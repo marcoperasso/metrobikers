@@ -1,0 +1,15 @@
+/* 
+    Document   : common
+    Created on : 21-mag-2013, 12.39.44
+    Author     : perasso
+    Description:
+        Purpose of the stylesheet follows.
+*/
+
+root { 
+    display: block;
+}
+body{
+    
+    background-color: wheat;
+}
