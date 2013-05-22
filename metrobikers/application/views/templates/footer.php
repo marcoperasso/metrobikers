@@ -1,1 +1,1 @@
-<strong>&copy; 2011</strong>	
+<strong>UrbanMovers is a product of Developer Coalition. All rights reserved. &copy; 2013</strong>	

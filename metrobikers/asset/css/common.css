@@ -6,10 +6,11 @@
         Purpose of the stylesheet follows.
 */
 
-root { 
-    display: block;
-}
 body{
     
     background-color: wheat;
+}
+h1{
+    
+    text-align: center;
 }
