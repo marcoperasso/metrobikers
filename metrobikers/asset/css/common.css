@@ -7,10 +7,21 @@
 */
 
 body{
-    
+
     background-color: wheat;
 }
 h1{
-    
+    text-align: center;
+}
+.invalid{
+    outline: red solid 2px;
+}
+.centered
+{
+    margin-left: auto;
+    margin-right: auto;
+}
+.centercontent{
+
     text-align: center;
 }
