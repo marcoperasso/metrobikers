@@ -22,7 +22,7 @@ class Register extends MY_Controller {
             $this->load->view('register/register');
         } else {
             $this->User_model->set_user();
-            $this->send_mail("marco.perasso@gmail.com", "Registration submitted", "Follow this link to activate your registration");
+            $this->send_mail("marco.perasso@gmail.com", "Registration submitted", "Follow this <a href=\"www.google.it\">link</a> to activate your registration");
 
             $this->load->view('register/success');
         }

@@ -9,7 +9,7 @@ class MY_Controller extends CI_Controller {
         parent::__construct();
     }
 
-    function send_mail($to, $subject, $message) {
+    protected function send_mail($to, $subject, $message) {
         $config = Array(
             'protocol' => 'smtp',
             'smtp_host' => 'ssl://smtp.gmail.com',
@@ -17,7 +17,8 @@ class MY_Controller extends CI_Controller {
             'smtp_user' => 'mtbgroupscout@gmail.com',
             'smtp_pass' => 'montoggio',
             'mailtype' => 'html',
-            'charset' => 'iso-8859-1'
+            'charset' => 'utf-8',
+            'mailtype' => 'html'
         );
 
         $this->load->library('email', $config);
