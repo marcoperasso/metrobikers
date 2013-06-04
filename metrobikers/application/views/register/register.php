@@ -33,6 +33,25 @@
             </select><br />
             <label for="birthdate">Birth date</label> 
             <input type="input" name="birthdate" id="birthdate" class="required"/><br />
+
+            <?php
+            $this->load->helper('captcha');
+            $vals = array(
+                'img_path' => './asset/captcha/',
+                'img_url' => base_url() . 'asset/captcha/'
+            );
+
+            $cap = create_captcha($vals);
+
+            $CI =& get_instance();
+            $CI->load->library('session');
+            $CI->session->set_userdata('captcha', $cap['word']);
+
+            echo 'Verification code:';
+            echo $cap['image'];
+            echo '';
+            ?>
+            <input type="text" name="captcha" id="captcha" class="required" value="" /><br />
             <input type="submit" name="submit" id="submit" value="Register" /> 
         </div>
     </form>

@@ -104,7 +104,7 @@ EOT;
                     break;
                 }
             default:
-                throw "ERROR";
+                throw new Exception("ERROR");
         }
         return $ret;
     }
