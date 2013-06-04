@@ -49,7 +49,7 @@
                 });
 
                 $('input').change(function() {
-                    $(this).removeClass('invalid')
+                    $(this).removeClass('invalid');
                 });
 
                 // Use the complexify plugin on the first password field
@@ -58,7 +58,7 @@
                     strengthScaleFactor: 0.7
                 },
                 function(valid, complexity) {
-                    $("#pwdmeter").css({"width": complexity + '%'})
+                    $("#pwdmeter").css({"width": complexity + '%'});
                 });
             });
 
@@ -92,8 +92,9 @@
                 for="pwdmeter">Password strength:</label>
             <div  class="pwdmetercontainer"><div id ="pwdmeter" class="pwdmeter"></div></div>
 
-            <input id="verify" name="verify" type="text" style="display: none"/>
-            <input type="submit" name="submit" id="submitbtn" value="Submit" /> 
+            <input id="userkey" name="userkey" type="hidden" value="<?php echo $key;?>"/>
+            <input id="password" name="password" type="hidden" />
+            <input type="submit" name="submitbtn" id="submitbtn" value="Submit" /> 
         </div>
     </form>
     <?php $this->load->view('templates/footer'); ?>

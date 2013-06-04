@@ -21,4 +21,8 @@ class Validation_key_model extends MY_Model {
         return $this->db->insert('validationkeys', $this);
     }
 
+    public function delete_key($user) {
+        return $this->db->delete('validationkeys', array('userid' => $user)); 
+    }
+
 }

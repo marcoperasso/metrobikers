@@ -2,12 +2,13 @@
 <html lang="en">
     <head>
         <?php $this->load->view('templates/header'); ?>
-        <title></title>
+        <title>User activated</title>
     </head>
-    
+
     <body>
         <?php $this->load->view('templates/visualheader'); ?>
-        <p>User succesfully registered</p>
+        <h1>User activated</h1>
+        <p>Congratulations, <?php echo $user->name . ' ' . $user->surname?>, your registration is now active, welcome to the ECOmmuters community!</p>
         <?php $this->load->view('templates/footer'); ?>
     </body>
 </html>
