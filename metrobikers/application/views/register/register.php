@@ -2,7 +2,7 @@
 <html lang="en">
     <head>
         <?php $this->load->view('templates/header'); ?>
-        <script type="text/javascript" src="<?php echo base_url() ?>asset/js/register.js"></script>
+        <script type="text/javascript" src="<?php echo base_url() ?>asset/js/validators.js"></script>
         <style>
             input, select{
                 width:200px;
@@ -24,7 +24,7 @@
             <label for="surname">Last Name</label> 
             <input type="input" name="surname"  class="required"/><br />
             <label for="mail">E Mail</label> 
-            <input type="input" name="mail" id="mail" class="required"/><br />
+            <input type="input" name="mail" id="mail" class="required mailinput"/><br />
             <label for="gender">Gender</label> 
             <select class="required" id="gender" name="gender">
                 <option value="0">Unspecified</option>
@@ -32,7 +32,7 @@
                 <option value="2">Male</option>
             </select><br />
             <label for="birthdate">Birth date</label> 
-            <input type="input" name="birthdate" id="birthdate" class="required"/><br />
+            <input type="input" name="birthdate" class="dateinput" id="birthdate" class="required"/><br />
 
             <?php
             $this->load->helper('captcha');
