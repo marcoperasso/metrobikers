@@ -48,10 +48,10 @@
 $active_group = 'default';
 $active_record = TRUE;
 
-$db['default']['hostname'] = 'localhost';
-$db['default']['username'] = 'webuser';
-$db['default']['password'] = 'webuser';
-$db['default']['database'] = 'metrobikers';
+$db['default']['hostname'] = DATABASE_HOST;
+$db['default']['username'] = DATABASE_USER;
+$db['default']['password'] = DATABASE_PASSWORD;
+$db['default']['database'] = DATABASE_NAME;
 $db['default']['dbdriver'] = 'mysql';
 $db['default']['dbprefix'] = '';
 $db['default']['pconnect'] = TRUE;

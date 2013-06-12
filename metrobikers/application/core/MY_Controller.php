@@ -12,10 +12,10 @@ class MY_Controller extends CI_Controller {
     protected function send_mail($to, $subject, $message) {
         $config = Array(
             'protocol' => 'smtp',
-            'smtp_host' => 'ssl://smtp.gmail.com',
-            'smtp_port' => 465,
-            'smtp_user' => 'mtbgroupscout@gmail.com',
-            'smtp_pass' => 'montoggio',
+            'smtp_host' => MAIL_HOST,
+            'smtp_port' => MAIL_PORT,
+            'smtp_user' => MAIL_USER,
+            'smtp_pass' => MAIL_PASSWORD,
             'mailtype' => 'html',
             'charset' => 'utf-8',
             'mailtype' => 'html'
@@ -23,7 +23,7 @@ class MY_Controller extends CI_Controller {
 
         $this->load->library('email', $config);
         $this->email->set_newline("\r\n");
-        $this->email->from('mtbgroupscout@gmail.com', 'Marco Perasso');
+        $this->email->from(MAIL_USER, 'ECOmmuters');
 
         $this->email->to($to);
 
