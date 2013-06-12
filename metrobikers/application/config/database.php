@@ -45,8 +45,8 @@
 | the active record class
 */
 
-$active_group = 'production';
-//$active_group = 'development';
+//$active_group = 'production';
+$active_group = 'development';
 $active_record = TRUE;
 
 $db['production']['hostname'] = '62.149.150.187';
