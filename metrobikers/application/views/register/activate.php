@@ -36,7 +36,7 @@
                     }
                     else
                     {
-                        $.get("<?php echo my_base_url() ?>/crypt", null, function(data) {
+                        $.get("<?php echo base_url() ?>crypt", null, function(data) {
                             eval(data);
                             var pwd = hex_md5($('#password1').val());
                             pwd = this.crypt(pwd);
