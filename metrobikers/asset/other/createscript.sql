@@ -9,9 +9,10 @@ CREATE TABLE `users` (
   `active` bit(1) DEFAULT NULL,
   `birthdate` date DEFAULT NULL,
   `gender` tinyint(4) DEFAULT NULL,
+  `activationdate` date DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `mail_UNIQUE` (`mail`)
-) ENGINE=InnoDB AUTO_INCREMENT=67 DEFAULT CHARSET=utf8$$
+) ENGINE=InnoDB AUTO_INCREMENT=91 DEFAULT CHARSET=utf8$$
 
 
 delimiter $$

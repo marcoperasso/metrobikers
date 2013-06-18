@@ -60,8 +60,8 @@ class Register extends MY_Controller {
             $this->load->library('session');
             $captcha = $this->session->userdata('captcha');
             $word = $this->input->post("captcha");
-             if (strcasecmp($captcha,$word) != 0)
-                throw new Exception("Invalid verification code!");
+            if (strcasecmp($captcha, $word) != 0)
+                show_error ("Invalid verification code!");
             $this->db->trans_begin();
             $this->User_model->create_user();
             $this->Validation_key_model->create_key($this->User_model->id);

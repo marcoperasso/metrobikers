@@ -9,6 +9,7 @@ class User_model extends MY_Model {
     var $surname;
     var $active;
     var $gender;
+    var $activationdate;
 
     public function __construct() {
         parent::__construct();
@@ -38,6 +39,7 @@ class User_model extends MY_Model {
 
     public function activate_user() {
         $this->active = TRUE;
+        $this->activationdate = date('Y-m-d');
         $this->load->library('Crypter');
         $pwd = $this->crypter->decrypt($this->input->post('password'));
         $this->password = $pwd;
