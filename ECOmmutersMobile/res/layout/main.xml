@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/lib/com.google.ads"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/gradient_background"
+    android:orientation="vertical" >
+
+    <com.google.ads.AdView
+        android:id="@+id/ad"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        app:adSize="BANNER"
+        app:adUnitId="a14dab484e38896" />
+
+    <ImageView
+        android:id="@+id/imageView1"
+        android:layout_width="fill_parent"
+        android:layout_height="0dip"
+        android:layout_weight="0.76"
+        android:contentDescription="ECOmmuters Logo"
+        android:src="@drawable/ecommuters" />
+
+    <TextView
+        android:id="@+id/textViewUrl"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:autoLink="web"
+        android:text="www.ecommuters.com" />
+
+    <Button
+        android:id="@+id/btn_routes"
+        android:layout_width="fill_parent"
+        android:layout_height="64dp"
+        android:layout_gravity="center"
+        android:layout_margin="5dp"
+        android:text="@string/btn_routes" />
+
+</LinearLayout>

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+    <style name="ecommuters" parent="@android:style/Theme.Light">
+<!--         <item name="android:background">@drawable/gradient_background</item> -->
+        
+    </style>
+</resources>
