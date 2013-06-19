@@ -26,7 +26,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.ads.AdView;
+
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapActivity;
 import com.google.android.maps.MapController;
@@ -102,9 +102,9 @@ public class TracksActivity extends MapActivity {
 		}
 		mController.setZoom(zoomLevel);
 
-		// Look up the AdView as a resource and load a request.
-		AdView adView = (com.google.ads.AdView) this.findViewById(R.id.ad);
-		adView.loadAd(new com.google.ads.AdRequest());
+//		// Look up the AdView as a resource and load a request.
+//		AdView adView = (com.google.ads.AdView) this.findViewById(R.id.ad);
+//		adView.loadAd(new com.google.ads.AdRequest());
 
 	}
 

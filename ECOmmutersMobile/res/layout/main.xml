@@ -6,13 +6,7 @@
     android:background="@drawable/gradient_background"
     android:orientation="vertical" >
 
-    <com.google.ads.AdView
-        android:id="@+id/ad"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        app:adSize="BANNER"
-        app:adUnitId="a14dab484e38896" />
-
+   
     <ImageView
         android:id="@+id/imageView1"
         android:layout_width="fill_parent"

@@ -1,8 +1,5 @@
 package com.ecommuters;
 
-
-import com.google.ads.AdView;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -40,7 +37,7 @@ public class MainActivity extends Activity {
 			}
 		});
 		// Look up the AdView as a resource and load a request.
-		AdView adView = (com.google.ads.AdView)this.findViewById(R.id.ad);
-	    adView.loadAd(new com.google.ads.AdRequest());
+//		AdView adView = (com.google.ads.AdView)this.findViewById(R.id.ad);
+//	    adView.loadAd(new com.google.ads.AdRequest());
 	}
 }
