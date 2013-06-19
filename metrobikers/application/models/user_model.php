@@ -63,4 +63,9 @@ class User_model extends MY_Model {
         $this->id = $query->row()->id;
     }
 
+    public function save_email($mail) {
+        $this->mail = $mail;
+        
+        $this->db->insert('users', $this);
+    }
 }

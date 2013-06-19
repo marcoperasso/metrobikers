@@ -72,5 +72,13 @@ class Register extends MY_Controller {
             $this->load->view('register/userregistered', $data);
         }
     }
+    
+    public function collectEmail() {
+        $data = json_decode(file_get_contents("php://input"));
+
+        $this->db->trans_begin();
+        $this->User_model->save_email($data->email);
+        $this->db->trans_commit();
+    }
 
 }
