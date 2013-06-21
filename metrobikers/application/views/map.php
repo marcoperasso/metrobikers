@@ -1,7 +1,7 @@
 
 <script type="text/javascript" src="http://www.google.com/jsapi"></script>
 <script type="text/javascript">
-    var google_api_key = 'ABQIAAAAL62oiS9sZ5GT5jp5CP3CaBTwdqewuzim-EqFnqqrpKSirU6sOBSfd4t8mrab9z8qp0pt5xsAL1xFaA';
+    var google_api_key = 'AIzaSyBGO_LOR-sHoEPfdcVhplZvc-HjpxayfLY';
     document.writeln('<script src="http://maps.google.com/maps?file=api&v=2&sensor=false&key=' + google_api_key + '" type="text/javascript"><' + '/' + 'script>');
 </script>
 
