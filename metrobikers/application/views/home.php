@@ -26,6 +26,7 @@
         <br />
         <br />
         <!--<a class="button" href="<?php echo \base_url()?>register/register"> Register</a>-->
+         <?php $this->load->view('map'); ?>
         <?php $this->load->view('templates/footer'); ?>
         <script>angular.module("Home", []).value("base_url", "<?php echo base_url() ?>")</script>
         <script type="text/javascript" src="<?php echo base_url() ?>asset/js/mailCollector.js"></script>
