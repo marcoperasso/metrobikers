@@ -1,2 +1,3 @@
-<span id="ecommuter_logo" class="logo"><em>ECOmmuterLogo</em></span>
-<h1>ECOmmuters</h1>
+ <img class="image_logo" src="<?php echo base_url()?>images/BozzaLogo.png"> </img>
+
+
