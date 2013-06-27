@@ -5,7 +5,7 @@
     android:layout_height="fill_parent"
     android:orientation="vertical" >
 
-    <LinearLayout 
+    <LinearLayout
         android:id="@+id/layoutNotification"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
@@ -13,39 +13,30 @@
         android:orientation="horizontal"
         android:padding="5dip"
         android:visibility="gone" >
-        
+
         <ProgressBar
             android:id="@+id/progressBarNotification"
             style="?android:attr/progressBarStyleSmall"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="2dip" />
-    
-    <TextView
-        android:id="@+id/textViewNotification"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_gravity="top" />
 
+        <TextView
+            android:id="@+id/textViewNotification"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="top" />
     </LinearLayout>
-     
-   
- <com.ecommuters.MyMapView
+
+    <com.ecommuters.MyMapView
         android:id="@+id/mapview1"
         android:layout_width="fill_parent"
         android:layout_height="0dip"
         android:layout_weight="1"
+        debugapiKey="0dEYPHJIAGuC3ZMx4EK5IjFp5SnxwDv7iOxKjEQ"
+        releaseapiKey="0HToEclXMbw-m5HMb9GSGaaf_2wKfdffQ0R6Wig"
         android:apiKey="0dEYPHJIAGuC3ZMx4EK5IjFp5SnxwDv7iOxKjEQ"
         android:clickable="true"
-        debugapiKey="0dEYPHJIAGuC3ZMx4EK5IjFp5SnxwDv7iOxKjEQ"
-        android:enabled="true"
-        releaseapiKey="0HToEclXMbw-m5HMb9GSGaaf_2wKfdffQ0R6Wig" />
-
-    <com.google.ads.AdView
-        android:id="@+id/ad"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        app:adSize="BANNER"
-        app:adUnitId="a14dab484e38896" />
+        android:enabled="true" />
 
 </LinearLayout>

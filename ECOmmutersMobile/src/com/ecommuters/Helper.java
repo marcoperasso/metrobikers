@@ -11,9 +11,12 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import android.content.Context;
 import android.net.ConnectivityManager;
+import android.util.Log;
 
 public class Helper {
 	static boolean sendRequest(String reqString, StringBuilder result) {
@@ -49,9 +52,7 @@ public class Helper {
 			result.append(e.getLocalizedMessage());
 			return false;
 		}
-		boolean ok = result.length() > 0
-				&& result.charAt(result.length() - 1) == '1';
-		result.delete(result.length() - 1, result.length());
+		boolean ok = result.length() > 0;
 		return ok;
 	}
 
@@ -66,15 +67,24 @@ public class Helper {
 
 	}
 
-	static String getProtocolVersion() {
+	static int getProtocolVersion() {
 		StringBuilder result = new StringBuilder();
-		if (sendRequest(RequestBuilder.getGetVersionRequest(), result))
-			return result.toString();
-		return "";
+		if (sendRequest(RequestBuilder.getGetVersionRequest(), result)) {
+			try {
+				JSONObject obj = new JSONObject(result.toString());
+
+				return obj.getInt("version");
+
+			} catch (JSONException e) {
+				Log.e("json", e.toString());
+			}
+
+		}
+		return -1;
 	}
 
 	static boolean matchProtocolVersion() {
-		return getProtocolVersion().equals(Const.PROTOCOL_VERSION);
+		return Const.PROTOCOL_VERSION.equals(getProtocolVersion());
 	}
 
 }

@@ -1,7 +1,7 @@
 package com.ecommuters;
 
 public class Const {
-	public static final String PROTOCOL_VERSION = "1";
+	public static final Integer PROTOCOL_VERSION = 1;
 	public static final int ACTIVATE_GPS = 0;
 	public static final String LATITUDE = "a";
 	public static final String LONGITUDE = "b";
