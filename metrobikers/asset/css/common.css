@@ -16,12 +16,11 @@ h1{
     text-align: center;
     color: #FF7D04;
 }
-
-.image_logo {
-    height: 250px;
-    display:block;
-    margin-left: auto;
-    margin-right: auto;
+.logo {
+    background-color: #0FCC00;
+    color: #000000;
+    width: 200px;
+    height: 200px;
 }
 .invalid{
     outline: red solid 2px;
