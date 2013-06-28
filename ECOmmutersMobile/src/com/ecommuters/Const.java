@@ -15,5 +15,7 @@ public class Const {
 	public static final String TRACK_GPS = "l";
 	public static final String TRACKINFO = "m";
 	public static final String ACTIVE_TRACK_NAME = "n";
+	public static final String EMAIL = "o";
+	public static final String PASSWORD = "p";
 
 }
