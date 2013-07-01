@@ -74,10 +74,10 @@ class Register extends MY_Controller {
     }
     
     public function collectEmail() {
-        $data = json_decode(file_get_contents("php://input"));
+        $email = $this->input->post('email');
 
         $this->db->trans_begin();
-        $this->User_model->save_email($data->email);
+        $this->User_model->save_email($email);
         $this->db->trans_commit();
     }
 
