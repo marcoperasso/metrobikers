@@ -1,1 +1,1 @@
-<img src="<?php echo base_url()?>images/BozzaLogo.png" id="ecommuter_logo" class="logo">
+<img src="<?php echo base_url()?>asset/img/logo.png" id="ecommuter_logo" class="logo">
