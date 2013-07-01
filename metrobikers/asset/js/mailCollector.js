@@ -4,14 +4,16 @@ function mailCollector($scope, $http, base_url) {
     $scope.base_url = base_url;
     
     $scope.collectMail = function() {
-        $http(
+        var postData = 'email=' + $scope.emailAddress;
+        
+       $http(
                 {   
                     url: $scope.base_url + 'register/collectEmail',
                     method: 'POST',
                     headers: {
-                        "Content-Type": "application/x-www-form-urlencoded"
+                        'Content-Type': 'application/x-www-form-urlencoded'
                     },
-                    data: { email: $scope.emailAddress}
+                    data: postData
                 }
             ).
             success(function (data, status, headers, config) {
