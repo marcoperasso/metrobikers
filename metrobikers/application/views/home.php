@@ -16,7 +16,7 @@
         </p>
         <p><em>Richiesta email per aggiornamenti</em></p>
         <p>Se interessati lasciare mail qui sotto</p>
-        <div ng-controller="mailCollector">
+        <div ng-controller="MailCollector">
             <form ng-submit="collectMail()">
                 <input type="text" ng-model="emailAddress" placeholder="insert your email address">
                 <input class="button" type="submit" value="ok">
@@ -26,8 +26,8 @@
         <br />
         <br />
         <!--<a class="button" href="<?php echo \base_url()?>register/register"> Register</a>-->
+         <?php $this->load->view('map'); ?>
         <?php $this->load->view('templates/footer'); ?>
-        <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.0.7/angular.min.js"></script>
         <script>angular.module("Home", []).value("base_url", "<?php echo base_url() ?>")</script>
         <script type="text/javascript" src="<?php echo base_url() ?>asset/js/mailCollector.js"></script>
     </body>

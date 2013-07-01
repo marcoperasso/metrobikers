@@ -1,4 +1,4 @@
-function mailCollector($scope, $http, base_url) {
+function MailCollector($scope, $http, base_url) {
     $scope.emailAddress='';
     $scope.greetings = '';
     $scope.base_url = base_url;

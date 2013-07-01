@@ -5,10 +5,10 @@
     <string name="need_gps">This application requires GPS, but it is turned off; do you want to turn it on now?</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
-    <string name="btn_routes">Tracks</string>
+    <string name="btn_map">Show map</string>
     <string name="coordinates">Latitude : %1$d\r\nlongitude: %2$d\r\naltitude: %3$f</string>
     <string name="your_position">Your position</string>
-    <string name="length">Lenght:</string>
+    <string name="length">Length:</string>
     <string name="cycle">Cycling:</string>
     <string name="difficulty">Difficulty:</string>
     <string name="maxHeight">Maximum height:</string>
@@ -21,5 +21,7 @@
     <string name="wrong_version">Application is out of date, please update it if you want to continue using it</string>
     <string name="show_position_menu">Show my position</string>
     <string name="hide_position_menu">Hide my position</string>
+    <string name="ecommuters_logo">ECOmmuters Logo</string>
+    <string name="btn_new_route">New Route...</string>
 </resources>
  
