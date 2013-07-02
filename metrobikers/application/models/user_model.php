@@ -15,6 +15,13 @@ class User_model extends MY_Model {
         parent::__construct();
     }
 
+    public function to_string() {
+        if (empty($this->name) && empty($this->surname))
+            return $this->mail;
+
+        return $this->name . " " . $this->surname;
+    }
+
     public function get_user_by_key($key) {
         $this->db->select('a.*')
                 ->join("validationkeys b", "a.id=b.userid")
@@ -65,7 +72,8 @@ class User_model extends MY_Model {
 
     public function save_email($mail) {
         $this->mail = $mail;
-        
+
         $this->db->insert('users', $this);
     }
+
 }

@@ -16,11 +16,16 @@ h1{
     text-align: center;
     color: #FF7D04;
 }
-.logo {
+img.logo {
     height: 250px;
+    width: 400px;
     margin-left: auto;
     margin-right: auto;
     display: block;
+}
+table.heading
+{
+    width:100%;
 }
 .invalid{
     outline: red solid 2px;
