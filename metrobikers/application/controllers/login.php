@@ -3,25 +3,37 @@
 if (!defined('BASEPATH'))
     exit('No direct script access allowed');
 
-class Home extends MY_Controller {
+class Login extends MY_Controller {
 
-    /**
-     * Index Page for this controller.
-     *
-     * Maps to the following URL
-     * 		http://example.com/index.php/welcome
-     * 	- or -  
-     * 		http://example.com/index.php/welcome/index
-     * 	- or -
-     * Since this controller is set as the default controller in 
-     * config/routes.php, it's displayed at http://example.com/
-     *
-     * So any other public methods not prefixed with an underscore will
-     * map to /index.php/welcome/<method_name>
-     * @see http://codeigniter.com/user_guide/general/urls.html
-     */
     public function index() {
-        $this->load->view('home');
+        $this->load->view('login');
+    }
+
+    public function dologin() {
+        $this->load->library('Crypter');
+        $pwd = $this->crypter->decrypt($this->input->get('pwd'));
+        $mail = $this->input->get('email');
+        $this->load->model('User_model');
+
+        $this->output->set_content_type('application/json');
+        $success = $this->User_model->get_user($mail) && $this->User_model->password == $pwd;
+        $response = array('success' => $success);
+        if ($success) {
+            $this->load->library('session');
+            $this->session->set_userdata("user", $this->User_model);
+        } else {
+            $response["message"] = "Login failed. Invalid user or password";
+        }
+
+        $this->output->set_output(json_encode($response));
+    }
+
+    public function dologoff() {
+        $this->output->set_content_type('application/json');
+        $this->load->library('session');
+        $this->session->set_userdata("user", NULL);
+        $response = array('success' => TRUE);
+        $this->output->set_output(json_encode($response));
     }
 
 }
