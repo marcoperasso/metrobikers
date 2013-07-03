@@ -23,6 +23,11 @@ img.logo {
     margin-right: auto;
     display: block;
 }
+img.headercommand
+{
+width: auto;
+height: 70px;
+}
 table.heading
 {
     width:100%;

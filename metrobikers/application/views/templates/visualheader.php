@@ -1,7 +1,11 @@
 <table cellpadding="0" cellspacing="0" border="0" class ="heading">
     <tr>
         <td style="width:25%;"></td>
-        <td style="width:50%;"><img src="<?php echo base_url() ?>asset/img/logo.png" id="ecommuter_logo" class="logo"></td>
+        <td style="width:50%;">
+            <a href="/" title="Vai alla pagina principale">
+                <img src="asset/img/logo.png" id="ecommuter_logo" class="logo">
+            </a>
+        </td>
         <td style="width:25%;"><?php
             $CI = & get_instance();
             $CI->load->library('session');
@@ -9,10 +13,11 @@
             $user = unserialize($CI->session->userdata("user"));
             if ($user == NULL) {
                 ?>
-                <a class ="logincommand" href="javascript:void(0)" title="Entra"><img src="asset/img/enter.png" alt="Entra"/></a>
+                <a class ="logincommand" href="javascript:void(0)" title="Entra"><img class="headercommand" src="asset/img/enter.png" alt="Entra"/></a>
+                <a class ="registercommand" href="register" title="Diventa un ECOmmuter!"><img class="headercommand" src="asset/img/register.png" alt="Diventa un ECOmmuter!"/></a>
             <?php } else { ?>
                 <span>Benvenuto, <?php echo $user->to_string(); ?></span>
-                <a class ="logoffcommand" href="javascript:void(0)" title="Esci"><img src="asset/img/exit.png" alt="Esci"/></a>
+                <a class ="logoffcommand" href="javascript:void(0)" title="Esci"><img class="headercommand" src="asset/img/exit.png" alt="Esci"/></a>
             <?php } ?></td>
 
     </tr>
