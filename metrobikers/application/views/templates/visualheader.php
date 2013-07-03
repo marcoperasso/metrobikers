@@ -3,7 +3,7 @@
         <td style="width:25%;"></td>
         <td style="width:50%;">
             <a href="/" title="Vai alla pagina principale">
-                <img src="asset/img/logo.png" id="ecommuter_logo" class="logo">
+                <img src="<?php echo base_url()?>asset/img/logo.png" id="ecommuter_logo" class="logo">
             </a>
         </td>
         <td style="width:25%;"><?php
@@ -13,11 +13,11 @@
             $user = unserialize($CI->session->userdata("user"));
             if ($user == NULL) {
                 ?>
-                <a class ="logincommand" href="javascript:void(0)" title="Entra"><img class="headercommand" src="asset/img/enter.png" alt="Entra"/></a>
-                <a class ="registercommand" href="register" title="Diventa un ECOmmuter!"><img class="headercommand" src="asset/img/register.png" alt="Diventa un ECOmmuter!"/></a>
+                <a class ="logincommand" href="javascript:void(0)" title="Entra"><img class="headercommand" src="<?php echo base_url()?>asset/img/enter.png" alt="Entra"/></a>
+                <a class ="registercommand" href="register" title="Diventa un ECOmmuter!"><img class="headercommand" src="<?php echo base_url()?>asset/img/register.png" alt="Diventa un ECOmmuter!"/></a>
             <?php } else { ?>
                 <span>Benvenuto, <?php echo $user->to_string(); ?></span>
-                <a class ="logoffcommand" href="javascript:void(0)" title="Esci"><img class="headercommand" src="asset/img/exit.png" alt="Esci"/></a>
+                <a class ="logoffcommand" href="javascript:void(0)" title="Esci"><img class="headercommand" src="<?php echo base_url()?>asset/img/exit.png" alt="Esci"/></a>
             <?php } ?></td>
 
     </tr>
@@ -32,9 +32,9 @@
             return;
         }
         $.get("login", null, function(data) {
-            loginForm = $(data)
-                    .appendTo(document.body)
-                    .dialog({
+            $(data).appendTo(document.body);
+            loginForm = $("#loginform");
+            loginForm.dialog({
                 autoOpen: true,
                 width: 400,
                 modal: true,
