@@ -13,20 +13,21 @@
     </form>
 </div>
 <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
-<script type="text/javascript" src="asset/js/md5-min.js"></script>
+<script type="text/javascript" src="<?php echo base_url() ?>asset/js/md5-min.js"></script>
 <script type="text/javascript">
     $("#loginforget").click(resetPassword);
+    var _autologin = this.autologin;
     function doLogin()
     {
         doLoginInternal();
     }
     function doLoginInternal(onEnd)
     {
-        $.get("crypt", null, function(data) {
+        jQuery.get("<?php echo base_url() ?>crypt", null, function(data) {
             eval(data);
             var pwd = hex_md5($('#loginpassword').val());
             pwd = this.crypt(pwd);
-            $.getJSON("login/dologin", {
+            $.getJSON("<?php echo base_url() ?>login/dologin", {
                 "email": $("#loginemail").val(),
                 "pwd": pwd
             }, function(data) {
@@ -64,17 +65,19 @@
             });
         }
     }
-    if (this.autologin)
+    if (_autologin)
     {
-        $("#loginemail").val(this.autologin.getUser());
-        $("#loginpassword").val(this.autologin.getPassword());
+        $("#loginemail").val(_autologin.getUser());
+        $("#loginpassword").val(_autologin.getPassword());
         try
         {
-            doLogin(function(data){this.autologin.completed(data.success);});
+            doLoginInternal(function(data) {
+                _autologin.completed(data.success, data.message);
+            });
         }
         catch (e)
         {
-            this.autologin.completed(false);
+            _autologin.completed(false, e);
         }
     }
 
