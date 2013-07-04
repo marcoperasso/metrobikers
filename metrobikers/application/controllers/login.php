@@ -19,8 +19,7 @@ class Login extends MY_Controller {
         $success = $this->User_model->get_user($mail) && $this->User_model->password == $pwd;
         $response = array('success' => $success);
         if ($success) {
-            $this->load->library('session');
-            $this->session->set_userdata("user", serialize($this->User_model));
+            $_SESSION["user"] = serialize($this->User_model);
         } else {
             $response["message"] = "Login failed. Invalid user or password";
         }
@@ -30,8 +29,7 @@ class Login extends MY_Controller {
 
     public function dologoff() {
         $this->output->set_content_type('application/json');
-        $this->load->library('session');
-        $this->session->set_userdata("user", NULL);
+        $_SESSION["user"] = NULL;
         $response = array('success' => TRUE);
         $this->output->set_output(json_encode($response));
     }

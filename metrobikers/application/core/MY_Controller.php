@@ -7,6 +7,9 @@ class MY_Controller extends CI_Controller {
 
     public function __construct() {
         parent::__construct();
+        if (!isset($_SESSION)) {
+            session_start();
+        }
     }
 
     protected function send_mail($to, $subject, $message) {

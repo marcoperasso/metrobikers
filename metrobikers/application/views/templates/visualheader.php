@@ -3,29 +3,29 @@
         <td style="width:25%;"></td>
         <td style="width:50%;">
             <a href="/" title="Vai alla pagina principale">
-                <img src="<?php echo base_url()?>asset/img/logo.png" id="ecommuter_logo" class="logo">
+                <img src="<?php echo base_url() ?>asset/img/logo.png" id="ecommuter_logo" class="logo">
             </a>
         </td>
         <td style="width:25%;"><?php
-            $CI = & get_instance();
-            $CI->load->library('session');
-            $CI->load->model('User_model');
-            $user = unserialize($CI->session->userdata("user"));
-            if ($user == NULL) {
+            if (isset($_SESSION['user'])) {
+                $CI = & get_instance();
+                $CI->load->model('User_model');
+                $user = unserialize($_SESSION['user']);
                 ?>
-                <a class ="logincommand" href="javascript:void(0)" title="Entra"><img class="headercommand" src="<?php echo base_url()?>asset/img/enter.png" alt="Entra"/></a>
-                <a class ="registercommand" href="register" title="Diventa un ECOmmuter!"><img class="headercommand" src="<?php echo base_url()?>asset/img/register.png" alt="Diventa un ECOmmuter!"/></a>
-            <?php } else { ?>
                 <span>Benvenuto, <?php echo $user->to_string(); ?></span>
-                <a class ="logoffcommand" href="javascript:void(0)" title="Esci"><img class="headercommand" src="<?php echo base_url()?>asset/img/exit.png" alt="Esci"/></a>
+                <a class ="logoffcommand" href="javascript:void(0)" title="Esci"><img class="headercommand" src="<?php echo base_url() ?>asset/img/exit.png" alt="Esci"/></a>
+
+            <?php } else { ?>
+                <a class ="logincommand" href="javascript:void(0)" title="Entra"><img class="headercommand" src="<?php echo base_url() ?>asset/img/enter.png" alt="Entra"/></a>
+                <a class ="registercommand" href="register" title="Diventa un ECOmmuter!"><img class="headercommand" src="<?php echo base_url() ?>asset/img/register.png" alt="Diventa un ECOmmuter!"/></a>
             <?php } ?></td>
 
     </tr>
 </table>
 <script type="text/javascript">
+    var loginForm = $("#loginform");
     function login()
     {
-        var loginForm = $("#loginform");
         if (loginForm.length !== 0)
         {
             loginForm.dialog("open");
@@ -41,7 +41,7 @@
                 buttons: {
                     Login: doLogin,
                     Cancel: function() {
-                        $(this).dialog("close");
+                        loginForm.dialog("close");
                     }
                 },
                 close: function() {

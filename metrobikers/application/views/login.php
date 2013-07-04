@@ -18,6 +18,10 @@
     $("#loginforget").click(resetPassword);
     function doLogin()
     {
+        doLoginInternal();
+    }
+    function doLoginInternal(onEnd)
+    {
         $.get("crypt", null, function(data) {
             eval(data);
             var pwd = hex_md5($('#loginpassword').val());
@@ -26,9 +30,9 @@
                 "email": $("#loginemail").val(),
                 "pwd": pwd
             }, function(data) {
-                if (this.autologin)
+                if (onEnd)
                 {
-                    this.autologin.completed(data.success);
+                    onEnd(data)
                 }
                 else
                 {
@@ -66,7 +70,7 @@
         $("#loginpassword").val(this.autologin.getPassword());
         try
         {
-            doLogin();
+            doLogin(function(data){this.autologin.completed(data.success);});
         }
         catch (e)
         {
