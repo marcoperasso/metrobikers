@@ -12,14 +12,15 @@
     <string name="show_position_menu">Visualizza la mia posizione</string>
     <string name="hide_position_menu">Nascondi la mia posizione</string>
     <string name="ecommuters_logo">Logo di ECOmmuters</string>
-    <string name="btn_new_route">Nuovo itinerario...</string>
+    <string name="btn_new_route">Nuovo itinerario&#8230;</string>
     <string name="credential_email">EMail</string>
     <string name="credential_password">Password</string>
     <string name="cancel">Annulla</string>
     <string name="ok">OK</string>
-    <string name="insert_credential_title">Inserisci le credenziali per accedere a ECOmmuters</string>
+    <string name="insert_credential_title">Inserisci le credenziali</string>
     <string name="user_credentials">Le mie credenziali</string>
-    <string name="retrieving_info">Sto recuperando le informazioni dal server...</string>
+    <string name="retrieving_info">Sto recuperando le informazioni dal server&#8230;</string>
     <string name="site_url">www.ecommuters.com</string>
+    <string name="credential_description">Non le hai ancora? <a href="http://www.ecommuters.com/register">diventa ECOmmuter!</a></string>
 </resources>
  

@@ -3,9 +3,11 @@ package com.ecommuters;
 import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
+import android.text.method.LinkMovementMethod;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 
 public class CredentialsDialog extends Dialog {
 	private Credentials credentials;
@@ -21,7 +23,9 @@ public class CredentialsDialog extends Dialog {
 	protected void onCreate(Bundle savedInstanceState) {
 		setContentView(R.layout.credentials);
 		setTitle(R.string.insert_credential_title);
-
+		TextView textView = (TextView) findViewById(R.id.textViewDescription);
+		textView.setMovementMethod(LinkMovementMethod.getInstance());
+		
 		setCancelable(true);
 
 		mPassword = (EditText) findViewById(R.id.editTextPassword);
