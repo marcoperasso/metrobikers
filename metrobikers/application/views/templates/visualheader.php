@@ -7,7 +7,7 @@
             </a>
         </td>
         <td style="width:25%;"><?php
-            if (isset($_SESSION['user'])) {
+            if (get_user() != NULL) {
                 $CI = & get_instance();
                 $CI->load->model('User_model');
                 $user = unserialize($_SESSION['user']);

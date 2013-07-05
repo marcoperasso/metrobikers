@@ -31,7 +31,7 @@ public class CredentialsDialog extends Dialog {
 		mPassword = (EditText) findViewById(R.id.editTextPassword);
 		mEmail = (EditText) findViewById(R.id.editTextEMail);
 
-		Credentials c = MySettings.getCredentials(getContext());
+		Credentials c = MySettings.readCredentials(getContext());
 		mEmail.setText(c.getEmail());
 		mPassword.setText(c.getPassword());
 

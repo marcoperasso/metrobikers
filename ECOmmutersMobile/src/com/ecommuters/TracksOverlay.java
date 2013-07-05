@@ -3,8 +3,6 @@ package com.ecommuters;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-import org.json.JSONObject;
-
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
@@ -287,25 +285,25 @@ public class TracksOverlay extends ItemizedOverlay<OverlayItem> {
 
 			@Override
 			protected GPSTrack doInBackground(String... params) {
-				GPSTrack pts = new GPSTrack();
-				String reqString = RequestBuilder
-						.getDownloadTrackRequest(params[0]);
-				StringBuilder result = new StringBuilder();
-				if (!Helper.sendRequest(reqString, result))
-					return null;
-				String[] tokens = result.toString().split("-");
-				try {
-					for (int i = 0; i < tokens.length; i += 3) {
-
-						GpsPoint pt = new GpsPoint(Integer.parseInt(tokens[i]),
-								Integer.parseInt(tokens[i + 1]),
-								Double.parseDouble(tokens[i + 2]));
-						pts.add(pt);
-					}
-					return pts;
-				} catch (Exception e) {
-					manageError(e);
-				}
+//				GPSTrack pts = new GPSTrack();
+//				String reqString = RequestBuilder
+//						.getDownloadTrackRequest(params[0]);
+//				StringBuilder result = new StringBuilder();
+//				if (!Helper.sendRequest(reqString, result))
+//					return null;
+//				String[] tokens = result.toString().split("-");
+//				try {
+//					for (int i = 0; i < tokens.length; i += 3) {
+//
+//						GpsPoint pt = new GpsPoint(Integer.parseInt(tokens[i]),
+//								Integer.parseInt(tokens[i + 1]),
+//								Double.parseDouble(tokens[i + 2]));
+//						pts.add(pt);
+//					}
+//					return pts;
+//				} catch (Exception e) {
+//					manageError(e);
+//				}
 				return null;
 			}
 
@@ -321,27 +319,27 @@ public class TracksOverlay extends ItemizedOverlay<OverlayItem> {
 
 			@Override
 			protected TrackInfo doInBackground(String... params) {
-				String reqString = RequestBuilder
-						.getGetTrackDetailRequest(params[0]);
-				StringBuilder result = new StringBuilder();
-				if (!Helper.sendRequest(reqString, result))
-					return null;
-				try {
-					JSONObject obj = new JSONObject(result.toString());
-
-					TrackInfo info = new TrackInfo();
-					info.setTitle(obj.getString("title"));
-					info.setLength(obj.getDouble("length"));
-					info.setCycling(obj.getInt("cycling"));
-					info.setDifficulty(obj.getString("difficulty"));
-					info.setMaxHeight(obj.getDouble("maxHeight"));
-					info.setMinHeight(obj.getDouble("minHeight"));
-					info.setRating(obj.getDouble("rank"));
-					return info;
-
-				} catch (Exception e) {
-					manageError(e);
-				}
+//				String reqString = RequestBuilder
+//						.getGetTrackDetailRequest(params[0]);
+//				StringBuilder result = new StringBuilder();
+//				if (!Helper.sendRequest(reqString, result))
+//					return null;
+//				try {
+//					JSONObject obj = new JSONObject(result.toString());
+//
+//					TrackInfo info = new TrackInfo();
+//					info.setTitle(obj.getString("title"));
+//					info.setLength(obj.getDouble("length"));
+//					info.setCycling(obj.getInt("cycling"));
+//					info.setDifficulty(obj.getString("difficulty"));
+//					info.setMaxHeight(obj.getDouble("maxHeight"));
+//					info.setMinHeight(obj.getDouble("minHeight"));
+//					info.setRating(obj.getDouble("rank"));
+//					return info;
+//
+//				} catch (Exception e) {
+//					manageError(e);
+//				}
 				return null;
 			}
 

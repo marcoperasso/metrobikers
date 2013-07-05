@@ -22,5 +22,6 @@
     <string name="retrieving_info">Sto recuperando le informazioni dal server&#8230;</string>
     <string name="site_url">www.ecommuters.com</string>
     <string name="credential_description">Non le hai ancora? <a href="http://www.ecommuters.com/register">diventa ECOmmuter!</a></string>
+    <string name="welcome_s">Benvenuto, %s</string>
 </resources>
  

@@ -1,6 +1,7 @@
 package com.ecommuters;
 
 public class Const {
+	public static final String HTTP_WWW_ECOMMUTERS_COM_LOGIN = "http://www.ecommuters.com/login";
 	public static final Integer PROTOCOL_VERSION = 1;
 	public static final int ACTIVATE_GPS = 0;
 	public static final String LATITUDE = "a";

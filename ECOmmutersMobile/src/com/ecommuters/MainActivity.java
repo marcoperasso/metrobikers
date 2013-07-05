@@ -12,6 +12,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class MainActivity extends Activity {
@@ -40,7 +41,7 @@ public class MainActivity extends Activity {
 		});
 
 		// testo le credenziali
-		Credentials credential = MySettings.getCredentials(this);
+		Credentials credential = MySettings.readCredentials(this);
 		if (credential.isEmpty()) {
 			// non ho le credenziali: le chiedo e contestualmente le valido (se
 			// sono online
@@ -48,7 +49,9 @@ public class MainActivity extends Activity {
 			// se non sono buone esco
 			showCredentialsDialog(new OnAsyncResponse() {
 				public void response(boolean success, String message) {
-					if (!success)
+					if (success)
+						writeUserInfo();
+					else
 						finish();
 
 				}
@@ -57,7 +60,9 @@ public class MainActivity extends Activity {
 			// se ci sono le credenziali e sono online, le testo
 			credential.testLogin(this, new OnAsyncResponse() {
 				public void response(boolean success, String message) {
-					if (!success)
+					if (success)
+						writeUserInfo();
+					else
 						finish();
 
 				}
@@ -67,6 +72,19 @@ public class MainActivity extends Activity {
 		// Look up the AdView as a resource and load a request.
 		// AdView adView = (com.google.ads.AdView)this.findViewById(R.id.ad);
 		// adView.loadAd(new com.google.ads.AdRequest());
+	}
+
+	protected void writeUserInfo() {
+		runOnUiThread(new Runnable() {
+			public void run() {
+				TextView textView = (TextView) findViewById(R.id.textViewUser);
+				Credentials c = MySettings.CurrentCredentials;
+				if (c != null) {
+					textView.setText(String.format(getString(R.string.welcome_s), c));
+				}
+			}
+		});
+
 	}
 
 	private void showCredentialsDialog(final OnAsyncResponse onResponse) {
@@ -85,12 +103,12 @@ public class MainActivity extends Activity {
 
 	private boolean testVersion() {
 		if (Helper.isOnline(this) && !Helper.matchProtocolVersion()) {
-				Toast t = Toast.makeText(this, R.string.wrong_version,
-						Toast.LENGTH_LONG);
-				t.setGravity(Gravity.CENTER, 0, 0);
-				t.show();
-				return false;
-			}
+			Toast t = Toast.makeText(this, R.string.wrong_version,
+					Toast.LENGTH_LONG);
+			t.setGravity(Gravity.CENTER, 0, 0);
+			t.show();
+			return false;
+		}
 		return true;
 	}
 

@@ -4,7 +4,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 public class MySettings {
-
+	public static Credentials CurrentCredentials;
+	
 	public static boolean getTrackGPSPosition(Context context) {
 		SharedPreferences settings = context.getSharedPreferences(Const.PREFS_NAME, 0);
 		return settings.getBoolean(Const.TRACK_GPS, true);
@@ -17,9 +18,10 @@ public class MySettings {
 		editor.commit();
 	}
 	
-	public static Credentials getCredentials(Context context) {
+	public static Credentials readCredentials(Context context) {
 		SharedPreferences settings = context.getSharedPreferences(Const.PREFS_NAME, 0);
-		return new Credentials(settings.getString(Const.EMAIL, ""), settings.getString(Const.PASSWORD, ""));
+		CurrentCredentials = new Credentials(settings.getString(Const.EMAIL, ""), settings.getString(Const.PASSWORD, ""));
+		return CurrentCredentials;
 	}
 	
 	public static void setCredentials(Context context, Credentials c) {
@@ -28,6 +30,7 @@ public class MySettings {
 		editor.putString(Const.EMAIL, c.getEmail());
 		editor.putString(Const.PASSWORD, c.getPassword());
 		editor.commit();
+		CurrentCredentials = c;
 	}
 	
 

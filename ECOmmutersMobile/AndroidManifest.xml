@@ -24,7 +24,7 @@
             android:required="true" />
 
         <activity
-            android:name=".MainActivity"
+            android:name="com.ecommuters.MainActivity"
             android:icon="@drawable/ic_launcher"
             android:label="@string/app_name" >
             <intent-filter>
@@ -34,10 +34,16 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".TracksActivity"
+            android:name="com.ecommuters.TracksActivity"
             android:icon="@drawable/ic_launcher"
             android:label="@string/app_name" >
         </activity>
+
+        <service
+            android:name="com.ecommuters.RegisterRouteService"
+            android:enabled="true"
+            android:exported="true" >
+        </service>
     </application>
 
 </manifest>

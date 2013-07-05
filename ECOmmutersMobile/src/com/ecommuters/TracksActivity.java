@@ -3,10 +3,6 @@ package com.ecommuters;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -17,7 +13,6 @@ import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.Settings;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -156,7 +151,7 @@ public class TracksActivity extends MapActivity {
 
 				@Override
 				protected ArrayList<Track> doInBackground(GeoPoint... params) {
-					return getVisibleTracks(params[0], params[1]);
+					return null;//getVisibleTracks(params[0], params[1]);
 				}
 
 			}
@@ -188,36 +183,7 @@ public class TracksActivity extends MapActivity {
 
 	}
 
-	private ArrayList<Track> getVisibleTracks(GeoPoint ul, GeoPoint br) {
-
-		int minlat = br.getLatitudeE6();
-		int maxlat = ul.getLatitudeE6();
-		int minlon = ul.getLongitudeE6();
-		int maxlon = br.getLongitudeE6();
-		String reqString = RequestBuilder.getDownloadTracksRequest(minlat,
-				maxlat, minlon, maxlon);
-		ArrayList<Track> tracks = new ArrayList<Track>();
-		StringBuilder result = new StringBuilder();
-		if (!Helper.sendRequest(reqString, result))
-			return tracks;
-
-		try {
-			// this will break the JSON messages into an array
-			JSONArray aryJSONTracks = new JSONArray(result.toString());
-			// loop through the array
-			for (int i = 0; i < aryJSONTracks.length(); i++) {
-				Track msgSum = new Track();
-				JSONObject obj = aryJSONTracks.getJSONObject(i);
-				msgSum.setName(obj.getString("name"));
-				msgSum.setLat(obj.getInt("lat"));
-				msgSum.setLon(obj.getInt("lon"));
-				tracks.add(msgSum);
-			}
-		} catch (JSONException e) {
-			Log.e("json", e.toString());
-		}
-		return tracks;
-	}
+	
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {

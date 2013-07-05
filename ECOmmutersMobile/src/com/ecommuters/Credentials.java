@@ -8,8 +8,18 @@ import android.webkit.WebView;
 import android.widget.Toast;
 
 public class Credentials {
+
 	private String email;
 	private String password;
+	private String name;
+	private String surname;
+
+	@Override
+	public String toString() {
+		if (Helper.isNullOrEmpty(name) || Helper.isNullOrEmpty(surname))
+			return email;
+		return name + " " + surname;
+	}
 
 	public Credentials(String mail, String pwd) {
 		this.email = mail;
@@ -35,15 +45,16 @@ public class Credentials {
 	void setEmail(String email) {
 		this.email = email;
 	}
-	
+
 	@SuppressLint("SetJavaScriptEnabled")
-	public void testLogin(final Context context, final OnAsyncResponse onResponse) {
-		
-		if (!Helper.isOnline(context))
-		{
+	public void testLogin(final Context context,
+			final OnAsyncResponse onResponse) {
+
+		if (!Helper.isOnline(context)) {
 			onResponse.response(true, "");
 		}
 		final Credentials c = this;
+		final WebView webView = new WebView(context);
 		class AutologinObject {
 			@SuppressWarnings("unused")
 			public String getUser() {
@@ -58,18 +69,36 @@ public class Credentials {
 			@SuppressWarnings("unused")
 			public void completed(boolean success, String message) {
 				if (!success) {
-					Toast t = Toast.makeText(context, message, Toast.LENGTH_LONG);
+					Toast t = Toast.makeText(context, message,
+							Toast.LENGTH_LONG);
 					t.setGravity(Gravity.CENTER, 0, 0);
 					t.show();
 				}
+
+				RequestBuilder.fillCredentialsData(c);
 				onResponse.response(success, message);
 			}
 		}
-		WebView webView = new WebView(context);
 		webView.setVisibility(View.INVISIBLE);
 		webView.getSettings().setJavaScriptEnabled(true);
 		webView.addJavascriptInterface(new AutologinObject(), "autologin");
-		
-		webView.loadUrl("http://www.ecommuters.com/login");
+
+		webView.loadUrl(Const.HTTP_WWW_ECOMMUTERS_COM_LOGIN);
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getSurname() {
+		return surname;
+	}
+
+	public void setSurname(String surname) {
+		this.surname = surname;
 	}
 }
