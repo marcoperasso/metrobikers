@@ -1,10 +1,16 @@
 package com.ecommuters;
 
 import android.app.Activity;
+import android.app.ActivityManager;
+import android.app.AlertDialog;
+import android.app.ActivityManager.RunningServiceInfo;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.location.LocationManager;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -17,12 +23,16 @@ import android.widget.Toast;
 
 public class MainActivity extends Activity {
 
+	private LocationManager mlocManager;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
-
+		mlocManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+		enableGPS();
+		
 		// prima di tutto testo la versione (solo se sono online)
 		if (!testVersion()) {
 			finish();
@@ -39,7 +49,19 @@ public class MainActivity extends Activity {
 
 			}
 		});
+		Button btnNewRoute = (Button) findViewById(R.id.btn_new_route);
+		btnNewRoute.setOnClickListener(new OnClickListener() {
 
+			public void onClick(View v) {
+				Intent myIntent = new Intent(v.getContext(),
+						RegisterRouteService.class);
+				if (isRegisterServiceRunning())
+					stopService(myIntent);
+				else
+					startService(myIntent);
+
+			}
+		});
 		// testo le credenziali
 		Credentials credential = MySettings.readCredentials(this);
 		if (credential.isEmpty()) {
@@ -73,7 +95,33 @@ public class MainActivity extends Activity {
 		// AdView adView = (com.google.ads.AdView)this.findViewById(R.id.ad);
 		// adView.loadAd(new com.google.ads.AdRequest());
 	}
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		if (requestCode == Const.ACTIVATE_GPS) {
+			Toast.makeText(this, R.string.gps_enabled, Toast.LENGTH_SHORT)
+					.show();
+		}
+		super.onActivityResult(requestCode, resultCode, data);
+	}
 
+	private void enableGPS() {
+		if (!mlocManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+
+			AlertDialog.Builder builder = new AlertDialog.Builder(this);
+			builder.setMessage(R.string.need_gps)
+					.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+
+						public void onClick(DialogInterface dialog, int which) {
+							Intent myIntent = new Intent(
+									Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+							startActivityForResult(myIntent, Const.ACTIVATE_GPS);
+							return;
+
+						}
+					}).show();
+			return;
+		}
+	}
 	protected void writeUserInfo() {
 		runOnUiThread(new Runnable() {
 			public void run() {
@@ -128,4 +176,13 @@ public class MainActivity extends Activity {
 		return super.onOptionsItemSelected(item);
 	}
 
+	private boolean isRegisterServiceRunning() {
+	    ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+	    for (RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+	        if (RegisterRouteService.class.getName().equals(service.service.getClassName())) {
+	            return true;
+	        }
+	    }
+	    return false;
+	}
 }

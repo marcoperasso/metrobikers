@@ -8,11 +8,11 @@ import com.google.android.maps.MapController;
 import com.google.android.maps.MapView;
 import com.google.android.maps.MyLocationOverlay;
 
-public class MtbMyLocationOverlay extends MyLocationOverlay {
+public class ECOmmutersLocationOverlay extends MyLocationOverlay {
 
 	private MapController mController;
 
-	public MtbMyLocationOverlay(Context context, MapView map,
+	public ECOmmutersLocationOverlay(Context context, MapView map,
 			MapController controller) {
 		super(context, map);
 		this.mController = controller;

@@ -42,7 +42,7 @@
         <service
             android:name="com.ecommuters.RegisterRouteService"
             android:enabled="true"
-            android:exported="true" >
+            android:exported="true" android:permission="android.permission.ACCESS_FINE_LOCATION">
         </service>
     </application>
 

@@ -33,8 +33,7 @@ public class TracksActivity extends MapActivity {
 	private MyMapView mMap;
 
 	private MapController mController;
-	private LocationManager mlocManager;
-
+	
 	private TracksOverlay mTracksOverlay;
 	private boolean mTrackGPSPosition;
 	private ArrayList<Track> mTracks;
@@ -52,8 +51,6 @@ public class TracksActivity extends MapActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.tracks);
-		mlocManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-		enableGPS();
 		mTrackGPSPosition = MySettings.getTrackGPSPosition(this);
 
 		mMap = (MyMapView) this.findViewById(R.id.mapview1);
@@ -68,7 +65,7 @@ public class TracksActivity extends MapActivity {
 		mTracksOverlay = new TracksOverlay(drawable, this, mMap);
 		mapOverlays.add(mTracksOverlay);
 
-		myLocationOverlay = new MtbMyLocationOverlay(this, mMap, mController);
+		myLocationOverlay = new ECOmmutersLocationOverlay(this, mMap, mController);
 		myLocationOverlay.runOnFirstFix(new Runnable() {
 			public void run() {
 				mController.animateTo(myLocationOverlay.getMyLocation());
@@ -185,38 +182,8 @@ public class TracksActivity extends MapActivity {
 
 	
 
-	@Override
-	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		if (requestCode == Const.ACTIVATE_GPS) {
-			Toast.makeText(this, R.string.gps_enabled, Toast.LENGTH_SHORT)
-					.show();
-		}
-		super.onActivityResult(requestCode, resultCode, data);
-	}
-
-	private void enableGPS() {
-		if (!mlocManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-
-			AlertDialog.Builder builder = new AlertDialog.Builder(this);
-			builder.setMessage(R.string.need_gps)
-					.setPositiveButton(R.string.yes, new OnClickListener() {
-
-						public void onClick(DialogInterface dialog, int which) {
-							Intent myIntent = new Intent(
-									Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-							startActivityForResult(myIntent, Const.ACTIVATE_GPS);
-							return;
-
-						}
-					}).setNegativeButton(R.string.no, new OnClickListener() {
-
-						public void onClick(DialogInterface dialog, int which) {
-							mTrackGPSPosition = false;
-						}
-					}).show();
-			return;
-		}
-	}
+	
+	
 
 
 	@Override
