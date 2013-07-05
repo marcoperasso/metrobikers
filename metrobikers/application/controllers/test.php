@@ -10,7 +10,7 @@ class Test extends MY_Controller {
         $this->load->model('User_model');
 
         $this->User_model->get_user("marco.perasso@microarea.it");
-        $_SESSION["user"] = serialize($this->User_model);
+        set_user($this->User_model);
     }
 
 }

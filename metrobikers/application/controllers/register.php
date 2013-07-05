@@ -24,7 +24,7 @@ class Register extends MY_Controller {
                 $this->User_model->activate_user();
                 $this->Validation_key_model->delete_key($this->User_model->id);
                 $this->db->trans_commit();
-                $_SESSION["user"] = serialize($this->User_model);
+                set_user($this->User_model);
                 $this->load->view("register/useractivated", $data);
             } else {
                 $this->load->view("register/invalidkey", $data);

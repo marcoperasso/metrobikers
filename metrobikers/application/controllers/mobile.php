@@ -5,12 +5,34 @@ if (!defined('BASEPATH'))
 
 class Mobile extends MY_Controller {
 
-  
     public function version() {
-        
+
         $this->output
                 ->set_content_type('application/json')
                 ->set_output(json_encode(array('version' => 1)));
+    }
+
+    public function user() {
+        $user = get_user();
+        $response = array();
+        if ($user!=NULL)
+        {
+            $response = array(
+                'logged' => TRUE,
+                'name' => $user->name,
+                'surname' => $user->surname,
+                'birthdate' => $user->birthdate,
+                );
+        }
+        else
+        {
+            $response = array(
+                'logged' => FALSE
+                );
+        }
+        $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode($response));
     }
 
 }
