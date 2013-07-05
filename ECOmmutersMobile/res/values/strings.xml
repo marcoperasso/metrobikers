@@ -1,27 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">ECOmmuters</string>
-    <string name="gps_enabled">Your GPS has been turned on</string>
-    <string name="need_gps">This application requires GPS, but it is turned off; do you want to turn it on now?</string>
-    <string name="yes">Yes</string>
+    <string name="gps_enabled">Il GPS è stato attivato.</string>
+    <string name="need_gps">Questa applicazione richiede l\'uso del GPS, ma è attualmente disattivato; vuoi attivarlo adesso?</string>
+    <string name="yes">Si</string>
     <string name="no">No</string>
-    <string name="btn_map">Show map</string>
-    <string name="coordinates">Latitude : %1$d\r\nlongitude: %2$d\r\naltitude: %3$f</string>
-    <string name="your_position">Your position</string>
-    <string name="length">Length:</string>
-    <string name="cycle">Cycling:</string>
-    <string name="difficulty">Difficulty:</string>
-    <string name="maxHeight">Maximum height:</string>
-    <string name="minHeight">Minimum height:</string>
-    <string name="routeDetail">Track details</string>
-    <string name="createdBy">Author:</string>    
-    <string name="retrieving_info">Retrieving track information from server...</string>
-    <string name="no_track_info">No track information found.</string>
-    <string name="no_connection">Warning! No Internet connection is available, the application will not work.</string>
-    <string name="wrong_version">Application is out of date, please update it if you want to continue using it</string>
-    <string name="show_position_menu">Show my position</string>
-    <string name="hide_position_menu">Hide my position</string>
-    <string name="ecommuters_logo">ECOmmuters Logo</string>
-    <string name="btn_new_route">New Route...</string>
+    <string name="btn_map">Mappa</string>
+    <string name="coordinates">Latitudine : %1$d\r\nlongitudine: %2$d\r\naltitudine: %3$f</string>
+    <string name="your_position">La tua posizione</string>
+    <string name="wrong_version">La versione dell\'applicazione non è allineata con quella del server, per proseguire occorre scaricare l\'aggiornamento.</string>
+    <string name="show_position_menu">Visualizza la mia posizione</string>
+    <string name="hide_position_menu">Nascondi la mia posizione</string>
+    <string name="ecommuters_logo">Logo di ECOmmuters</string>
+    <string name="btn_new_route">Nuovo itinerario...</string>
+    <string name="credential_email">EMail</string>
+    <string name="credential_password">Password</string>
+    <string name="cancel">Annulla</string>
+    <string name="ok">OK</string>
+    <string name="insert_credential_title">Inserisci le credenziali per accedere a ECOmmuters</string>
+    <string name="user_credentials">Le mie credenziali</string>
+    <string name="retrieving_info">Sto recuperando le informazioni dal server...</string>
+    <string name="site_url">www.ecommuters.com</string>
 </resources>
  

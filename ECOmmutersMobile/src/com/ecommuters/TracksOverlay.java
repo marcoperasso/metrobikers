@@ -243,8 +243,7 @@ public class TracksOverlay extends ItemizedOverlay<OverlayItem> {
 			TrackOverlayItem item = mOverlays.get(index);
 			TrackOverlayItem activeItem = getActiveItem();
 			if (activeItem == item) {
-				TracksDialog dlg = new TracksDialog(mContext, trackInfo);
-				dlg.show();
+				
 			} else {
 				if (activeItem != null)
 					activeItem.setMarker(null);

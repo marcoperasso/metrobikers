@@ -19,10 +19,7 @@ public class MySettings {
 	
 	public static Credentials getCredentials(Context context) {
 		SharedPreferences settings = context.getSharedPreferences(Const.PREFS_NAME, 0);
-		Credentials c = new Credentials();
-		c.setEmail(settings.getString(Const.EMAIL, ""));
-		c.setPassword(settings.getString(Const.PASSWORD, ""));
-		return c;
+		return new Credentials(settings.getString(Const.EMAIL, ""), settings.getString(Const.PASSWORD, ""));
 	}
 	
 	public static void setCredentials(Context context, Credentials c) {

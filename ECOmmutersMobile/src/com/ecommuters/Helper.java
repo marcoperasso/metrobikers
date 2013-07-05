@@ -87,4 +87,8 @@ public class Helper {
 		return Const.PROTOCOL_VERSION.equals(getProtocolVersion());
 	}
 
+	public static boolean isNullOrEmpty(String s) {
+		return s == null || s.length() == 0;
+	}
+
 }
