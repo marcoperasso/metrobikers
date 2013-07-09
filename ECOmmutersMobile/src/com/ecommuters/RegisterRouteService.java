@@ -12,6 +12,10 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.http.client.ClientProtocolException;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import android.app.IntentService;
 import android.content.Context;
 import android.content.Intent;
@@ -25,7 +29,6 @@ import android.widget.Toast;
 public class RegisterRouteService extends IntentService {
 
 	boolean working = true;
-	String routeName;
 	private LocationManager mlocManager;
 	private LocationListener mLocationListener;
 
@@ -35,16 +38,17 @@ public class RegisterRouteService extends IntentService {
 	// liste accedute dal solo worker thread del servizio
 	private List<GpsPoint> mLocationsToSave = new ArrayList<GpsPoint>();
 	private List<GpsPoint> mSavedLocations = new ArrayList<GpsPoint>();
-
+	private RegisteredPoints mPointsToSend = new RegisteredPoints();
+	
 	public RegisterRouteService() {
 		super("RegisterRouteService");
 	}
 
 	@Override
 	protected void onHandleIntent(Intent intent) {
-		routeName = intent.getExtras().getString(Const.ROUTE_NAME);
+		mPointsToSend.setRouteName(intent.getExtras().getString(Const.ROUTE_NAME));
 
-		String routeFile = Helper.getRouteFile(routeName);
+		String routeFile = Helper.getRouteFile(mPointsToSend.getRouteName());
 		File file = getFileStreamPath(routeFile);
 		if (file.exists()) {
 			try {
@@ -101,10 +105,33 @@ public class RegisterRouteService extends IntentService {
 				e.printStackTrace();
 			}
 		}
+		
+		if (!mPointsToSend.isEmpty()) {
+			try {
+				sendLocations();
+			} catch (JSONException e) {
+
+				e.printStackTrace();
+			}
+		}
+	}
+
+	private void sendLocations() throws JSONException {
+		try {
+			RequestBuilder.sendRouteData(mPointsToSend);
+			mPointsToSend.getPoints().clear();
+		} catch (ClientProtocolException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 	}
 
 	private void saveLocations() throws IOException {
-		FileOutputStream fos = openFileOutput(Helper.getRouteFile(routeName), Context.MODE_PRIVATE);
+		FileOutputStream fos = openFileOutput(Helper.getRouteFile(mPointsToSend.getRouteName()), Context.MODE_PRIVATE);
 		ObjectOutput out = null;
 		try {
 			out = new ObjectOutputStream(fos);
@@ -119,6 +146,7 @@ public class RegisterRouteService extends IntentService {
 		}
 
 		mSavedLocations.addAll(mLocationsToSave);
+		mPointsToSend.getPoints().addAll(mLocationsToSave);
 		mLocationsToSave.clear();
 
 	}
