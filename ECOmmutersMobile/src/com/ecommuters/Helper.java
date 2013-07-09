@@ -32,13 +32,23 @@ public class Helper {
 			String title, DialogInterface.OnClickListener okListener,
 			DialogInterface.OnClickListener cancelListener) {
 		new AlertDialog.Builder(context)
-				.setIcon(android.R.drawable.ic_dialog_alert)
-				.setTitle(title)
+				.setIcon(android.R.drawable.ic_dialog_alert).setTitle(title)
 				.setMessage(message)
-				.setPositiveButton(R.string.yes, okListener)
-				.setNegativeButton(R.string.no, cancelListener)
-				.show();
+				.setPositiveButton(android.R.string.yes, okListener)
+				.setNegativeButton(android.R.string.no, cancelListener).show();
 
+	}
+
+	public static void dialogMessage(final Activity context, int message,
+			int title, DialogInterface.OnClickListener okListener,
+			DialogInterface.OnClickListener cancelListener) {
+		dialogMessage(context, context.getString(message),
+				context.getString(title), okListener, cancelListener);
+
+	}
+
+	public static String getRouteFile(String routeName) {
+		return routeName.replaceAll("[^a-zA-Z0-9.-]", "_") + ".route";
 	}
 
 }

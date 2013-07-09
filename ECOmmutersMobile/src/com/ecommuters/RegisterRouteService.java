@@ -2,14 +2,12 @@ package com.ecommuters;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
-import java.io.StreamCorruptedException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -23,7 +21,6 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
-import android.widget.TextView.SavedState;
 
 public class RegisterRouteService extends IntentService {
 
@@ -47,10 +44,11 @@ public class RegisterRouteService extends IntentService {
 	protected void onHandleIntent(Intent intent) {
 		routeName = intent.getExtras().getString(Const.ROUTE_NAME);
 
-		File file = getFileStreamPath(routeName);
+		String routeFile = Helper.getRouteFile(routeName);
+		File file = getFileStreamPath(routeFile);
 		if (file.exists()) {
 			try {
-				FileInputStream fis = openFileInput(routeName);
+				FileInputStream fis = openFileInput(routeFile);
 				ObjectInput in = null;
 				try {
 					in = new ObjectInputStream(fis);
@@ -106,7 +104,7 @@ public class RegisterRouteService extends IntentService {
 	}
 
 	private void saveLocations() throws IOException {
-		FileOutputStream fos = openFileOutput(routeName, Context.MODE_PRIVATE);
+		FileOutputStream fos = openFileOutput(Helper.getRouteFile(routeName), Context.MODE_PRIVATE);
 		ObjectOutput out = null;
 		try {
 			out = new ObjectOutputStream(fos);

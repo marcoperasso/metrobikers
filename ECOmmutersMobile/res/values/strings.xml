@@ -3,8 +3,6 @@
     <string name="app_name">ECOmmuters</string>
     <string name="gps_enabled">Il GPS è stato attivato.</string>
     <string name="need_gps">Questa applicazione richiede l\'uso del GPS, ma è attualmente disattivato; vuoi attivarlo adesso?</string>
-    <string name="yes">Si</string>
-    <string name="no">No</string>
     <string name="btn_map">Mappa</string>
     <string name="coordinates">Latitudine : %1$d\r\nlongitudine: %2$d\r\naltitudine: %3$f</string>
     <string name="your_position">La tua posizione</string>
@@ -15,8 +13,6 @@
     <string name="btn_new_route">Registra itinerario&#8230;</string>
     <string name="credential_email">EMail</string>
     <string name="credential_password">Password</string>
-    <string name="cancel">Annulla</string>
-    <string name="ok">OK</string>
     <string name="insert_credential_title">Inserisci le credenziali</string>
     <string name="user_credentials">Le mie credenziali</string>
     <string name="retrieving_info">Sto recuperando le informazioni dal server&#8230;</string>
@@ -27,5 +23,9 @@
     <string name="recording_started">Registrazione avviata</string>
     <string name="recording_stopped">Registrazione terminata</string>
     <string name="stop_recording_question">Vuoi fermare la registrazione?</string>
+    <string name="ecommuters">ECOmmuters</string>
+    <string name="existing_route_question">L\'itinerario %s esiste già; cosa vuoi fare?</string>
+    <string name="overwrite">Sovrascrivi</string>
+    <string name="append">Incrementa</string>
 </resources>
  

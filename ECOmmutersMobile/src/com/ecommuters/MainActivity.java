@@ -1,11 +1,6 @@
 package com.ecommuters;
 
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.ObjectInput;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutput;
-import java.io.ObjectOutputStream;
+import java.io.File;
 
 import android.app.Activity;
 import android.app.ActivityManager;
@@ -18,7 +13,6 @@ import android.content.Intent;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.provider.Settings;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -62,12 +56,14 @@ public class MainActivity extends Activity {
 
 			public void onClick(View v) {
 
+				final String routeName = "myroute";
 				final Intent myIntent = new Intent(v.getContext(),
 						RegisterRouteService.class);
-
+				myIntent.putExtra(Const.ROUTE_NAME, routeName);
+				
 				if (isRegisterServiceRunning()) {
 					Helper.dialogMessage(context,
-							getString(R.string.stop_recording_question), "",
+							R.string.stop_recording_question, R.string.ecommuters,
 							new DialogInterface.OnClickListener() {
 
 								public void onClick(DialogInterface dialog,
@@ -81,9 +77,39 @@ public class MainActivity extends Activity {
 				}
 
 				else {
-					btnNewRoute.setText(R.string.stop_recording);
-					myIntent.putExtra(Const.ROUTE_NAME, "myroute");
-					startService(myIntent);
+					String routeFile = Helper.getRouteFile(routeName);
+					final File file = getFileStreamPath(routeFile);
+					if (file.exists())
+					{
+						new AlertDialog.Builder(context)
+						.setIcon(android.R.drawable.ic_dialog_alert)
+						.setTitle(getString(R.string.ecommuters))
+						.setMessage(getString(R.string.existing_route_question, routeName))
+						.setPositiveButton(R.string.overwrite, new DialogInterface.OnClickListener() {
+							public void onClick(DialogInterface dialog,
+									int which) {
+								file.delete();
+								btnNewRoute.setText(R.string.stop_recording);
+								startService(myIntent);
+
+							}
+						})
+						.setNegativeButton(android.R.string.cancel, null)
+						.setNeutralButton(R.string.append, new DialogInterface.OnClickListener() {
+							public void onClick(DialogInterface dialog,
+									int which) {
+								btnNewRoute.setText(R.string.stop_recording);
+								startService(myIntent);
+							}
+						})
+						.show();
+						
+					}
+					else
+					{
+						btnNewRoute.setText(R.string.stop_recording);
+						startService(myIntent);
+					}
 				}
 
 			}
@@ -136,21 +162,19 @@ public class MainActivity extends Activity {
 	private void enableGPS() {
 		if (!mlocManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
 
-			AlertDialog.Builder builder = new AlertDialog.Builder(this);
-			builder.setMessage(R.string.need_gps)
-					.setPositiveButton(R.string.yes,
-							new DialogInterface.OnClickListener() {
+			Helper.dialogMessage(this, R.string.need_gps, R.string.ecommuters, new DialogInterface.OnClickListener() {
 
-								public void onClick(DialogInterface dialog,
-										int which) {
-									Intent myIntent = new Intent(
-											Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-									startActivityForResult(myIntent,
-											Const.ACTIVATE_GPS);
-									return;
+				public void onClick(DialogInterface dialog,
+						int which) {
+					Intent myIntent = new Intent(
+							Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+					startActivityForResult(myIntent,
+							Const.ACTIVATE_GPS);
+					return;
 
-								}
-							}).show();
+				}
+			}, null);
+			
 			return;
 		}
 	}

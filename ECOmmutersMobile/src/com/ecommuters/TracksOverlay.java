@@ -58,7 +58,6 @@ public class TracksOverlay extends ItemizedOverlay<OverlayItem> {
 		lp.mode = MapView.LayoutParams.MODE_MAP;
 		mImageView.setLayoutParams(lp);
 
-		
 		MapView.LayoutParams mlp = new MapView.LayoutParams(
 				MapView.LayoutParams.MATCH_PARENT,
 				MapView.LayoutParams.WRAP_CONTENT, 0, 0,
@@ -67,8 +66,7 @@ public class TracksOverlay extends ItemizedOverlay<OverlayItem> {
 		mTitleTextView.setVisibility(View.GONE);
 		mTitleTextView.setTextColor(Color.YELLOW);
 		map.addView(mTitleTextView, mlp);
-		
-		
+
 		map.setOnDrawListener(new MyMapView.OnDrawListener() {
 
 			public void onDraw() {
@@ -85,14 +83,15 @@ public class TracksOverlay extends ItemizedOverlay<OverlayItem> {
 
 	public void addTracksOverlay(ArrayList<Track> tracks) {
 		mOverlays.clear();
-
-		for (Track r : tracks) {
-			GeoPoint point = new GeoPoint(r.getLat(), r.getLon());
-			TrackOverlayItem overlayitem = new TrackOverlayItem(point, "", "",
-					r);
-			if (r.getName().equals(mActiveTrackName))
-				setActiveMarker(overlayitem);
-			mOverlays.add(overlayitem);
+		if (tracks != null) {
+			for (Track r : tracks) {
+				GeoPoint point = new GeoPoint(r.getLat(), r.getLon());
+				TrackOverlayItem overlayitem = new TrackOverlayItem(point, "",
+						"", r);
+				if (r.getName().equals(mActiveTrackName))
+					setActiveMarker(overlayitem);
+				mOverlays.add(overlayitem);
+			}
 		}
 		setLastFocusedIndex(-1);
 		populate();
@@ -178,7 +177,8 @@ public class TracksOverlay extends ItemizedOverlay<OverlayItem> {
 				float x2 = (float) ((float) offsetLon * ratio);
 				float y2 = (float) ((float) offsetLat * ratio);
 				if (x1 != -1) {
-					//pnt.setColor(pt.getColor(gpsPoints.minEle, gpsPoints.maxEle));
+					// pnt.setColor(pt.getColor(gpsPoints.minEle,
+					// gpsPoints.maxEle));
 					cnv.drawLine(x1, y1, x2, y2, pnt);
 				}
 				x1 = x2;
@@ -240,7 +240,7 @@ public class TracksOverlay extends ItemizedOverlay<OverlayItem> {
 			TrackOverlayItem item = mOverlays.get(index);
 			TrackOverlayItem activeItem = getActiveItem();
 			if (activeItem == item) {
-				
+
 			} else {
 				if (activeItem != null)
 					activeItem.setMarker(null);
@@ -284,25 +284,25 @@ public class TracksOverlay extends ItemizedOverlay<OverlayItem> {
 
 			@Override
 			protected GPSTrack doInBackground(String... params) {
-//				GPSTrack pts = new GPSTrack();
-//				String reqString = RequestBuilder
-//						.getDownloadTrackRequest(params[0]);
-//				StringBuilder result = new StringBuilder();
-//				if (!Helper.sendRequest(reqString, result))
-//					return null;
-//				String[] tokens = result.toString().split("-");
-//				try {
-//					for (int i = 0; i < tokens.length; i += 3) {
-//
-//						GpsPoint pt = new GpsPoint(Integer.parseInt(tokens[i]),
-//								Integer.parseInt(tokens[i + 1]),
-//								Double.parseDouble(tokens[i + 2]));
-//						pts.add(pt);
-//					}
-//					return pts;
-//				} catch (Exception e) {
-//					manageError(e);
-//				}
+				// GPSTrack pts = new GPSTrack();
+				// String reqString = RequestBuilder
+				// .getDownloadTrackRequest(params[0]);
+				// StringBuilder result = new StringBuilder();
+				// if (!Helper.sendRequest(reqString, result))
+				// return null;
+				// String[] tokens = result.toString().split("-");
+				// try {
+				// for (int i = 0; i < tokens.length; i += 3) {
+				//
+				// GpsPoint pt = new GpsPoint(Integer.parseInt(tokens[i]),
+				// Integer.parseInt(tokens[i + 1]),
+				// Double.parseDouble(tokens[i + 2]));
+				// pts.add(pt);
+				// }
+				// return pts;
+				// } catch (Exception e) {
+				// manageError(e);
+				// }
 				return null;
 			}
 
@@ -318,27 +318,27 @@ public class TracksOverlay extends ItemizedOverlay<OverlayItem> {
 
 			@Override
 			protected TrackInfo doInBackground(String... params) {
-//				String reqString = RequestBuilder
-//						.getGetTrackDetailRequest(params[0]);
-//				StringBuilder result = new StringBuilder();
-//				if (!Helper.sendRequest(reqString, result))
-//					return null;
-//				try {
-//					JSONObject obj = new JSONObject(result.toString());
-//
-//					TrackInfo info = new TrackInfo();
-//					info.setTitle(obj.getString("title"));
-//					info.setLength(obj.getDouble("length"));
-//					info.setCycling(obj.getInt("cycling"));
-//					info.setDifficulty(obj.getString("difficulty"));
-//					info.setMaxHeight(obj.getDouble("maxHeight"));
-//					info.setMinHeight(obj.getDouble("minHeight"));
-//					info.setRating(obj.getDouble("rank"));
-//					return info;
-//
-//				} catch (Exception e) {
-//					manageError(e);
-//				}
+				// String reqString = RequestBuilder
+				// .getGetTrackDetailRequest(params[0]);
+				// StringBuilder result = new StringBuilder();
+				// if (!Helper.sendRequest(reqString, result))
+				// return null;
+				// try {
+				// JSONObject obj = new JSONObject(result.toString());
+				//
+				// TrackInfo info = new TrackInfo();
+				// info.setTitle(obj.getString("title"));
+				// info.setLength(obj.getDouble("length"));
+				// info.setCycling(obj.getInt("cycling"));
+				// info.setDifficulty(obj.getString("difficulty"));
+				// info.setMaxHeight(obj.getDouble("maxHeight"));
+				// info.setMinHeight(obj.getDouble("minHeight"));
+				// info.setRating(obj.getDouble("rank"));
+				// return info;
+				//
+				// } catch (Exception e) {
+				// manageError(e);
+				// }
 				return null;
 			}
 
@@ -362,7 +362,7 @@ public class TracksOverlay extends ItemizedOverlay<OverlayItem> {
 		} else {
 			mTitleTextView.setVisibility(View.GONE);
 		}
-		
+
 	}
 
 	public void recycle() {
