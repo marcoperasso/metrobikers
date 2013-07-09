@@ -1,33 +1,29 @@
 package com.ecommuters;
 
 import java.io.Serializable;
+import java.util.Date;
 
-import android.graphics.Color;
-
-import com.google.android.maps.GeoPoint;
-
-public class GpsPoint extends GeoPoint implements Serializable {
+public class GpsPoint implements Serializable {
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1654731097649464268L;
 	double ele;
-	int color = Color.TRANSPARENT;
+	//Date date;
+	int lat;
+	int lon;
 
-	GpsPoint(int lat, int lon, double ele) {
-		super(lat, lon);
+	GpsPoint(int lat, int lon, double ele, Date date) {
+		this.lat = lat;
+		this.lon = lon;
 		this.ele = ele;
+		//this.date = date;
 	}
 
 	public GpsPoint() {
-		super(0, 0);
 
 	}
 
-	public int getColor(double minEle, double maxEle) {
-		if (color == Color.TRANSPARENT)
-			color = ColorProvider.GetColor(ele, minEle, maxEle);
-		return color;
-	}
+	
 
 }

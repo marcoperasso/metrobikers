@@ -1,8 +1,18 @@
 package com.ecommuters;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutput;
+import java.io.ObjectOutputStream;
+import java.io.StreamCorruptedException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
-import java.util.concurrent.CountDownLatch;
 
 import android.app.IntentService;
 import android.content.Context;
@@ -11,16 +21,23 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Toast;
+import android.widget.TextView.SavedState;
 
 public class RegisterRouteService extends IntentService {
 
 	boolean working = true;
+	String routeName;
 	private LocationManager mlocManager;
 	private LocationListener mLocationListener;
-	private List<Location> mRecorderLocations = new ArrayList<Location>();
-	private List<Location> mLocationsToSend = new ArrayList<Location>();
-	private List<Location> mSentLocations = new ArrayList<Location>();
+
+	// acceduto da diversi thread: va sincronizzato
+	private List<GpsPoint> mRecorderLocations = new ArrayList<GpsPoint>();
+
+	// liste accedute dal solo worker thread del servizio
+	private List<GpsPoint> mLocationsToSave = new ArrayList<GpsPoint>();
+	private List<GpsPoint> mSavedLocations = new ArrayList<GpsPoint>();
 
 	public RegisterRouteService() {
 		super("RegisterRouteService");
@@ -28,46 +45,91 @@ public class RegisterRouteService extends IntentService {
 
 	@Override
 	protected void onHandleIntent(Intent intent) {
+		routeName = intent.getExtras().getString(Const.ROUTE_NAME);
 
+		File file = getFileStreamPath(routeName);
+		if (file.exists()) {
+			try {
+				FileInputStream fis = openFileInput(routeName);
+				ObjectInput in = null;
+				try {
+					in = new ObjectInputStream(fis);
+					while (fis.available() > 0) {
+						try {
+							GpsPoint pt = (GpsPoint) in.readObject();
+							mSavedLocations.add(pt);
+						} catch (Exception ex) {
+							Log.e("ec", ex.getMessage(), ex);
+							break;
+						}
+
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				} finally {
+					in.close();
+					fis.close();
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
+		}
 		while (working) {
 			try {
 				Thread.sleep(5000);
-				sendToServer();
+				archiveData();
 
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				Log.e(Const.LogTag, e.getMessage(), e);
 			}
 		}
 
 	}
 
-	private void sendToServer() {
-		if (!Helper.isOnline(this))
-			return;
-		if (mLocationsToSend.isEmpty()) {
+	private void archiveData() {
+		if (mLocationsToSave.isEmpty()) {
 			synchronized (mRecorderLocations) {
-				mLocationsToSend.addAll(mRecorderLocations);
+				mLocationsToSave.addAll(mRecorderLocations);
 				mRecorderLocations.clear();
 			}
 		}
-		
-		if (!mLocationsToSend.isEmpty())
-		{
-			saveLocations();
+
+		if (!mLocationsToSave.isEmpty()) {
+			try {
+				saveLocations();
+			} catch (IOException e) {
+
+				e.printStackTrace();
+			}
 		}
 	}
 
-	private void saveLocations() {
-		//TODO save
-		mSentLocations.addAll(mLocationsToSend);
-		mLocationsToSend.clear();
-		
+	private void saveLocations() throws IOException {
+		FileOutputStream fos = openFileOutput(routeName, Context.MODE_PRIVATE);
+		ObjectOutput out = null;
+		try {
+			out = new ObjectOutputStream(fos);
+			for (GpsPoint l : mSavedLocations)
+				out.writeObject(l);
+			for (GpsPoint l : mLocationsToSave)
+				out.writeObject(l);
+			out.flush();
+		} finally {
+			out.close();
+			fos.close();
+		}
+
+		mSavedLocations.addAll(mLocationsToSave);
+		mLocationsToSave.clear();
+
 	}
 
 	@Override
 	public void onCreate() {
-		Toast.makeText(this, "Started recording", Toast.LENGTH_SHORT).show();
+
+		Toast.makeText(this, R.string.recording_started, Toast.LENGTH_SHORT)
+				.show();
 		mlocManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 		mLocationListener = new LocationListener() {
 
@@ -86,7 +148,10 @@ public class RegisterRouteService extends IntentService {
 
 			public void onLocationChanged(Location location) {
 				synchronized (mRecorderLocations) {
-					mRecorderLocations.add(location);
+					mRecorderLocations.add(new GpsPoint((int) (location
+							.getLatitude() * 1E6), (int) (location
+							.getLongitude() * 1E6), location.getAltitude(),
+							new Date()));
 				}
 			}
 		};
@@ -99,7 +164,8 @@ public class RegisterRouteService extends IntentService {
 	public void onDestroy() {
 		working = false;
 		mlocManager.removeUpdates(mLocationListener);
-		Toast.makeText(this, "Stopped recording", Toast.LENGTH_SHORT).show();
+		Toast.makeText(this, R.string.recording_stopped, Toast.LENGTH_SHORT)
+				.show();
 		super.onDestroy();
 	}
 }

@@ -26,10 +26,10 @@ public class GPSTrack extends ArrayList<GpsPoint> {
 	public boolean add(GpsPoint object) {
 		minEle = Math.min(minEle, object.ele);
 		maxEle = Math.max(maxEle, object.ele);
-		minLat = Math.min(minLat, object.getLatitudeE6());
-		maxLat = Math.max(maxLat, object.getLatitudeE6());
-		minLon = Math.min(minLon, object.getLongitudeE6());
-		maxLon = Math.max(maxLon, object.getLongitudeE6());
+		minLat = Math.min(minLat, object.lat);
+		maxLat = Math.max(maxLat, object.lat);
+		minLon = Math.min(minLon, object.lon);
+		maxLon = Math.max(maxLon, object.lon);
 		return super.add(object);
 	}
 

@@ -173,13 +173,12 @@ public class TracksOverlay extends ItemizedOverlay<OverlayItem> {
 			float x1 = -1, y1 = -1;
 			for (int i = 0; i < top; i++) {
 				GpsPoint pt = gpsPoints.get(i);
-				int offsetLat = gpsPoints.maxLat - pt.getLatitudeE6();
-				int offsetLon = pt.getLongitudeE6() - gpsPoints.minLon;
+				int offsetLat = gpsPoints.maxLat - pt.lat;
+				int offsetLon = pt.lon - gpsPoints.minLon;
 				float x2 = (float) ((float) offsetLon * ratio);
 				float y2 = (float) ((float) offsetLat * ratio);
 				if (x1 != -1) {
-					pnt.setColor(pt
-							.getColor(gpsPoints.minEle, gpsPoints.maxEle));
+					//pnt.setColor(pt.getColor(gpsPoints.minEle, gpsPoints.maxEle));
 					cnv.drawLine(x1, y1, x2, y2, pnt);
 				}
 				x1 = x2;

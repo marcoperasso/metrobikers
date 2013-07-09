@@ -1,26 +1,26 @@
 package com.ecommuters;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.ObjectInput;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutput;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.content.DialogInterface.OnClickListener;
-import android.content.Intent;
 import android.graphics.drawable.Drawable;
-import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.provider.Settings;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
-
 
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapActivity;
@@ -33,7 +33,7 @@ public class TracksActivity extends MapActivity {
 	private MyMapView mMap;
 
 	private MapController mController;
-	
+
 	private TracksOverlay mTracksOverlay;
 	private boolean mTrackGPSPosition;
 	private ArrayList<Track> mTracks;
@@ -65,7 +65,8 @@ public class TracksActivity extends MapActivity {
 		mTracksOverlay = new TracksOverlay(drawable, this, mMap);
 		mapOverlays.add(mTracksOverlay);
 
-		myLocationOverlay = new ECOmmutersLocationOverlay(this, mMap, mController);
+		myLocationOverlay = new ECOmmutersLocationOverlay(this, mMap,
+				mController);
 		myLocationOverlay.runOnFirstFix(new Runnable() {
 			public void run() {
 				mController.animateTo(myLocationOverlay.getMyLocation());
@@ -79,13 +80,13 @@ public class TracksActivity extends MapActivity {
 			if (mTracks != null)
 				mTracksOverlay.addTracksOverlay(mTracks);
 
-			mTracksOverlay.setCurrentTrack(
-					(GPSTrack) savedInstanceState
-					.getSerializable(Const.TRACK), 
+			mTracksOverlay.setCurrentTrack((GPSTrack) savedInstanceState
+					.getSerializable(Const.TRACK),
 					(TrackInfo) savedInstanceState
-					.getSerializable(Const.TRACKINFO));
-			
-			mTracksOverlay.setActiveTrackName(savedInstanceState.getString(Const.ACTIVE_TRACK_NAME));
+							.getSerializable(Const.TRACKINFO));
+
+			mTracksOverlay.setActiveTrackName(savedInstanceState
+					.getString(Const.ACTIVE_TRACK_NAME));
 			int late6 = savedInstanceState.getInt(Const.MAPLATITUDE);
 			int lone6 = savedInstanceState.getInt(Const.MAPLONGITUDE);
 			mController.animateTo(new GeoPoint(late6, lone6));
@@ -94,11 +95,13 @@ public class TracksActivity extends MapActivity {
 		}
 		mController.setZoom(zoomLevel);
 
-//		// Look up the AdView as a resource and load a request.
-//		AdView adView = (com.google.ads.AdView) this.findViewById(R.id.ad);
-//		adView.loadAd(new com.google.ads.AdRequest());
+		// // Look up the AdView as a resource and load a request.
+		// AdView adView = (com.google.ads.AdView) this.findViewById(R.id.ad);
+		// adView.loadAd(new com.google.ads.AdRequest());
 
 	}
+
+	
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -148,7 +151,7 @@ public class TracksActivity extends MapActivity {
 
 				@Override
 				protected ArrayList<Track> doInBackground(GeoPoint... params) {
-					return null;//getVisibleTracks(params[0], params[1]);
+					return null;// getVisibleTracks(params[0], params[1]);
 				}
 
 			}
@@ -162,8 +165,6 @@ public class TracksActivity extends MapActivity {
 
 		}
 	}
-
-	
 
 	public void checkTracks() {
 		if (!retrievingTracks) {
@@ -180,19 +181,15 @@ public class TracksActivity extends MapActivity {
 
 	}
 
-	
-
-	
-	
-
-
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
 		try {
 			outState.putSerializable(Const.TRACKS, mTracks);
 			outState.putSerializable(Const.TRACK, mTracksOverlay.getGpsPoints());
-			outState.putSerializable(Const.TRACKINFO, mTracksOverlay.getTrackInfo());
-			outState.putString(Const.ACTIVE_TRACK_NAME, mTracksOverlay.getActiveTrackName());
+			outState.putSerializable(Const.TRACKINFO,
+					mTracksOverlay.getTrackInfo());
+			outState.putString(Const.ACTIVE_TRACK_NAME,
+					mTracksOverlay.getActiveTrackName());
 			outState.putInt(Const.MAPLATITUDE, mMap.getMapCenter()
 					.getLatitudeE6());
 			outState.putInt(Const.MAPLONGITUDE, mMap.getMapCenter()
@@ -228,12 +225,11 @@ public class TracksActivity extends MapActivity {
 	}
 
 	public void notifyMessage(int id) {
-		TextView tv = (TextView)findViewById(R.id.textViewNotification);
-		LinearLayout l = (LinearLayout)findViewById(R.id.layoutNotification);
+		TextView tv = (TextView) findViewById(R.id.textViewNotification);
+		LinearLayout l = (LinearLayout) findViewById(R.id.layoutNotification);
 		if (id == -1)
 			l.setVisibility(View.GONE);
-		else
-		{
+		else {
 			l.setVisibility(View.VISIBLE);
 			tv.setText(id);
 		}

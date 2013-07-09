@@ -18,5 +18,7 @@ public class Const {
 	public static final String ACTIVE_TRACK_NAME = "n";
 	public static final String EMAIL = "o";
 	public static final String PASSWORD = "p";
+	protected static final String ROUTE_NAME = "q";
+	public static final String LogTag = "log";
 
 }
