@@ -14,7 +14,6 @@ import java.util.List;
 
 import org.apache.http.client.ClientProtocolException;
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import android.app.IntentService;
 import android.content.Context;
@@ -38,7 +37,7 @@ public class RegisterRouteService extends IntentService {
 	// liste accedute dal solo worker thread del servizio
 	private List<GpsPoint> mLocationsToSave = new ArrayList<GpsPoint>();
 	private List<GpsPoint> mSavedLocations = new ArrayList<GpsPoint>();
-	private RegisteredPoints mPointsToSend = new RegisteredPoints();
+	private RegisteredRoute mPointsToSend = new RegisteredRoute();
 	
 	public RegisterRouteService() {
 		super("RegisterRouteService");
@@ -46,9 +45,9 @@ public class RegisterRouteService extends IntentService {
 
 	@Override
 	protected void onHandleIntent(Intent intent) {
-		mPointsToSend.setRouteName(intent.getExtras().getString(Const.ROUTE_NAME));
+		mPointsToSend.setName(intent.getExtras().getString(Const.ROUTE_NAME));
 
-		String routeFile = Helper.getRouteFile(mPointsToSend.getRouteName());
+		String routeFile = Helper.getRouteFile(mPointsToSend.getName());
 		File file = getFileStreamPath(routeFile);
 		if (file.exists()) {
 			try {
@@ -131,7 +130,7 @@ public class RegisterRouteService extends IntentService {
 	}
 
 	private void saveLocations() throws IOException {
-		FileOutputStream fos = openFileOutput(Helper.getRouteFile(mPointsToSend.getRouteName()), Context.MODE_PRIVATE);
+		FileOutputStream fos = openFileOutput(Helper.getRouteFile(mPointsToSend.getName()), Context.MODE_PRIVATE);
 		ObjectOutput out = null;
 		try {
 			out = new ObjectOutputStream(fos);

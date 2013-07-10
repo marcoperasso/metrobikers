@@ -19,7 +19,7 @@ class Route_model extends MY_Model {
         return FALSE;
     }
 
-    public function create_route($name, $userid) {
+    public function create_route($userid, $name) {
         $this->name = $name;
         $this->userid = $userid;
         $this->db->insert('routes', $this);

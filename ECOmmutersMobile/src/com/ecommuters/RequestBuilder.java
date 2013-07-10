@@ -3,7 +3,6 @@ package com.ecommuters;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,24 +24,21 @@ import android.util.Log;
 import android.webkit.CookieManager;
 
 public class RequestBuilder {
+	private static final String host = "http://10.0.2.2:8888/ecommuters/";// "http://www.ecommuters.com/"
+	private static final String getGetVersionRequest = host + "mobile/version";
+	private static final String getUserRequest = host + "mobile/user";
+	private static final String getSendRouteDataRequest = host
+			+ "mobile/save_route";
+	public static final String HTTP_WWW_ECOMMUTERS_COM_LOGIN = host + "login";
 
-	private static final String getGetVersionRequest = "http://www.ecommuters.com/mobile/version";
-	private static final String getUserRequest = "http://www.ecommuters.com/mobile/user";
-	private static final String getSendRouteDataRequest = "http://www.ecommuters.com/mobile/save_route";
-
-	static JSONObject sendRequest(String reqString)
-			throws ClientProtocolException, JSONException, IOException {
-		return sendRequest(reqString, "");
-	}
-
-	static JSONObject sendRequest(String reqString, String cookie)
+	static JSONObject sendRequest(String reqString, Boolean useSession)
 			throws JSONException, ClientProtocolException, IOException {
 		StringBuilder result = new StringBuilder();
 		HttpClient httpClient = new DefaultHttpClient();
 		HttpContext localContext = new BasicHttpContext();
 
 		HttpGet httpGet = new HttpGet(reqString);
-		httpGet.setHeader("Cookie", cookie);
+		httpGet.setHeader("Cookie", getCookie(useSession));
 		HttpResponse response = null;
 		response = httpClient.execute(httpGet, localContext);
 		BufferedReader reader;
@@ -57,18 +53,16 @@ public class RequestBuilder {
 		return new JSONObject(result.toString());
 	}
 
-	static JSONObject postRequest(String reqString, Object data, String cookie)
+	static JSONObject postRequest(String reqString, IJsonSerializable data, Boolean useSession)
 			throws ClientProtocolException, IOException, JSONException {
 		StringBuilder result = new StringBuilder();
 		HttpClient httpClient = new DefaultHttpClient();
 		HttpContext localContext = new BasicHttpContext();
 
 		HttpPost httpPost = new HttpPost(reqString);
-		httpPost.setHeader("Cookie", cookie);
+		httpPost.setHeader("Cookie", getCookie(useSession));
 		List<NameValuePair> postParameters = new ArrayList<NameValuePair>();
-		JSONObject jsonData = new JSONObject();
-		jsonData.put("route", data);
-		String json = jsonData.toString(); 
+		String json = data.toJson().toString();
 		postParameters.add(new BasicNameValuePair("route", json));
 		UrlEncodedFormEntity entity = new UrlEncodedFormEntity(postParameters);
 		httpPost.setEntity(entity);
@@ -86,10 +80,20 @@ public class RequestBuilder {
 		return new JSONObject(result.toString());
 	}
 
+	private static String getCookie(Boolean useSession) {
+		StringBuilder cookie = new StringBuilder();
+		if (useSession) {
+			cookie.append(CookieManager.getInstance().getCookie(
+					HTTP_WWW_ECOMMUTERS_COM_LOGIN));
+		}
+		cookie.append(";XDEBUG_SESSION=netbeans-xdebug");
+		return cookie.toString();
+	}
+
 	static int getProtocolVersion() {
 		JSONObject obj;
 		try {
-			obj = sendRequest(getGetVersionRequest);
+			obj = sendRequest(getGetVersionRequest, false);
 			return obj == null ? -1 : obj.getInt("version");
 		} catch (ClientProtocolException e) {
 			Log.e("json", e.toString());
@@ -102,12 +106,10 @@ public class RequestBuilder {
 	}
 
 	public static void fillCredentialsData(Credentials c) {
-		CookieManager cookieManager = CookieManager.getInstance();
-		final String cookie = cookieManager
-				.getCookie(Const.HTTP_WWW_ECOMMUTERS_COM_LOGIN);
+
 		JSONObject obj;
 		try {
-			obj = sendRequest(getUserRequest, cookie);
+			obj = sendRequest(getUserRequest, true);
 			c.setName(obj.getString("name"));
 			c.setSurname(obj.getString("surname"));
 		} catch (ClientProtocolException e) {
@@ -119,13 +121,10 @@ public class RequestBuilder {
 		}
 	}
 
-	public static void sendRouteData(RegisteredPoints mPointsToSend)
+	public static void sendRouteData(RegisteredRoute mPointsToSend)
 			throws JSONException, ClientProtocolException, IOException {
-		
-		CookieManager cookieManager = CookieManager.getInstance();
-		final String cookie = cookieManager
-				.getCookie(Const.HTTP_WWW_ECOMMUTERS_COM_LOGIN);
-		postRequest(getSendRouteDataRequest, mPointsToSend, cookie);
+
+		postRequest(getSendRouteDataRequest, mPointsToSend, true);
 		JSONObject obj = new JSONObject();
 		obj.put("route", mPointsToSend);
 
