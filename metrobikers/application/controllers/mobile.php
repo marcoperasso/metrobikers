@@ -41,8 +41,23 @@ class Mobile extends MY_Controller {
             $this->load->model("Route_model");
             $this->load->model("Route_points_model");
             try {
-                if (!$this->Route_model->get_route($user->id, $route->name))
-                    $this->Route_model->create_route($user->id, $route->name);
+                $this->Route_model->name = $route->name;
+                $this->Route_model->userid = $user->id;
+                $this->db->trans_begin();
+                if (!$this->Route_model->get_route())
+                    $this->Route_model->create_route();
+                foreach ($route->points as $point) {
+                    $this->Route_points_model->id = $point->id;
+                    $this->Route_points_model->routeid = $this->Route_model->id;
+                    if (!$this->Route_points_model->get_point()) {
+                        $this->Route_points_model->lat = $point->lat;
+                        $this->Route_points_model->lon = $point->lon;
+                        $this->Route_points_model->ele = $point->ele;
+                        $this->Route_points_model->time = date('Y-m-d H:i:s', $point->time);
+                        $this->Route_points_model->create_point();
+                    }
+                }
+                $this->db->trans_commit();
                 $response = array(
                     'saved' => TRUE
                 );

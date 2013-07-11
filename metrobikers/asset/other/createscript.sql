@@ -26,6 +26,21 @@ CREATE TABLE `validationkeys` (
 
 delimiter $$
 
+CREATE TABLE `routepoints` (
+  `id` int(11) NOT NULL,
+  `routeid` int(11) NOT NULL,
+  `lat` bigint(20) DEFAULT NULL,
+  `lon` bigint(20) DEFAULT NULL,
+  `ele` float DEFAULT NULL,
+  `time` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`,`routeid`),
+  KEY `route` (`routeid`),
+  CONSTRAINT `route` FOREIGN KEY (`routeid`) REFERENCES `routes` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8$$
+
+
+delimiter $$
+
 CREATE TABLE `routes` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `userid` int(11) NOT NULL,
@@ -33,16 +48,9 @@ CREATE TABLE `routes` (
   PRIMARY KEY (`id`,`userid`),
   KEY `user` (`userid`),
   CONSTRAINT `user` FOREIGN KEY (`userid`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8$$
+) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8$$
 
-delimiter $$
 
-CREATE TABLE `routepoints` (
-  `routeid` int(11) NOT NULL,
-  `lat` mediumint(9) DEFAULT NULL,
-  `lon` mediumint(9) DEFAULT NULL,
-  `ele` float DEFAULT NULL,
-  `time` timestamp NULL DEFAULT NULL,
-  KEY `route` (`routeid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8$$
+
+
 

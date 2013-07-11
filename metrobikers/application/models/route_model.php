@@ -10,18 +10,16 @@ class Route_model extends MY_Model {
         parent::__construct();
     }
 
-    public function get_route($userid, $name) {
-        $query = $this->db->get_where('routes ', array('userid' => $userid, 'name' =>$name));
-        if ($query->num_rows() === 1) {
+    public function get_route() {
+        $query = $this->db->get_where('routes ', array('userid' => $this->userid, 'name' => $this->name));
+        if ($query->num_rows() >= 1) {
             $this->assign($query->row());
             return TRUE;
         }
         return FALSE;
     }
 
-    public function create_route($userid, $name) {
-        $this->name = $name;
-        $this->userid = $userid;
+    public function create_route() {
         $this->db->insert('routes', $this);
         $this->db->select('id')->where('name', $this->name);
         $this->id = $query->row()->id;
