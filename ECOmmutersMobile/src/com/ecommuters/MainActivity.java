@@ -20,19 +20,111 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
 public class MainActivity extends Activity {
 
 	private LocationManager mlocManager;
+	private Button btnNewRoute;
+
+	private void toggleRegister() {
+		if (isRegisterServiceRunning()) {
+			stopRegister();
+		} else {
+			askRouteName(new OnRouteSelected() {
+				public void select(String routeName) {
+					doRegister(routeName);
+				}
+			});
+
+		}
+	}
+
+	private void stopRegister() {
+		Helper.dialogMessage(this, R.string.stop_recording_question,
+				R.string.ecommuters, new DialogInterface.OnClickListener() {
+
+					public void onClick(DialogInterface dialog, int which) {
+						Intent myIntent = new Intent(getBaseContext(),
+								RegisterRouteService.class);
+						stopService(myIntent);
+						btnNewRoute.setText(R.string.btn_new_route);
+
+					}
+				}, null);
+	}
+
+	private void doRegister(String routeName) {
+		final Intent myIntent = new Intent(this, RegisterRouteService.class);
+		myIntent.putExtra(Const.ROUTE_NAME, routeName);
+		String routeFile = Helper.getRouteFile(routeName);
+		final File file = getFileStreamPath(routeFile);
+		if (file.exists()) {
+			new AlertDialog.Builder(this)
+					.setIcon(android.R.drawable.ic_dialog_alert)
+					.setTitle(getString(R.string.ecommuters))
+					.setMessage(
+							getString(R.string.existing_route_question,
+									routeName))
+					.setPositiveButton(R.string.overwrite,
+							new DialogInterface.OnClickListener() {
+								public void onClick(DialogInterface dialog,
+										int which) {
+									file.delete();
+									btnNewRoute
+											.setText(R.string.stop_recording);
+									startService(myIntent);
+
+								}
+							})
+					.setNegativeButton(android.R.string.cancel, null)
+					.setNeutralButton(R.string.append,
+							new DialogInterface.OnClickListener() {
+								public void onClick(DialogInterface dialog,
+										int which) {
+									btnNewRoute
+											.setText(R.string.stop_recording);
+									startService(myIntent);
+								}
+							}).show();
+
+		} else {
+			btnNewRoute.setText(R.string.stop_recording);
+			startService(myIntent);
+		}
+
+	}
+
+	private void askRouteName(final OnRouteSelected onSelected) {
+		
+		// Set an EditText view to get user input
+		final EditText input = new EditText(this);
+		
+		AlertDialog.Builder alert = new AlertDialog.Builder(this);
+		alert
+		.setTitle(R.string.ecommuters)
+		.setMessage(R.string.insert_route_name)
+		.setView(input)
+		.setPositiveButton(android.R.string.ok,
+				new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int whichButton) {
+						
+						String routeName = input.getText().toString();
+						if (!Helper.isNullOrEmpty(routeName))
+							onSelected.select(routeName);
+					}
+				})
+		.setNegativeButton(android.R.string.cancel, null)
+		.show();
+	}
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
-		
-		final Activity context = this;
+
 		mlocManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 		enableGPS();
 
@@ -41,8 +133,7 @@ public class MainActivity extends Activity {
 			finish();
 			return;
 		}
-		if (!isConnectorServiceRunning())
-		{
+		if (!isConnectorServiceRunning()) {
 			Intent myIntent = new Intent(this, ConnectorService.class);
 			startService(myIntent);
 		}
@@ -56,69 +147,11 @@ public class MainActivity extends Activity {
 
 			}
 		});
-		final Button btnNewRoute = (Button) findViewById(R.id.btn_new_route);
+		btnNewRoute = (Button) findViewById(R.id.btn_new_route);
 		btnNewRoute.setOnClickListener(new OnClickListener() {
-
 			public void onClick(View v) {
-
-				final String routeName = "myroute";
-				final Intent myIntent = new Intent(v.getContext(),
-						RegisterRouteService.class);
-				myIntent.putExtra(Const.ROUTE_NAME, routeName);
-				
-				if (isRegisterServiceRunning()) {
-					Helper.dialogMessage(context,
-							R.string.stop_recording_question, R.string.ecommuters,
-							new DialogInterface.OnClickListener() {
-
-								public void onClick(DialogInterface dialog,
-										int which) {
-									stopService(myIntent);
-									btnNewRoute.setText(R.string.btn_new_route);
-
-								}
-							}, null);
-
-				}
-
-				else {
-					String routeFile = Helper.getRouteFile(routeName);
-					final File file = getFileStreamPath(routeFile);
-					if (file.exists())
-					{
-						new AlertDialog.Builder(context)
-						.setIcon(android.R.drawable.ic_dialog_alert)
-						.setTitle(getString(R.string.ecommuters))
-						.setMessage(getString(R.string.existing_route_question, routeName))
-						.setPositiveButton(R.string.overwrite, new DialogInterface.OnClickListener() {
-							public void onClick(DialogInterface dialog,
-									int which) {
-								file.delete();
-								btnNewRoute.setText(R.string.stop_recording);
-								startService(myIntent);
-
-							}
-						})
-						.setNegativeButton(android.R.string.cancel, null)
-						.setNeutralButton(R.string.append, new DialogInterface.OnClickListener() {
-							public void onClick(DialogInterface dialog,
-									int which) {
-								btnNewRoute.setText(R.string.stop_recording);
-								startService(myIntent);
-							}
-						})
-						.show();
-						
-					}
-					else
-					{
-						btnNewRoute.setText(R.string.stop_recording);
-						startService(myIntent);
-					}
-				}
-
+				toggleRegister();
 			}
-
 		});
 		// testo le credenziali
 		Credentials credential = MySettings.readCredentials(this);
@@ -154,7 +187,6 @@ public class MainActivity extends Activity {
 		// adView.loadAd(new com.google.ads.AdRequest());
 	}
 
-
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		if (requestCode == Const.ACTIVATE_GPS) {
@@ -167,19 +199,18 @@ public class MainActivity extends Activity {
 	private void enableGPS() {
 		if (!mlocManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
 
-			Helper.dialogMessage(this, R.string.need_gps, R.string.ecommuters, new DialogInterface.OnClickListener() {
+			Helper.dialogMessage(this, R.string.need_gps, R.string.ecommuters,
+					new DialogInterface.OnClickListener() {
 
-				public void onClick(DialogInterface dialog,
-						int which) {
-					Intent myIntent = new Intent(
-							Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-					startActivityForResult(myIntent,
-							Const.ACTIVATE_GPS);
-					return;
+						public void onClick(DialogInterface dialog, int which) {
+							Intent myIntent = new Intent(
+									Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+							startActivityForResult(myIntent, Const.ACTIVATE_GPS);
+							return;
 
-				}
-			}, null);
-			
+						}
+					}, null);
+
 			return;
 		}
 	}
@@ -232,9 +263,9 @@ public class MainActivity extends Activity {
 
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
-		case R.id.itemCredentials:
-			showCredentialsDialog(null);
-			break;
+			case R.id.itemCredentials :
+				showCredentialsDialog(null);
+				break;
 		}
 		return super.onOptionsItemSelected(item);
 	}
@@ -247,7 +278,8 @@ public class MainActivity extends Activity {
 		return isServiceRunning(ConnectorService.class);
 	}
 
-	private boolean isServiceRunning(@SuppressWarnings("rawtypes") Class serviceClass) {
+	private boolean isServiceRunning(
+			@SuppressWarnings("rawtypes") Class serviceClass) {
 		ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
 		for (RunningServiceInfo service : manager
 				.getRunningServices(Integer.MAX_VALUE)) {

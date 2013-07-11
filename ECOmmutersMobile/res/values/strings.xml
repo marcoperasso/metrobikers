@@ -27,5 +27,6 @@
     <string name="existing_route_question">L\'itinerario %s esiste già; cosa vuoi fare?</string>
     <string name="overwrite">Sovrascrivi</string>
     <string name="append">Incrementa</string>
+    <string name="insert_route_name">Inserisci il nome dell\'itinerario</string>
 </resources>
  
