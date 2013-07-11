@@ -24,7 +24,8 @@ import android.util.Log;
 import android.webkit.CookieManager;
 
 public class RequestBuilder {
-	private static final String host = "http://10.0.2.2:8888/ecommuters/";// "http://www.ecommuters.com/"
+	//private static final String host = "http://10.0.2.2:8888/ecommuters/";
+	private static final String host = "http://www.ecommuters.com/";
 	private static final String getGetVersionRequest = host + "mobile/version";
 	private static final String getUserRequest = host + "mobile/user";
 	private static final String getUserLoggedRequest = host + "mobile/user_logged";
