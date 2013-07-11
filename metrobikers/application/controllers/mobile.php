@@ -12,6 +12,13 @@ class Mobile extends MY_Controller {
                 ->set_output(json_encode(array('version' => 1)));
     }
 
+    public function user_logged() {
+        $user = get_user();
+        $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode(array('logged' => $user !== NULL)));
+    }
+
     public function user() {
         $user = get_user();
         $response = NULL;
@@ -49,11 +56,14 @@ class Mobile extends MY_Controller {
                 foreach ($route->points as $point) {
                     $this->Route_points_model->id = $point->id;
                     $this->Route_points_model->routeid = $this->Route_model->id;
-                    if (!$this->Route_points_model->get_point()) {
-                        $this->Route_points_model->lat = $point->lat;
-                        $this->Route_points_model->lon = $point->lon;
-                        $this->Route_points_model->ele = $point->ele;
-                        $this->Route_points_model->time = date('Y-m-d H:i:s', $point->time);
+                    $updating = $this->Route_points_model->get_point();
+                    $this->Route_points_model->lat = $point->lat;
+                    $this->Route_points_model->lon = $point->lon;
+                    $this->Route_points_model->ele = $point->ele;
+                    $this->Route_points_model->time = date('Y-m-d H:i:s', $point->time);
+                    if ($updating) {
+                        $this->Route_points_model->update_point();
+                    } else {
                         $this->Route_points_model->create_point();
                     }
                 }

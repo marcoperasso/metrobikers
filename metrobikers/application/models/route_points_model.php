@@ -21,7 +21,11 @@ class Route_points_model extends MY_Model {
         return FALSE;
     }
 
-    public function create_point() {
+    public function update_point() {
+        $this->db->where(array('routeid' => $this->routeid, 'id' =>$this->id));
+        $this->db->update('routepoints', $this);
+    }
+     public function create_point() {
         $this->db->insert('routepoints', $this);
     }
 }
