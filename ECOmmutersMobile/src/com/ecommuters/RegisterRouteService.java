@@ -2,6 +2,7 @@ package com.ecommuters;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInput;
@@ -10,9 +11,6 @@ import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.apache.http.client.ClientProtocolException;
-import org.json.JSONException;
 
 import android.app.IntentService;
 import android.content.Context;
@@ -40,8 +38,8 @@ public class RegisterRouteService extends IntentService {
 	private List<RegisteredPoint> mLocationsToSave = new ArrayList<RegisteredPoint>();
 	// lista dei punti salvati
 	private List<RegisteredPoint> mSavedLocations = new ArrayList<RegisteredPoint>();
-
-	private RegisteredRoute mPointsToSend = new RegisteredRoute();
+	private String mRouteName;
+	private int latestFileToSendIndex;
 
 	public RegisterRouteService() {
 		super("RegisterRouteService");
@@ -54,9 +52,9 @@ public class RegisterRouteService extends IntentService {
 
 	@Override
 	protected void onHandleIntent(Intent intent) {
-		mPointsToSend.setName(intent.getExtras().getString(Const.ROUTE_NAME));
+		mRouteName = intent.getExtras().getString(Const.ROUTE_NAME);
 
-		String routeFile = Helper.getRouteFile(mPointsToSend.getName());
+		String routeFile = Helper.getRouteFile(mRouteName);
 		File file = getFileStreamPath(routeFile);
 		if (file.exists()) {
 			try {
@@ -115,40 +113,17 @@ public class RegisterRouteService extends IntentService {
 			}
 		}
 
-		if (!mPointsToSend.isEmpty()) {
-			try {
-				sendLocations();
-			} catch (JSONException e) {
-
-				e.printStackTrace();
-			}
-		}
-	}
-
-	private void sendLocations() throws JSONException {
-		try {
-			RequestBuilder.sendRouteData(mPointsToSend);
-			mPointsToSend.getPoints().clear();
-		} catch (ClientProtocolException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
 	}
 
 	private void saveLocations() throws IOException {
-		FileOutputStream fos = openFileOutput(
-				Helper.getRouteFile(mPointsToSend.getName()),
+		FileOutputStream fos = openFileOutput(Helper.getRouteFile(mRouteName),
 				Context.MODE_PRIVATE);
 		ObjectOutput out = null;
 		try {
 			out = new ObjectOutputStream(fos);
-			for (GpsPoint l : mSavedLocations)
+			for (RegisteredPoint l : mSavedLocations)
 				out.writeObject(l);
-			for (GpsPoint l : mLocationsToSave)
+			for (RegisteredPoint l : mLocationsToSave)
 				out.writeObject(l);
 			out.flush();
 		} finally {
@@ -157,8 +132,39 @@ public class RegisterRouteService extends IntentService {
 		}
 
 		mSavedLocations.addAll(mLocationsToSave);
-		mPointsToSend.getPoints().addAll(mLocationsToSave);
+		saveFileToSend();
+
 		mLocationsToSave.clear();
+
+	}
+	private void saveFileToSend() {
+		File file;
+		do {
+			file = getFileStreamPath(Helper
+					.getFileToSend(++latestFileToSendIndex));
+		} while (file.exists());
+
+		try {
+			RegisteredRoute route = new RegisteredRoute(mRouteName);
+			route.getPoints().addAll(mLocationsToSave);
+
+			FileOutputStream fos = openFileOutput(file.getName(),
+					Context.MODE_PRIVATE);
+			ObjectOutput out = null;
+			try {
+				out = new ObjectOutputStream(fos);
+				out.writeObject(route);
+				out.flush();
+			} finally {
+				out.close();
+				fos.close();
+			}
+
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 
 	}
 
@@ -188,13 +194,14 @@ public class RegisterRouteService extends IntentService {
 					mRecorderLocations.add(new RegisteredPoint(getNewId(),
 							(int) (location.getLatitude() * 1E6),
 							(int) (location.getLongitude() * 1E6), location
-									.getAltitude(), (long) (System.currentTimeMillis() / 1E3)));
+									.getAltitude(), (long) (System
+									.currentTimeMillis() / 1E3)));
 				}
 			}
 
 		};
-		mlocManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0,
-				mLocationListener);
+		mlocManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
+				1000/* un secondo */, 1/* un metro */, mLocationListener);
 		super.onCreate();
 	}
 

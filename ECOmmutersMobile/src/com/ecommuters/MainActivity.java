@@ -41,7 +41,11 @@ public class MainActivity extends Activity {
 			finish();
 			return;
 		}
-
+		if (!isConnectorServiceRunning())
+		{
+			Intent myIntent = new Intent(this, ConnectorService.class);
+			startService(myIntent);
+		}
 		Button btnRoutes = (Button) findViewById(R.id.btn_routes);
 		btnRoutes.setOnClickListener(new OnClickListener() {
 
@@ -236,11 +240,18 @@ public class MainActivity extends Activity {
 	}
 
 	private boolean isRegisterServiceRunning() {
+		return isServiceRunning(RegisterRouteService.class);
+	}
+
+	private boolean isConnectorServiceRunning() {
+		return isServiceRunning(ConnectorService.class);
+	}
+
+	private boolean isServiceRunning(@SuppressWarnings("rawtypes") Class serviceClass) {
 		ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
 		for (RunningServiceInfo service : manager
 				.getRunningServices(Integer.MAX_VALUE)) {
-			if (RegisterRouteService.class.getName().equals(
-					service.service.getClassName())) {
+			if (serviceClass.getName().equals(service.service.getClassName())) {
 				return true;
 			}
 		}

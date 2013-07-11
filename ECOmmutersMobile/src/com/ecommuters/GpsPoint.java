@@ -1,7 +1,13 @@
 package com.ecommuters;
 
+import java.io.Serializable;
 
-public class GpsPoint {
+
+public class GpsPoint implements  Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -3295827706008323983L;
 	int lat;
 	int lon;
 	double ele;

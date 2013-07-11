@@ -42,8 +42,23 @@
         <service
             android:name="com.ecommuters.RegisterRouteService"
             android:enabled="true"
-            android:exported="true" android:permission="android.permission.ACCESS_FINE_LOCATION">
+            android:exported="true"
+            android:permission="android.permission.ACCESS_FINE_LOCATION" >
         </service>
+        <service
+            android:name="com.ecommuters.ConnectorService"
+            android:enabled="true"
+            android:exported="true" >
+        </service>
+        <!-- Declaring broadcast receiver for BOOT_COMPLETED event -->
+        <receiver
+            android:name="com.ecommuters.BootReceiver"
+            android:enabled="true"
+            android:exported="false" >
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

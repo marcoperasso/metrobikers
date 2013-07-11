@@ -48,7 +48,11 @@ public class Helper {
 	}
 
 	public static String getRouteFile(String routeName) {
-		return routeName.replaceAll("[^a-zA-Z0-9.-]", "_") + ".route";
+		return routeName.replaceAll("[^a-zA-Z0-9.-]", "_") + Const.ROUTEEXT;
+	}
+
+	public static String getFileToSend(int index) {
+			return index + Const.TOSENDEXT;
 	}
 
 }

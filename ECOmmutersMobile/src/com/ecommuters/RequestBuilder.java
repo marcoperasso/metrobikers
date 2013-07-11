@@ -27,6 +27,7 @@ public class RequestBuilder {
 	private static final String host = "http://10.0.2.2:8888/ecommuters/";// "http://www.ecommuters.com/"
 	private static final String getGetVersionRequest = host + "mobile/version";
 	private static final String getUserRequest = host + "mobile/user";
+	private static final String getUserLoggedRequest = host + "mobile/user_logged";
 	private static final String getSendRouteDataRequest = host
 			+ "mobile/save_route";
 	public static final String HTTP_WWW_ECOMMUTERS_COM_LOGIN = host + "login";
@@ -120,13 +121,23 @@ public class RequestBuilder {
 			Log.e("json", e.toString());
 		}
 	}
+	
+	public static boolean isLogged() {
 
-	public static void sendRouteData(RegisteredRoute mPointsToSend)
+		JSONObject obj;
+		try {
+			obj = sendRequest(getUserLoggedRequest, true);
+			return obj.getBoolean("logged");
+		} catch (Exception e) {
+			return false;
+		}
+	}
+
+	public static boolean sendRouteData(RegisteredRoute route)
 			throws JSONException, ClientProtocolException, IOException {
 
-		postRequest(getSendRouteDataRequest, mPointsToSend, true);
-		JSONObject obj = new JSONObject();
-		obj.put("route", mPointsToSend);
+		JSONObject response = postRequest(getSendRouteDataRequest, route, true);
+		return response.has("saved") &&  response.getBoolean("saved");
 
 	}
 

@@ -15,6 +15,11 @@ public class RegisteredRoute implements IJsonSerializable, Serializable{
 	private static final long serialVersionUID = 8299537479740651539L;
 	private String name;
 	private List<RegisteredPoint> points = new ArrayList<RegisteredPoint>();
+	public RegisteredRoute(String name) {
+		this.name = name;
+	}
+	public RegisteredRoute() {
+	}
 	public String getName() {
 		return name;
 	}
