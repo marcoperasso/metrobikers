@@ -73,6 +73,7 @@ public class Credentials {
 							Toast.LENGTH_LONG);
 					t.setGravity(Gravity.CENTER, 0, 0);
 					t.show();
+					return;
 				}
 
 				RequestBuilder.fillCredentialsData(c);
@@ -83,7 +84,7 @@ public class Credentials {
 		webView.getSettings().setJavaScriptEnabled(true);
 		webView.addJavascriptInterface(new AutologinObject(), "autologin");
 
-		webView.loadUrl(Const.HTTP_WWW_ECOMMUTERS_COM_LOGIN);
+		webView.loadUrl(RequestBuilder.HTTP_WWW_ECOMMUTERS_COM_LOGIN);
 	}
 
 	public String getName() {

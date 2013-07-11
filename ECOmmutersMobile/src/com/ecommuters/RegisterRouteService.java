@@ -9,7 +9,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import org.apache.http.client.ClientProtocolException;
@@ -32,15 +31,25 @@ public class RegisterRouteService extends IntentService {
 	private LocationListener mLocationListener;
 
 	// acceduto da diversi thread: va sincronizzato
-	private List<GpsPoint> mRecorderLocations = new ArrayList<GpsPoint>();
+	// sono i punti registrati ma non ancora salvati
+	private List<RegisteredPoint> mRecorderLocations = new ArrayList<RegisteredPoint>();
 
-	// liste accedute dal solo worker thread del servizio
-	private List<GpsPoint> mLocationsToSave = new ArrayList<GpsPoint>();
-	private List<GpsPoint> mSavedLocations = new ArrayList<GpsPoint>();
+	// liste accedute dal solo worker thread del servizio, non vanno
+	// sincronizzate
+	// lista dei punti da salvare
+	private List<RegisteredPoint> mLocationsToSave = new ArrayList<RegisteredPoint>();
+	// lista dei punti salvati
+	private List<RegisteredPoint> mSavedLocations = new ArrayList<RegisteredPoint>();
+
 	private RegisteredRoute mPointsToSend = new RegisteredRoute();
-	
+
 	public RegisterRouteService() {
 		super("RegisterRouteService");
+	}
+
+	private int getNewId() {
+		return mRecorderLocations.size() + mLocationsToSave.size()
+				+ mSavedLocations.size();
 	}
 
 	@Override
@@ -57,7 +66,8 @@ public class RegisterRouteService extends IntentService {
 					in = new ObjectInputStream(fis);
 					while (fis.available() > 0) {
 						try {
-							GpsPoint pt = (GpsPoint) in.readObject();
+							RegisteredPoint pt = (RegisteredPoint) in
+									.readObject();
 							mSavedLocations.add(pt);
 						} catch (Exception ex) {
 							Log.e("ec", ex.getMessage(), ex);
@@ -104,7 +114,7 @@ public class RegisterRouteService extends IntentService {
 				e.printStackTrace();
 			}
 		}
-		
+
 		if (!mPointsToSend.isEmpty()) {
 			try {
 				sendLocations();
@@ -126,11 +136,13 @@ public class RegisterRouteService extends IntentService {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 	}
 
 	private void saveLocations() throws IOException {
-		FileOutputStream fos = openFileOutput(Helper.getRouteFile(mPointsToSend.getName()), Context.MODE_PRIVATE);
+		FileOutputStream fos = openFileOutput(
+				Helper.getRouteFile(mPointsToSend.getName()),
+				Context.MODE_PRIVATE);
 		ObjectOutput out = null;
 		try {
 			out = new ObjectOutputStream(fos);
@@ -173,12 +185,13 @@ public class RegisterRouteService extends IntentService {
 
 			public void onLocationChanged(Location location) {
 				synchronized (mRecorderLocations) {
-					mRecorderLocations.add(new GpsPoint((int) (location
-							.getLatitude() * 1E6), (int) (location
-							.getLongitude() * 1E6), location.getAltitude(),
-							new Date()));
+					mRecorderLocations.add(new RegisteredPoint(getNewId(),
+							(int) (location.getLatitude() * 1E6),
+							(int) (location.getLongitude() * 1E6), location
+									.getAltitude(), (long) (System.currentTimeMillis() / 1E3)));
 				}
 			}
+
 		};
 		mlocManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0,
 				mLocationListener);
