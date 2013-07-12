@@ -12,8 +12,8 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.VIBRATE" />
-    <permission android:name="START_CONNECTOR_SERVICE"></permission>
-    <uses-permission android:name="START_CONNECTOR_SERVICE"/>
+    <permission android:name="START_WORKER_SERVICE" android:protectionLevel="normal"></permission>
+    <uses-permission android:name="START_WORKER_SERVICE"/>
 
     <application
         android:allowBackup="true"
@@ -31,7 +31,6 @@
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -42,15 +41,14 @@
         </activity>
 
         <service
-            android:name="com.ecommuters.RegisterRouteService"
+            android:name="com.ecommuters.RecordRouteService"
             android:enabled="true"
-            android:exported="true"
-            android:permission="android.permission.ACCESS_FINE_LOCATION" >
+            android:exported="true" >
         </service>
         <service
             android:name="com.ecommuters.ConnectorService"
             android:enabled="true"
-            android:exported="true">
+            android:exported="true" >
         </service>
         <!-- Declaring broadcast receiver for BOOT_COMPLETED event -->
         <receiver

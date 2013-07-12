@@ -28,5 +28,6 @@
     <string name="overwrite">Sovrascrivi</string>
     <string name="append">Incrementa</string>
     <string name="insert_route_name">Inserisci il nome dell\'itinerario</string>
+    <string name="recording_details">Itinerario %1$s; punti traccia: %2$d</string>
 </resources>
  

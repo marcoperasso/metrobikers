@@ -12,7 +12,12 @@ import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.android.maps.MapActivity;
+
 import android.app.IntentService;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
@@ -22,7 +27,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 
-public class RegisterRouteService extends IntentService {
+public class RecordRouteService extends IntentService {
 
 	boolean working = true;
 	private LocationManager mlocManager;
@@ -40,12 +45,13 @@ public class RegisterRouteService extends IntentService {
 	private List<RegisteredPoint> mSavedLocations = new ArrayList<RegisteredPoint>();
 	private String mRouteName;
 	private int latestFileToSendIndex;
+	private NotificationManager mNotificationManager;
 
-	public RegisterRouteService() {
+	public RecordRouteService() {
 		super("RegisterRouteService");
 	}
 
-	private int getNewId() {
+	private int getPoints() {
 		return mRecorderLocations.size() + mLocationsToSave.size()
 				+ mSavedLocations.size();
 	}
@@ -53,7 +59,10 @@ public class RegisterRouteService extends IntentService {
 	@Override
 	protected void onHandleIntent(Intent intent) {
 		mRouteName = intent.getExtras().getString(Const.ROUTE_NAME);
-
+		
+		mNotificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+		setNotification();
+		
 		String routeFile = Helper.getRouteFile(mRouteName);
 		File file = getFileStreamPath(routeFile);
 		if (file.exists()) {
@@ -94,6 +103,16 @@ public class RegisterRouteService extends IntentService {
 			}
 		}
 
+	}
+
+	private void setNotification() {
+		Notification notification = new Notification(R.drawable.ic_launcher, getString(R.string.recording_started), System.currentTimeMillis());
+		notification.flags = Notification.FLAG_ONGOING_EVENT;
+		PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
+				new Intent(this, MapActivity.class),
+				Notification.FLAG_ONGOING_EVENT);
+		notification.setLatestEventInfo(this, getString(R.string.ecommuters), getString(R.string.recording_details, mRouteName, getPoints()), contentIntent);
+		mNotificationManager.notify(Const.RECORDING_NOTIFICATION_ID, notification);
 	}
 
 	private void archiveData() {
@@ -191,19 +210,23 @@ public class RegisterRouteService extends IntentService {
 
 			public void onLocationChanged(Location location) {
 				synchronized (mRecorderLocations) {
-					mRecorderLocations.add(new RegisteredPoint(getNewId(),
+					mRecorderLocations.add(new RegisteredPoint(getPoints(),
 							(int) (location.getLatitude() * 1E6),
 							(int) (location.getLongitude() * 1E6), location
 									.getAltitude(), (long) (System
 									.currentTimeMillis() / 1E3)));
+					setNotification();
 				}
 			}
 
 		};
 		mlocManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
 				1000/* un secondo */, 1/* un metro */, mLocationListener);
+
+			
 		super.onCreate();
 	}
+
 
 	@Override
 	public void onDestroy() {
@@ -211,6 +234,7 @@ public class RegisterRouteService extends IntentService {
 		mlocManager.removeUpdates(mLocationListener);
 		Toast.makeText(this, R.string.recording_stopped, Toast.LENGTH_SHORT)
 				.show();
+		mNotificationManager.cancel(Const.RECORDING_NOTIFICATION_ID);
 		super.onDestroy();
 	}
 }

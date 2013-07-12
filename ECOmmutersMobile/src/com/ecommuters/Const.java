@@ -21,5 +21,6 @@ public class Const {
 	public static final String LogTag = "log";
 	public static final String ROUTEEXT = ".route";
 	public static final String TOSENDEXT = ".pending";
+	public static final int RECORDING_NOTIFICATION_ID = 1;
 
 }

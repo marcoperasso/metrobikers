@@ -30,7 +30,7 @@ public class MainActivity extends Activity {
 	private Button btnNewRoute;
 
 	private void toggleRegister() {
-		if (isRegisterServiceRunning()) {
+		if (isRecordingServiceRunning()) {
 			stopRegister();
 		} else {
 			askRouteName(new OnRouteSelected() {
@@ -48,7 +48,7 @@ public class MainActivity extends Activity {
 
 					public void onClick(DialogInterface dialog, int which) {
 						Intent myIntent = new Intent(getBaseContext(),
-								RegisterRouteService.class);
+								RecordRouteService.class);
 						stopService(myIntent);
 						btnNewRoute.setText(R.string.btn_new_route);
 
@@ -57,7 +57,7 @@ public class MainActivity extends Activity {
 	}
 
 	private void doRegister(String routeName) {
-		final Intent myIntent = new Intent(this, RegisterRouteService.class);
+		final Intent myIntent = new Intent(this, RecordRouteService.class);
 		myIntent.putExtra(Const.ROUTE_NAME, routeName);
 		String routeFile = Helper.getRouteFile(routeName);
 		final File file = getFileStreamPath(routeFile);
@@ -102,22 +102,32 @@ public class MainActivity extends Activity {
 		// Set an EditText view to get user input
 		final EditText input = new EditText(this);
 		
-		AlertDialog.Builder alert = new AlertDialog.Builder(this);
-		alert
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		builder
 		.setTitle(R.string.ecommuters)
 		.setMessage(R.string.insert_route_name)
 		.setView(input)
-		.setPositiveButton(android.R.string.ok,
-				new DialogInterface.OnClickListener() {
-					public void onClick(DialogInterface dialog, int whichButton) {
-						
-						String routeName = input.getText().toString();
-						if (!Helper.isNullOrEmpty(routeName))
-							onSelected.select(routeName);
-					}
-				})
-		.setNegativeButton(android.R.string.cancel, null)
-		.show();
+		.setPositiveButton(android.R.string.ok, null)
+		.setNegativeButton(android.R.string.cancel, null);
+		final AlertDialog  dialog = builder.create();
+		dialog.show();
+		
+		Button theButton = dialog.getButton(DialogInterface.BUTTON_POSITIVE);
+		theButton.setOnClickListener(new View.OnClickListener(){
+			public void onClick(View v) {
+				String routeName = input.getText().toString();
+				if (!Helper.isNullOrEmpty(routeName))
+				{
+					dialog.dismiss();
+					onSelected.select(routeName);
+				}
+				else
+				{
+					Toast.makeText(dialog.getContext(), R.string.insert_route_name, Toast.LENGTH_SHORT)
+					.show();
+				}
+				
+			}});
 	}
 
 	@Override
@@ -153,6 +163,8 @@ public class MainActivity extends Activity {
 				toggleRegister();
 			}
 		});
+		if (isRecordingServiceRunning())
+			btnNewRoute.setText(R.string.stop_recording);
 		// testo le credenziali
 		Credentials credential = MySettings.readCredentials(this);
 		if (credential.isEmpty()) {
@@ -270,8 +282,8 @@ public class MainActivity extends Activity {
 		return super.onOptionsItemSelected(item);
 	}
 
-	private boolean isRegisterServiceRunning() {
-		return isServiceRunning(RegisterRouteService.class);
+	private boolean isRecordingServiceRunning() {
+		return isServiceRunning(RecordRouteService.class);
 	}
 
 	private boolean isConnectorServiceRunning() {
