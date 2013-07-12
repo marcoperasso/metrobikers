@@ -221,7 +221,7 @@ public class RecordRouteService extends IntentService {
 
 		};
 		mlocManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
-				1000/* un secondo */, 1/* un metro */, mLocationListener);
+				15000/* 15 secondi */, 1/* un metro */, mLocationListener);
 
 			
 		super.onCreate();
