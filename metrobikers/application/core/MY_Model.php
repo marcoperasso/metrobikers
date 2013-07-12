@@ -7,7 +7,8 @@ class MY_Model extends CI_Model {
     }
 
     protected function assign($object) {
-        foreach (get_object_vars($object) as $key => $value) {
+        $ar = is_array($object) ? $object : get_object_vars($object);
+        foreach ($ar as $key => $value) {
             $this->$key = $value;
         }
     }

@@ -13,7 +13,7 @@
     </form>
 </div>
 <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
-<script type="text/javascript" src="<?php echo base_url() ?>asset/js/md5-min.js"></script>
+<script type="text/javascript" src="<?php echo base_url_considering_mobile() ?>asset/js/md5-min.js"></script>
 <script type="text/javascript">
     $("#loginforget").click(resetPassword);
     var _autologin = this.autologin;
@@ -23,11 +23,11 @@
     }
     function doLoginInternal(onEnd)
     {
-        jQuery.get("<?php echo base_url() ?>crypt", null, function(data) {
+            jQuery.get("<?php echo base_url_considering_mobile() ?>crypt", null, function(data) {
             eval(data);
             var pwd = hex_md5($('#loginpassword').val());
             pwd = this.crypt(pwd);
-            $.getJSON("<?php echo base_url() ?>login/dologin", {
+            $.getJSON("<?php echo base_url_considering_mobile() ?>login/dologin", {
                 "email": $("#loginemail").val(),
                 "pwd": pwd
             }, function(data) {
