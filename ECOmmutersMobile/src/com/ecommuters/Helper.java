@@ -28,7 +28,7 @@ public class Helper {
 		return s == null || s.length() == 0;
 	}
 
-	public static void dialogMessage(final Activity context, String message,
+	public static void dialogMessage(final Context context, String message,
 			String title, DialogInterface.OnClickListener okListener,
 			DialogInterface.OnClickListener cancelListener) {
 		new AlertDialog.Builder(context)
@@ -39,7 +39,7 @@ public class Helper {
 
 	}
 
-	public static void dialogMessage(final Activity context, int message,
+	public static void dialogMessage(final Context context, int message,
 			int title, DialogInterface.OnClickListener okListener,
 			DialogInterface.OnClickListener cancelListener) {
 		dialogMessage(context, context.getString(message),

@@ -12,8 +12,6 @@ import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.google.android.maps.MapActivity;
-
 import android.app.IntentService;
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -23,6 +21,7 @@ import android.content.Intent;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.location.LocationProvider;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
@@ -61,7 +60,6 @@ public class RecordRouteService extends IntentService {
 		mRouteName = intent.getExtras().getString(Const.ROUTE_NAME);
 		
 		mNotificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-		setNotification();
 		
 		String routeFile = Helper.getRouteFile(mRouteName);
 		File file = getFileStreamPath(routeFile);
@@ -93,6 +91,8 @@ public class RecordRouteService extends IntentService {
 			}
 
 		}
+		setNotification(getString(R.string.recording_details, mRouteName, getPoints()));
+		
 		while (working) {
 			try {
 				Thread.sleep(5000);
@@ -105,13 +105,15 @@ public class RecordRouteService extends IntentService {
 
 	}
 
-	private void setNotification() {
-		Notification notification = new Notification(R.drawable.ic_launcher, getString(R.string.recording_started), System.currentTimeMillis());
+	private void setNotification(String message) {
+		Notification notification = new Notification(R.drawable.ic_launcher, getString(R.string.recording), System.currentTimeMillis());
 		notification.flags = Notification.FLAG_ONGOING_EVENT;
+		Intent intent = new Intent(this, ManageServiceActivity.class);
+		intent.putExtra(Const.ServiceMessage, message);
 		PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
-				new Intent(this, MapActivity.class),
-				Notification.FLAG_ONGOING_EVENT);
-		notification.setLatestEventInfo(this, getString(R.string.ecommuters), getString(R.string.recording_details, mRouteName, getPoints()), contentIntent);
+				intent,
+				PendingIntent.FLAG_UPDATE_CURRENT );
+		notification.setLatestEventInfo(this, getString(R.string.ecommuters), message, contentIntent);
 		mNotificationManager.notify(Const.RECORDING_NOTIFICATION_ID, notification);
 	}
 
@@ -197,15 +199,25 @@ public class RecordRouteService extends IntentService {
 
 			public void onStatusChanged(String provider, int status,
 					Bundle extras) {
-
+				switch (status) {
+		            case LocationProvider.AVAILABLE:
+		            	setNotification(getString(R.string.gps_available));
+		                break;
+		            case LocationProvider.OUT_OF_SERVICE:
+		            	setNotification(getString(R.string.gps_out_of_service));
+		                break;
+		            case LocationProvider.TEMPORARILY_UNAVAILABLE:
+		            	setNotification(getString(R.string.gps_temporarily_unavailable));
+		                break;
+		            }
 			}
 
 			public void onProviderEnabled(String provider) {
-
+				setNotification(getString(R.string.gps_enabled));
 			}
 
 			public void onProviderDisabled(String provider) {
-
+				setNotification(getString(R.string.gps_disabled));
 			}
 
 			public void onLocationChanged(Location location) {
@@ -215,13 +227,13 @@ public class RecordRouteService extends IntentService {
 							(int) (location.getLongitude() * 1E6), location
 									.getAltitude(), (long) (System
 									.currentTimeMillis() / 1E3)));
-					setNotification();
+					setNotification(getString(R.string.recording_details, mRouteName, getPoints()));
 				}
 			}
 
 		};
 		mlocManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
-				15000/* 15 secondi */, 1/* un metro */, mLocationListener);
+				6000/* 6 secondi */, 1/* un metro */, mLocationListener);
 
 			
 		super.onCreate();

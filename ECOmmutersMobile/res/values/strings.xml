@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
     <string name="app_name">ECOmmuters</string>
-    <string name="gps_enabled">Il GPS è stato attivato.</string>
+    <string name="gps_enabled">GPS abilitato</string>
     <string name="need_gps">Questa applicazione richiede l\'uso del GPS, ma è attualmente disattivato; vuoi attivarlo adesso?</string>
     <string name="btn_map">Mappa</string>
     <string name="coordinates">Latitudine : %1$d\r\nlongitudine: %2$d\r\naltitudine: %3$f</string>
@@ -29,5 +30,12 @@
     <string name="append">Incrementa</string>
     <string name="insert_route_name">Inserisci il nome dell\'itinerario</string>
     <string name="recording_details">Itinerario %1$s; punti traccia: %2$d</string>
+    <string name="title_activity_manage_service">ManageServiceActivity</string>
+    <string name="action_settings">Impostazioni</string>
+    <string name="recording">Registrazione in corso</string>
+    <string name="gps_available">GPS disponibile.</string>
+    <string name="gps_out_of_service">GPS fuori servizio</string>
+    <string name="gps_temporarily_unavailable">GPS temporaneamente non disponibile</string>
+    <string name="gps_disabled">GPS disabilitato</string>
+
 </resources>
- 
