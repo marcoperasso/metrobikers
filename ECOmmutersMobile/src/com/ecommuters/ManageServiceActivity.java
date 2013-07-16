@@ -32,7 +32,7 @@ public class ManageServiceActivity extends Activity {
 
 			public void onClick(View arg0) {
 				Helper.dialogMessage(context,
-						R.string.stop_recording_question, R.string.ecommuters,
+						R.string.stop_recording_question, R.string.app_name,
 						new DialogInterface.OnClickListener() {
 
 							public void onClick(DialogInterface dialog,

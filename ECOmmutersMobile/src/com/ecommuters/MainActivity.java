@@ -44,7 +44,7 @@ public class MainActivity extends Activity {
 
 	private void stopRegister() {
 		Helper.dialogMessage(this, R.string.stop_recording_question,
-				R.string.ecommuters, new DialogInterface.OnClickListener() {
+				R.string.app_name, new DialogInterface.OnClickListener() {
 
 					public void onClick(DialogInterface dialog, int which) {
 						Intent myIntent = new Intent(getBaseContext(),
@@ -64,7 +64,7 @@ public class MainActivity extends Activity {
 		if (file.exists()) {
 			new AlertDialog.Builder(this)
 					.setIcon(android.R.drawable.ic_dialog_alert)
-					.setTitle(getString(R.string.ecommuters))
+					.setTitle(getString(R.string.app_name))
 					.setMessage(
 							getString(R.string.existing_route_question,
 									routeName))
@@ -104,7 +104,7 @@ public class MainActivity extends Activity {
 		
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
 		builder
-		.setTitle(R.string.ecommuters)
+		.setTitle(R.string.app_name)
 		.setMessage(R.string.insert_route_name)
 		.setView(input)
 		.setPositiveButton(android.R.string.ok, null)
@@ -211,7 +211,7 @@ public class MainActivity extends Activity {
 	private void enableGPS() {
 		if (!mlocManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
 
-			Helper.dialogMessage(this, R.string.need_gps, R.string.ecommuters,
+			Helper.dialogMessage(this, R.string.need_gps, R.string.app_name,
 					new DialogInterface.OnClickListener() {
 
 						public void onClick(DialogInterface dialog, int which) {

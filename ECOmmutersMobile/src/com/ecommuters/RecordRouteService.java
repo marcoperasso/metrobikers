@@ -113,7 +113,7 @@ public class RecordRouteService extends IntentService {
 		PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
 				intent,
 				PendingIntent.FLAG_UPDATE_CURRENT );
-		notification.setLatestEventInfo(this, getString(R.string.ecommuters), message, contentIntent);
+		notification.setLatestEventInfo(this, getString(R.string.app_name), message, contentIntent);
 		mNotificationManager.notify(Const.RECORDING_NOTIFICATION_ID, notification);
 	}
 
