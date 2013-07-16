@@ -9,50 +9,35 @@
                 display: inline-block;
             }
         </style>
-        <title>Register user</title>
+        <title>Diventa ECOmmuter!</title>
     </head>
 
     <body>
         <?php $this->load->view('templates/visualheader'); ?>
-        <h1>Register user</h1>
+        <h1>Stai per diventare un ECOmmuter!</h1>
         <?php echo validation_errors(); ?>
 
         <?php echo form_open('register/register') ?>
         <div class="centercontent">
-            <label for="name">First Name</label> 
+            <label for="name">Nome</label> 
             <input type="input" name="name" class="required"/><br />
-            <label for="surname">Last Name</label> 
+            <label for="surname">Cognome</label> 
             <input type="input" name="surname"  class="required"/><br />
             <label for="mail">E Mail</label> 
             <input type="input" name="mail" id="mail" class="required mailinput"/><br />
-            <label for="gender">Gender</label> 
+            <label for="gender">Genere</label> 
             <select class="required" id="gender" name="gender">
-                <option value="0">Unspecified</option>
-                <option value="1">Female</option>
-                <option value="2">Male</option>
+                <option value="0">Non specificato</option>
+                <option value="1">Femmina</option>
+                <option value="2">Maschio</option>
             </select><br />
-            <label for="birthdate">Birth date</label> 
+            <label for="birthdate">Data di nascita</label> 
             <input type="input" name="birthdate" class="dateinput" id="birthdate" class="required"/><br />
-
-            <?php
-            $this->load->helper('captcha');
-            $vals = array(
-                'img_path' => './asset/captcha/',
-                'img_url' => base_url() . 'asset/captcha/'
-            );
-
-            $cap = create_captcha($vals);
-
-            $CI =& get_instance();
-            $CI->load->library('session');
-            $CI->session->set_userdata('captcha', $cap['word']);
-
-            echo 'Verification code:';
-            echo $cap['image'];
-            echo '';
-            ?>
+            Codice di controllo:
+            <?php echo $cap['image']; ?><br />
+            <label for="captcha">Inserisci qui il codice di controllo</label> 
             <input type="text" name="captcha" id="captcha" class="required" value="" /><br />
-            <input type="submit" name="submit" id="submit" value="Register" /> 
+            <input type="submit" name="submit" id="submit" value="Registrati" /> 
         </div>
     </form>
     <?php $this->load->view('templates/footer'); ?>

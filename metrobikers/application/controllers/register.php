@@ -55,7 +55,16 @@ class Register extends MY_Controller {
         $this->form_validation->set_rules('birthdate', 'Birth date', 'required');
         $this->form_validation->set_rules('captcha', 'Verification code', 'required');
         if ($this->form_validation->run() === FALSE) {
-            $this->load->view('register/register');
+            $this->load->helper('captcha');
+            $vals = array(
+                'img_path' => './asset/captcha/',
+                'img_url' => base_url() . 'asset/captcha/'
+            );
+
+            $cap = create_captcha($vals);
+            $this->load->library('session');
+            $this->session->set_userdata('captcha', $cap['word']);
+            $this->load->view('register/register', array('cap' => $cap));
         } else {
 
             $this->load->library('session');
@@ -68,7 +77,7 @@ class Register extends MY_Controller {
             $this->Validation_key_model->create_key($this->User_model->id);
             $this->db->trans_commit();
             $url = base_url() . "register/preactivate?userkey=" . urlencode($this->Validation_key_model->validationkey);
-            $this->send_mail($this->User_model->mail, "Registration submitted", "Follow this link: <a href=\"" . $url . "\">" . $url . "</a> to activate your registration.");
+            $this->send_mail($this->User_model->mail, "Registrazione inoltrata", "Utilizza questo link: <a href=\"" . $url . "\">" . $url . "</a> per attivare la tua registrazione.");
             $data["user"] = $this->User_model;
             $this->load->view('register/userregistered', $data);
         }

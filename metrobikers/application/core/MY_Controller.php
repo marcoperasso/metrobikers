@@ -26,6 +26,7 @@ class MY_Controller extends CI_Controller {
 
         $this->load->library('email', $config);
         $this->email->set_newline("\r\n");
+        $this->email->set_crlf("\r\n");
         $this->email->from(MAIL_USER, 'ECOmmuters');
 
         $this->email->to($to);
