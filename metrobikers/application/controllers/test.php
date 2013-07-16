@@ -6,11 +6,11 @@ if (!defined('BASEPATH'))
 class Test extends MY_Controller {
 
     public function index() {
-        echo my_base_url();
-        $this->load->model('User_model');
+        echo base_url();
+        //$this->load->model('User_model');
 
-        $this->User_model->get_user("marco.perasso@microarea.it");
-        set_user($this->User_model);
+       // $this->User_model->get_user("marco.perasso@microarea.it");
+       // set_user($this->User_model);
     }
 
 }

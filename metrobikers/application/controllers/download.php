@@ -9,7 +9,7 @@ class Download extends MY_Controller {
         parent::__construct();
     }
 
-    public function gpx($route_name) {
+    public function gps($route_name) {
         $user = get_user();
         if ($user == NULL)
             return;

@@ -21,7 +21,21 @@ class Home extends MY_Controller {
      * @see http://codeigniter.com/user_guide/general/urls.html
      */
     public function index() {
-        $this->load->view('home');
+
+        $data = array();
+        $user = get_user();
+        if ($user != NULL) {
+            $this->load->model("Route_model");
+            $this->load->model("Route_points_model");
+            $this->Route_model->userid = $user->id;
+            $routes = $this->Route_model->get_routes();
+            foreach ($routes as $route) {
+                $this->Route_points_model->routeid = $route->id;
+                $route->points = $this->Route_points_model->get_points();
+            }
+            $data['routes'] = $routes;
+        }
+        $this->load->view('home', $data);
     }
 
 }
