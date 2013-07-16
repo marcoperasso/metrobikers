@@ -9,7 +9,7 @@
         <?php $this->load->view('templates/visualheader'); ?>
         <p><em>Breve testo che spiega le motivazioni della nostra iniziativa, magari messo gi&ugrave; secondo il video why-how-what</em></p>
         <p>Lorem ipsum dolor sit amet, consectetur adipisici elit, sed eiusmod tempor incidunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquid ex ea commodi consequat. Quis aute iure reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint obcaecat cupiditat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
-
+        <a href="/asset/other/ECOmmutersMobile.apk" >Scarica la App per Android</a>
         <p><em>Richiesta email per aggiornamenti</em></p>
         <p>Se interessati lasciare mail qui sotto</p>
         <div ng-controller="MailCollector">
