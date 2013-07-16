@@ -182,11 +182,11 @@
 <?php if (isset($routes)) {
     $index = 0;
     foreach ($routes as $route) { ?>
-            t = <?php echo++$index; ?>;
+            t = <?php echo$index++; ?>;
             track = [];
             trk_info[t] = track;
-            track['name'] = <?php echo $route->name; ?>;
-            track['desc'] = <?php echo $route->name; ?>;
+            track['name'] = '<?php echo $route->name; ?>';
+            track['desc'] = '<?php echo $route->name; ?>';
             track['clickable'] = true;
             track['width'] = 3;
             track['opacity'] = 0.9;
