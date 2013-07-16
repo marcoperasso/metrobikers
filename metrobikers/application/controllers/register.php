@@ -58,17 +58,17 @@ class Register extends MY_Controller {
             $this->load->helper('captcha');
             $vals = array(
                 'img_path' => './asset/captcha/',
-                'img_url' => base_url() . 'asset/captcha/'
+                'img_url' => base_url() . 'asset/captcha/',
+                'img_width'  => 150,
+                'img_height' => 50,
+                'font_path'  => './system/fonts/texb.ttf' 
             );
 
             $cap = create_captcha($vals);
-            $this->load->library('session');
-            $this->session->set_userdata('captcha', $cap['word']);
+            $_SESSION['captcha'] = $cap['word'];
             $this->load->view('register/register', array('cap' => $cap));
         } else {
-
-            $this->load->library('session');
-            $captcha = $this->session->userdata('captcha');
+            $captcha = $_SESSION('captcha');
             $word = $this->input->post("captcha");
             if (strcasecmp($captcha, $word) != 0)
                 show_error ("Invalid verification code!");
