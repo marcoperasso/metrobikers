@@ -68,16 +68,16 @@ class Register extends MY_Controller {
             $_SESSION['captcha'] = $cap['word'];
             $this->load->view('register/register', array('cap' => $cap));
         } else {
-            $captcha = $_SESSION('captcha');
+            $captcha = $_SESSION["captcha"];
             $word = $this->input->post("captcha");
             if (strcasecmp($captcha, $word) != 0)
-                show_error ("Invalid verification code!");
+                show_error (lang('error_invalid_verification_code'));
             $this->db->trans_begin();
             $this->User_model->create_user();
             $this->Validation_key_model->create_key($this->User_model->id);
             $this->db->trans_commit();
             $url = base_url() . "register/preactivate?userkey=" . urlencode($this->Validation_key_model->validationkey);
-            $this->send_mail($this->User_model->mail, "Registrazione inoltrata", "Utilizza questo link: <a href=\"" . $url . "\">" . $url . "</a> per attivare la tua registrazione.");
+            $this->send_mail($this->User_model->mail, lang("registration_submitted"), sprintf(lang("mail_content"), $url, $url));
             $data["user"] = $this->User_model;
             $this->load->view('register/userregistered', $data);
         }

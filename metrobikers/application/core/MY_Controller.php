@@ -10,6 +10,11 @@ class MY_Controller extends CI_Controller {
         if (!isset($_SESSION)) {
             session_start();
         }
+       /* $lang = isset($_SESSION["CURRENT_LANGUAGE"]) ? $_SESSION["CURRENT_LANGUAGE"] : NULL;
+        if ($lang == NULL)
+            $lang = $this->config['language'];
+        if (!$this->lang->load("messages", $lang))*/
+            $this->lang->load("messages", "it-IT");
     }
 
     protected function send_mail($to, $subject, $message) {
