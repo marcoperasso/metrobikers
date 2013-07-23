@@ -70,6 +70,10 @@
             android:name="com.ecommuters.ManageServiceActivity"
             android:label="@string/title_activity_manage_service" >
         </activity>
+        <activity
+            android:name="com.ecommuters.CredentialsActivity"
+            android:label="@string/title_activity_credentials" >
+        </activity>
     </application>
 
 </manifest>

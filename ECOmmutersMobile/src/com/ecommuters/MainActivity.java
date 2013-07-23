@@ -6,7 +6,6 @@ import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningServiceInfo;
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -98,36 +97,33 @@ public class MainActivity extends Activity {
 	}
 
 	private void askRouteName(final OnRouteSelected onSelected) {
-		
+
 		// Set an EditText view to get user input
 		final EditText input = new EditText(this);
-		
+
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
-		builder
-		.setTitle(R.string.app_name)
-		.setMessage(R.string.insert_route_name)
-		.setView(input)
-		.setPositiveButton(android.R.string.ok, null)
-		.setNegativeButton(android.R.string.cancel, null);
-		final AlertDialog  dialog = builder.create();
+		builder.setTitle(R.string.app_name)
+				.setMessage(R.string.insert_route_name).setView(input)
+				.setPositiveButton(android.R.string.ok, null)
+				.setNegativeButton(android.R.string.cancel, null);
+		final AlertDialog dialog = builder.create();
 		dialog.show();
-		
+
 		Button theButton = dialog.getButton(DialogInterface.BUTTON_POSITIVE);
-		theButton.setOnClickListener(new View.OnClickListener(){
+		theButton.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
 				String routeName = input.getText().toString();
-				if (!Helper.isNullOrEmpty(routeName))
-				{
+				if (!Helper.isNullOrEmpty(routeName)) {
 					dialog.dismiss();
 					onSelected.select(routeName);
+				} else {
+					Toast.makeText(dialog.getContext(),
+							R.string.insert_route_name, Toast.LENGTH_SHORT)
+							.show();
 				}
-				else
-				{
-					Toast.makeText(dialog.getContext(), R.string.insert_route_name, Toast.LENGTH_SHORT)
-					.show();
-				}
-				
-			}});
+
+			}
+		});
 	}
 
 	@Override
@@ -172,15 +168,7 @@ public class MainActivity extends Activity {
 			// sono online
 			// facendo una login, altrimenti controllando che non siano vuote),
 			// se non sono buone esco
-			showCredentialsDialog(new OnAsyncResponse() {
-				public void response(boolean success, String message) {
-					if (success)
-						writeUserInfo();
-					else
-						finish();
-
-				}
-			});
+			showCredentialsDialog(true);
 		} else {
 			// se ci sono le credenziali e sono online, le testo
 			credential.testLogin(this, new OnAsyncResponse() {
@@ -201,9 +189,15 @@ public class MainActivity extends Activity {
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		if (requestCode == Const.ACTIVATE_GPS) {
+		if (requestCode == Const.ACTIVATE_GPS_RESULT) {
 			Toast.makeText(this, R.string.gps_enabled, Toast.LENGTH_SHORT)
 					.show();
+		} else if (requestCode == Const.CREDENTIALS_RESULT) {
+			if (resultCode == RESULT_OK)
+				writeUserInfo();
+			else
+				finish();
+
 		}
 		super.onActivityResult(requestCode, resultCode, data);
 	}
@@ -217,7 +211,8 @@ public class MainActivity extends Activity {
 						public void onClick(DialogInterface dialog, int which) {
 							Intent myIntent = new Intent(
 									Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-							startActivityForResult(myIntent, Const.ACTIVATE_GPS);
+							startActivityForResult(myIntent,
+									Const.ACTIVATE_GPS_RESULT);
 							return;
 
 						}
@@ -241,18 +236,12 @@ public class MainActivity extends Activity {
 
 	}
 
-	private void showCredentialsDialog(final OnAsyncResponse onResponse) {
-		final CredentialsDialog dialog = new CredentialsDialog(this);
-		if (onResponse != null) {
-			dialog.setOnDismissListener(new Dialog.OnDismissListener() {
-				public void onDismiss(DialogInterface di) {
-					if (!dialog.isCredentialsSet()) {
-						onResponse.response(false, null);
-					}
-				}
-			});
-		}
-		dialog.show();
+	private void showCredentialsDialog(boolean compulsory) {
+		Intent intent = new Intent(this, CredentialsActivity.class);
+		if (compulsory)
+			startActivityForResult(intent, Const.CREDENTIALS_RESULT);
+		else
+			startActivity(intent);
 	}
 
 	private boolean testVersion() {
@@ -276,7 +265,7 @@ public class MainActivity extends Activity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 			case R.id.itemCredentials :
-				showCredentialsDialog(null);
+				showCredentialsDialog(false);
 				break;
 		}
 		return super.onOptionsItemSelected(item);

@@ -36,5 +36,7 @@
     <string name="gps_out_of_service">GPS fuori servizio</string>
     <string name="gps_temporarily_unavailable">GPS temporaneamente non disponibile</string>
     <string name="gps_disabled">GPS disabilitato</string>
+    <string name="title_activity_credentials">CredentialsActivity</string>
+    <string name="hello_world">Hello world!</string>
 
 </resources>
