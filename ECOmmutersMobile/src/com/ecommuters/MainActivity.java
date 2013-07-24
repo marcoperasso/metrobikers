@@ -2,15 +2,20 @@ package com.ecommuters;
 
 import java.io.File;
 
+import com.ecommuters.RecordRouteService.RecordRouteBinder;
+
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningServiceInfo;
 import android.app.AlertDialog;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.provider.Settings;
 import android.view.Gravity;
 import android.view.Menu;
@@ -27,6 +32,8 @@ public class MainActivity extends Activity {
 
 	private LocationManager mlocManager;
 	private Button btnNewRoute;
+	private ServiceConnection mConnection;
+	private RecordRouteService mRecordService = null;
 
 	private void toggleRegister() {
 		if (isRecordingServiceRunning()) {
@@ -49,15 +56,15 @@ public class MainActivity extends Activity {
 						Intent myIntent = new Intent(getBaseContext(),
 								RecordRouteService.class);
 						stopService(myIntent);
+						if (mRecordService != null)
+					    	unbindService(mConnection);
 						btnNewRoute.setText(R.string.btn_new_route);
 
 					}
 				}, null);
 	}
 
-	private void doRegister(String routeName) {
-		final Intent myIntent = new Intent(this, RecordRouteService.class);
-		myIntent.putExtra(Const.ROUTE_NAME, routeName);
+	private void doRegister(final String routeName) {
 		String routeFile = Helper.getRouteFile(routeName);
 		final File file = getFileStreamPath(routeFile);
 		if (file.exists()) {
@@ -72,9 +79,7 @@ public class MainActivity extends Activity {
 								public void onClick(DialogInterface dialog,
 										int which) {
 									file.delete();
-									btnNewRoute
-											.setText(R.string.stop_recording);
-									startService(myIntent);
+									startRecordingService(routeName);
 
 								}
 							})
@@ -83,19 +88,42 @@ public class MainActivity extends Activity {
 							new DialogInterface.OnClickListener() {
 								public void onClick(DialogInterface dialog,
 										int which) {
-									btnNewRoute
-											.setText(R.string.stop_recording);
-									startService(myIntent);
+									startRecordingService(routeName);
 								}
+
 							}).show();
 
 		} else {
-			btnNewRoute.setText(R.string.stop_recording);
-			startService(myIntent);
+			startRecordingService(routeName);
 		}
 
 	}
+	 @Override
+	  protected void onResume() {
+	    super.onResume();
+	    if (isRecordingServiceRunning())
+		{
+			btnNewRoute.setText(R.string.stop_recording);
+			Intent myIntent = new Intent(this, RecordRouteService.class);
+			bindService(myIntent, mConnection, Context.BIND_AUTO_CREATE);
+		}
+	  }
 
+	  @Override
+	  protected void onPause() {
+	    super.onPause();
+	    if (mRecordService != null && mRecordService.isWorking())
+	    	unbindService(mConnection);
+	  }
+	  
+	private void startRecordingService(String routeName) {
+
+		Intent myIntent = new Intent(this, RecordRouteService.class);
+		myIntent.putExtra(Const.ROUTE_NAME, routeName);
+		btnNewRoute.setText(R.string.stop_recording);
+		startService(myIntent);
+		bindService(myIntent, mConnection, Context.BIND_AUTO_CREATE);
+	}
 	private void askRouteName(final OnRouteSelected onSelected) {
 
 		// Set an EditText view to get user input
@@ -133,7 +161,19 @@ public class MainActivity extends Activity {
 
 		mlocManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 		enableGPS();
+		mConnection = new ServiceConnection() {
 
+			
+			public void onServiceDisconnected(ComponentName name) {
+				mRecordService = null;
+
+			}
+
+			public void onServiceConnected(ComponentName name, IBinder service) {
+				mRecordService = ((RecordRouteBinder)service).getService();
+
+			}
+		};
 		// prima di tutto testo la versione (solo se sono online)
 		if (!testVersion()) {
 			finish();
@@ -159,8 +199,7 @@ public class MainActivity extends Activity {
 				toggleRegister();
 			}
 		});
-		if (isRecordingServiceRunning())
-			btnNewRoute.setText(R.string.stop_recording);
+		
 		// testo le credenziali
 		Credentials credential = MySettings.readCredentials(this);
 		if (credential.isEmpty()) {

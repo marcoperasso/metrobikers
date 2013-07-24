@@ -49,12 +49,12 @@
         <service
             android:name="com.ecommuters.RecordRouteService"
             android:enabled="true"
-            android:exported="true" >
+            android:exported="false" >
         </service>
         <service
             android:name="com.ecommuters.ConnectorService"
             android:enabled="true"
-            android:exported="true" >
+            android:exported="false" >
         </service>
         <!-- Declaring broadcast receiver for BOOT_COMPLETED event -->
         <receiver
@@ -65,11 +65,6 @@
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
-
-        <activity
-            android:name="com.ecommuters.ManageServiceActivity"
-            android:label="@string/title_activity_manage_service" >
-        </activity>
         <activity
             android:name="com.ecommuters.CredentialsActivity"
             android:label="@string/title_activity_credentials" >
