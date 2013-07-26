@@ -1,19 +1,13 @@
 package com.ecommuters;
 
-import java.io.Serializable;
-import java.util.ArrayList;
+import java.util.List;
 
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Point;
 import android.graphics.drawable.Drawable;
-import android.os.AsyncTask;
-import android.os.Vibrator;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -24,12 +18,10 @@ import com.google.android.maps.ItemizedOverlay;
 import com.google.android.maps.MapView;
 import com.google.android.maps.MapView.LayoutParams;
 import com.google.android.maps.OverlayItem;
-import com.google.android.maps.Projection;
 
 public class TracksOverlay extends ItemizedOverlay<OverlayItem> {
-	private ArrayList<TrackOverlayItem> mOverlays = new ArrayList<TrackOverlayItem>();
-	private TracksActivity mContext;
-	private GPSTrack gpsPoints;
+	private RoutesActivity mContext;
+	private List<Route> routes;
 	private TrackInfo trackInfo;
 	private ImageView mImageView;
 	private Paint pnt = new Paint();
@@ -40,12 +32,11 @@ public class TracksOverlay extends ItemizedOverlay<OverlayItem> {
 	int currentZoomLevel = -1;
 	private String mActiveTrackName = "";
 
-	public TracksOverlay(Drawable defaultMarker, TracksActivity context,
+	public TracksOverlay(Drawable defaultMarker, RoutesActivity context,
 			MyMapView map) {
 		super(boundCenterBottom(defaultMarker));
 		mContext = context;
 		mImageView = new ImageView(mContext);
-		gpsPoints = null;
 		pnt.setStyle(Paint.Style.FILL);
 		pnt.setStrokeWidth(4);
 		pnt.setAntiAlias(true);
@@ -72,7 +63,7 @@ public class TracksOverlay extends ItemizedOverlay<OverlayItem> {
 			public void onDraw() {
 				if (mMap.getZoomLevel() != currentZoomLevel) {
 					currentZoomLevel = mMap.getZoomLevel();
-					resizeBitmap();
+					//resizeBitmap();
 				}
 				mContext.checkTracks();
 			}
@@ -81,48 +72,14 @@ public class TracksOverlay extends ItemizedOverlay<OverlayItem> {
 		populate();
 	}
 
-	public void addTracksOverlay(ArrayList<Track> tracks) {
-		mOverlays.clear();
-		if (tracks != null) {
-			for (Track r : tracks) {
-				GeoPoint point = new GeoPoint(r.getLat(), r.getLon());
-				TrackOverlayItem overlayitem = new TrackOverlayItem(point, "",
-						"", r);
-				if (r.getName().equals(mActiveTrackName))
-					setActiveMarker(overlayitem);
-				mOverlays.add(overlayitem);
-			}
-		}
-		setLastFocusedIndex(-1);
-		populate();
-	}
-
-	@Override
-	public boolean onTouchEvent(MotionEvent arg0, MapView arg1) {
-		switch (arg0.getAction()) {
-		case MotionEvent.ACTION_DOWN:
-		case MotionEvent.ACTION_MOVE:
-
-			break;
-		case MotionEvent.ACTION_UP:
-		case MotionEvent.ACTION_OUTSIDE:
-			mContext.checkTracks();
-			break;
-		default:
-
-		}
-
-		return super.onTouchEvent(arg0, arg1);
-	}
-
 	@Override
 	protected OverlayItem createItem(int i) {
-		return mOverlays.get(i);
+		return null;
 	}
 
 	@Override
 	public int size() {
-		return mOverlays.size();
+		return 0;
 	}
 
 	@Override
@@ -150,16 +107,27 @@ public class TracksOverlay extends ItemizedOverlay<OverlayItem> {
 
 	}
 
-	private void drawTrack() {
+	private void drawRoute(Route r) {
 		try {
 			mImageView.setImageBitmap(null);
 			recycle();
 
-			if (gpsPoints == null)
-				return;
-
-			int realWidth = gpsPoints.maxLon - gpsPoints.minLon;
-			int realHeight = gpsPoints.maxLat - gpsPoints.minLat;
+			int maxLon = Integer.MIN_VALUE;
+			int minLon = Integer.MAX_VALUE;
+			int maxLat = Integer.MIN_VALUE;
+			int minLat = Integer.MAX_VALUE;
+			for (GpsPoint pt : r.getPoints()) {
+				if (pt.lat > maxLat)
+					maxLat = pt.lat;
+				if (pt.lon > maxLon)
+					maxLon = pt.lon;
+				if (pt.lat < minLat)
+					minLat = pt.lat;
+				if (pt.lon < minLon)
+					minLon = pt.lon;
+			}
+			int realWidth = maxLon - minLon;
+			int realHeight = maxLat - minLat;
 			final int bmpWidth = 1024;
 			double ratio = (double) bmpWidth / (double) realWidth;
 			trackBitmap = Bitmap.createBitmap(bmpWidth,
@@ -168,12 +136,12 @@ public class TracksOverlay extends ItemizedOverlay<OverlayItem> {
 
 			Canvas cnv = new Canvas(trackBitmap);
 
-			int top = gpsPoints.size();
+			int top = r.getPoints().size();
 			float x1 = -1, y1 = -1;
 			for (int i = 0; i < top; i++) {
-				GpsPoint pt = gpsPoints.get(i);
-				int offsetLat = gpsPoints.maxLat - pt.lat;
-				int offsetLon = pt.lon - gpsPoints.minLon;
+				GpsPoint pt = r.getPoints().get(i);
+				int offsetLat = maxLat - pt.lat;
+				int offsetLon = pt.lon - minLon;
 				float x2 = (float) ((float) offsetLon * ratio);
 				float y2 = (float) ((float) offsetLat * ratio);
 				if (x1 != -1) {
@@ -186,7 +154,7 @@ public class TracksOverlay extends ItemizedOverlay<OverlayItem> {
 
 			}
 
-			resizeBitmap();
+			//resizeBitmap();
 		} catch (Exception e) {
 			manageError(e);
 		} catch (Error e1) {
@@ -198,159 +166,6 @@ public class TracksOverlay extends ItemizedOverlay<OverlayItem> {
 	private void manageError(Throwable e) {
 
 		Toast.makeText(mContext, e.toString(), Toast.LENGTH_LONG).show();
-	}
-
-	public void resizeBitmap() {
-		try {
-			if (trackBitmap == null)
-				return;
-			Projection projection = mMap.getProjection();
-
-			GeoPoint topLeft = gpsPoints.getTopLeft();
-			Point pxTopLeft = new Point();
-			projection.toPixels(topLeft, pxTopLeft);
-
-			GeoPoint bottomRight = gpsPoints.getBottomRight();
-			Point pxBottomRight = new Point();
-			projection.toPixels(bottomRight, pxBottomRight);
-
-			int pxWidth = pxBottomRight.x - pxTopLeft.x;
-			int pxHeight = pxBottomRight.y - pxTopLeft.y;
-
-			MapView.LayoutParams params = (LayoutParams) mImageView
-					.getLayoutParams();
-			params.width = pxWidth;
-			params.height = pxHeight;
-			params.point = topLeft;
-		} catch (Exception e) {
-			manageError(e);
-		} catch (Error e1) {
-			manageError(e1);
-		}
-
-	}
-
-	@Override
-	protected boolean onTap(int index) {
-
-		try {
-			Vibrator v = (Vibrator) mContext
-					.getSystemService(Context.VIBRATOR_SERVICE);
-			v.vibrate(100);
-			TrackOverlayItem item = mOverlays.get(index);
-			TrackOverlayItem activeItem = getActiveItem();
-			if (activeItem == item) {
-
-			} else {
-				if (activeItem != null)
-					activeItem.setMarker(null);
-				downloadTrack(item);
-				setActiveMarker(item);
-				mActiveTrackName = item.getName();
-			}
-		} catch (Exception e) {
-			manageError(e);
-		}
-
-		return true;
-	}
-
-	private TrackOverlayItem getActiveItem() {
-		for (TrackOverlayItem i : mOverlays)
-			if (i.getName().equals(mActiveTrackName))
-				return i;
-		return null;
-	}
-
-	private void setActiveMarker(TrackOverlayItem item) {
-		item.setMarker(boundCenterBottom(mContext.getResources().getDrawable(
-				R.drawable.ic_activeroutemarker)));
-	}
-
-	private void downloadTrack(TrackOverlayItem item) {
-
-		class DownloadPointsTask extends AsyncTask<String, Void, GPSTrack> {
-			protected void onPostExecute(GPSTrack pts) {
-				gpsPoints = pts;
-				setLastFocusedIndex(-1);
-				mMap.invalidate();
-				mMap.getController().zoomToSpan(
-						gpsPoints.maxLat - gpsPoints.minLat,
-						gpsPoints.maxLon - gpsPoints.minLon);
-				drawTrack();
-				mContext.notifyMessage(-1);
-
-			}
-
-			@Override
-			protected GPSTrack doInBackground(String... params) {
-				// GPSTrack pts = new GPSTrack();
-				// String reqString = RequestBuilder
-				// .getDownloadTrackRequest(params[0]);
-				// StringBuilder result = new StringBuilder();
-				// if (!Helper.sendRequest(reqString, result))
-				// return null;
-				// String[] tokens = result.toString().split("-");
-				// try {
-				// for (int i = 0; i < tokens.length; i += 3) {
-				//
-				// GpsPoint pt = new GpsPoint(Integer.parseInt(tokens[i]),
-				// Integer.parseInt(tokens[i + 1]),
-				// Double.parseDouble(tokens[i + 2]));
-				// pts.add(pt);
-				// }
-				// return pts;
-				// } catch (Exception e) {
-				// manageError(e);
-				// }
-				return null;
-			}
-
-		}
-
-		class DownloadDataTask extends AsyncTask<String, Void, TrackInfo> {
-
-			protected void onPostExecute(TrackInfo info) {
-				trackInfo = info;
-
-				displayTrackInfo();
-			}
-
-			@Override
-			protected TrackInfo doInBackground(String... params) {
-				// String reqString = RequestBuilder
-				// .getGetTrackDetailRequest(params[0]);
-				// StringBuilder result = new StringBuilder();
-				// if (!Helper.sendRequest(reqString, result))
-				// return null;
-				// try {
-				// JSONObject obj = new JSONObject(result.toString());
-				//
-				// TrackInfo info = new TrackInfo();
-				// info.setTitle(obj.getString("title"));
-				// info.setLength(obj.getDouble("length"));
-				// info.setCycling(obj.getInt("cycling"));
-				// info.setDifficulty(obj.getString("difficulty"));
-				// info.setMaxHeight(obj.getDouble("maxHeight"));
-				// info.setMinHeight(obj.getDouble("minHeight"));
-				// info.setRating(obj.getDouble("rank"));
-				// return info;
-				//
-				// } catch (Exception e) {
-				// manageError(e);
-				// }
-				return null;
-			}
-
-		}
-
-		mMap.getController().animateTo(item.getPoint());
-		mContext.notifyMessage(R.string.retrieving_info);
-		DownloadDataTask task1 = new DownloadDataTask();
-		task1.execute(item.getName());
-		DownloadPointsTask task2 = new DownloadPointsTask();
-		task2.execute(item.getName());
-
 	}
 
 	private void displayTrackInfo() {
@@ -372,26 +187,27 @@ public class TracksOverlay extends ItemizedOverlay<OverlayItem> {
 		}
 	}
 
-	void setCurrentTrack(GPSTrack gpsPoints, TrackInfo trackInfo) {
-		this.gpsPoints = gpsPoints;
-		this.trackInfo = trackInfo;
-		drawTrack();
-		displayTrackInfo();
-	}
-
-	public Serializable getGpsPoints() {
-		return gpsPoints;
-	}
-
-	public TrackInfo getTrackInfo() {
-		return trackInfo;
-	}
-
+	
 	public String getActiveTrackName() {
 		return mActiveTrackName;
 	}
 
 	public void setActiveTrackName(String currentTrackName) {
 		this.mActiveTrackName = currentTrackName;
+	}
+
+	public List<Route> getRoutes() {
+		return routes;
+	}
+
+	public void setRoutes(List<Route> routes) {
+		this.routes = routes;
+	}
+
+	public void drawRoutes() {
+		if (routes == null)
+			return;
+		for (Route r : routes)
+			drawRoute(r);
 	}
 }

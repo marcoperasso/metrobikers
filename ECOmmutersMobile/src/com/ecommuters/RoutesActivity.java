@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.graphics.drawable.Drawable;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -19,7 +18,7 @@ import com.google.android.maps.MapController;
 import com.google.android.maps.MyLocationOverlay;
 import com.google.android.maps.Overlay;
 
-public class TracksActivity extends MapActivity {
+public class RoutesActivity extends MapActivity {
 
 	private MyMapView mMap;
 
@@ -27,7 +26,7 @@ public class TracksActivity extends MapActivity {
 
 	private TracksOverlay mTracksOverlay;
 	private boolean mTrackGPSPosition;
-	private ArrayList<Track> mTracks;
+	private ArrayList<Route> mTracks;
 
 	private MyLocationOverlay myLocationOverlay;
 	MenuItem mMenuItemTrackGpsPosition;
@@ -37,7 +36,6 @@ public class TracksActivity extends MapActivity {
 	private boolean retrievingTracks;
 
 	/** Called when the activity is first created. */
-	@SuppressWarnings("unchecked")
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -65,17 +63,10 @@ public class TracksActivity extends MapActivity {
 		});
 
 		mapOverlays.add(myLocationOverlay);
+		mTracks = Route.readAllRoutes(this);
+		mTracksOverlay.setRoutes(mTracks);
 		if (savedInstanceState != null) {
-			mTracks = (ArrayList<Track>) savedInstanceState
-					.getSerializable(Const.TRACKS);
-			if (mTracks != null)
-				mTracksOverlay.addTracksOverlay(mTracks);
-
-			mTracksOverlay.setCurrentTrack((GPSTrack) savedInstanceState
-					.getSerializable(Const.TRACK),
-					(TrackInfo) savedInstanceState
-							.getSerializable(Const.TRACKINFO));
-
+			
 			mTracksOverlay.setActiveTrackName(savedInstanceState
 					.getString(Const.ACTIVE_TRACK_NAME));
 			int late6 = savedInstanceState.getInt(Const.MAPLATITUDE);
@@ -85,7 +76,7 @@ public class TracksActivity extends MapActivity {
 			zoomLevel = savedInstanceState.getInt(Const.ZoomLevel, 15);
 		}
 		mController.setZoom(zoomLevel);
-
+		mTracksOverlay.drawRoutes();
 		// // Look up the AdView as a resource and load a request.
 		// AdView adView = (com.google.ads.AdView) this.findViewById(R.id.ad);
 		// adView.loadAd(new com.google.ads.AdRequest());
@@ -128,34 +119,6 @@ public class TracksActivity extends MapActivity {
 			myLocationOverlay.disableMyLocation();
 	}
 
-	private void showTracks(GeoPoint ul, GeoPoint br) {
-		try {
-
-			retrievingTracks = true;
-			class DownloadTracksTask extends
-					AsyncTask<GeoPoint, Void, ArrayList<Track>> {
-				protected void onPostExecute(ArrayList<Track> tracks) {
-					mTracks = tracks;
-					mTracksOverlay.addTracksOverlay(mTracks);
-					retrievingTracks = false;
-				}
-
-				@Override
-				protected ArrayList<Track> doInBackground(GeoPoint... params) {
-					return null;// getVisibleTracks(params[0], params[1]);
-				}
-
-			}
-			DownloadTracksTask task = new DownloadTracksTask();
-			task.execute(ul, br);
-
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} finally {
-
-		}
-	}
 
 	public void checkTracks() {
 		if (!retrievingTracks) {
@@ -166,7 +129,7 @@ public class TracksActivity extends MapActivity {
 			if (!ul.equals(upperLeft) || !br.equals(bottomRight)) {
 				upperLeft = ul;
 				bottomRight = br;
-				showTracks(ul, br);
+				
 			}
 		}
 
@@ -175,10 +138,6 @@ public class TracksActivity extends MapActivity {
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
 		try {
-			outState.putSerializable(Const.TRACKS, mTracks);
-			outState.putSerializable(Const.TRACK, mTracksOverlay.getGpsPoints());
-			outState.putSerializable(Const.TRACKINFO,
-					mTracksOverlay.getTrackInfo());
 			outState.putString(Const.ACTIVE_TRACK_NAME,
 					mTracksOverlay.getActiveTrackName());
 			outState.putInt(Const.MAPLATITUDE, mMap.getMapCenter()

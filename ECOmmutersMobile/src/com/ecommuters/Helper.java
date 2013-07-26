@@ -1,5 +1,9 @@
 package com.ecommuters;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -46,6 +50,19 @@ public class Helper {
 
 	}
 
+	public static  List<File> getFiles(Context context, String ext) {
+		File dir = context.getFilesDir();
+		final List<File> files = new ArrayList<File>();
+		File[] subFiles = dir.listFiles();
+		if (subFiles != null) {
+			for (File file : subFiles) {
+				if (file.isFile() && file.getName().endsWith(ext)) {
+					files.add(file);
+				}
+			}
+		}
+		return files;
+	}
 	public static String getRouteFile(String routeName) {
 		return routeName.replaceAll("[^a-zA-Z0-9.-]", "_") + Const.ROUTEEXT;
 	}

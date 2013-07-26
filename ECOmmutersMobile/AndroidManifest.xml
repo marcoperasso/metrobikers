@@ -41,7 +41,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.ecommuters.TracksActivity"
+            android:name="com.ecommuters.RoutesActivity"
             android:icon="@drawable/ic_launcher"
             android:label="@string/app_name" >
         </activity>

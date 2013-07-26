@@ -134,7 +134,7 @@ public class RequestBuilder {
 		}
 	}
 
-	public static boolean sendRouteData(RegisteredRoute route)
+	public static boolean sendRouteData(Route route)
 			throws JSONException, ClientProtocolException, IOException {
 
 		JSONObject response = postRequest(getSendRouteDataRequest, route, true);

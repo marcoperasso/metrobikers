@@ -1,10 +1,6 @@
 package com.ecommuters;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.ObjectInput;
-import java.io.ObjectInputStream;
-import java.util.ArrayList;
 import java.util.List;
 
 import android.app.IntentService;
@@ -47,19 +43,11 @@ public class ConnectorService extends IntentService {
 	}
 
 	private void sendLocations() {
-		File dir = getFilesDir();
-		final List<File> files = new ArrayList<File>();
-		File[] subFiles = dir.listFiles();
-		if (subFiles != null) {
-			for (File file : subFiles) {
-				if (file.isFile() && file.getName().endsWith(Const.TOSENDEXT)) {
-					files.add(file);
-				}
-			}
-		}
+		final List<File> files = Helper.getFiles(this, Const.TOSENDEXT);
 
 		if (files.size() == 0)
 			return;
+		
 
 		testCredentials(new OnAsyncResponse() {
 
@@ -68,18 +56,7 @@ public class ConnectorService extends IntentService {
 					return;
 				for (File file : files) {
 					try {
-						RegisteredRoute route = null;
-						FileInputStream fis = openFileInput(file.getName());
-						ObjectInput in = null;
-						try {
-							in = new ObjectInputStream(fis);
-							route = (RegisteredRoute) in.readObject();
-						} catch (Exception e) {
-							e.printStackTrace();
-						} finally {
-							in.close();
-							fis.close();
-						}
+						Route route = Route.readRoute(ConnectorService.this, file.getName());
 						if (route != null
 								&& RequestBuilder.sendRouteData(route))
 							file.delete();
@@ -92,6 +69,7 @@ public class ConnectorService extends IntentService {
 		});
 
 	}
+	
 	private void testCredentials(OnAsyncResponse testResponse) {
 		if (RequestBuilder.isLogged()) {
 			testResponse.response(true, "");

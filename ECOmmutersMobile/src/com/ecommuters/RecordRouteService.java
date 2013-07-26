@@ -1,14 +1,8 @@
 package com.ecommuters;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.ObjectInput;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutput;
-import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,14 +30,14 @@ public class RecordRouteService extends IntentService {
 
 	// acceduto da diversi thread: va sincronizzato
 	// sono i punti registrati ma non ancora salvati
-	private List<RegisteredPoint> mRecorderLocations = new ArrayList<RegisteredPoint>();
+	private List<RoutePoint> mRecorderLocations = new ArrayList<RoutePoint>();
 
 	// liste accedute dal solo worker thread del servizio, non vanno
 	// sincronizzate
 	// lista dei punti da salvare
-	private List<RegisteredPoint> mLocationsToSave = new ArrayList<RegisteredPoint>();
+	private List<RoutePoint> mLocationsToSave = new ArrayList<RoutePoint>();
 	// lista dei punti salvati
-	private List<RegisteredPoint> mSavedLocations = new ArrayList<RegisteredPoint>();
+	private Route mSavedRoute;
 	private String mRouteName;
 	private int latestFileToSendIndex;
 	private NotificationManager mNotificationManager;
@@ -55,7 +49,7 @@ public class RecordRouteService extends IntentService {
 
 	private int getPoints() {
 		return mRecorderLocations.size() + mLocationsToSave.size()
-				+ mSavedLocations.size();
+				+ mSavedRoute.getPoints().size();
 	}
 	boolean isWorking() {
 		return working;
@@ -65,37 +59,11 @@ public class RecordRouteService extends IntentService {
 		mRouteName = intent.getExtras().getString(Const.ROUTE_NAME);
 
 		mNotificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-
 		String routeFile = Helper.getRouteFile(mRouteName);
-		File file = getFileStreamPath(routeFile);
-		if (file.exists()) {
-			try {
-				FileInputStream fis = openFileInput(routeFile);
-				ObjectInput in = null;
-				try {
-					in = new ObjectInputStream(fis);
-					while (fis.available() > 0) {
-						try {
-							RegisteredPoint pt = (RegisteredPoint) in
-									.readObject();
-							mSavedLocations.add(pt);
-						} catch (Exception ex) {
-							Log.e("ec", ex.getMessage(), ex);
-							break;
-						}
 
-					}
-				} catch (Exception e) {
-					e.printStackTrace();
-				} finally {
-					in.close();
-					fis.close();
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-
-		}
+		mSavedRoute = Route.readRoute(this, routeFile);
+		if (mSavedRoute == null)
+			mSavedRoute = new Route(mRouteName);
 		setNotification(getString(R.string.recording_details, mRouteName,
 				getPoints()));
 
@@ -144,22 +112,12 @@ public class RecordRouteService extends IntentService {
 	}
 
 	private void saveLocations() throws IOException {
-		FileOutputStream fos = openFileOutput(Helper.getRouteFile(mRouteName),
-				Context.MODE_PRIVATE);
-		ObjectOutput out = null;
-		try {
-			out = new ObjectOutputStream(fos);
-			for (RegisteredPoint l : mSavedLocations)
-				out.writeObject(l);
-			for (RegisteredPoint l : mLocationsToSave)
-				out.writeObject(l);
-			out.flush();
-		} finally {
-			out.close();
-			fos.close();
-		}
+		Route r = new Route(mRouteName);
+		r.getPoints().addAll(mSavedRoute.getPoints());
+		r.getPoints().addAll(mLocationsToSave);
+		r.save(this, Helper.getRouteFile(mRouteName));
 
-		mSavedLocations.addAll(mLocationsToSave);
+		mSavedRoute = r;
 		saveFileToSend();
 
 		mLocationsToSave.clear();
@@ -173,20 +131,9 @@ public class RecordRouteService extends IntentService {
 		} while (file.exists());
 
 		try {
-			RegisteredRoute route = new RegisteredRoute(mRouteName);
+			Route route = new Route(mRouteName);
 			route.getPoints().addAll(mLocationsToSave);
-
-			FileOutputStream fos = openFileOutput(file.getName(),
-					Context.MODE_PRIVATE);
-			ObjectOutput out = null;
-			try {
-				out = new ObjectOutputStream(fos);
-				out.writeObject(route);
-				out.flush();
-			} finally {
-				out.close();
-				fos.close();
-			}
+			route.save(this, file.getName());
 
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
@@ -229,7 +176,7 @@ public class RecordRouteService extends IntentService {
 
 			public void onLocationChanged(Location location) {
 				synchronized (mRecorderLocations) {
-					mRecorderLocations.add(new RegisteredPoint(getPoints(),
+					mRecorderLocations.add(new RoutePoint(getPoints(),
 							(int) (location.getLatitude() * 1E6),
 							(int) (location.getLongitude() * 1E6), location
 									.getAltitude(), (long) (System

@@ -5,7 +5,7 @@ import java.io.Serializable;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class RegisteredPoint extends GpsPoint implements IJsonSerializable,
+public class RoutePoint extends GpsPoint implements IJsonSerializable,
 		Serializable {
 	/**
 	 * 
@@ -13,7 +13,7 @@ public class RegisteredPoint extends GpsPoint implements IJsonSerializable,
 	private static final long serialVersionUID = 4639726905468751875L;
 	int id;
 
-	public RegisteredPoint(int id, int lat, int lon, double ele, long unixTime) {
+	public RoutePoint(int id, int lat, int lon, double ele, long unixTime) {
 		super(lat, lon, ele, unixTime);
 		this.id = id;
 	}

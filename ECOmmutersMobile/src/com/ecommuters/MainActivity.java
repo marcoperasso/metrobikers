@@ -188,7 +188,7 @@ public class MainActivity extends Activity {
 
 			public void onClick(View v) {
 				Intent myIntent = new Intent(v.getContext(),
-						TracksActivity.class);
+						RoutesActivity.class);
 				startActivity(myIntent);
 
 			}
