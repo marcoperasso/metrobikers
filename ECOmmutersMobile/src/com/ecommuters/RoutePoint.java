@@ -5,8 +5,10 @@ import java.io.Serializable;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class RoutePoint extends GpsPoint implements IJsonSerializable,
-		Serializable {
+public class RoutePoint extends GpsPoint
+		implements
+			IJsonSerializable,
+			Serializable {
 	/**
 	 * 
 	 */
@@ -28,4 +30,10 @@ public class RoutePoint extends GpsPoint implements IJsonSerializable,
 		return obj;
 	}
 
+	public static RoutePoint parseJSON(JSONObject jsonObject)
+			throws JSONException {
+		return new RoutePoint(jsonObject.getInt("id"),
+				jsonObject.getInt("lat"), jsonObject.getInt("lon"),
+				jsonObject.getDouble("ele"), jsonObject.getLong("time"));
+	}
 }

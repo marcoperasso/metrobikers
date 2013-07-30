@@ -26,7 +26,7 @@ public class RoutesActivity extends MapActivity {
 
 	private TracksOverlay mTracksOverlay;
 	private boolean mTrackGPSPosition;
-	private ArrayList<Route> mTracks;
+	private ArrayList<Route> mRoutes;
 
 	private MyLocationOverlay myLocationOverlay;
 	MenuItem mMenuItemTrackGpsPosition;
@@ -44,7 +44,7 @@ public class RoutesActivity extends MapActivity {
 
 		mMap = (MyMapView) this.findViewById(R.id.mapview1);
 		mController = mMap.getController();
-		mMap.setSatellite(true);
+		mMap.setSatellite(false);
 		mMap.displayZoomControls(true);
 		int zoomLevel = 15;
 
@@ -63,10 +63,8 @@ public class RoutesActivity extends MapActivity {
 		});
 
 		mapOverlays.add(myLocationOverlay);
-		mTracks = Route.readAllRoutes(this);
-		mTracksOverlay.setRoutes(mTracks);
 		if (savedInstanceState != null) {
-			
+
 			mTracksOverlay.setActiveTrackName(savedInstanceState
 					.getString(Const.ACTIVE_TRACK_NAME));
 			int late6 = savedInstanceState.getInt(Const.MAPLATITUDE);
@@ -74,33 +72,36 @@ public class RoutesActivity extends MapActivity {
 			mController.animateTo(new GeoPoint(late6, lone6));
 
 			zoomLevel = savedInstanceState.getInt(Const.ZoomLevel, 15);
+			mRoutes = (ArrayList<Route>) savedInstanceState.getSerializable(Const.ROUTES);
+		} else {
+			mRoutes = Route.readAllRoutes(this);
 		}
+		mTracksOverlay.setRoutes(mRoutes);
+
 		mController.setZoom(zoomLevel);
-		mTracksOverlay.drawRoutes();
+		// mTracksOverlay.drawRoutes();
 		// // Look up the AdView as a resource and load a request.
 		// AdView adView = (com.google.ads.AdView) this.findViewById(R.id.ad);
 		// adView.loadAd(new com.google.ads.AdRequest());
 
 	}
 
-	
-
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.tracks_menu, menu);
 		mMenuItemTrackGpsPosition = menu.findItem(R.id.itemTrackGpsPosition);
-		mMenuItemTrackGpsPosition
-				.setTitleCondensed(getString(mTrackGPSPosition ? R.string.hide_position_menu
-						: R.string.show_position_menu));
+		mMenuItemTrackGpsPosition.setTitleCondensed(getString(mTrackGPSPosition
+				? R.string.hide_position_menu
+				: R.string.show_position_menu));
 		return true;
 	}
 
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
-		case R.id.itemTrackGpsPosition:
-			setTrackGPSPosition(!mTrackGPSPosition);
-			break;
+			case R.id.itemTrackGpsPosition :
+				setTrackGPSPosition(!mTrackGPSPosition);
+				break;
 		}
 		return super.onOptionsItemSelected(item);
 	}
@@ -109,16 +110,15 @@ public class RoutesActivity extends MapActivity {
 		mTrackGPSPosition = b;
 
 		MySettings.setTrackGPSPosition(this, mTrackGPSPosition);
-		mMenuItemTrackGpsPosition
-				.setTitleCondensed(getString(mTrackGPSPosition ? R.string.hide_position_menu
-						: R.string.show_position_menu));
+		mMenuItemTrackGpsPosition.setTitleCondensed(getString(mTrackGPSPosition
+				? R.string.hide_position_menu
+				: R.string.show_position_menu));
 
 		if (mTrackGPSPosition)
 			myLocationOverlay.enableMyLocation();
 		else
 			myLocationOverlay.disableMyLocation();
 	}
-
 
 	public void checkTracks() {
 		if (!retrievingTracks) {
@@ -129,7 +129,7 @@ public class RoutesActivity extends MapActivity {
 			if (!ul.equals(upperLeft) || !br.equals(bottomRight)) {
 				upperLeft = ul;
 				bottomRight = br;
-				
+
 			}
 		}
 
@@ -145,6 +145,7 @@ public class RoutesActivity extends MapActivity {
 			outState.putInt(Const.MAPLONGITUDE, mMap.getMapCenter()
 					.getLongitudeE6());
 			outState.putInt(Const.ZoomLevel, mMap.getZoomLevel());
+			outState.putSerializable(Const.ROUTES, mRoutes);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -156,7 +157,7 @@ public class RoutesActivity extends MapActivity {
 	protected void onPause() {
 		myLocationOverlay.disableMyLocation();
 		myLocationOverlay.disableCompass();
-		mTracksOverlay.recycle();
+		// mTracksOverlay.recycle();
 		super.onPause();
 	}
 

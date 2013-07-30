@@ -115,15 +115,17 @@ public class RecordRouteService extends IntentService {
 		Route r = new Route(mRouteName);
 		r.getPoints().addAll(mSavedRoute.getPoints());
 		r.getPoints().addAll(mLocationsToSave);
+		long latestUpdate = (long) (System.currentTimeMillis() / 1E3);
+		r.setLatestUpdate(latestUpdate);
 		r.save(this, Helper.getRouteFile(mRouteName));
 
 		mSavedRoute = r;
-		saveFileToSend();
+		saveFileToSend(latestUpdate);
 
 		mLocationsToSave.clear();
 
 	}
-	private void saveFileToSend() {
+	private void saveFileToSend(long latestUpdate) {
 		File file;
 		do {
 			file = getFileStreamPath(Helper
@@ -132,6 +134,7 @@ public class RecordRouteService extends IntentService {
 
 		try {
 			Route route = new Route(mRouteName);
+			route.setLatestUpdate(latestUpdate);
 			route.getPoints().addAll(mLocationsToSave);
 			route.save(this, file.getName());
 

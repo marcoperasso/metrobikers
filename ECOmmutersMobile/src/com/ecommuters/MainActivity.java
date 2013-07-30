@@ -1,8 +1,7 @@
 package com.ecommuters;
 
 import java.io.File;
-
-import com.ecommuters.RecordRouteService.RecordRouteBinder;
+import java.util.List;
 
 import android.app.Activity;
 import android.app.ActivityManager;
@@ -27,6 +26,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.ecommuters.RecordRouteService.RecordRouteBinder;
 
 public class MainActivity extends Activity {
 
@@ -306,8 +307,24 @@ public class MainActivity extends Activity {
 			case R.id.itemCredentials :
 				showCredentialsDialog(false);
 				break;
+			case R.id.itemDownloadRoutes:
+				downloadRoutes();
+				break;
 		}
 		return super.onOptionsItemSelected(item);
+	}
+
+	private void downloadRoutes() {
+		try {
+			List<Route> rr = RequestBuilder.getRoutes();
+			for (Route r : rr)
+			{
+				r.save(this, Helper.getRouteFile(r.getName()));
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
 	}
 
 	private boolean isRecordingServiceRunning() {

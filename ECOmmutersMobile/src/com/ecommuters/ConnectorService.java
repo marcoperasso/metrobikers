@@ -47,7 +47,6 @@ public class ConnectorService extends IntentService {
 
 		if (files.size() == 0)
 			return;
-		
 
 		testCredentials(new OnAsyncResponse() {
 

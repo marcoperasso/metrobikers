@@ -7,7 +7,7 @@ public class Const {
 	public static final String LATITUDE = "a";
 	public static final String LONGITUDE = "b";
 	public static final String ALTITUDE = "c";
-	public static final String TRACKS = "d";
+	public static final String ROUTES = "d";
 	public static final String MAPLATITUDE = "e";
 	public static final String MAPLONGITUDE = "f";
 	public static final String TRACK = "g";

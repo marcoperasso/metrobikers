@@ -17,6 +17,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -24,17 +25,30 @@ import android.util.Log;
 import android.webkit.CookieManager;
 
 public class RequestBuilder {
-	//private static final String host = "http://10.0.2.2:8888/ecommuters/";
+	// private static final String host = "http://10.0.2.2:8888/ecommuters/";
 	private static final String host = "http://www.ecommuters.com/";
 	private static final String getGetVersionRequest = host + "mobile/version";
 	private static final String getUserRequest = host + "mobile/user";
-	private static final String getUserLoggedRequest = host + "mobile/user_logged";
+	private static final String getUserLoggedRequest = host
+			+ "mobile/user_logged";
 	private static final String getSendRouteDataRequest = host
 			+ "mobile/save_route";
+	private static final String getGetRoutesRequest = host
+			+ "mobile/get_routes";
 	public static final String HTTP_WWW_ECOMMUTERS_COM_LOGIN = host + "login";
 
-	static JSONObject sendRequest(String reqString, Boolean useSession)
+	static JSONObject sendRequestForObject(String reqString, Boolean useSession)
 			throws JSONException, ClientProtocolException, IOException {
+		StringBuilder result = sendRequest(reqString, useSession);
+		return new JSONObject(result.toString());
+	}
+	static JSONArray sendRequestForArray(String reqString, Boolean useSession)
+			throws JSONException, ClientProtocolException, IOException {
+		StringBuilder result = sendRequest(reqString, useSession);
+		return new JSONArray(result.toString());
+	}
+	private static StringBuilder sendRequest(String reqString,
+			Boolean useSession) throws IOException, ClientProtocolException {
 		StringBuilder result = new StringBuilder();
 		HttpClient httpClient = new DefaultHttpClient();
 		HttpContext localContext = new BasicHttpContext();
@@ -52,11 +66,12 @@ public class RequestBuilder {
 
 		}
 		reader.close();
-		return new JSONObject(result.toString());
+		return result;
 	}
 
-	static JSONObject postRequest(String reqString, IJsonSerializable data, Boolean useSession)
-			throws ClientProtocolException, IOException, JSONException {
+	static JSONObject postRequest(String reqString, IJsonSerializable data,
+			Boolean useSession) throws ClientProtocolException, IOException,
+			JSONException {
 		StringBuilder result = new StringBuilder();
 		HttpClient httpClient = new DefaultHttpClient();
 		HttpContext localContext = new BasicHttpContext();
@@ -95,7 +110,7 @@ public class RequestBuilder {
 	static int getProtocolVersion() {
 		JSONObject obj;
 		try {
-			obj = sendRequest(getGetVersionRequest, false);
+			obj = sendRequestForObject(getGetVersionRequest, false);
 			return obj == null ? -1 : obj.getInt("version");
 		} catch (ClientProtocolException e) {
 			Log.e("json", e.toString());
@@ -111,7 +126,7 @@ public class RequestBuilder {
 
 		JSONObject obj;
 		try {
-			obj = sendRequest(getUserRequest, true);
+			obj = sendRequestForObject(getUserRequest, true);
 			c.setName(obj.getString("name"));
 			c.setSurname(obj.getString("surname"));
 		} catch (ClientProtocolException e) {
@@ -122,24 +137,34 @@ public class RequestBuilder {
 			Log.e("json", e.toString());
 		}
 	}
-	
+
 	public static boolean isLogged() {
 
 		JSONObject obj;
 		try {
-			obj = sendRequest(getUserLoggedRequest, true);
+			obj = sendRequestForObject(getUserLoggedRequest, true);
 			return obj.getBoolean("logged");
 		} catch (Exception e) {
 			return false;
 		}
 	}
 
-	public static boolean sendRouteData(Route route)
-			throws JSONException, ClientProtocolException, IOException {
+	public static boolean sendRouteData(Route route) throws JSONException,
+			ClientProtocolException, IOException {
 
 		JSONObject response = postRequest(getSendRouteDataRequest, route, true);
-		return response.has("saved") &&  response.getBoolean("saved");
+		return response.has("saved") && response.getBoolean("saved");
 
+	}
+
+	public static List<Route> getRoutes() throws ClientProtocolException,
+			JSONException, IOException {
+		List<Route> routes = new ArrayList<Route>();
+		JSONArray response = sendRequestForArray(getGetRoutesRequest, true);
+		for (int i = 0; i < response.length(); i++) {
+			routes.add(Route.parseJSON(response.getJSONObject(i)));
+		}
+		return routes;
 	}
 
 }
