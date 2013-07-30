@@ -5,6 +5,8 @@ class Route_model extends MY_Model {
     var $id;
     var $userid;
     var $name;
+    var $latestupdate;
+    var $points;
 
     public function __construct() {
         parent::__construct();
@@ -18,6 +20,7 @@ class Route_model extends MY_Model {
         }
         return FALSE;
     }
+
     public function get_routes() {
         $query = $this->db->get_where('routes ', array('userid' => $this->userid));
         $result = array();
@@ -36,6 +39,9 @@ class Route_model extends MY_Model {
         $this->id = $query->row()->id;
     }
 
-   
+    public function update_route() {
+        $this->db->where(array('id' => $this->id, 'userid' => $this->userid));
+        $this->db->update('routes', $this);
+    }
 
 }

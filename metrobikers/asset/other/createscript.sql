@@ -45,10 +45,11 @@ CREATE TABLE `routes` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `userid` int(11) NOT NULL,
   `name` varchar(45) DEFAULT NULL,
+  `latestupdate` datetime DEFAULT '0000-00-00 00:00:00',
   PRIMARY KEY (`id`,`userid`),
   KEY `user` (`userid`),
   CONSTRAINT `user` FOREIGN KEY (`userid`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8$$
+) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=utf8$$
 
 
 
