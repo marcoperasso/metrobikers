@@ -34,7 +34,6 @@ class Home extends MY_Controller {
                 $route->points = $this->Route_points_model->get_points();
             }
             $data['routes'] = $routes;
-            echo count($routes);
         }
         $this->load->view('home', $data);
     }

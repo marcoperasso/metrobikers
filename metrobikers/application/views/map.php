@@ -72,7 +72,7 @@
     //gv_options.center = [44.523909, 9.0595785];  // [latitude,longitude] - be sure to keep the square brackets
     gv_options.zoom = 'auto'; // higher number means closer view; can also be 'auto'
     gv_options.map_opacity = 1; // number from 0 to 1
-    gv_options.map_type = 'G_HYBRID_MAP'; // popular map_type choices are 'G_NORMAL_MAP', 'G_SATELLITE_MAP', 'G_HYBRID_MAP', 'G_PHYSICAL_MAP', 'MYTOPO_TILES'
+    gv_options.map_type = 'G_NORMAL_MAP'; // popular map_type choices are 'G_NORMAL_MAP', 'G_SATELLITE_MAP', 'G_HYBRID_MAP', 'G_PHYSICAL_MAP', 'MYTOPO_TILES'
     gv_options.doubleclick_zoom = false; // true|false: zoom in when mouse is double-clicked?
     gv_options.mousewheel_zoom = true; // true|false; or 'reverse' for down=in and up=out
     gv_options.centering_options = {'open_info_window': true, 'partial_match': true, 'center_key': 'center', 'default_zoom': null} // URL-based centering (e.g., ?center=name_of_marker&zoom=14)
