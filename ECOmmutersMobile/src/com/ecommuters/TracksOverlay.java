@@ -28,6 +28,7 @@ public class TracksOverlay extends ItemizedOverlay<OverlayItem> {
 	private TextView mTitleTextView;
 	int currentZoomLevel = -1;
 	private String mActiveTrackName = "";
+	private Route mRecordingRoute;
 
 	public TracksOverlay(Drawable defaultMarker, RoutesActivity context,
 			MyMapView map) {
@@ -95,7 +96,17 @@ public class TracksOverlay extends ItemizedOverlay<OverlayItem> {
 		boolean draw = false;
 		Point p1 = new Point(), p2 = new Point();
 		for (Route r : routes) {
-
+			if (MySettings.isHiddenRoute(mContext, r.getName()))
+				continue;
+			if (isRecordingRoute(r))
+			{
+				r = mRecordingRoute;
+				pnt.setColor(Color.RED);
+			}
+			else
+			{
+				pnt.setColor(Color.BLUE);
+			}
 			for (int i = 0; i < r.getPoints().size(); i++) {
 				RoutePoint pt = r.getPoints().get(i);
 				if (invertX) {
@@ -104,7 +115,7 @@ public class TracksOverlay extends ItemizedOverlay<OverlayItem> {
 						continue;
 				} else {
 					if (pt.lat > bottomRight.getLatitudeE6()
-					|| pt.lat < topLeft.getLatitudeE6())
+							|| pt.lat < topLeft.getLatitudeE6())
 						continue;
 				}
 				if (invertY) {
@@ -113,7 +124,7 @@ public class TracksOverlay extends ItemizedOverlay<OverlayItem> {
 						continue;
 				} else {
 					if (pt.lon > bottomRight.getLongitudeE6()
-					|| pt.lon < topLeft.getLongitudeE6())
+							|| pt.lon < topLeft.getLongitudeE6())
 						continue;
 				}
 				GeoPoint gp = new GeoPoint(pt.lat, pt.lon);
@@ -129,6 +140,11 @@ public class TracksOverlay extends ItemizedOverlay<OverlayItem> {
 			}
 		}
 
+	}
+
+	public boolean isRecordingRoute(Route r) {
+		return mRecordingRoute != null
+				&& r.getName() == mRecordingRoute.getName();
 	}
 	// public void drawRoutes() {
 	// try {
@@ -214,6 +230,11 @@ public class TracksOverlay extends ItemizedOverlay<OverlayItem> {
 
 	public void setRoutes(List<Route> routes) {
 		this.routes = routes;
+	}
+
+	public void setRecordingData(Route savedRoute) {
+		mRecordingRoute = savedRoute;
+
 	}
 
 }

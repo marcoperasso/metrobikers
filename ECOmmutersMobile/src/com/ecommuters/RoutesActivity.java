@@ -1,10 +1,18 @@
 package com.ecommuters;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
+import android.app.AlertDialog;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -12,6 +20,7 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.ecommuters.RecordRouteService.RecordRouteBinder;
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapActivity;
 import com.google.android.maps.MapController;
@@ -35,6 +44,9 @@ public class RoutesActivity extends MapActivity {
 	private GeoPoint bottomRight;
 	private boolean retrievingTracks;
 
+	private ServiceConnection mConnection;
+	private RecordRouteService mRecordService;
+
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -47,7 +59,18 @@ public class RoutesActivity extends MapActivity {
 		mMap.setSatellite(false);
 		mMap.displayZoomControls(true);
 		int zoomLevel = 15;
+		mConnection = new ServiceConnection() {
 
+			public void onServiceDisconnected(ComponentName name) {
+				mRecordService = null;
+
+			}
+
+			public void onServiceConnected(ComponentName name, IBinder service) {
+				mRecordService = ((RecordRouteBinder) service).getService();
+				mTracksOverlay.setRecordingData(mRecordService.getSavedRoute());
+			}
+		};
 		List<Overlay> mapOverlays = mMap.getOverlays();
 		Drawable drawable = this.getResources().getDrawable(
 				R.drawable.ic_routemarker);
@@ -72,7 +95,8 @@ public class RoutesActivity extends MapActivity {
 			mController.animateTo(new GeoPoint(late6, lone6));
 
 			zoomLevel = savedInstanceState.getInt(Const.ZoomLevel, 15);
-			mRoutes = (ArrayList<Route>) savedInstanceState.getSerializable(Const.ROUTES);
+			mRoutes = (ArrayList<Route>) savedInstanceState
+					.getSerializable(Const.ROUTES);
 		} else {
 			mRoutes = Route.readAllRoutes(this);
 		}
@@ -101,6 +125,9 @@ public class RoutesActivity extends MapActivity {
 		switch (item.getItemId()) {
 			case R.id.itemTrackGpsPosition :
 				setTrackGPSPosition(!mTrackGPSPosition);
+				break;
+			case R.id.itemVisibleRoutes :
+				chooseRoutes();
 				break;
 		}
 		return super.onOptionsItemSelected(item);
@@ -157,7 +184,9 @@ public class RoutesActivity extends MapActivity {
 	protected void onPause() {
 		myLocationOverlay.disableMyLocation();
 		myLocationOverlay.disableCompass();
-		// mTracksOverlay.recycle();
+
+		if (mRecordService != null && mRecordService.isWorking())
+			unbindService(mConnection);
 		super.onPause();
 	}
 
@@ -166,6 +195,12 @@ public class RoutesActivity extends MapActivity {
 		if (mTrackGPSPosition)
 			myLocationOverlay.enableMyLocation();
 		myLocationOverlay.enableCompass();
+
+		if (Helper.isRecordingServiceRunning(this)) {
+			Intent myIntent = new Intent(this, RecordRouteService.class);
+			bindService(myIntent, mConnection, Context.BIND_AUTO_CREATE);
+		}
+
 		super.onResume();
 	}
 
@@ -174,7 +209,33 @@ public class RoutesActivity extends MapActivity {
 		// TODO Auto-generated method stub
 		return false;
 	}
+	public void chooseRoutes() {
 
+		final CharSequence[] items = new CharSequence[mRoutes.size()];
+		boolean[] checkedItems = new boolean[mRoutes.size()];
+		int i = 0;
+		for (Route r : mRoutes) {
+			items[i] = r.getName();
+			checkedItems[i] = !MySettings.isHiddenRoute(this, r.getName());
+			i++;
+		}
+
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		builder.setTitle(R.string.routes)
+				.setMultiChoiceItems(items, checkedItems,
+						new DialogInterface.OnMultiChoiceClickListener() {
+
+							public void onClick(DialogInterface dialog,
+									int which, boolean isChecked) {
+								MySettings.setHiddenRoute(RoutesActivity.this,
+										items[which].toString(), !isChecked);
+								mMap.invalidate();
+							}
+						})
+						.setPositiveButton(android.R.string.ok, null)
+						.show();
+
+	}
 	public void notifyMessage(int id) {
 		TextView tv = (TextView) findViewById(R.id.textViewNotification);
 		LinearLayout l = (LinearLayout) findViewById(R.id.layoutNotification);

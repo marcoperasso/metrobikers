@@ -215,4 +215,8 @@ public class RecordRouteService extends IntentService {
 			return RecordRouteService.this;
 		}
 	}
+
+	public Route getSavedRoute() {
+		return mSavedRoute;
+	}
 }

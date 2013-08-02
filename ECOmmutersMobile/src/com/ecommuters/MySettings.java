@@ -1,5 +1,7 @@
 package com.ecommuters;
 
+import java.util.HashMap;
+
 import android.content.Context;
 import android.content.SharedPreferences;
 
@@ -32,6 +34,19 @@ public class MySettings {
 		editor.commit();
 		CurrentCredentials = c;
 	}
+
+	public static boolean isHiddenRoute(Context context, String routeName) {
+		SharedPreferences settings = context.getSharedPreferences(Const.PREFS_NAME, 0);
+		return settings.getBoolean(Const.VISIBLE_ROUTES + routeName, false);
+	}
+	
+	public static void setHiddenRoute(Context context, String routeName, boolean b) {
+		SharedPreferences settings = context. getSharedPreferences(Const.PREFS_NAME, 0);
+		SharedPreferences.Editor editor = settings.edit();
+		editor.putBoolean(Const.VISIBLE_ROUTES + routeName, b);
+		editor.commit();
+	}
+	
 	
 
 }

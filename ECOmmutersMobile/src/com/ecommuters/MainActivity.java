@@ -4,8 +4,6 @@ import java.io.File;
 import java.util.List;
 
 import android.app.Activity;
-import android.app.ActivityManager;
-import android.app.ActivityManager.RunningServiceInfo;
 import android.app.AlertDialog;
 import android.content.ComponentName;
 import android.content.Context;
@@ -37,7 +35,7 @@ public class MainActivity extends Activity {
 	private RecordRouteService mRecordService = null;
 
 	private void toggleRegister() {
-		if (isRecordingServiceRunning()) {
+		if (Helper.isRecordingServiceRunning(this)) {
 			stopRegister();
 		} else {
 			askRouteName(new OnRouteSelected() {
@@ -102,7 +100,7 @@ public class MainActivity extends Activity {
 	 @Override
 	  protected void onResume() {
 	    super.onResume();
-	    if (isRecordingServiceRunning())
+	    if (Helper.isRecordingServiceRunning(this))
 		{
 			btnNewRoute.setText(R.string.stop_recording);
 			Intent myIntent = new Intent(this, RecordRouteService.class);
@@ -180,7 +178,7 @@ public class MainActivity extends Activity {
 			finish();
 			return;
 		}
-		if (!isConnectorServiceRunning()) {
+		if (!Helper.isConnectorServiceRunning(this)) {
 			Intent myIntent = new Intent(this, ConnectorService.class);
 			startService(myIntent);
 		}
@@ -327,23 +325,5 @@ public class MainActivity extends Activity {
 		
 	}
 
-	private boolean isRecordingServiceRunning() {
-		return isServiceRunning(RecordRouteService.class);
-	}
-
-	private boolean isConnectorServiceRunning() {
-		return isServiceRunning(ConnectorService.class);
-	}
-
-	private boolean isServiceRunning(
-			@SuppressWarnings("rawtypes") Class serviceClass) {
-		ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
-		for (RunningServiceInfo service : manager
-				.getRunningServices(Integer.MAX_VALUE)) {
-			if (serviceClass.getName().equals(service.service.getClassName())) {
-				return true;
-			}
-		}
-		return false;
-	}
+	
 }

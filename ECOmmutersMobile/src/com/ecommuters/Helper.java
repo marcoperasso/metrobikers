@@ -4,7 +4,9 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.app.ActivityManager;
 import android.app.AlertDialog;
+import android.app.ActivityManager.RunningServiceInfo;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.net.ConnectivityManager;
@@ -50,7 +52,7 @@ public class Helper {
 
 	}
 
-	public static  List<File> getFiles(Context context, String ext) {
+	public static List<File> getFiles(Context context, String ext) {
 		File dir = context.getFilesDir();
 		final List<File> files = new ArrayList<File>();
 		File[] subFiles = dir.listFiles();
@@ -68,7 +70,26 @@ public class Helper {
 	}
 
 	public static String getFileToSend(int index) {
-			return index + Const.TOSENDEXT;
+		return index + Const.TOSENDEXT;
+	}
+	public static boolean isRecordingServiceRunning(Context context) {
+		return isServiceRunning(context, RecordRouteService.class);
 	}
 
+	public static boolean isConnectorServiceRunning(Context context) {
+		return isServiceRunning(context, ConnectorService.class);
+	}
+
+	private static boolean isServiceRunning(Context context,
+			@SuppressWarnings("rawtypes") Class serviceClass) {
+		ActivityManager manager = (ActivityManager) context
+				.getSystemService(Context.ACTIVITY_SERVICE);
+		for (RunningServiceInfo service : manager
+				.getRunningServices(Integer.MAX_VALUE)) {
+			if (serviceClass.getName().equals(service.service.getClassName())) {
+				return true;
+			}
+		}
+		return false;
+	}
 }

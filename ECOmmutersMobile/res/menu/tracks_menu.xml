@@ -1,6 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
-    
- <item android:id="@+id/itemTrackGpsPosition" android:titleCondensed="@string/hide_position_menu" android:checkable="true">
+
+    <item
+        android:id="@+id/itemTrackGpsPosition"
+        android:checkable="true"
+        android:titleCondensed="@string/hide_position_menu">
     </item>
+    <item
+        android:id="@+id/itemVisibleRoutes"
+        android:checkable="true"
+        android:titleCondensed="@string/visible_routes">
+    </item>
+
 </menu>
