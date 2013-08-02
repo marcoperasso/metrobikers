@@ -5,14 +5,17 @@ import java.util.List;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.location.LocationManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.os.Looper;
 import android.provider.Settings;
 import android.view.Gravity;
 import android.view.Menu;
@@ -56,7 +59,7 @@ public class MainActivity extends Activity {
 								RecordRouteService.class);
 						stopService(myIntent);
 						if (mRecordService != null)
-					    	unbindService(mConnection);
+							unbindService(mConnection);
 						btnNewRoute.setText(R.string.btn_new_route);
 
 					}
@@ -97,24 +100,23 @@ public class MainActivity extends Activity {
 		}
 
 	}
-	 @Override
-	  protected void onResume() {
-	    super.onResume();
-	    if (Helper.isRecordingServiceRunning(this))
-		{
+	@Override
+	protected void onResume() {
+		super.onResume();
+		if (Helper.isRecordingServiceRunning(this)) {
 			btnNewRoute.setText(R.string.stop_recording);
 			Intent myIntent = new Intent(this, RecordRouteService.class);
 			bindService(myIntent, mConnection, Context.BIND_AUTO_CREATE);
 		}
-	  }
+	}
 
-	  @Override
-	  protected void onPause() {
-	    super.onPause();
-	    if (mRecordService != null && mRecordService.isWorking())
-	    	unbindService(mConnection);
-	  }
-	  
+	@Override
+	protected void onPause() {
+		super.onPause();
+		if (mRecordService != null && mRecordService.isWorking())
+			unbindService(mConnection);
+	}
+
 	private void startRecordingService(String routeName) {
 
 		Intent myIntent = new Intent(this, RecordRouteService.class);
@@ -162,14 +164,13 @@ public class MainActivity extends Activity {
 		enableGPS();
 		mConnection = new ServiceConnection() {
 
-			
 			public void onServiceDisconnected(ComponentName name) {
 				mRecordService = null;
 
 			}
 
 			public void onServiceConnected(ComponentName name, IBinder service) {
-				mRecordService = ((RecordRouteBinder)service).getService();
+				mRecordService = ((RecordRouteBinder) service).getService();
 
 			}
 		};
@@ -198,7 +199,18 @@ public class MainActivity extends Activity {
 				toggleRegister();
 			}
 		});
-		
+
+		Button btnMyRoutes = (Button) findViewById(R.id.btn_my_routes);
+		btnMyRoutes.setOnClickListener(new OnClickListener() {
+
+			public void onClick(View v) {
+				Intent myIntent = new Intent(v.getContext(),
+						MyRoutesActivity.class);
+				startActivity(myIntent);
+
+			}
+		});
+
 		// testo le credenziali
 		Credentials credential = MySettings.readCredentials(this);
 		if (credential.isEmpty()) {
@@ -305,25 +317,67 @@ public class MainActivity extends Activity {
 			case R.id.itemCredentials :
 				showCredentialsDialog(false);
 				break;
-			case R.id.itemDownloadRoutes:
+			case R.id.itemDownloadRoutes :
 				downloadRoutes();
 				break;
+
 		}
 		return super.onOptionsItemSelected(item);
 	}
 
 	private void downloadRoutes() {
-		try {
-			List<Route> rr = RequestBuilder.getRoutes();
-			for (Route r : rr)
-			{
-				r.save(this, Helper.getRouteFile(r.getName()));
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
 		
+		if (!Helper.isOnline(this)) {
+			Toast.makeText(this, R.string.internet_unavailable,
+					Toast.LENGTH_LONG).show();
+			return;
+		}
+		final ProgressDialog pd = ProgressDialog.show(this, "", "Downloading...");
+		
+		class DownloadOperation extends AsyncTask<Void, Void, String> {
+			@Override
+			protected String doInBackground(Void... params) {
+				try {
+					Looper.prepare();
+					List<Route> rr = RequestBuilder.getRoutes();
+					StringBuilder message = new StringBuilder();
+					int saved = 0;
+					for (Route r : rr) {
+						String routeFile = Helper.getRouteFile(r.getName());
+						if (getFileStreamPath(routeFile).exists()) {
+							Route existing = Route.readRoute(MainActivity.this,
+									routeFile);
+							if (existing != null
+									&& existing.getLatestUpdate() >= r
+											.getLatestUpdate()) {
+								message.append(String
+										.format(getString(R.string.route_already_existing),
+												r.getName()));
+								continue;
+							}
+						}
+						r.save(MainActivity.this, routeFile);
+						saved++;
+					}
+					message.append(String.format(
+							getString(R.string.route_succesfully_downloaded),
+							saved));
+					return message.toString();
+				} catch (Exception e) {
+					return e.getLocalizedMessage();
+				}
+			}
+			@Override
+			protected void onPostExecute(String result) {
+				Toast.makeText(MainActivity.this, result, Toast.LENGTH_LONG).show();
+				pd.dismiss();
+				super.onPostExecute(result);
+			}
+
+		}
+		new DownloadOperation().execute();
+		
+
 	}
 
-	
 }

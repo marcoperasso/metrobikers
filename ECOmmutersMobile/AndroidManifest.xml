@@ -65,9 +65,14 @@
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
+
         <activity
             android:name="com.ecommuters.CredentialsActivity"
             android:label="@string/title_activity_credentials" >
+        </activity>
+        <activity
+            android:name="com.ecommuters.MyRoutesActivity"
+            android:label="@string/title_activity_my_routes" >
         </activity>
     </application>
 

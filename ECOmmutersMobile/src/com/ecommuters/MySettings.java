@@ -1,7 +1,4 @@
 package com.ecommuters;
-
-import java.util.HashMap;
-
 import android.content.Context;
 import android.content.SharedPreferences;
 
