@@ -332,7 +332,7 @@ public class MainActivity extends Activity {
 					Toast.LENGTH_LONG).show();
 			return;
 		}
-		final ProgressDialog pd = ProgressDialog.show(this, "", "Downloading...");
+		final ProgressDialog pd = ProgressDialog.show(this, "", getString(R.string.downloading));
 		
 		class DownloadOperation extends AsyncTask<Void, Void, String> {
 			@Override
