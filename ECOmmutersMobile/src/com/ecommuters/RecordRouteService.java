@@ -128,8 +128,7 @@ public class RecordRouteService extends IntentService {
 	private void saveFileToSend(long latestUpdate) {
 		File file;
 		do {
-			file = getFileStreamPath(Helper
-					.getFileToSend(++latestFileToSendIndex));
+			file = getFileStreamPath(Helper.getFileToSend(mRouteName, ++latestFileToSendIndex));
 		} while (file.exists());
 
 		try {

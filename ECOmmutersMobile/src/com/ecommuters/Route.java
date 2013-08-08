@@ -27,6 +27,11 @@ public class Route implements IJsonSerializable, Serializable {
 	private String name;
 	private long latestUpdate;
 	private List<RoutePoint> points = new ArrayList<RoutePoint>();
+	
+	@Override
+	public String toString() {
+		return name;
+	}
 	public Route(String name) {
 		this.name = name;
 	}

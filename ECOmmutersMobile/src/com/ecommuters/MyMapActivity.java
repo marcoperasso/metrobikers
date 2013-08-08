@@ -1,7 +1,6 @@
 package com.ecommuters;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import android.app.AlertDialog;
@@ -27,7 +26,7 @@ import com.google.android.maps.MapController;
 import com.google.android.maps.MyLocationOverlay;
 import com.google.android.maps.Overlay;
 
-public class RoutesActivity extends MapActivity {
+public class MyMapActivity extends MapActivity {
 
 	private MyMapView mMap;
 
@@ -47,11 +46,14 @@ public class RoutesActivity extends MapActivity {
 	private ServiceConnection mConnection;
 	private RecordRouteService mRecordService;
 
+	private ActivityCommonActions mCommonActions;
+
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.tracks);
+		setContentView(R.layout.activity_mymap);
+		mCommonActions = new ActivityCommonActions(this);
 		mTrackGPSPosition = MySettings.getTrackGPSPosition(this);
 
 		mMap = (MyMapView) this.findViewById(R.id.mapview1);
@@ -95,8 +97,8 @@ public class RoutesActivity extends MapActivity {
 			mController.animateTo(new GeoPoint(late6, lone6));
 
 			zoomLevel = savedInstanceState.getInt(Const.ZoomLevel, 15);
-			mRoutes = (ArrayList<Route>) savedInstanceState
-					.getSerializable(Const.ROUTES);
+			mRoutes = ((ArrayList<Route>) savedInstanceState
+					.getSerializable(Const.ROUTES));
 		} else {
 			mRoutes = Route.readAllRoutes(this);
 		}
@@ -118,10 +120,12 @@ public class RoutesActivity extends MapActivity {
 		mMenuItemTrackGpsPosition.setTitleCondensed(getString(mTrackGPSPosition
 				? R.string.hide_position_menu
 				: R.string.show_position_menu));
-		return true;
+		return mCommonActions.onCreateOptionsMenu(menu);
 	}
 
 	public boolean onOptionsItemSelected(MenuItem item) {
+		if (mCommonActions.onOptionsItemSelected(item))
+			return true;
 		switch (item.getItemId()) {
 			case R.id.itemTrackGpsPosition :
 				setTrackGPSPosition(!mTrackGPSPosition);
@@ -227,7 +231,7 @@ public class RoutesActivity extends MapActivity {
 
 							public void onClick(DialogInterface dialog,
 									int which, boolean isChecked) {
-								MySettings.setHiddenRoute(RoutesActivity.this,
+								MySettings.setHiddenRoute(MyMapActivity.this,
 										items[which].toString(), !isChecked);
 								mMap.invalidate();
 							}

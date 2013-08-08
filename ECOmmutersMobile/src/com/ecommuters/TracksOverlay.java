@@ -18,7 +18,7 @@ import com.google.android.maps.OverlayItem;
 import com.google.android.maps.Projection;
 
 public class TracksOverlay extends ItemizedOverlay<OverlayItem> {
-	private RoutesActivity mContext;
+	private MyMapActivity mContext;
 	private List<Route> routes;
 	// private ImageView mImageView;
 	private Paint pnt = new Paint();
@@ -30,7 +30,7 @@ public class TracksOverlay extends ItemizedOverlay<OverlayItem> {
 	private String mActiveTrackName = "";
 	private Route mRecordingRoute;
 
-	public TracksOverlay(Drawable defaultMarker, RoutesActivity context,
+	public TracksOverlay(Drawable defaultMarker, MyMapActivity context,
 			MyMapView map) {
 		super(boundCenterBottom(defaultMarker));
 		mContext = context;

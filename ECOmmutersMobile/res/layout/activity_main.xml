@@ -25,12 +25,7 @@
         android:layout_height="50dp"
         android:layout_margin="1dp"
         android:text="@string/btn_my_routes" />
-    <Button
-        android:id="@+id/btn_new_route"
-        android:layout_width="fill_parent"
-        android:layout_height="50dp"
-        android:layout_margin="1dp"
-        android:text="@string/btn_new_route" />
+    
 
     <Button
         android:id="@+id/btn_routes"

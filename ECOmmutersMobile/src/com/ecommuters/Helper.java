@@ -13,6 +13,8 @@ import android.net.ConnectivityManager;
 
 public class Helper {
 
+	private static final String regExp = "[^a-zA-Z0-9.-]";
+
 	static boolean isOnline(Context context) {
 		try {
 			ConnectivityManager cm = (ConnectivityManager) context
@@ -65,12 +67,30 @@ public class Helper {
 		}
 		return files;
 	}
+	
+	public static List<File> getRoutePacketFiles(Context context, String routeName) {
+		final List<File> files = new ArrayList<File>();
+		List<File> subFiles = getFiles(context, Const.TOSENDEXT);
+			for (File file : subFiles) {
+				if (getRouteNameFromFileToSend(file.getName()).equals(routeName)) {
+					files.add(file);
+				}
+			}
+		return files;
+	}
+	public static boolean isValidRouteName(String routeName) {
+		return !isNullOrEmpty(routeName) && routeName.replaceAll(regExp, "_").equals(routeName);
+	}
 	public static String getRouteFile(String routeName) {
-		return routeName.replaceAll("[^a-zA-Z0-9.-]", "_") + Const.ROUTEEXT;
+		return routeName.replaceAll(regExp, "_") + Const.ROUTEEXT;
 	}
 
-	public static String getFileToSend(int index) {
-		return index + Const.TOSENDEXT;
+	public static String getFileToSend(String routeName, int index) {
+		return routeName + '.' + index + Const.TOSENDEXT;
+	}
+	public static String getRouteNameFromFileToSend(String file) {
+		int endIdx = file.indexOf('.');
+		return file.substring(0, endIdx);
 	}
 	public static boolean isRecordingServiceRunning(Context context) {
 		return isServiceRunning(context, RecordRouteService.class);
