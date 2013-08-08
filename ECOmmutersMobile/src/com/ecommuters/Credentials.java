@@ -73,10 +73,9 @@ public class Credentials {
 							Toast.LENGTH_LONG);
 					t.setGravity(Gravity.CENTER, 0, 0);
 					t.show();
-					return;
+				} else {
+					RequestBuilder.fillCredentialsData(c);
 				}
-
-				RequestBuilder.fillCredentialsData(c);
 				onResponse.response(success, message);
 			}
 		}

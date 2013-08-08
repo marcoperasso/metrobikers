@@ -120,7 +120,7 @@ public class RecordRouteService extends IntentService {
 		long latestUpdate = (long) (System.currentTimeMillis() / 1E3);
 		r.setLatestUpdate(latestUpdate);
 		String routeFile = Helper.getRouteFile(mRouteName);
-		boolean existing = new File(routeFile).exists();
+		boolean existing = getFileStreamPath(routeFile).exists();
 		r.save(this, routeFile);
 		if (!existing)
 			MyApplication.getInstance().refreshRoutes();
@@ -143,6 +143,8 @@ public class RecordRouteService extends IntentService {
 			route.setLatestUpdate(latestUpdate);
 			route.getPoints().addAll(mLocationsToSave);
 			route.save(this, file.getName());
+			
+			//TODO refresh dei soli frammenti da mandare
 
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();

@@ -35,10 +35,7 @@ public class MainActivity extends Activity {
 			finish();
 			return;
 		}
-		if (!Helper.isConnectorServiceRunning(this)) {
-			Intent myIntent = new Intent(this, ConnectorService.class);
-			startService(myIntent);
-		}
+		MyApplication.getInstance().activateConnector(this);
 		Button btnRoutes = (Button) findViewById(R.id.btn_routes);
 		btnRoutes.setOnClickListener(new OnClickListener() {
 

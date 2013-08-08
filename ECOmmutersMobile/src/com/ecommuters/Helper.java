@@ -96,10 +96,6 @@ public class Helper {
 		return isServiceRunning(context, RecordRouteService.class);
 	}
 
-	public static boolean isConnectorServiceRunning(Context context) {
-		return isServiceRunning(context, ConnectorService.class);
-	}
-
 	private static boolean isServiceRunning(Context context,
 			@SuppressWarnings("rawtypes") Class serviceClass) {
 		ActivityManager manager = (ActivityManager) context

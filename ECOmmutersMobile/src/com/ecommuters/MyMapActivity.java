@@ -76,7 +76,7 @@ public class MyMapActivity extends MapActivity {
 			public void onServiceDisconnected(ComponentName name) {
 				mRecordService.OnRouteUpdated.removeHandler(updateRoutehandler);
 				mRecordService = null;
-
+				mTracksOverlay.setRecordService(mRecordService);
 			}
 
 			public void onServiceConnected(ComponentName name, IBinder service) {
@@ -112,6 +112,7 @@ public class MyMapActivity extends MapActivity {
 
 		mRoutes = MyApplication.getInstance().getRoutes();
 		mTracksOverlay.setRoutes(mRoutes);
+		mTracksOverlay.setRecordService(mRecordService);
 		mRoutesChangedHandler = new GenericEvent() {
 			public void onEvent(Object sender, EventArgs args) {
 				mRoutes = MyApplication.getInstance().getRoutes();

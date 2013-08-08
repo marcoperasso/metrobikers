@@ -149,7 +149,7 @@ public class MyRoutesActivity extends Activity {
 		StringBuilder sb = new StringBuilder();
 
 		if (mRoutes.length == 0)
-			sb.append(R.string.no_routes);
+			sb.append(getString(R.string.no_routes));
 		List<File> files = Helper.getFiles(this, Const.TOSENDEXT);
 		if (files.size() > 0) {
 			HashMap<String, Integer> map = new HashMap<String, Integer>();
