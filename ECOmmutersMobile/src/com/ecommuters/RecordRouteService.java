@@ -43,6 +43,8 @@ public class RecordRouteService extends IntentService {
 	private NotificationManager mNotificationManager;
 	private RecordRouteBinder mBinder;
 
+	EventHandler OnRouteUpdated = new EventHandler();
+	
 	public RecordRouteService() {
 		super("RegisterRouteService");
 	}
@@ -83,7 +85,7 @@ public class RecordRouteService extends IntentService {
 		Notification notification = new Notification(R.drawable.ic_launcher,
 				getString(R.string.recording), System.currentTimeMillis());
 		notification.flags = Notification.FLAG_ONGOING_EVENT;
-		Intent intent = new Intent(this, MainActivity.class);
+		Intent intent = new Intent(this, MyRoutesActivity.class);
 		PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
 				intent, PendingIntent.FLAG_UPDATE_CURRENT);
 		notification.setLatestEventInfo(this, getString(R.string.app_name),
@@ -117,9 +119,13 @@ public class RecordRouteService extends IntentService {
 		r.getPoints().addAll(mLocationsToSave);
 		long latestUpdate = (long) (System.currentTimeMillis() / 1E3);
 		r.setLatestUpdate(latestUpdate);
-		r.save(this, Helper.getRouteFile(mRouteName));
-
+		String routeFile = Helper.getRouteFile(mRouteName);
+		boolean existing = new File(routeFile).exists();
+		r.save(this, routeFile);
+		if (!existing)
+			MyApplication.getInstance().refreshRoutes();
 		mSavedRoute = r;
+		OnRouteUpdated.fire(this, EventArgs.Empty);
 		saveFileToSend(latestUpdate);
 
 		mLocationsToSave.clear();
@@ -128,7 +134,8 @@ public class RecordRouteService extends IntentService {
 	private void saveFileToSend(long latestUpdate) {
 		File file;
 		do {
-			file = getFileStreamPath(Helper.getFileToSend(mRouteName, ++latestFileToSendIndex));
+			file = getFileStreamPath(Helper.getFileToSend(mRouteName,
+					++latestFileToSendIndex));
 		} while (file.exists());
 
 		try {

@@ -19,7 +19,7 @@ import com.google.android.maps.Projection;
 
 public class TracksOverlay extends ItemizedOverlay<OverlayItem> {
 	private MyMapActivity mContext;
-	private List<Route> routes;
+	private Route[] routes;
 	// private ImageView mImageView;
 	private Paint pnt = new Paint();
 	private MyMapView mMap;
@@ -28,7 +28,7 @@ public class TracksOverlay extends ItemizedOverlay<OverlayItem> {
 	private TextView mTitleTextView;
 	int currentZoomLevel = -1;
 	private String mActiveTrackName = "";
-	private Route mRecordingRoute;
+	private RecordRouteService mRecordService;
 
 	public TracksOverlay(Drawable defaultMarker, MyMapActivity context,
 			MyMapView map) {
@@ -100,7 +100,7 @@ public class TracksOverlay extends ItemizedOverlay<OverlayItem> {
 				continue;
 			if (isRecordingRoute(r))
 			{
-				r = mRecordingRoute;
+				r = mRecordService.getSavedRoute();
 				pnt.setColor(Color.RED);
 			}
 			else
@@ -143,97 +143,24 @@ public class TracksOverlay extends ItemizedOverlay<OverlayItem> {
 	}
 
 	public boolean isRecordingRoute(Route r) {
-		return mRecordingRoute != null
-				&& r.getName() == mRecordingRoute.getName();
-	}
-	// public void drawRoutes() {
-	// try {
-	// mImageView.setImageBitmap(null);
-	// recycle();
-	//
-	// if (routes == null)
-	// return;
-	// int maxLon = Integer.MIN_VALUE;
-	// int minLon = Integer.MAX_VALUE;
-	// int maxLat = Integer.MIN_VALUE;
-	// int minLat = Integer.MAX_VALUE;
-	//
-	// for (Route r : routes) {
-	// for (GpsPoint pt : r.getPoints()) {
-	// if (pt.lat > maxLat)
-	// maxLat = pt.lat;
-	// if (pt.lon > maxLon)
-	// maxLon = pt.lon;
-	// if (pt.lat < minLat)
-	// minLat = pt.lat;
-	// if (pt.lon < minLon)
-	// minLon = pt.lon;
-	// }
-	// }
-	//
-	// int minDimension = 100;
-	// int realWidth = Math.max(maxLon - minLon, minDimension);
-	// int realHeight = Math.max(maxLat - minLat, minDimension);
-	// final int bmpWidth = 1024;
-	// double ratio = (double) bmpWidth / (double) realWidth;
-	// trackBitmap = Bitmap.createBitmap(bmpWidth,
-	// (int) (realHeight * ratio), Config.ARGB_8888);
-	// mImageView.setImageBitmap(trackBitmap);
-	//
-	// Canvas cnv = new Canvas(trackBitmap);
-	// for (Route r : routes) {
-	// int top = r.getPoints().size();
-	// float x1 = -1, y1 = -1;
-	// for (int i = 0; i < top; i++) {
-	// GpsPoint pt = r.getPoints().get(i);
-	// int offsetLat = maxLat - pt.lat;
-	// int offsetLon = pt.lon - minLon;
-	// float x2 = (float) ((float) offsetLon * ratio);
-	// float y2 = (float) ((float) offsetLat * ratio);
-	// if (x1 != -1) {
-	// // pnt.setColor(pt.getColor(gpsPoints.minEle,
-	// // gpsPoints.maxEle));
-	// cnv.drawLine(x1, y1, x2, y2, pnt);
-	// }
-	// x1 = x2;
-	// y1 = y2;
-	//
-	// }
-	// }
-	// // resizeBitmap();
-	// } catch (Exception e) {
-	// manageError(e);
-	// } catch (Error e1) {
-	// manageError(e1);
-	// }
-	//
-	// }
-
-	// public void recycle() {
-	// if (trackBitmap != null) {
-	// trackBitmap.recycle();
-	// trackBitmap = null;
-	// }
-	// }
-
-	public String getActiveTrackName() {
-		return mActiveTrackName;
+		if (mRecordService == null)
+			return false;
+		Route savedRoute = mRecordService.getSavedRoute();
+		return savedRoute != null
+				&& r.getName().equals(savedRoute.getName());
 	}
 
-	public void setActiveTrackName(String currentTrackName) {
-		this.mActiveTrackName = currentTrackName;
-	}
 
-	public List<Route> getRoutes() {
+	public Route[] getRoutes() {
 		return routes;
 	}
 
-	public void setRoutes(List<Route> routes) {
-		this.routes = routes;
+	public void setRoutes(Route[] mRoutes) {
+		this.routes = mRoutes;
 	}
 
-	public void setRecordingData(Route savedRoute) {
-		mRecordingRoute = savedRoute;
+	public void setRecordService(RecordRouteService service) {
+		mRecordService = service;
 
 	}
 

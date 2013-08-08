@@ -42,9 +42,11 @@
     <string name="routes">Itinerari</string>
     <string name="title_activity_my_routes">I miei itinerari</string>
     <string name="btn_my_routes">I miei itinerari</string>
-    <string name="route_already_existing">Esiste già un itinerario con lo stesso nome: %s\n</string>
+    <string name="route_already_existing">Esiste già un itinerario con lo stesso nome: \'%s\'\r\n</string>
     <string name="route_succesfully_downloaded">Sono state scaricati con successo %d itinerari</string>
     <string name="internet_unavailable">Connessione Internet non disponibile</string>
-    <string name="downloading">Sto scaricando...</string>
+    <string name="downloading">Sto scaricando…</string>
+    <string name="pending_packages">Ci sono %1$d pacchetti in sospeso per l\'itinerario \'%2$s\' da mandare al server\r\n</string>
+    <string name="no_routes">Non ci sono itinerari\r\n</string>
 
 </resources>

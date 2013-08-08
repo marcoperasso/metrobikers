@@ -1,14 +1,9 @@
 package com.ecommuters;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import com.ecommuters.RecordRouteService.RecordRouteBinder;
-
-import android.os.Bundle;
-import android.os.IBinder;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ComponentName;
@@ -16,12 +11,14 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.os.Bundle;
+import android.os.IBinder;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
-import android.view.View.OnClickListener;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -30,16 +27,22 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.ecommuters.RecordRouteService.RecordRouteBinder;
+
 public class MyRoutesActivity extends Activity {
 
 	private static final int menuDeleteLocal = 0;
-	private ArrayList<Route> mRoutes;
-	private Route mActiveRoute;
 
 	private Button btnNewRoute;
 	private ServiceConnection mConnection;
 	private RecordRouteService mRecordService = null;
 	private ActivityCommonActions mCommonActions;
+
+	private Route[] mRoutes;
+
+	private Route mActiveRoute;
+
+	private GenericEvent mRoutesChangedHandler;
 
 	private void toggleRegister() {
 		if (Helper.isRecordingServiceRunning(this)) {
@@ -105,11 +108,25 @@ public class MyRoutesActivity extends Activity {
 
 	}
 	@Override
+	protected void onStop() {
+		MyApplication.getInstance().RouteChanged
+				.removeHandler(mRoutesChangedHandler);
+		super.onStop();
+	}
+	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_my_routes);
-		mRoutes = Route.readAllRoutes(this);
 
+		mRoutes = MyApplication.getInstance().getRoutes();
+		mRoutesChangedHandler = new GenericEvent() {
+			public void onEvent(Object sender, EventArgs args) {
+				mRoutes = MyApplication.getInstance().getRoutes();
+				populate();
+			}
+		};
+		MyApplication.getInstance().RouteChanged
+				.addHandler(mRoutesChangedHandler);
 		mCommonActions = new ActivityCommonActions(this);
 		ListView lv = populate();
 		registerForContextMenu(lv);
@@ -130,8 +147,9 @@ public class MyRoutesActivity extends Activity {
 	}
 	private ListView populate() {
 		StringBuilder sb = new StringBuilder();
-		if (mRoutes.size() == 0)
-			sb.append("Non ci sono itinerari\r\n");
+
+		if (mRoutes.length == 0)
+			sb.append(R.string.no_routes);
 		List<File> files = Helper.getFiles(this, Const.TOSENDEXT);
 		if (files.size() > 0) {
 			HashMap<String, Integer> map = new HashMap<String, Integer>();
@@ -147,7 +165,7 @@ public class MyRoutesActivity extends Activity {
 			}
 			for (String key : map.keySet()) {
 				sb.append(String
-						.format("Ci sono %d pacchetti in sospeso per l'itinerario %s da mandare al server\r\n",
+						.format(getString(R.string.pending_packages),
 								map.get(key), key));
 			}
 		}
@@ -156,10 +174,8 @@ public class MyRoutesActivity extends Activity {
 		tvDescri.setText(sb.toString());
 
 		ListView lv = (ListView) findViewById(R.id.list_routes);
-		Route[] listItems = new Route[mRoutes.size()];
-		mRoutes.toArray(listItems);
 		ArrayAdapter<Route> adapter = new ArrayAdapter<Route>(this,
-				android.R.layout.simple_list_item_1, listItems);
+				android.R.layout.simple_list_item_1, mRoutes);
 		lv.setAdapter(adapter);
 		return lv;
 	}
@@ -172,7 +188,7 @@ public class MyRoutesActivity extends Activity {
 			ContextMenuInfo menuInfo) {
 		if (v.getId() == R.id.list_routes) {
 			AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
-			mActiveRoute = mRoutes.get(info.position);
+			mActiveRoute = mRoutes[info.position];
 			menu.setHeaderTitle(mActiveRoute.toString());
 
 			menu.add(Menu.NONE, menuDeleteLocal, 0, "Elimina");
@@ -209,13 +225,9 @@ public class MyRoutesActivity extends Activity {
 		return true;
 	}
 	private void removeActiveRoute() {
-		String routeFile = Helper.getRouteFile(mActiveRoute.getName());
-		final File file = getFileStreamPath(routeFile);
-		file.delete();
-		mRoutes.remove(mActiveRoute);
-		for (File f : Helper.getRoutePacketFiles(this, mActiveRoute.getName()))
-			f.delete();
-		populate();
+
+		MyApplication.getInstance().removeRoute(mActiveRoute);
+
 	}
 
 	@Override
@@ -240,7 +252,9 @@ public class MyRoutesActivity extends Activity {
 		myIntent.putExtra(Const.ROUTE_NAME, routeName);
 		btnNewRoute.setText(R.string.stop_recording);
 		startService(myIntent);
-		bindService(myIntent, mConnection, Context.BIND_AUTO_CREATE);
+		
+		myIntent = new Intent(this, MyMapActivity.class);
+		startActivity(myIntent);
 	}
 	private void askRouteName(final OnRouteSelected onSelected) {
 

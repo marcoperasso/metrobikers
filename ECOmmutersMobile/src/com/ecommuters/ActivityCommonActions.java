@@ -81,6 +81,9 @@ public class ActivityCommonActions {
 						r.save(mActivity, routeFile);
 						saved++;
 					}
+					if (saved > 0)
+						MyApplication.getInstance().refreshRoutes();
+						
 					message.append(String.format(mActivity
 							.getString(R.string.route_succesfully_downloaded),
 							saved));

@@ -28,7 +28,7 @@ public class ConnectorService extends IntentService {
 				Thread.sleep(10000);
 				try {
 					if (Helper.isOnline(this)) {
-						//sendLocations();
+						sendLocations();
 					}
 				} catch (Exception e) {
 

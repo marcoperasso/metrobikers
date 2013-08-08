@@ -34,7 +34,6 @@ public class MyMapActivity extends MapActivity {
 
 	private TracksOverlay mTracksOverlay;
 	private boolean mTrackGPSPosition;
-	private ArrayList<Route> mRoutes;
 
 	private MyLocationOverlay myLocationOverlay;
 	MenuItem mMenuItemTrackGpsPosition;
@@ -48,6 +47,17 @@ public class MyMapActivity extends MapActivity {
 
 	private ActivityCommonActions mCommonActions;
 
+	private Route[] mRoutes;
+
+	private GenericEvent mRoutesChangedHandler;
+	private GenericEvent updateRoutehandler = new GenericEvent() {
+
+		@Override
+		public void onEvent(Object sender, EventArgs args) {
+			mMap.invalidate();
+
+		}
+	};
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -64,13 +74,16 @@ public class MyMapActivity extends MapActivity {
 		mConnection = new ServiceConnection() {
 
 			public void onServiceDisconnected(ComponentName name) {
+				mRecordService.OnRouteUpdated.removeHandler(updateRoutehandler);
 				mRecordService = null;
 
 			}
 
 			public void onServiceConnected(ComponentName name, IBinder service) {
 				mRecordService = ((RecordRouteBinder) service).getService();
-				mTracksOverlay.setRecordingData(mRecordService.getSavedRoute());
+
+				mRecordService.OnRouteUpdated.addHandler(updateRoutehandler);
+				mTracksOverlay.setRecordService(mRecordService);
 			}
 		};
 		List<Overlay> mapOverlays = mMap.getOverlays();
@@ -90,20 +103,25 @@ public class MyMapActivity extends MapActivity {
 		mapOverlays.add(myLocationOverlay);
 		if (savedInstanceState != null) {
 
-			mTracksOverlay.setActiveTrackName(savedInstanceState
-					.getString(Const.ACTIVE_TRACK_NAME));
 			int late6 = savedInstanceState.getInt(Const.MAPLATITUDE);
 			int lone6 = savedInstanceState.getInt(Const.MAPLONGITUDE);
 			mController.animateTo(new GeoPoint(late6, lone6));
 
 			zoomLevel = savedInstanceState.getInt(Const.ZoomLevel, 15);
-			mRoutes = ((ArrayList<Route>) savedInstanceState
-					.getSerializable(Const.ROUTES));
-		} else {
-			mRoutes = Route.readAllRoutes(this);
 		}
-		mTracksOverlay.setRoutes(mRoutes);
 
+		mRoutes = MyApplication.getInstance().getRoutes();
+		mTracksOverlay.setRoutes(mRoutes);
+		mRoutesChangedHandler = new GenericEvent() {
+			public void onEvent(Object sender, EventArgs args) {
+				mRoutes = MyApplication.getInstance().getRoutes();
+				mTracksOverlay.setRoutes(mRoutes);
+
+				mMap.invalidate();
+			}
+		};
+		MyApplication.getInstance().RouteChanged
+				.addHandler(mRoutesChangedHandler);
 		mController.setZoom(zoomLevel);
 		// mTracksOverlay.drawRoutes();
 		// // Look up the AdView as a resource and load a request.
@@ -111,7 +129,12 @@ public class MyMapActivity extends MapActivity {
 		// adView.loadAd(new com.google.ads.AdRequest());
 
 	}
-
+	@Override
+	protected void onStop() {
+		MyApplication.getInstance().RouteChanged
+				.removeHandler(mRoutesChangedHandler);
+		super.onStop();
+	}
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		MenuInflater inflater = getMenuInflater();
@@ -169,8 +192,6 @@ public class MyMapActivity extends MapActivity {
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
 		try {
-			outState.putString(Const.ACTIVE_TRACK_NAME,
-					mTracksOverlay.getActiveTrackName());
 			outState.putInt(Const.MAPLATITUDE, mMap.getMapCenter()
 					.getLatitudeE6());
 			outState.putInt(Const.MAPLONGITUDE, mMap.getMapCenter()
@@ -189,8 +210,11 @@ public class MyMapActivity extends MapActivity {
 		myLocationOverlay.disableMyLocation();
 		myLocationOverlay.disableCompass();
 
-		if (mRecordService != null && mRecordService.isWorking())
-			unbindService(mConnection);
+		if (mRecordService != null) {
+			if (mRecordService.isWorking())
+				unbindService(mConnection);
+			mRecordService.OnRouteUpdated.removeHandler(updateRoutehandler);
+		}
 		super.onPause();
 	}
 
@@ -215,8 +239,8 @@ public class MyMapActivity extends MapActivity {
 	}
 	public void chooseRoutes() {
 
-		final CharSequence[] items = new CharSequence[mRoutes.size()];
-		boolean[] checkedItems = new boolean[mRoutes.size()];
+		final CharSequence[] items = new CharSequence[mRoutes.length];
+		boolean[] checkedItems = new boolean[mRoutes.length];
 		int i = 0;
 		for (Route r : mRoutes) {
 			items[i] = r.getName();
@@ -235,9 +259,7 @@ public class MyMapActivity extends MapActivity {
 										items[which].toString(), !isChecked);
 								mMap.invalidate();
 							}
-						})
-						.setPositiveButton(android.R.string.ok, null)
-						.show();
+						}).setPositiveButton(android.R.string.ok, null).show();
 
 	}
 	public void notifyMessage(int id) {
