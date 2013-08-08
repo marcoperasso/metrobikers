@@ -6,7 +6,6 @@ class Route_model extends MY_Model {
     var $userid;
     var $name;
     var $latestupdate;
-    var $points;
 
     public function __construct() {
         parent::__construct();

@@ -97,9 +97,15 @@ class Mobile extends MY_Controller {
                     }
                 }
                 $this->db->trans_commit();
-                $response = array(
-                    'saved' => TRUE
-                );
+                if ($this->db->_error_message()) {
+                    $response = array(
+                    'saved' => FALSE,
+                    'message' => $this->db->_error_message());
+                } else {
+                    $response = array(
+                        'saved' => TRUE
+                    );
+                }
             } catch (Exception $exc) {
                 $response = array(
                     'saved' => FALSE,
