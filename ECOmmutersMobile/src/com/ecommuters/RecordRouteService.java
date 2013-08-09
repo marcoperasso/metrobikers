@@ -43,7 +43,7 @@ public class RecordRouteService extends IntentService {
 	private NotificationManager mNotificationManager;
 	private RecordRouteBinder mBinder;
 
-	EventHandler OnRouteUpdated = new EventHandler();
+	EventHandler OnRecordingRouteUpdated = new EventHandler();
 	
 	public RecordRouteService() {
 		super("RegisterRouteService");
@@ -125,7 +125,6 @@ public class RecordRouteService extends IntentService {
 		if (!existing)
 			MyApplication.getInstance().refreshRoutes();
 		mSavedRoute = r;
-		OnRouteUpdated.fire(this, EventArgs.Empty);
 		saveFileToSend(latestUpdate);
 
 		mLocationsToSave.clear();
@@ -144,7 +143,7 @@ public class RecordRouteService extends IntentService {
 			route.getPoints().addAll(mLocationsToSave);
 			route.save(this, file.getName());
 			
-			//TODO refresh dei soli frammenti da mandare
+			OnRecordingRouteUpdated.fire(this, EventArgs.Empty);
 
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();

@@ -1,7 +1,5 @@
 package com.ecommuters;
 
-import java.util.List;
-
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -27,7 +25,6 @@ public class TracksOverlay extends ItemizedOverlay<OverlayItem> {
 	GeoPoint trackRectOrigin;
 	private TextView mTitleTextView;
 	int currentZoomLevel = -1;
-	private String mActiveTrackName = "";
 	private RecordRouteService mRecordService;
 
 	public TracksOverlay(Drawable defaultMarker, MyMapActivity context,
@@ -93,50 +90,53 @@ public class TracksOverlay extends ItemizedOverlay<OverlayItem> {
 		boolean invertX = topLeft.getLatitudeE6() > bottomRight.getLatitudeE6();
 		boolean invertY = topLeft.getLongitudeE6() > bottomRight
 				.getLongitudeE6();
-		boolean draw = false;
 		Point p1 = new Point(), p2 = new Point();
 		for (Route r : routes) {
 			if (MySettings.isHiddenRoute(mContext, r.getName()))
 				continue;
-			if (isRecordingRoute(r))
-			{
+			if (isRecordingRoute(r)) {
 				r = mRecordService.getSavedRoute();
 				pnt.setColor(Color.RED);
-			}
-			else
-			{
+			} else {
 				pnt.setColor(Color.BLUE);
 			}
+			RoutePoint rp1 = null;
+			boolean p1Calculated = false;
 			for (int i = 0; i < r.getPoints().size(); i++) {
 				RoutePoint pt = r.getPoints().get(i);
-				if (invertX) {
-					if (pt.lat < bottomRight.getLatitudeE6()
-							|| pt.lat > topLeft.getLatitudeE6())
-						continue;
-				} else {
-					if (pt.lat > bottomRight.getLatitudeE6()
-							|| pt.lat < topLeft.getLatitudeE6())
-						continue;
-				}
-				if (invertY) {
-					if (pt.lon < bottomRight.getLongitudeE6()
-							|| pt.lon > topLeft.getLongitudeE6())
-						continue;
-				} else {
-					if (pt.lon > bottomRight.getLongitudeE6()
-							|| pt.lon < topLeft.getLongitudeE6())
-						continue;
-				}
-				GeoPoint gp = new GeoPoint(pt.lat, pt.lon);
-				prj.toPixels(gp, p2);
+				try {
+					if (invertX) {
+						if (pt.lat < bottomRight.getLatitudeE6()
+								|| pt.lat > topLeft.getLatitudeE6())
+							continue;
+					} else {
+						if (pt.lat > bottomRight.getLatitudeE6()
+								|| pt.lat < topLeft.getLatitudeE6())
+							continue;
+					}
+					if (invertY) {
+						if (pt.lon < bottomRight.getLongitudeE6()
+								|| pt.lon > topLeft.getLongitudeE6())
+							continue;
+					} else {
+						if (pt.lon > bottomRight.getLongitudeE6()
+								|| pt.lon < topLeft.getLongitudeE6())
+							continue;
+					}
 
-				if (draw) {
-					// pnt.setColor(pt.getColor(points.minEle, points.maxEle));
-					canvas.drawLine(p1.x, p1.y, p2.x, p2.y, pnt);
+					if (null != rp1) {
+						if (!p1Calculated) {
+							prj.toPixels(new GeoPoint(rp1.lat, rp1.lon), p1);
+							p1Calculated = true;
+						}
+						prj.toPixels(new GeoPoint(pt.lat, pt.lon), p2);
+						canvas.drawLine(p1.x, p1.y, p2.x, p2.y, pnt);
+						p1.x = p2.x;
+						p1.y = p2.y;
+					}
+				} finally {
+					rp1 = pt;
 				}
-				p1.x = p2.x;
-				p1.y = p2.y;
-				draw = true;
 			}
 		}
 
@@ -146,10 +146,8 @@ public class TracksOverlay extends ItemizedOverlay<OverlayItem> {
 		if (mRecordService == null)
 			return false;
 		Route savedRoute = mRecordService.getSavedRoute();
-		return savedRoute != null
-				&& r.getName().equals(savedRoute.getName());
+		return savedRoute != null && r.getName().equals(savedRoute.getName());
 	}
-
 
 	public Route[] getRoutes() {
 		return routes;

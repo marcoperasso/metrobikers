@@ -43,7 +43,13 @@ public class MyRoutesActivity extends Activity {
 	private Route mActiveRoute;
 
 	private GenericEvent mRoutesChangedHandler;
+	private GenericEvent updateRoutehandler = new GenericEvent() {
 
+		@Override
+		public void onEvent(Object sender, EventArgs args) {
+			populate();
+		}
+	};
 	private void toggleRegister() {
 		if (Helper.isRecordingServiceRunning(this)) {
 			stopRegister();
@@ -132,10 +138,13 @@ public class MyRoutesActivity extends Activity {
 		registerForContextMenu(lv);
 		mConnection = new ServiceConnection() {
 			public void onServiceDisconnected(ComponentName name) {
+				mRecordService.OnRecordingRouteUpdated.removeHandler(updateRoutehandler);
 				mRecordService = null;
 			}
 			public void onServiceConnected(ComponentName name, IBinder service) {
 				mRecordService = ((RecordRouteBinder) service).getService();
+				mRecordService.OnRecordingRouteUpdated.addHandler(updateRoutehandler);
+				
 			}
 		};
 		btnNewRoute = (Button) findViewById(R.id.btn_new_route);
@@ -242,9 +251,12 @@ public class MyRoutesActivity extends Activity {
 
 	@Override
 	protected void onPause() {
-		super.onPause();
-		if (mRecordService != null && mRecordService.isWorking())
-			unbindService(mConnection);
+		if (mRecordService != null) {
+			if (mRecordService.isWorking())
+				unbindService(mConnection);
+			mRecordService.OnRecordingRouteUpdated.removeHandler(updateRoutehandler);
+		}super.onPause();
+		
 	}
 	private void startRecordingService(String routeName) {
 

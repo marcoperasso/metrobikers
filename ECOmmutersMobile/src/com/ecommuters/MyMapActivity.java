@@ -1,6 +1,5 @@
 package com.ecommuters;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import android.app.AlertDialog;
@@ -74,7 +73,7 @@ public class MyMapActivity extends MapActivity {
 		mConnection = new ServiceConnection() {
 
 			public void onServiceDisconnected(ComponentName name) {
-				mRecordService.OnRouteUpdated.removeHandler(updateRoutehandler);
+				mRecordService.OnRecordingRouteUpdated.removeHandler(updateRoutehandler);
 				mRecordService = null;
 				mTracksOverlay.setRecordService(mRecordService);
 			}
@@ -82,7 +81,7 @@ public class MyMapActivity extends MapActivity {
 			public void onServiceConnected(ComponentName name, IBinder service) {
 				mRecordService = ((RecordRouteBinder) service).getService();
 
-				mRecordService.OnRouteUpdated.addHandler(updateRoutehandler);
+				mRecordService.OnRecordingRouteUpdated.addHandler(updateRoutehandler);
 				mTracksOverlay.setRecordService(mRecordService);
 			}
 		};
@@ -214,7 +213,7 @@ public class MyMapActivity extends MapActivity {
 		if (mRecordService != null) {
 			if (mRecordService.isWorking())
 				unbindService(mConnection);
-			mRecordService.OnRouteUpdated.removeHandler(updateRoutehandler);
+			mRecordService.OnRecordingRouteUpdated.removeHandler(updateRoutehandler);
 		}
 		super.onPause();
 	}
