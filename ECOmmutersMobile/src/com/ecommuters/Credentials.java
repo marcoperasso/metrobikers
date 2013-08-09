@@ -1,5 +1,8 @@
 package com.ecommuters;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.view.Gravity;
@@ -56,6 +59,9 @@ public class Credentials {
 		final Credentials c = this;
 		final WebView webView = new WebView(context);
 		class AutologinObject {
+			boolean timeout = false;
+			Timer timer = new Timer();
+			
 			@SuppressWarnings("unused")
 			public String getUser() {
 				return c.getEmail();
@@ -68,6 +74,10 @@ public class Credentials {
 
 			@SuppressWarnings("unused")
 			public void completed(boolean success, String message) {
+				if (timeout)
+					return;
+				
+				timer.cancel();
 				if (!success) {
 					Toast t = Toast.makeText(context, message,
 							Toast.LENGTH_LONG);
@@ -78,12 +88,24 @@ public class Credentials {
 				}
 				onResponse.response(success, message);
 			}
+
+			public void startTimeoutTimer() {
+				timer.schedule(new TimerTask() {
+					@Override
+					public void run() {
+						timeout = true;
+						timer.cancel();
+						onResponse.response(false, "Timeout!");
+					}
+				}, 30000);//30 secondi
+			}
 		}
 		webView.setVisibility(View.INVISIBLE);
 		webView.getSettings().setJavaScriptEnabled(true);
-		webView.addJavascriptInterface(new AutologinObject(), "autologin");
-
+		AutologinObject autologinObject = new AutologinObject();
+		webView.addJavascriptInterface(autologinObject, "autologin");
 		webView.loadUrl(RequestBuilder.HTTP_WWW_ECOMMUTERS_COM_LOGIN);
+		autologinObject.startTimeoutTimer();
 	}
 
 	public String getName() {

@@ -3,6 +3,8 @@ package com.ecommuters;
 import java.io.File;
 import java.util.List;
 
+import junit.framework.TestListener;
+
 import android.app.IntentService;
 import android.content.Intent;
 
@@ -20,7 +22,6 @@ public class ConnectorService extends IntentService {
 		super.onDestroy();
 	}
 	protected void onHandleIntent(Intent intent) {
-		// Thread.sleep(10000);
 		try {
 			if (Helper.isOnline(this)) {
 				sendLocations();
@@ -37,8 +38,10 @@ public class ConnectorService extends IntentService {
 		MyApplication.getInstance().setSendingData(true);
 		final List<File> files = Helper.getFiles(this, Const.TOSENDEXT);
 
-		if (files.size() == 0)
+		if (files.size() == 0) {
+			MyApplication.getInstance().setSendingData(false);
 			return;
+		}
 
 		testCredentials(new OnAsyncResponse() {
 			public void response(boolean success, String message) {
@@ -53,13 +56,13 @@ public class ConnectorService extends IntentService {
 							if (route != null
 									&& RequestBuilder.sendRouteData(route))
 								file.delete();
-							//TODO refresh dei soli frammenti da mandare
+							// TODO refresh dei soli frammenti da mandare
 						} catch (Exception e) {
 							e.printStackTrace();
 						}
 					}
 				} finally {
-					MyApplication.getInstance().setSendingData(false);
+
 				}
 
 			}
