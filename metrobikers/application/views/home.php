@@ -7,8 +7,26 @@
 
     <body>
         <?php $this->load->view('templates/visualheader'); ?>
-        <p><em>Breve testo che spiega le motivazioni della nostra iniziativa, magari messo gi&ugrave; secondo il video why-how-what</em></p>
-        <p>Lorem ipsum dolor sit amet, consectetur adipisici elit, sed eiusmod tempor incidunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquid ex ea commodi consequat. Quis aute iure reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint obcaecat cupiditat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+        <p><b>«</b>&nbsp;Sono le azioni che contano. I nostri pensieri, per quanto 
+            buoni possano essere, sono perle false fintanto che non vengono trasformati 
+            in azioni. Sii il cambiamento che vuoi vedere nel mondo.&nbsp;<b>»</b>&nbsp;
+            <small><a href="http://it.wikipedia.org/wiki/Mahatma_Gandhi">(Mahatma Gandhi)</a></small></p>
+        <p>Spostarsi in auto in città spesso significa sopportare ore di coda, perdere 
+            tempo alla ricerca di parcheggi, stress, costi di carburante, assicurazioni, 
+            manutenzione, inquinamento.
+        <p>Ridurre questi aspetti negativi contribuirebbe a migliorare la qualità della vita di ognuno di noi.</p>
+        <p>Utilizzare la bicicletta é una possibile soluzione: tuttavia molte 
+            città non sono ancora a misura di bicicletta e spesso ad utilizzare un 
+            mezzo a due ruote sono ancora pochi temerari.</p>
+        <p><b>ecommuters.com si prefigge di colmare questa lacuna</b>: registrati, trova persone che 
+            percorrono in bicicletta il tuo stesso tragitto casa-lavoro ed unisciti a loro.
+            Facendo massa critica sarete più rispettati dagli automobilisti, sarete più visibili 
+            aumentando la sicurezza dello spostamento, potrete chiedere a gran voce alle amministrazioni 
+            locali la creazione di percorsi ciclabili perchè proporrete i tragitti che percorrete 
+            tutti assieme tutti i giorni.</p>
+        <p><b>Questa è la missione di ecommuters.com</b>: facilitare la ricerca di compagni di viaggio 
+            casa-lavoro al fine di coinvolgere più persone possibile, verso un futuro in cui in città 
+            saranno poche auto a transitare tra migliaia di biciclette. </p>
         <a href="/asset/other/ECOmmutersMobile.apk" >Scarica la App per Android</a>
         <p><em>Richiesta email per aggiornamenti</em></p>
         <p>Se interessati lasciare mail qui sotto</p>
