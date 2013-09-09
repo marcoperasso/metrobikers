@@ -20,9 +20,9 @@
             mezzo a due ruote sono ancora pochi temerari.</p>
         <p><b>ecommuters.com si prefigge di colmare questa lacuna</b>: registrati, trova persone che 
             percorrono in bicicletta il tuo stesso tragitto casa-lavoro ed unisciti a loro.
-            Facendo massa critica sarete più rispettati dagli automobilisti, sarete più visibili 
-            aumentando la sicurezza dello spostamento, potrete chiedere a gran voce alle amministrazioni 
-            locali la creazione di percorsi ciclabili perchè proporrete i tragitti che percorrete 
+            Facendo massa critica saremo più rispettati dagli automobilisti, saremo più visibili 
+            aumentando la sicurezza dello spostamento, potremo chiedere a gran voce alle amministrazioni 
+            locali la creazione di percorsi ciclabili perchè proporremo i tragitti che percorriamo 
             tutti assieme tutti i giorni.</p>
         <p><b>Questa è la missione di ecommuters.com</b>: facilitare la ricerca di compagni di viaggio 
             casa-lavoro al fine di coinvolgere più persone possibile, verso un futuro in cui in città 
