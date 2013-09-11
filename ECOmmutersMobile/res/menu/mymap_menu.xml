@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <item
+        android:id="@+id/itemCredentials"
+        android:titleCondensed="@string/user_credentials">
+    </item>
+    <item
+        android:id="@+id/itemDownloadRoutes"
+        android:titleCondensed="@string/download_routes">
+    </item>
+    <item
+        android:id="@+id/itemMyRoutes"
+        android:titleCondensed="@string/my_routes">
+    </item>
+    <item
+        android:id="@+id/itemTrackGpsPosition"
+        android:titleCondensed="@string/show_position_menu">
+    </item>
+    <item
+        android:id="@+id/itemRecordRoute"
+        android:titleCondensed="@string/record_route">
+    </item>
+
+</menu>

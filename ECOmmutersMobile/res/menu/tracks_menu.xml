@@ -11,5 +11,6 @@
         android:checkable="true"
         android:titleCondensed="@string/visible_routes">
     </item>
-
+<item android:id="@+id/itemRecordRoute" android:titleCondensed="@string/record_route"></item>
+    
 </menu>

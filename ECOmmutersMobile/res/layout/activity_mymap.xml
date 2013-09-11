@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/lib/com.google.ads"
     android:layout_width="match_parent"
     android:layout_height="fill_parent"
@@ -31,12 +31,19 @@
     <com.ecommuters.MyMapView
         android:id="@+id/mapview1"
         android:layout_width="fill_parent"
-        android:layout_height="0dip"
-        android:layout_weight="1"
+        android:layout_height="match_parent"
         debugapiKey="0dEYPHJIAGuC3ZMx4EK5IjFp5SnxwDv7iOxKjEQ"
         releaseapiKey="0HToEclXMbw-m5HMb9GSGaaf_2wKfdffQ0R6Wig"
         android:apiKey="0dEYPHJIAGuC3ZMx4EK5IjFp5SnxwDv7iOxKjEQ"
         android:clickable="true"
         android:enabled="true" />
 
-</LinearLayout>
+    <Button
+        android:id="@+id/buttonRecord"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:background="@drawable/ic_recordbutton" />
+
+</RelativeLayout>

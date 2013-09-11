@@ -25,6 +25,7 @@ public class Const {
 	public static final String TOSENDEXT = ".pending";
 	public static final int RECORDING_NOTIFICATION_ID = 1;
 	static final String ServiceMessage = "sm";
+	public static final String DEFAULT_TRACK_NAME = "route";
 	
 
 }

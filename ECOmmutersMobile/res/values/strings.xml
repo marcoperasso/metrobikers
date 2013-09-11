@@ -48,5 +48,7 @@
     <string name="downloading">Sto scaricando…</string>
     <string name="pending_packages">Ci sono %1$d pacchetti in sospeso per l\'itinerario \'%2$s\' da mandare al server\r\n</string>
     <string name="no_routes">Non ci sono itinerari\r\n</string>
+    <string name="record_route">Registra itinerario</string>
+    <string name="my_routes">I miei itinerari</string>
 
 </resources>
