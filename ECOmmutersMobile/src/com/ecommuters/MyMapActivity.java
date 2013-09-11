@@ -28,6 +28,7 @@ import android.view.animation.Animation;
 import android.view.animation.LinearInterpolator;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -76,40 +77,39 @@ public class MyMapActivity extends MapActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_mymap);
-		
-		// prima di tutto testo la versione (solo se sono online)
-				if (!testVersion()) {
-					finish();
-					return;
-				}
-				mlocManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-				
-				enableGPS();
-				
-				
-				MyApplication.getInstance().activateConnector(this);
-				
-				// testo le credenziali
-				Credentials credential = MySettings.readCredentials(this);
-				if (credential.isEmpty()) {
-					// non ho le credenziali: le chiedo e contestualmente le valido (se
-					// sono online
-					// facendo una login, altrimenti controllando che non siano vuote),
-					// se non sono buone esco
-					showCredentialsDialog(true);
-				} else {
-					// se ci sono le credenziali e sono online, le testo
-					credential.testLogin(this, new OnAsyncResponse() {
-						public void response(boolean success, String message) {
-							if (success)
-								writeUserInfo();
-							else
-								finish();
 
-						}
-					});
+		// prima di tutto testo la versione (solo se sono online)
+		if (!testVersion()) {
+			finish();
+			return;
+		}
+		mlocManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+
+		enableGPS();
+
+		MyApplication.getInstance().activateConnector(this);
+
+		// testo le credenziali
+		Credentials credential = MySettings.readCredentials(this);
+		if (credential.isEmpty()) {
+			// non ho le credenziali: le chiedo e contestualmente le valido (se
+			// sono online
+			// facendo una login, altrimenti controllando che non siano vuote),
+			// se non sono buone esco
+			showCredentialsDialog(true);
+		} else {
+			// se ci sono le credenziali e sono online, le testo
+			credential.testLogin(this, new OnAsyncResponse() {
+				public void response(boolean success, String message) {
+					if (success)
+						writeUserInfo();
+					else
+						finish();
+
 				}
-						
+			});
+		}
+
 		mTrackGPSPosition = MySettings.getTrackGPSPosition(this);
 
 		mMap = (MyMapView) this.findViewById(R.id.mapview1);
@@ -120,7 +120,8 @@ public class MyMapActivity extends MapActivity {
 		mConnection = new ServiceConnection() {
 
 			public void onServiceDisconnected(ComponentName name) {
-				mRecordService.OnRecordingRouteUpdated.removeHandler(updateRoutehandler);
+				mRecordService.OnRecordingRouteUpdated
+						.removeHandler(updateRoutehandler);
 				mRecordService = null;
 				mTracksOverlay.setRecordService(mRecordService);
 			}
@@ -128,7 +129,8 @@ public class MyMapActivity extends MapActivity {
 			public void onServiceConnected(ComponentName name, IBinder service) {
 				mRecordService = ((RecordRouteBinder) service).getService();
 
-				mRecordService.OnRecordingRouteUpdated.addHandler(updateRoutehandler);
+				mRecordService.OnRecordingRouteUpdated
+						.addHandler(updateRoutehandler);
 				mTracksOverlay.setRecordService(mRecordService);
 			}
 		};
@@ -170,8 +172,28 @@ public class MyMapActivity extends MapActivity {
 		MyApplication.getInstance().RouteChanged
 				.addHandler(mRoutesChangedHandler);
 		mController.setZoom(zoomLevel);
-		
-		adjustRecordingButtonVisibility();
+
+		ImageButton btn = (ImageButton) findViewById(R.id.buttonRecord);
+		final Animation animation = new AlphaAnimation(1, 0.5f); // Change alpha
+																// from fully
+																// visible to
+																// invisible
+		animation.setDuration(50); 
+		animation.setInterpolator(new LinearInterpolator()); // do not alter
+																// animation
+																// rate
+		animation.setRepeatCount(Animation.INFINITE); // Repeat animation
+														// infinitely
+		animation.setRepeatMode(Animation.REVERSE); // Reverse animation at the
+													// end so the button will
+													// fade back in
+		btn.startAnimation(animation);
+		btn.setOnClickListener(new OnClickListener() {
+			public void onClick(final View view) {
+				toggleRecording();
+			}
+		});
+		showStopRecordingButton(Helper.isRecordingServiceRunning(this));
 		// mTracksOverlay.drawRoutes();
 		// // Look up the AdView as a resource and load a request.
 		// AdView adView = (com.google.ads.AdView) this.findViewById(R.id.ad);
@@ -179,43 +201,24 @@ public class MyMapActivity extends MapActivity {
 
 	}
 
-	private void adjustRecordingButtonVisibility() {
-		Button btn = (Button) findViewById(R.id.buttonRecord);
-		if (Helper.isRecordingServiceRunning(this))
-		{
-			final Animation animation = new AlphaAnimation(1, 0); // Change alpha from fully visible to invisible
-		    animation.setDuration(500); // duration - half a second
-		    animation.setInterpolator(new LinearInterpolator()); // do not alter animation rate
-		    animation.setRepeatCount(Animation.INFINITE); // Repeat animation infinitely
-		    animation.setRepeatMode(Animation.REVERSE); // Reverse animation at the end so the button will fade back in
-		    btn.startAnimation(animation);
-		    btn.setOnClickListener(new OnClickListener() {
-		        public void onClick(final View view) {
-		           toggleRecording();
-		        }
-		    });
-		}
-		else
-		{
-			btn.setVisibility(View.GONE);
-		}
+	private void showStopRecordingButton(Boolean show) {
+		ImageButton btn = (ImageButton) findViewById(R.id.buttonRecord);
+		btn.setVisibility(show ? View.VISIBLE : View.GONE);
 	}
-	
+
 	protected void writeUserInfo() {
 		runOnUiThread(new Runnable() {
 			public void run() {
 				Credentials c = MySettings.CurrentCredentials;
 				if (c != null) {
-					Toast.makeText(MyMapActivity.this, String.format(
-							getString(R.string.welcome_s), c),
+					Toast.makeText(MyMapActivity.this,
+							String.format(getString(R.string.welcome_s), c),
 							Toast.LENGTH_LONG).show();
 				}
 			}
 		});
 
 	}
-
-	
 
 	private boolean testVersion() {
 		if (Helper.isOnline(this) && !Helper.matchProtocolVersion()) {
@@ -274,6 +277,12 @@ public class MyMapActivity extends MapActivity {
 		mMenuItemTrackGpsPosition.setTitleCondensed(getString(mTrackGPSPosition
 				? R.string.hide_position_menu
 				: R.string.show_position_menu));
+		
+		MenuItem menuItemRecordRoute = menu.findItem(R.id.itemRecordRoute);
+		menuItemRecordRoute.setTitleCondensed(getString(Helper.isRecordingServiceRunning(this)
+				? R.string.stop_recording
+				: R.string.record_route));
+		
 		return super.onCreateOptionsMenu(menu);
 	}
 
@@ -281,10 +290,10 @@ public class MyMapActivity extends MapActivity {
 		if (Helper.isRecordingServiceRunning(this)) {
 			stopRecording();
 		} else {
-				doRecord(Const.DEFAULT_TRACK_NAME);
+			doRecord(Const.DEFAULT_TRACK_NAME);
 		}
 	}
-	
+
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 			case R.id.itemTrackGpsPosition :
@@ -293,7 +302,7 @@ public class MyMapActivity extends MapActivity {
 			case R.id.itemVisibleRoutes :
 				chooseRoutes();
 				return true;
-			case R.id.itemRecordRoute:
+			case R.id.itemRecordRoute :
 				toggleRecording();
 				return true;
 			case R.id.itemCredentials :
@@ -302,10 +311,10 @@ public class MyMapActivity extends MapActivity {
 			case R.id.itemDownloadRoutes :
 				downloadRoutes();
 				return true;
-			case R.id.itemMyRoutes:
+			/*case R.id.itemMyRoutes :
 				Intent myIntent = new Intent(this, MyRoutesActivity.class);
 				startActivity(myIntent);
-				return true;
+				return true;*/
 		}
 		return super.onOptionsItemSelected(item);
 	}
@@ -324,7 +333,8 @@ public class MyMapActivity extends MapActivity {
 					Toast.LENGTH_LONG).show();
 			return;
 		}
-		final ProgressDialog pd = ProgressDialog.show(this, "", getString(R.string.downloading));
+		final ProgressDialog pd = ProgressDialog.show(this, "",
+				getString(R.string.downloading));
 
 		class DownloadOperation extends AsyncTask<Void, Void, String> {
 			@Override
@@ -337,13 +347,14 @@ public class MyMapActivity extends MapActivity {
 					for (Route r : rr) {
 						String routeFile = Helper.getRouteFile(r.getName());
 						if (getFileStreamPath(routeFile).exists()) {
-							Route existing = Route.readRoute(MyMapActivity.this, routeFile);
+							Route existing = Route.readRoute(
+									MyMapActivity.this, routeFile);
 							if (existing != null
 									&& existing.getLatestUpdate() >= r
 											.getLatestUpdate()) {
-								message.append(String.format(
-										getString(R.string.route_already_existing),
-										r.getName()));
+								message.append(String
+										.format(getString(R.string.route_already_existing),
+												r.getName()));
 								continue;
 							}
 						}
@@ -352,8 +363,9 @@ public class MyMapActivity extends MapActivity {
 					}
 					if (saved > 0)
 						MyApplication.getInstance().refreshRoutes();
-						
-					message.append(String.format(getString(R.string.route_succesfully_downloaded),
+
+					message.append(String.format(
+							getString(R.string.route_succesfully_downloaded),
 							saved));
 					return message.toString();
 				} catch (Exception e) {
@@ -362,7 +374,8 @@ public class MyMapActivity extends MapActivity {
 			}
 			@Override
 			protected void onPostExecute(String result) {
-				Toast.makeText(MyMapActivity.this, result, Toast.LENGTH_LONG).show();
+				Toast.makeText(MyMapActivity.this, result, Toast.LENGTH_LONG)
+						.show();
 				pd.dismiss();
 				super.onPostExecute(result);
 			}
@@ -372,27 +385,18 @@ public class MyMapActivity extends MapActivity {
 
 	}
 	private void stopRecording() {
-		Helper.dialogMessage(this, R.string.stop_recording_question,
-				R.string.app_name, new DialogInterface.OnClickListener() {
-
-					public void onClick(DialogInterface dialog, int which) {
-						Intent myIntent = new Intent(getBaseContext(),
-								RecordRouteService.class);
-						stopService(myIntent);
-						adjustRecordingButtonVisibility();
-						if (mRecordService != null)
-							unbindService(mConnection);
-						
-						askRouteName(new OnRouteSelected() {
-							public void select(String routeName) {
-								
-							}
-						});
-
-					}
-				}, null);
+		askRouteName(new OnRouteSelected() {
+			public void select(String routeName) {
+				Intent myIntent = new Intent(getBaseContext(),
+						RecordRouteService.class);
+				stopService(myIntent);
+				showStopRecordingButton(false);
+				if (mRecordService != null)
+					unbindService(mConnection);
+			}
+		});
 	}
-	
+
 	private void askRouteName(final OnRouteSelected onSelected) {
 
 		// Set an EditText view to get user input
@@ -458,7 +462,6 @@ public class MyMapActivity extends MapActivity {
 
 	}
 
-
 	private void setTrackGPSPosition(boolean b) {
 		mTrackGPSPosition = b;
 
@@ -512,7 +515,8 @@ public class MyMapActivity extends MapActivity {
 		if (mRecordService != null) {
 			if (mRecordService.isWorking())
 				unbindService(mConnection);
-			mRecordService.OnRecordingRouteUpdated.removeHandler(updateRoutehandler);
+			mRecordService.OnRecordingRouteUpdated
+					.removeHandler(updateRoutehandler);
 		}
 		super.onPause();
 	}
@@ -522,11 +526,8 @@ public class MyMapActivity extends MapActivity {
 		Intent myIntent = new Intent(this, RecordRouteService.class);
 		myIntent.putExtra(Const.ROUTE_NAME, routeName);
 		startService(myIntent);
-		
-		myIntent = new Intent(this, MyMapActivity.class);
-		startActivity(myIntent);
-		
-		adjustRecordingButtonVisibility();
+
+		showStopRecordingButton(true);
 	}
 	@Override
 	protected void onResume() {

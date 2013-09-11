@@ -21,9 +21,8 @@
     <string name="credential_description">Non le hai ancora? <a href="http://www.ecommuters.com/register">Diventa ECOmmuter!</a></string>
     <string name="welcome_s">Benvenuto, %s</string>
     <string name="stop_recording">Ferma registrazione</string>
-    <string name="recording_started">Registrazione avviata</string>
+    <string name="recording_started">Registrazione avviata; premi il pulsante lampeggiante per interromperla.</string>
     <string name="recording_stopped">Registrazione terminata</string>
-    <string name="stop_recording_question">Vuoi fermare la registrazione?</string>
     <string name="existing_route_question">L\'itinerario %s esiste già; cosa vuoi fare?</string>
     <string name="overwrite">Sovrascrivi</string>
     <string name="append">Accoda</string>

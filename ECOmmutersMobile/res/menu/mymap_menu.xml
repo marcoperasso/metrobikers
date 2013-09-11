@@ -9,10 +9,10 @@
         android:id="@+id/itemDownloadRoutes"
         android:titleCondensed="@string/download_routes">
     </item>
-    <item
-        android:id="@+id/itemMyRoutes"
-        android:titleCondensed="@string/my_routes">
-    </item>
+<!--     <item -->
+<!--         android:id="@+id/itemMyRoutes" -->
+<!--         android:titleCondensed="@string/my_routes"> -->
+<!--     </item> -->
     <item
         android:id="@+id/itemTrackGpsPosition"
         android:titleCondensed="@string/show_position_menu">

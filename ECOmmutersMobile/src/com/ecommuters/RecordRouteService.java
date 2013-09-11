@@ -85,7 +85,7 @@ public class RecordRouteService extends IntentService {
 		Notification notification = new Notification(R.drawable.ic_launcher,
 				getString(R.string.recording), System.currentTimeMillis());
 		notification.flags = Notification.FLAG_ONGOING_EVENT;
-		Intent intent = new Intent(this, MyRoutesActivity.class);
+		Intent intent = new Intent(this, MyMapActivity.class);
 		PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
 				intent, PendingIntent.FLAG_UPDATE_CURRENT);
 		notification.setLatestEventInfo(this, getString(R.string.app_name),
