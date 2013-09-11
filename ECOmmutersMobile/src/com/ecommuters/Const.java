@@ -18,14 +18,15 @@ public class Const {
 	public static final String ACTIVE_TRACK_NAME = "n";
 	public static final String EMAIL = "o";
 	public static final String PASSWORD = "p";
-	public static final String ROUTE_NAME = "q";
 	public static final String VISIBLE_ROUTES = "r";
 	public static final String LogTag = "log";
 	public static final String ROUTEEXT = ".route";
-	public static final String TOSENDEXT = ".pending";
+	public static final String TOSENDEXT = ".tosend";
+	public static final String RECORDINGROUTEEXT = ".recording";
 	public static final int RECORDING_NOTIFICATION_ID = 1;
 	static final String ServiceMessage = "sm";
-	public static final String DEFAULT_TRACK_NAME = "route";
+	public static final String DEFAULT_ROUTE_NAME = "route";
+	public static final String RECORDING_ROUTE_FILE = DEFAULT_ROUTE_NAME + RECORDINGROUTEEXT;
 	
 
 }

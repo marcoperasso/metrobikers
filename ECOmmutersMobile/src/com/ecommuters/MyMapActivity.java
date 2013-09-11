@@ -290,7 +290,7 @@ public class MyMapActivity extends MapActivity {
 		if (Helper.isRecordingServiceRunning(this)) {
 			stopRecording();
 		} else {
-			doRecord(Const.DEFAULT_TRACK_NAME);
+			startRecordingService();
 		}
 	}
 
@@ -427,7 +427,7 @@ public class MyMapActivity extends MapActivity {
 		});
 	}
 
-	private void doRecord(final String routeName) {
+	/*private void doRecord() {
 		String routeFile = Helper.getRouteFile(routeName);
 		final File file = getFileStreamPath(routeFile);
 		if (file.exists()) {
@@ -460,7 +460,7 @@ public class MyMapActivity extends MapActivity {
 			startRecordingService(routeName);
 		}
 
-	}
+	}*/
 
 	private void setTrackGPSPosition(boolean b) {
 		mTrackGPSPosition = b;
@@ -521,10 +521,9 @@ public class MyMapActivity extends MapActivity {
 		super.onPause();
 	}
 
-	private void startRecordingService(String routeName) {
+	private void startRecordingService() {
 
 		Intent myIntent = new Intent(this, RecordRouteService.class);
-		myIntent.putExtra(Const.ROUTE_NAME, routeName);
 		startService(myIntent);
 
 		showStopRecordingButton(true);

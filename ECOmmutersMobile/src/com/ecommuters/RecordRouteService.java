@@ -38,7 +38,6 @@ public class RecordRouteService extends IntentService {
 	private List<RoutePoint> mLocationsToSave = new ArrayList<RoutePoint>();
 	// lista dei punti salvati
 	private Route mSavedRoute;
-	private String mRouteName;
 	private int latestFileToSendIndex;
 	private NotificationManager mNotificationManager;
 	private RecordRouteBinder mBinder;
@@ -58,16 +57,13 @@ public class RecordRouteService extends IntentService {
 	}
 	@Override
 	protected void onHandleIntent(Intent intent) {
-		mRouteName = intent.getExtras().getString(Const.ROUTE_NAME);
 
 		mNotificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-		String routeFile = Helper.getRouteFile(mRouteName);
-
+		String routeFile = Helper.getRouteFile(Const.DEFAULT_ROUTE_NAME);
 		mSavedRoute = Route.readRoute(this, routeFile);
 		if (mSavedRoute == null)
-			mSavedRoute = new Route(mRouteName);
-		setNotification(getString(R.string.recording_details, mRouteName,
-				getPoints()));
+			mSavedRoute = new Route(Const.DEFAULT_ROUTE_NAME);
+		setNotification(getString(R.string.recording_detail, getPoints()));
 
 		while (working) {
 			try {
@@ -114,44 +110,20 @@ public class RecordRouteService extends IntentService {
 	}
 
 	private void saveLocations() throws IOException {
-		Route r = new Route(mRouteName);
+		Route r = new Route(Const.DEFAULT_ROUTE_NAME);
 		r.getPoints().addAll(mSavedRoute.getPoints());
 		r.getPoints().addAll(mLocationsToSave);
 		long latestUpdate = (long) (System.currentTimeMillis() / 1E3);
 		r.setLatestUpdate(latestUpdate);
-		String routeFile = Helper.getRouteFile(mRouteName);
-		boolean existing = getFileStreamPath(routeFile).exists();
+		String routeFile = Const.RECORDING_ROUTE_FILE;
 		r.save(this, routeFile);
-		if (!existing)
-			MyApplication.getInstance().refreshRoutes();
+		MyApplication.getInstance().refreshRoutes();
 		mSavedRoute = r;
-		saveFileToSend(latestUpdate);
-
+		
 		mLocationsToSave.clear();
 
 	}
-	private void saveFileToSend(long latestUpdate) {
-		File file;
-		do {
-			file = getFileStreamPath(Helper.getFileToSend(mRouteName,
-					++latestFileToSendIndex));
-		} while (file.exists());
-
-		try {
-			Route route = new Route(mRouteName);
-			route.setLatestUpdate(latestUpdate);
-			route.getPoints().addAll(mLocationsToSave);
-			route.save(this, file.getName());
-			
-			OnRecordingRouteUpdated.fire(this, EventArgs.Empty);
-
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
-	}
+	
 
 	@Override
 	public void onCreate() {
@@ -191,8 +163,7 @@ public class RecordRouteService extends IntentService {
 							(int) (location.getLongitude() * 1E6), location
 									.getAltitude(), (long) (System
 									.currentTimeMillis() / 1E3)));
-					setNotification(getString(R.string.recording_details,
-							mRouteName, getPoints()));
+					setNotification(getString(R.string.recording_detail, getPoints()));
 				}
 			}
 
