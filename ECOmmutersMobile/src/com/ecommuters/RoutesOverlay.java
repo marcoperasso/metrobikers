@@ -15,7 +15,7 @@ import com.google.android.maps.MapView.LayoutParams;
 import com.google.android.maps.OverlayItem;
 import com.google.android.maps.Projection;
 
-public class TracksOverlay extends ItemizedOverlay<OverlayItem> {
+public class RoutesOverlay extends ItemizedOverlay<OverlayItem> {
 	private MyMapActivity mContext;
 	private Route[] routes;
 	// private ImageView mImageView;
@@ -27,7 +27,7 @@ public class TracksOverlay extends ItemizedOverlay<OverlayItem> {
 	int currentZoomLevel = -1;
 	private RecordRouteService mRecordService;
 
-	public TracksOverlay(Drawable defaultMarker, MyMapActivity context,
+	public RoutesOverlay(Drawable defaultMarker, MyMapActivity context,
 			MyMapView map) {
 		super(boundCenterBottom(defaultMarker));
 		mContext = context;
@@ -75,80 +75,75 @@ public class TracksOverlay extends ItemizedOverlay<OverlayItem> {
 	}
 
 	@Override
-	public void draw(Canvas canvas, MapView mapView, boolean shadow) {
+	public void draw(final Canvas canvas, MapView mapView, boolean shadow) {
 		super.draw(canvas, mapView, shadow);
 
 		if (routes == null)
 			return;
 		if (shadow)
 			return;
-		Projection prj = mMap.getProjection();
+		final Projection prj = mMap.getProjection();
 		int width = canvas.getWidth();
 		int height = canvas.getHeight();
-		GeoPoint topLeft = prj.fromPixels(0, 0);
-		GeoPoint bottomRight = prj.fromPixels(width, height);
-		boolean invertX = topLeft.getLatitudeE6() > bottomRight.getLatitudeE6();
-		boolean invertY = topLeft.getLongitudeE6() > bottomRight
+		final GeoPoint topLeft = prj.fromPixels(0, 0);
+		final GeoPoint bottomRight = prj.fromPixels(width, height);
+		final boolean invertX = topLeft.getLatitudeE6() > bottomRight
+				.getLatitudeE6();
+		final boolean invertY = topLeft.getLongitudeE6() > bottomRight
 				.getLongitudeE6();
-		Point p1 = new Point(), p2 = new Point();
 		for (Route r : routes) {
 			if (MySettings.isHiddenRoute(mContext, r.getName()))
 				continue;
-			if (isRecordingRoute(r)) {
-				r = mRecordService.getSavedRoute();
-				pnt.setColor(Color.RED);
-			} else {
-				pnt.setColor(Color.BLUE);
-			}
-			RoutePoint rp1 = null;
-			boolean p1Calculated = false;
-			for (int i = 0; i < r.getPoints().size(); i++) {
-				RoutePoint pt = r.getPoints().get(i);
-				try {
-					if (invertX) {
-						if (pt.lat < bottomRight.getLatitudeE6()
-								|| pt.lat > topLeft.getLatitudeE6())
-							continue;
-					} else {
-						if (pt.lat > bottomRight.getLatitudeE6()
-								|| pt.lat < topLeft.getLatitudeE6())
-							continue;
-					}
-					if (invertY) {
-						if (pt.lon < bottomRight.getLongitudeE6()
-								|| pt.lon > topLeft.getLongitudeE6())
-							continue;
-					} else {
-						if (pt.lon > bottomRight.getLongitudeE6()
-								|| pt.lon < topLeft.getLongitudeE6())
-							continue;
-					}
+			drawRoute(Color.BLUE, r, invertX, invertY, topLeft, bottomRight, prj, canvas);
+		}
+		if (mRecordService!=null)
+			drawRoute(Color.RED, mRecordService.getSavedRoute(), invertX, invertY, topLeft, bottomRight, prj, canvas);
 
-					if (null != rp1) {
-						if (!p1Calculated) {
-							prj.toPixels(new GeoPoint(rp1.lat, rp1.lon), p1);
-							p1Calculated = true;
-						}
-						prj.toPixels(new GeoPoint(pt.lat, pt.lon), p2);
-						canvas.drawLine(p1.x, p1.y, p2.x, p2.y, pnt);
-						p1.x = p2.x;
-						p1.y = p2.y;
-					}
-				} finally {
-					rp1 = pt;
+	}
+	private void drawRoute(int color, Route r, boolean invertX, boolean invertY, GeoPoint topLeft, GeoPoint bottomRight, Projection prj, Canvas canvas) {
+		pnt.setColor(color);
+		Point p1 = new Point(), p2 = new Point();
+		RoutePoint rp1 = null;
+		boolean p1Calculated = false;
+		for (int i = 0; i < r.getPoints().size(); i++) {
+			RoutePoint pt = r.getPoints().get(i);
+			try {
+				if (invertX) {
+					if (pt.lat < bottomRight.getLatitudeE6()
+							|| pt.lat > topLeft.getLatitudeE6())
+						continue;
+				} else {
+					if (pt.lat > bottomRight.getLatitudeE6()
+							|| pt.lat < topLeft.getLatitudeE6())
+						continue;
 				}
+				if (invertY) {
+					if (pt.lon < bottomRight.getLongitudeE6()
+							|| pt.lon > topLeft.getLongitudeE6())
+						continue;
+				} else {
+					if (pt.lon > bottomRight.getLongitudeE6()
+							|| pt.lon < topLeft.getLongitudeE6())
+						continue;
+				}
+
+				if (null != rp1) {
+					if (!p1Calculated) {
+						prj.toPixels(
+								new GeoPoint(rp1.lat, rp1.lon), p1);
+						p1Calculated = true;
+					}
+					prj.toPixels(new GeoPoint(pt.lat, pt.lon), p2);
+					canvas.drawLine(p1.x, p1.y, p2.x, p2.y, pnt);
+					p1.x = p2.x;
+					p1.y = p2.y;
+				}
+			} finally {
+				rp1 = pt;
 			}
 		}
-
 	}
-
-	public boolean isRecordingRoute(Route r) {
-		if (mRecordService == null)
-			return false;
-		Route savedRoute = mRecordService.getSavedRoute();
-		return savedRoute != null && r.getName().equals(savedRoute.getName());
-	}
-
+	
 	public Route[] getRoutes() {
 		return routes;
 	}

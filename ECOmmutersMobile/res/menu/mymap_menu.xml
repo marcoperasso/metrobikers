@@ -5,10 +5,10 @@
         android:id="@+id/itemCredentials"
         android:titleCondensed="@string/user_credentials">
     </item>
-    <item
-        android:id="@+id/itemDownloadRoutes"
-        android:titleCondensed="@string/download_routes">
-    </item>
+<!--     <item -->
+<!--         android:id="@+id/itemDownloadRoutes" -->
+<!--         android:titleCondensed="@string/download_routes"> -->
+<!--     </item> -->
 <!--     <item -->
 <!--         android:id="@+id/itemMyRoutes" -->
 <!--         android:titleCondensed="@string/my_routes"> -->

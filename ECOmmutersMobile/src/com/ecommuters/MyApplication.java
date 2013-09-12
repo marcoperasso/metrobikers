@@ -17,6 +17,8 @@ public class MyApplication extends Application {
 	private ArrayList<Route> mRoutes;
 	private boolean connectorActivated;
 	private boolean sendingData;
+	private boolean recording;
+	
 	public EventHandler RouteChanged = new EventHandler();
 
 	@Override
@@ -53,8 +55,6 @@ public class MyApplication extends Application {
 			final File file = getFileStreamPath(routeFile);
 			file.delete();
 			mRoutes.remove(route);
-			for (File f : Helper.getRoutePacketFiles(this, route.getName()))
-				f.delete();
 		}
 		RouteChanged.fire(this, EventArgs.Empty);
 
@@ -80,5 +80,11 @@ public class MyApplication extends Application {
 	}
 	public void setSendingData(boolean sendingData) {
 		this.sendingData = sendingData;
+	}
+	public boolean isRecording() {
+		return recording;
+	}
+	public void setRecording(boolean recording) {
+		this.recording = recording;
 	}
 }

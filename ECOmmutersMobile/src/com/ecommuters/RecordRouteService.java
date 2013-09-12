@@ -1,7 +1,5 @@
 package com.ecommuters;
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,9 +14,7 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.location.LocationProvider;
-import android.os.Binder;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -38,9 +34,7 @@ public class RecordRouteService extends IntentService {
 	private List<RoutePoint> mLocationsToSave = new ArrayList<RoutePoint>();
 	// lista dei punti salvati
 	private Route mSavedRoute;
-	private int latestFileToSendIndex;
 	private NotificationManager mNotificationManager;
-	private RecordRouteBinder mBinder;
 
 	EventHandler OnRecordingRouteUpdated = new EventHandler();
 	
@@ -57,7 +51,6 @@ public class RecordRouteService extends IntentService {
 	}
 	@Override
 	protected void onHandleIntent(Intent intent) {
-
 		mNotificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 		String routeFile = Helper.getRouteFile(Const.DEFAULT_ROUTE_NAME);
 		mSavedRoute = Route.readRoute(this, routeFile);
@@ -117,7 +110,6 @@ public class RecordRouteService extends IntentService {
 		r.setLatestUpdate(latestUpdate);
 		String routeFile = Const.RECORDING_ROUTE_FILE;
 		r.save(this, routeFile);
-		MyApplication.getInstance().refreshRoutes();
 		mSavedRoute = r;
 		
 		mLocationsToSave.clear();
@@ -127,8 +119,8 @@ public class RecordRouteService extends IntentService {
 
 	@Override
 	public void onCreate() {
-		mBinder = new RecordRouteBinder();
-		Toast.makeText(this, R.string.recording_started, Toast.LENGTH_SHORT)
+		MyApplication.getInstance().setRecording(true);
+		Toast.makeText(this, R.string.recording_started, Toast.LENGTH_LONG)
 				.show();
 		mlocManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 		mLocationListener = new LocationListener() {
@@ -174,10 +166,7 @@ public class RecordRouteService extends IntentService {
 		super.onCreate();
 	}
 
-	@Override
-	public IBinder onBind(Intent intent) {
-		return mBinder;
-	}
+	
 	@Override
 	public void onDestroy() {
 		working = false;
@@ -185,14 +174,11 @@ public class RecordRouteService extends IntentService {
 		Toast.makeText(this, R.string.recording_stopped, Toast.LENGTH_SHORT)
 				.show();
 		mNotificationManager.cancel(Const.RECORDING_NOTIFICATION_ID);
+		MyApplication.getInstance().setRecording(false);
+		
 		super.onDestroy();
 	}
 
-	class RecordRouteBinder extends Binder {
-		RecordRouteService getService() {
-			return RecordRouteService.this;
-		}
-	}
 
 	public Route getSavedRoute() {
 		return mSavedRoute;

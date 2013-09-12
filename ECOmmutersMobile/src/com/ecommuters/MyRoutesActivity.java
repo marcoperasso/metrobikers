@@ -5,13 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 
 import android.app.Activity;
-import android.content.ComponentName;
-import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
-import android.content.ServiceConnection;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Menu;
@@ -19,18 +14,13 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
-import com.ecommuters.RecordRouteService.RecordRouteBinder;
 
 public class MyRoutesActivity extends Activity {
 
 	private static final int menuDeleteLocal = 0;
 
-	private Button btnNewRoute;
-	private ServiceConnection mConnection;
-	private RecordRouteService mRecordService = null;
 
 	private Route[] mRoutes;
 
@@ -67,17 +57,6 @@ public class MyRoutesActivity extends Activity {
 				.addHandler(mRoutesChangedHandler);
 		ListView lv = populate();
 		registerForContextMenu(lv);
-		mConnection = new ServiceConnection() {
-			public void onServiceDisconnected(ComponentName name) {
-				mRecordService.OnRecordingRouteUpdated.removeHandler(updateRoutehandler);
-				mRecordService = null;
-			}
-			public void onServiceConnected(ComponentName name, IBinder service) {
-				mRecordService = ((RecordRouteBinder) service).getService();
-				mRecordService.OnRecordingRouteUpdated.addHandler(updateRoutehandler);
-				
-			}
-		};
 		
 	}
 	private ListView populate() {
@@ -155,26 +134,5 @@ public class MyRoutesActivity extends Activity {
 		MyApplication.getInstance().removeRoute(mActiveRoute);
 
 	}
-
-	@Override
-	protected void onResume() {
-		super.onResume();
-		if (Helper.isRecordingServiceRunning(this)) {
-			btnNewRoute.setText(R.string.stop_recording);
-			Intent myIntent = new Intent(this, RecordRouteService.class);
-			bindService(myIntent, mConnection, Context.BIND_AUTO_CREATE);
-		}
-	}
-
-	@Override
-	protected void onPause() {
-		if (mRecordService != null) {
-			if (mRecordService.isWorking())
-				unbindService(mConnection);
-			mRecordService.OnRecordingRouteUpdated.removeHandler(updateRoutehandler);
-		}super.onPause();
-		
-	}
-	
 	
 }

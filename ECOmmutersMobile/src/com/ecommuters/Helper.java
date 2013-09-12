@@ -6,9 +6,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 
-import android.app.ActivityManager;
 import android.app.AlertDialog;
-import android.app.ActivityManager.RunningServiceInfo;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.net.ConnectivityManager;
@@ -70,16 +68,6 @@ public class Helper {
 		return files;
 	}
 	
-	public static List<File> getRoutePacketFiles(Context context, String routeName) {
-		final List<File> files = new ArrayList<File>();
-		List<File> subFiles = getFiles(context, Const.TOSENDEXT);
-			for (File file : subFiles) {
-				if (getRouteNameFromFileToSend(file.getName()).equals(routeName)) {
-					files.add(file);
-				}
-			}
-		return files;
-	}
 	public static boolean isValidRouteName(String routeName) {
 		return !isNullOrEmpty(routeName) && routeName.replaceAll(regExp, "_").equals(routeName);
 	}
@@ -87,28 +75,12 @@ public class Helper {
 		return routeName.replaceAll(regExp, "_") + Const.ROUTEEXT;
 	}
 
-	public static String getFileToSend(String routeName, int index) {
-		return routeName + '.' + index + Const.TOSENDEXT;
+	public static String getFileToSend(String routeName) {
+		return routeName + '.' + Const.TOSENDEXT;
 	}
 	public static String getRouteNameFromFileToSend(String file) {
 		int endIdx = file.indexOf('.');
 		return file.substring(0, endIdx);
-	}
-	public static boolean isRecordingServiceRunning(Context context) {
-		return isServiceRunning(context, RecordRouteService.class);
-	}
-
-	private static boolean isServiceRunning(Context context,
-			@SuppressWarnings("rawtypes") Class serviceClass) {
-		ActivityManager manager = (ActivityManager) context
-				.getSystemService(Context.ACTIVITY_SERVICE);
-		for (RunningServiceInfo service : manager
-				.getRunningServices(Integer.MAX_VALUE)) {
-			if (serviceClass.getName().equals(service.service.getClassName())) {
-				return true;
-			}
-		}
-		return false;
 	}
 	
 	public static final String md5(final String s) {
@@ -134,5 +106,6 @@ public class Helper {
 	    }
 	    return "";
 	}
+
 	
 }

@@ -1,7 +1,10 @@
 package com.ecommuters;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
+
+import org.json.JSONException;
 
 import android.app.IntentService;
 import android.content.Intent;
@@ -28,6 +31,38 @@ public class ConnectorService extends IntentService {
 
 			e.printStackTrace();
 		}
+	}
+
+	private void downloadRoutes() throws IOException, JSONException {
+
+		if (!Helper.isOnline(this)) {
+			return;
+		}
+		List<Route> rr = RequestBuilder.getRoutes();
+		StringBuilder message = new StringBuilder();
+		int saved = 0;
+		for (Route r : rr) {
+			String routeFile = Helper.getRouteFile(r.getName());
+			if (getFileStreamPath(routeFile).exists()) {
+				Route existing = Route.readRoute(ConnectorService.this,
+						routeFile);
+				if (existing != null
+						&& existing.getLatestUpdate() >= r.getLatestUpdate()) {
+					message.append(String.format(
+							getString(R.string.route_already_existing),
+							r.getName()));
+					continue;
+				}
+			}
+			r.save(ConnectorService.this, routeFile);
+			saved++;
+		}
+		if (saved > 0)
+			MyApplication.getInstance().refreshRoutes();
+
+		message.append(String.format(
+				getString(R.string.route_succesfully_downloaded), saved));
+
 	}
 
 	private void sendLocations() {

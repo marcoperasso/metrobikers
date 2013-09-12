@@ -23,9 +23,6 @@
     <string name="stop_recording">Ferma registrazione</string>
     <string name="recording_started">Registrazione avviata; premi il pulsante lampeggiante per interromperla.</string>
     <string name="recording_stopped">Registrazione terminata</string>
-    <string name="existing_route_question">L\'itinerario %s esiste già; cosa vuoi fare?</string>
-    <string name="overwrite">Sovrascrivi</string>
-    <string name="append">Accoda</string>
     <string name="insert_route_name">Inserisci il nome dell\'itinerario; i caratteri ammessi sono lettere (non accentate), numeri, -  e .</string>
     <string name="recording_detail">Punti traccia: %d</string>
     <string name="action_settings">Impostazioni</string>
@@ -49,5 +46,7 @@
     <string name="no_routes">Non ci sono itinerari\r\n</string>
     <string name="record_route">Registra itinerario</string>
     <string name="my_routes">I miei itinerari</string>
+    <string name="record">Record</string>
+    <string name="overwrite_route_question">Itinerario già esistente, vuoi sovrascriverlo?</string>
 
 </resources>

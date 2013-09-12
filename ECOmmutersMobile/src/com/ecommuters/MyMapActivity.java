@@ -4,18 +4,12 @@ import java.io.File;
 import java.util.List;
 
 import android.app.AlertDialog;
-import android.app.ProgressDialog;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.graphics.drawable.Drawable;
 import android.location.LocationManager;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.IBinder;
-import android.os.Looper;
 import android.provider.Settings;
 import android.view.Gravity;
 import android.view.Menu;
@@ -28,12 +22,8 @@ import android.view.animation.Animation;
 import android.view.animation.LinearInterpolator;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import com.ecommuters.RecordRouteService.RecordRouteBinder;
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapActivity;
 import com.google.android.maps.MapController;
@@ -46,7 +36,7 @@ public class MyMapActivity extends MapActivity {
 
 	private MapController mController;
 
-	private TracksOverlay mTracksOverlay;
+	private RoutesOverlay mTracksOverlay;
 	private boolean mTrackGPSPosition;
 
 	private MyLocationOverlay myLocationOverlay;
@@ -55,9 +45,6 @@ public class MyMapActivity extends MapActivity {
 	private GeoPoint upperLeft;
 	private GeoPoint bottomRight;
 	private boolean retrievingTracks;
-
-	private ServiceConnection mConnection;
-	private RecordRouteService mRecordService;
 
 	private Route[] mRoutes;
 
@@ -72,6 +59,8 @@ public class MyMapActivity extends MapActivity {
 	};
 
 	private LocationManager mlocManager;
+
+	private Animation mAnimation;
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -117,27 +106,11 @@ public class MyMapActivity extends MapActivity {
 		mMap.setSatellite(false);
 		mMap.displayZoomControls(true);
 		int zoomLevel = 15;
-		mConnection = new ServiceConnection() {
-
-			public void onServiceDisconnected(ComponentName name) {
-				mRecordService.OnRecordingRouteUpdated
-						.removeHandler(updateRoutehandler);
-				mRecordService = null;
-				mTracksOverlay.setRecordService(mRecordService);
-			}
-
-			public void onServiceConnected(ComponentName name, IBinder service) {
-				mRecordService = ((RecordRouteBinder) service).getService();
-
-				mRecordService.OnRecordingRouteUpdated
-						.addHandler(updateRoutehandler);
-				mTracksOverlay.setRecordService(mRecordService);
-			}
-		};
+		
 		List<Overlay> mapOverlays = mMap.getOverlays();
 		Drawable drawable = this.getResources().getDrawable(
 				R.drawable.ic_routemarker);
-		mTracksOverlay = new TracksOverlay(drawable, this, mMap);
+		mTracksOverlay = new RoutesOverlay(drawable, this, mMap);
 		mapOverlays.add(mTracksOverlay);
 
 		myLocationOverlay = new ECOmmutersLocationOverlay(this, mMap,
@@ -160,7 +133,6 @@ public class MyMapActivity extends MapActivity {
 
 		mRoutes = MyApplication.getInstance().getRoutes();
 		mTracksOverlay.setRoutes(mRoutes);
-		mTracksOverlay.setRecordService(mRecordService);
 		mRoutesChangedHandler = new GenericEvent() {
 			public void onEvent(Object sender, EventArgs args) {
 				mRoutes = MyApplication.getInstance().getRoutes();
@@ -173,27 +145,30 @@ public class MyMapActivity extends MapActivity {
 				.addHandler(mRoutesChangedHandler);
 		mController.setZoom(zoomLevel);
 
-		ImageButton btn = (ImageButton) findViewById(R.id.buttonRecord);
-		final Animation animation = new AlphaAnimation(1, 0.5f); // Change alpha
-																// from fully
-																// visible to
-																// invisible
-		animation.setDuration(50); 
-		animation.setInterpolator(new LinearInterpolator()); // do not alter
+		Button btn = (Button) findViewById(R.id.buttonRecord);
+		mAnimation = new AlphaAnimation(1, 0.5f);
+		// from
+		// fully
+		// visible
+		// to
+		// invisible
+		mAnimation.setDuration(300);
+		mAnimation.setInterpolator(new LinearInterpolator()); // do not alter
 																// animation
 																// rate
-		animation.setRepeatCount(Animation.INFINITE); // Repeat animation
+		mAnimation.setRepeatCount(Animation.INFINITE); // Repeat animation
 														// infinitely
-		animation.setRepeatMode(Animation.REVERSE); // Reverse animation at the
-													// end so the button will
-													// fade back in
-		btn.startAnimation(animation);
+		mAnimation.setRepeatMode(Animation.REVERSE); // Reverse animation at the
+														// end so the button
+														// will
+														// fade back in
 		btn.setOnClickListener(new OnClickListener() {
 			public void onClick(final View view) {
 				toggleRecording();
 			}
 		});
-		showStopRecordingButton(Helper.isRecordingServiceRunning(this));
+		
+		showStopRecordingButton(MyApplication.getInstance().isRecording());
 		// mTracksOverlay.drawRoutes();
 		// // Look up the AdView as a resource and load a request.
 		// AdView adView = (com.google.ads.AdView) this.findViewById(R.id.ad);
@@ -202,10 +177,18 @@ public class MyMapActivity extends MapActivity {
 	}
 
 	private void showStopRecordingButton(Boolean show) {
-		ImageButton btn = (ImageButton) findViewById(R.id.buttonRecord);
-		btn.setVisibility(show ? View.VISIBLE : View.GONE);
-	}
+		Button btn = (Button) findViewById(R.id.buttonRecord);
+		if (show) {
+			btn.setAnimation(mAnimation);
+			btn.setVisibility(View.VISIBLE);
+			mAnimation.start();
+		} else {
+			btn.setVisibility(View.GONE);
+			btn.setAnimation(null);
+			mAnimation.cancel();
+		}
 
+	}
 	protected void writeUserInfo() {
 		runOnUiThread(new Runnable() {
 			public void run() {
@@ -277,17 +260,18 @@ public class MyMapActivity extends MapActivity {
 		mMenuItemTrackGpsPosition.setTitleCondensed(getString(mTrackGPSPosition
 				? R.string.hide_position_menu
 				: R.string.show_position_menu));
-		
+
 		MenuItem menuItemRecordRoute = menu.findItem(R.id.itemRecordRoute);
-		menuItemRecordRoute.setTitleCondensed(getString(Helper.isRecordingServiceRunning(this)
+		menuItemRecordRoute.setTitleCondensed(getString(MyApplication
+				.getInstance().isRecording()
 				? R.string.stop_recording
 				: R.string.record_route));
-		
+
 		return super.onCreateOptionsMenu(menu);
 	}
 
 	private void toggleRecording() {
-		if (Helper.isRecordingServiceRunning(this)) {
+		if (MyApplication.getInstance().isRecording()) {
 			stopRecording();
 		} else {
 			startRecordingService();
@@ -308,13 +292,12 @@ public class MyMapActivity extends MapActivity {
 			case R.id.itemCredentials :
 				showCredentialsDialog(false);
 				return true;
-			case R.id.itemDownloadRoutes :
-				downloadRoutes();
-				return true;
-			/*case R.id.itemMyRoutes :
-				Intent myIntent = new Intent(this, MyRoutesActivity.class);
-				startActivity(myIntent);
-				return true;*/
+				/*
+				 * case R.id.itemDownloadRoutes : downloadRoutes(); return true;
+				 * case R.id.itemMyRoutes : Intent myIntent = new Intent(this,
+				 * MyRoutesActivity.class); startActivity(myIntent); return
+				 * true;
+				 */
 		}
 		return super.onOptionsItemSelected(item);
 	}
@@ -326,77 +309,27 @@ public class MyMapActivity extends MapActivity {
 		else
 			startActivity(intent);
 	}
-	private void downloadRoutes() {
 
-		if (!Helper.isOnline(this)) {
-			Toast.makeText(this, R.string.internet_unavailable,
-					Toast.LENGTH_LONG).show();
+	private void stopRecording() {
+		final File recordingFile = getFileStreamPath(Const.RECORDING_ROUTE_FILE);
+		if (!recordingFile.exists()) {
+			stopRecordingService();
 			return;
 		}
-		final ProgressDialog pd = ProgressDialog.show(this, "",
-				getString(R.string.downloading));
-
-		class DownloadOperation extends AsyncTask<Void, Void, String> {
-			@Override
-			protected String doInBackground(Void... params) {
-				try {
-					Looper.prepare();
-					List<Route> rr = RequestBuilder.getRoutes();
-					StringBuilder message = new StringBuilder();
-					int saved = 0;
-					for (Route r : rr) {
-						String routeFile = Helper.getRouteFile(r.getName());
-						if (getFileStreamPath(routeFile).exists()) {
-							Route existing = Route.readRoute(
-									MyMapActivity.this, routeFile);
-							if (existing != null
-									&& existing.getLatestUpdate() >= r
-											.getLatestUpdate()) {
-								message.append(String
-										.format(getString(R.string.route_already_existing),
-												r.getName()));
-								continue;
-							}
-						}
-						r.save(MyMapActivity.this, routeFile);
-						saved++;
-					}
-					if (saved > 0)
-						MyApplication.getInstance().refreshRoutes();
-
-					message.append(String.format(
-							getString(R.string.route_succesfully_downloaded),
-							saved));
-					return message.toString();
-				} catch (Exception e) {
-					return e.getLocalizedMessage();
-				}
-			}
-			@Override
-			protected void onPostExecute(String result) {
-				Toast.makeText(MyMapActivity.this, result, Toast.LENGTH_LONG)
-						.show();
-				pd.dismiss();
-				super.onPostExecute(result);
-			}
-
-		}
-		new DownloadOperation().execute();
-
-	}
-	private void stopRecording() {
 		askRouteName(new OnRouteSelected() {
 			public void select(String routeName) {
-				Intent myIntent = new Intent(getBaseContext(),
-						RecordRouteService.class);
-				stopService(myIntent);
-				showStopRecordingButton(false);
-				if (mRecordService != null)
-					unbindService(mConnection);
+				recordingFile.renameTo(getFileStreamPath(Helper
+						.getFileToSend(routeName)));
+				stopRecordingService();
 			}
+
 		});
 	}
-
+	private void stopRecordingService() {
+		Intent myIntent = new Intent(getBaseContext(), RecordRouteService.class);
+		stopService(myIntent);
+		showStopRecordingButton(false);
+	}
 	private void askRouteName(final OnRouteSelected onSelected) {
 
 		// Set an EditText view to get user input
@@ -413,10 +346,29 @@ public class MyMapActivity extends MapActivity {
 		Button theButton = dialog.getButton(DialogInterface.BUTTON_POSITIVE);
 		theButton.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
-				String routeName = input.getText().toString();
+				final String routeName = input.getText().toString();
 				if (Helper.isValidRouteName(routeName)) {
-					dialog.dismiss();
-					onSelected.select(routeName);
+
+					final File fileStreamPath = getFileStreamPath(Helper
+							.getRouteFile(routeName));
+					if (fileStreamPath.exists()) {
+						Helper.dialogMessage(MyMapActivity.this,
+								R.string.overwrite_route_question,
+								R.string.app_name,
+								new DialogInterface.OnClickListener() {
+
+									public void onClick(DialogInterface dialog,
+											int which) {
+										fileStreamPath.delete();
+										dialog.dismiss();
+										onSelected.select(routeName);
+
+									}
+								}, null);
+					} else {
+						dialog.dismiss();
+						onSelected.select(routeName);
+					}
 				} else {
 					Toast.makeText(dialog.getContext(),
 							R.string.insert_route_name, Toast.LENGTH_SHORT)
@@ -427,40 +379,28 @@ public class MyMapActivity extends MapActivity {
 		});
 	}
 
-	/*private void doRecord() {
-		String routeFile = Helper.getRouteFile(routeName);
-		final File file = getFileStreamPath(routeFile);
-		if (file.exists()) {
-			new AlertDialog.Builder(this)
-					.setIcon(android.R.drawable.ic_dialog_alert)
-					.setTitle(getString(R.string.app_name))
-					.setMessage(
-							getString(R.string.existing_route_question,
-									routeName))
-					.setPositiveButton(R.string.overwrite,
-							new DialogInterface.OnClickListener() {
-								public void onClick(DialogInterface dialog,
-										int which) {
-									file.delete();
-									startRecordingService(routeName);
-
-								}
-							})
-					.setNegativeButton(android.R.string.cancel, null)
-					.setNeutralButton(R.string.append,
-							new DialogInterface.OnClickListener() {
-								public void onClick(DialogInterface dialog,
-										int which) {
-									startRecordingService(routeName);
-								}
-
-							}).show();
-
-		} else {
-			startRecordingService(routeName);
-		}
-
-	}*/
+	/*
+	 * private void doRecord() { String routeFile =
+	 * Helper.getRouteFile(routeName); final File file =
+	 * getFileStreamPath(routeFile); if (file.exists()) { new
+	 * AlertDialog.Builder(this) .setIcon(android.R.drawable.ic_dialog_alert)
+	 * .setTitle(getString(R.string.app_name)) .setMessage(
+	 * getString(R.string.existing_route_question, routeName))
+	 * .setPositiveButton(R.string.overwrite, new
+	 * DialogInterface.OnClickListener() { public void onClick(DialogInterface
+	 * dialog, int which) { file.delete(); startRecordingService(routeName);
+	 * 
+	 * } }) .setNegativeButton(android.R.string.cancel, null)
+	 * .setNeutralButton(R.string.append, new DialogInterface.OnClickListener()
+	 * { public void onClick(DialogInterface dialog, int which) {
+	 * startRecordingService(routeName); }
+	 * 
+	 * }).show();
+	 * 
+	 * } else { startRecordingService(routeName); }
+	 * 
+	 * }
+	 */
 
 	private void setTrackGPSPosition(boolean b) {
 		mTrackGPSPosition = b;
@@ -512,12 +452,6 @@ public class MyMapActivity extends MapActivity {
 		myLocationOverlay.disableMyLocation();
 		myLocationOverlay.disableCompass();
 
-		if (mRecordService != null) {
-			if (mRecordService.isWorking())
-				unbindService(mConnection);
-			mRecordService.OnRecordingRouteUpdated
-					.removeHandler(updateRoutehandler);
-		}
 		super.onPause();
 	}
 
@@ -533,11 +467,6 @@ public class MyMapActivity extends MapActivity {
 		if (mTrackGPSPosition)
 			myLocationOverlay.enableMyLocation();
 		myLocationOverlay.enableCompass();
-
-		if (Helper.isRecordingServiceRunning(this)) {
-			Intent myIntent = new Intent(this, RecordRouteService.class);
-			bindService(myIntent, mConnection, Context.BIND_AUTO_CREATE);
-		}
 
 		super.onResume();
 	}
@@ -571,16 +500,6 @@ public class MyMapActivity extends MapActivity {
 							}
 						}).setPositiveButton(android.R.string.ok, null).show();
 
-	}
-	public void notifyMessage(int id) {
-		TextView tv = (TextView) findViewById(R.id.textViewNotification);
-		LinearLayout l = (LinearLayout) findViewById(R.id.layoutNotification);
-		if (id == -1)
-			l.setVisibility(View.GONE);
-		else {
-			l.setVisibility(View.VISIBLE);
-			tv.setText(id);
-		}
 	}
 
 }
