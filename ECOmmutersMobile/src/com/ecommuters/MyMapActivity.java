@@ -320,12 +320,11 @@ public class MyMapActivity extends MapActivity {
 		askRouteName(new OnRouteSelected() {
 			public void select(String routeName) {
 				try {
-					File routeFile = getFileStreamPath(Helper
-							.getRouteFile(routeName));
-					recordingFile.renameTo(routeFile);
-
-					Helper.copyFile(routeFile, getFileStreamPath(Helper
-							.getRouteFileToSend(routeName)), false);
+					Route r = Route.readRoute(MyMapActivity.this, Const.RECORDING_ROUTE_FILE);
+					r.setName(routeName);
+					r.save(MyMapActivity.this, Helper.getRouteFile(routeName));
+					r.save(MyMapActivity.this, Helper.getRouteFileToSend(routeName));
+					recordingFile.delete();
 					MyApplication.getInstance().refreshRoutes();
 				} catch (IOException e) {
 					Toast.makeText(MyMapActivity.this, e.getLocalizedMessage(),
