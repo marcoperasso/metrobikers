@@ -96,7 +96,7 @@ public class MyRoutesActivity extends Activity {
 						this,
 						String.format(
 								"Confermi la cancellazione dell'itinerario %s? Potrai comunque scaricarlo nuovamente dal server.",
-								mActiveRoute.getName()), null,
+								mActiveRoute.getName()), 
 						new DialogInterface.OnClickListener() {
 
 							public void onClick(DialogInterface dialog,

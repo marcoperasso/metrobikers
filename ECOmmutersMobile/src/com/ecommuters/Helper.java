@@ -49,7 +49,18 @@ public class Helper {
 				.setNegativeButton(android.R.string.no, cancelListener).show();
 
 	}
+	public static void dialogMessage(final Context context, String message,
+			DialogInterface.OnClickListener okListener,
+			DialogInterface.OnClickListener cancelListener) {
+		dialogMessage(context, message, okListener, cancelListener);
 
+	}
+	public static void dialogMessage(final Context context, int message,
+			DialogInterface.OnClickListener okListener,
+			DialogInterface.OnClickListener cancelListener) {
+		dialogMessage(context, context.getString(message), okListener, cancelListener);
+
+	}
 	public static void dialogMessage(final Context context, int message,
 			int title, DialogInterface.OnClickListener okListener,
 			DialogInterface.OnClickListener cancelListener) {

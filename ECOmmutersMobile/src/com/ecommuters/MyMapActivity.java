@@ -5,9 +5,11 @@ import java.io.IOException;
 import java.util.List;
 
 import android.app.AlertDialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.drawable.Drawable;
 import android.location.LocationManager;
 import android.os.Bundle;
@@ -58,7 +60,39 @@ public class MyMapActivity extends MapActivity {
 
 		}
 	};
+	private BroadcastReceiver recordingServiceStoppedReceiver = new BroadcastReceiver() {
 
+		@Override
+		public void onReceive(Context context, Intent intent) {
+
+			final Route r = (Route) intent
+					.getSerializableExtra(Const.ROUTE_EXTRA);
+			if (r.getPoints().size() == 0)
+				return;
+
+			askRouteName(new OnRouteSelected() {
+				public void select(String routeName) {
+					try {
+						r.setName(routeName);
+						r.save(MyMapActivity.this,
+								Helper.getRouteFile(routeName));
+						r.save(MyMapActivity.this,
+								Helper.getRouteFileToSend(routeName));
+
+						final File recordingFile = getFileStreamPath(Const.RECORDING_ROUTE_FILE);
+						recordingFile.delete();
+						MyApplication.getInstance().refreshRoutes();
+					} catch (IOException e) {
+						Toast.makeText(MyMapActivity.this,
+								e.getLocalizedMessage(), Toast.LENGTH_LONG)
+								.show();
+					}
+					stopRecordingService();
+				}
+
+			});
+		}
+	};
 	private LocationManager mlocManager;
 
 	private Animation mAnimation;
@@ -78,6 +112,9 @@ public class MyMapActivity extends MapActivity {
 		enableGPS();
 
 		MyApplication.getInstance().activateConnector(this);
+
+		IntentFilter intentFilter = new IntentFilter(Const.SERVICE_STOPPED);
+		registerReceiver(recordingServiceStoppedReceiver, intentFilter);
 
 		// testo le credenziali
 		Credentials credential = MySettings.readCredentials(this);
@@ -251,6 +288,7 @@ public class MyMapActivity extends MapActivity {
 	protected void onStop() {
 		MyApplication.getInstance().RouteChanged
 				.removeHandler(mRoutesChangedHandler);
+		unregisterReceiver(recordingServiceStoppedReceiver);
 		super.onStop();
 	}
 	@Override
@@ -273,7 +311,7 @@ public class MyMapActivity extends MapActivity {
 
 	private void toggleRecording() {
 		if (MyApplication.getInstance().isRecording()) {
-			stopRecording();
+			stopRecordingService();
 		} else {
 			startRecordingService();
 		}
@@ -311,30 +349,6 @@ public class MyMapActivity extends MapActivity {
 			startActivity(intent);
 	}
 
-	private void stopRecording() {
-		final File recordingFile = getFileStreamPath(Const.RECORDING_ROUTE_FILE);
-		if (!recordingFile.exists()) {
-			stopRecordingService();
-			return;
-		}
-		askRouteName(new OnRouteSelected() {
-			public void select(String routeName) {
-				try {
-					Route r = Route.readRoute(MyMapActivity.this, Const.RECORDING_ROUTE_FILE);
-					r.setName(routeName);
-					r.save(MyMapActivity.this, Helper.getRouteFile(routeName));
-					r.save(MyMapActivity.this, Helper.getRouteFileToSend(routeName));
-					recordingFile.delete();
-					MyApplication.getInstance().refreshRoutes();
-				} catch (IOException e) {
-					Toast.makeText(MyMapActivity.this, e.getLocalizedMessage(),
-							Toast.LENGTH_LONG).show();
-				}
-				stopRecordingService();
-			}
-
-		});
-	}
 	private void startRecordingService() {
 
 		Intent myIntent = new Intent(this, RecordRouteService.class);
@@ -361,8 +375,32 @@ public class MyMapActivity extends MapActivity {
 		final AlertDialog dialogRoute = builder.create();
 		dialogRoute.show();
 
-		Button theButton = dialogRoute.getButton(DialogInterface.BUTTON_POSITIVE);
-		theButton.setOnClickListener(new View.OnClickListener() {
+		Button cancelButton = dialogRoute
+				.getButton(DialogInterface.BUTTON_NEGATIVE);
+		cancelButton.setOnClickListener(new View.OnClickListener() {
+
+			public void onClick(View v) {
+				dialogRoute.dismiss();
+				final File f = getFileStreamPath(Const.RECORDING_ROUTE_FILE);
+				if (!f.exists())
+					return;
+				Helper.dialogMessage(MyMapActivity.this,
+						R.string.maintain_recording_question, R.string.app_name,
+						null, new DialogInterface.OnClickListener() {
+
+							public void onClick(DialogInterface dialog,
+									int which) {
+								f.delete();
+
+							}
+						});
+
+			}
+		});
+
+		Button okButton = dialogRoute
+				.getButton(DialogInterface.BUTTON_POSITIVE);
+		okButton.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
 				final String routeName = input.getText().toString();
 				if (Helper.isValidRouteName(routeName)) {

@@ -22,7 +22,7 @@ public class RecordRouteService extends IntentService {
 	private LocationManager mlocManager;
 	private LocationListener mLocationListener;
 
-	private Route mRoute = new Route(Const.DEFAULT_ROUTE_NAME);
+	private Route mRoute;
 	private boolean routeModified = false;
 	private NotificationManager mNotificationManager;
 
@@ -55,6 +55,11 @@ public class RecordRouteService extends IntentService {
 			}
 		}
 
+		Intent new_intent = new Intent();
+		new_intent.putExtra(Const.ROUTE_EXTRA, mRoute);
+		new_intent.setAction(Const.SERVICE_STOPPED);
+		sendBroadcast(new_intent);
+
 	}
 
 	private void setNotification(String message) {
@@ -83,6 +88,9 @@ public class RecordRouteService extends IntentService {
 
 	@Override
 	public void onCreate() {
+		mRoute = Route.readRoute(this, Const.RECORDING_ROUTE_FILE);
+		if (mRoute == null)
+			mRoute = new Route(Const.DEFAULT_ROUTE_NAME);
 		MyApplication.getInstance().setRecordingService(this);
 		Toast.makeText(this, R.string.recording_started, Toast.LENGTH_LONG)
 				.show();
@@ -131,7 +139,7 @@ public class RecordRouteService extends IntentService {
 
 		};
 		mlocManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
-				6000/* 6 secondi */, 1/* un metro */, mLocationListener);
+				6000/* 6 secondi */, 2/* due metri */, mLocationListener);
 
 		super.onCreate();
 	}
