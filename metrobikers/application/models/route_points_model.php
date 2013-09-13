@@ -33,6 +33,10 @@ class Route_points_model extends MY_Model {
         return $result;
     }
 
+    public function delete_points() {
+        $this->db->where(array('routeid' => $this->routeid));
+        $this->db->delete('routepoints');
+    }
     public function update_point() {
         $this->db->where(array('routeid' => $this->routeid, 'id' => $this->id));
         $this->db->update('routepoints', $this);

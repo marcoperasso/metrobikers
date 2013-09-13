@@ -82,19 +82,17 @@ class Mobile extends MY_Controller {
                     $this->Route_model->latestupdate = max(array(date('Y-m-d H:i:s', $route->latestupdate), $this->Route_model->latestupdate));
                     $this->Route_model->update_route();
                 }
+                
+                $this->Route_points_model->delete_points();
+                
                 foreach ($route->points as $point) {
                     $this->Route_points_model->id = $point->id;
                     $this->Route_points_model->routeid = $this->Route_model->id;
-                    $updating = $this->Route_points_model->get_point();
                     $this->Route_points_model->lat = $point->lat;
                     $this->Route_points_model->lon = $point->lon;
                     $this->Route_points_model->ele = $point->ele;
                     $this->Route_points_model->time = date('Y-m-d H:i:s', $point->time);
-                    if ($updating) {
-                        $this->Route_points_model->update_point();
-                    } else {
-                        $this->Route_points_model->create_point();
-                    }
+                    $this->Route_points_model->create_point();
                 }
                 $this->db->trans_commit();
                 if ($this->db->_error_message()) {
