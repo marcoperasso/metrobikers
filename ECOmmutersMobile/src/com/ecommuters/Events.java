@@ -20,6 +20,11 @@ class TEventHandler<TSender, TArgs> {
 			return handler_list.remove(handler);
 		}
 	}
+	public void clearHandlers() {
+		synchronized (handler_list) {
+			handler_list.clear();
+		}
+	}
 	public void fire(TSender sender, TArgs args) {
 		synchronized (handler_list) {
 			for (TEvent<TSender, TArgs> e : handler_list)

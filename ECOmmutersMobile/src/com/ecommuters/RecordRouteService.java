@@ -1,8 +1,6 @@
 package com.ecommuters;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 import android.app.IntentService;
 import android.app.Notification;
@@ -24,27 +22,18 @@ public class RecordRouteService extends IntentService {
 	private LocationManager mlocManager;
 	private LocationListener mLocationListener;
 
-	// acceduto da diversi thread: va sincronizzato
-	// sono i punti registrati ma non ancora salvati
-	private List<RoutePoint> mRecorderLocations = new ArrayList<RoutePoint>();
-
-	// liste accedute dal solo worker thread del servizio, non vanno
-	// sincronizzate
-	// lista dei punti da salvare
-	private List<RoutePoint> mLocationsToSave = new ArrayList<RoutePoint>();
-	// lista dei punti salvati
-	private Route mSavedRoute;
+	private Route mRoute = new Route(Const.DEFAULT_ROUTE_NAME);
+	private boolean routeModified = false;
 	private NotificationManager mNotificationManager;
 
-	EventHandler OnRecordingRouteUpdated = new EventHandler();
-	
 	public RecordRouteService() {
 		super("RegisterRouteService");
 	}
 
 	private int getPoints() {
-		return mRecorderLocations.size() + mLocationsToSave.size()
-				+ mSavedRoute.getPoints().size();
+		synchronized (mRoute) {
+			return mRoute.getPoints().size();
+		}
 	}
 	boolean isWorking() {
 		return working;
@@ -52,18 +41,16 @@ public class RecordRouteService extends IntentService {
 	@Override
 	protected void onHandleIntent(Intent intent) {
 		mNotificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-		String routeFile = Helper.getRouteFile(Const.DEFAULT_ROUTE_NAME);
-		mSavedRoute = Route.readRoute(this, routeFile);
-		if (mSavedRoute == null)
-			mSavedRoute = new Route(Const.DEFAULT_ROUTE_NAME);
 		setNotification(getString(R.string.recording_detail, getPoints()));
-
 		while (working) {
 			try {
 				Thread.sleep(5000);
-				archiveData();
+				if (routeModified)
+					archiveData();
 
 			} catch (InterruptedException e) {
+				Log.e(Const.LogTag, e.getMessage(), e);
+			} catch (IOException e) {
 				Log.e(Const.LogTag, e.getMessage(), e);
 			}
 		}
@@ -83,43 +70,20 @@ public class RecordRouteService extends IntentService {
 				notification);
 	}
 
-	private void archiveData() {
-		if (mLocationsToSave.isEmpty()) {
-			synchronized (mRecorderLocations) {
-				mLocationsToSave.addAll(mRecorderLocations);
-				mRecorderLocations.clear();
-			}
-		}
-
-		if (!mLocationsToSave.isEmpty()) {
-			try {
-				saveLocations();
-			} catch (IOException e) {
-
-				e.printStackTrace();
-			}
+	private void archiveData() throws IOException {
+		synchronized (mRoute) {
+			long latestUpdate = (long) (System.currentTimeMillis() / 1E3);
+			mRoute.setLatestUpdate(latestUpdate);
+			String routeFile = Const.RECORDING_ROUTE_FILE;
+			mRoute.save(this, routeFile);
+			routeModified = false;
 		}
 
 	}
-
-	private void saveLocations() throws IOException {
-		Route r = new Route(Const.DEFAULT_ROUTE_NAME);
-		r.getPoints().addAll(mSavedRoute.getPoints());
-		r.getPoints().addAll(mLocationsToSave);
-		long latestUpdate = (long) (System.currentTimeMillis() / 1E3);
-		r.setLatestUpdate(latestUpdate);
-		String routeFile = Const.RECORDING_ROUTE_FILE;
-		r.save(this, routeFile);
-		mSavedRoute = r;
-		
-		mLocationsToSave.clear();
-
-	}
-	
 
 	@Override
 	public void onCreate() {
-		MyApplication.getInstance().setRecording(true);
+		MyApplication.getInstance().setRecordingService(this);
 		Toast.makeText(this, R.string.recording_started, Toast.LENGTH_LONG)
 				.show();
 		mlocManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
@@ -149,14 +113,20 @@ public class RecordRouteService extends IntentService {
 			}
 
 			public void onLocationChanged(Location location) {
-				synchronized (mRecorderLocations) {
-					mRecorderLocations.add(new RoutePoint(getPoints(),
-							(int) (location.getLatitude() * 1E6),
-							(int) (location.getLongitude() * 1E6), location
+				synchronized (mRoute) {
+					mRoute.getPoints().add(
+							new RoutePoint(getPoints(), (int) (location
+									.getLatitude() * 1E6), (int) (location
+									.getLongitude() * 1E6), location
 									.getAltitude(), (long) (System
 									.currentTimeMillis() / 1E3)));
-					setNotification(getString(R.string.recording_detail, getPoints()));
+					routeModified = true;
+
 				}
+				setNotification(getString(R.string.recording_detail,
+						getPoints()));
+				MyApplication.getInstance().OnRecordingRouteUpdated.fire(this,
+						EventArgs.Empty);
 			}
 
 		};
@@ -166,7 +136,6 @@ public class RecordRouteService extends IntentService {
 		super.onCreate();
 	}
 
-	
 	@Override
 	public void onDestroy() {
 		working = false;
@@ -174,13 +143,13 @@ public class RecordRouteService extends IntentService {
 		Toast.makeText(this, R.string.recording_stopped, Toast.LENGTH_SHORT)
 				.show();
 		mNotificationManager.cancel(Const.RECORDING_NOTIFICATION_ID);
-		MyApplication.getInstance().setRecording(false);
-		
+		MyApplication.getInstance().setRecordingService(null);
+
 		super.onDestroy();
 	}
 
-
-	public Route getSavedRoute() {
-		return mSavedRoute;
+	public Route getRoute() {
+		return mRoute;
 	}
+
 }

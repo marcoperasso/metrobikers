@@ -25,7 +25,6 @@ public class RoutesOverlay extends ItemizedOverlay<OverlayItem> {
 	GeoPoint trackRectOrigin;
 	private TextView mTitleTextView;
 	int currentZoomLevel = -1;
-	private RecordRouteService mRecordService;
 
 	public RoutesOverlay(Drawable defaultMarker, MyMapActivity context,
 			MyMapView map) {
@@ -96,8 +95,14 @@ public class RoutesOverlay extends ItemizedOverlay<OverlayItem> {
 				continue;
 			drawRoute(Color.BLUE, r, invertX, invertY, topLeft, bottomRight, prj, canvas);
 		}
-		if (mRecordService!=null)
-			drawRoute(Color.RED, mRecordService.getSavedRoute(), invertX, invertY, topLeft, bottomRight, prj, canvas);
+		RecordRouteService recordingService = MyApplication.getInstance().getRecordingService();
+		if (recordingService != null)
+		{
+			Route route = recordingService.getRoute();
+			synchronized (route) {
+				drawRoute(Color.RED, route, invertX, invertY, topLeft, bottomRight, prj, canvas);
+			}
+		}
 
 	}
 	private void drawRoute(int color, Route r, boolean invertX, boolean invertY, GeoPoint topLeft, GeoPoint bottomRight, Projection prj, Canvas canvas) {
@@ -151,10 +156,5 @@ public class RoutesOverlay extends ItemizedOverlay<OverlayItem> {
 	public void setRoutes(Route[] mRoutes) {
 		this.routes = mRoutes;
 	}
-
-	public void setRecordService(RecordRouteService service) {
-		mRecordService = service;
-
-	}
-
+	
 }

@@ -65,25 +65,7 @@ public class MyRoutesActivity extends Activity {
 		if (mRoutes.length == 0)
 			sb.append(getString(R.string.no_routes));
 		List<File> files = Helper.getFiles(this, Const.TOSENDEXT);
-		if (files.size() > 0) {
-			HashMap<String, Integer> map = new HashMap<String, Integer>();
-			for (File f : files) {
-				String name = Helper.getRouteNameFromFileToSend(f.getName());
-				Integer i = map.get(name);
-				if (i == null)
-					i = 1;
-				else
-					i++;
-
-				map.put(name, i);
-			}
-			for (String key : map.keySet()) {
-				sb.append(String
-						.format(getString(R.string.pending_packages),
-								map.get(key), key));
-			}
-		}
-
+		
 		TextView tvDescri = (TextView) findViewById(R.id.textViewDescription);
 		tvDescri.setText(sb.toString());
 

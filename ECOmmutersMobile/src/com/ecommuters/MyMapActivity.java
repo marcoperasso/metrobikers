@@ -1,6 +1,7 @@
 package com.ecommuters;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 import android.app.AlertDialog;
@@ -49,7 +50,7 @@ public class MyMapActivity extends MapActivity {
 	private Route[] mRoutes;
 
 	private GenericEvent mRoutesChangedHandler;
-	private GenericEvent updateRoutehandler = new GenericEvent() {
+	private GenericEvent mUpdateRoutehandler = new GenericEvent() {
 
 		@Override
 		public void onEvent(Object sender, EventArgs args) {
@@ -106,7 +107,7 @@ public class MyMapActivity extends MapActivity {
 		mMap.setSatellite(false);
 		mMap.displayZoomControls(true);
 		int zoomLevel = 15;
-		
+
 		List<Overlay> mapOverlays = mMap.getOverlays();
 		Drawable drawable = this.getResources().getDrawable(
 				R.drawable.ic_routemarker);
@@ -167,7 +168,7 @@ public class MyMapActivity extends MapActivity {
 				toggleRecording();
 			}
 		});
-		
+
 		showStopRecordingButton(MyApplication.getInstance().isRecording());
 		// mTracksOverlay.drawRoutes();
 		// // Look up the AdView as a resource and load a request.
@@ -318,13 +319,31 @@ public class MyMapActivity extends MapActivity {
 		}
 		askRouteName(new OnRouteSelected() {
 			public void select(String routeName) {
-				recordingFile.renameTo(getFileStreamPath(Helper
-						.getFileToSend(routeName)));
+				try {
+					File routeFile = getFileStreamPath(Helper
+							.getRouteFile(routeName));
+					recordingFile.renameTo(routeFile);
+
+					Helper.copyFile(routeFile, getFileStreamPath(Helper
+							.getRouteFileToSend(routeName)), false);
+					MyApplication.getInstance().refreshRoutes();
+				} catch (IOException e) {
+					Toast.makeText(MyMapActivity.this, e.getLocalizedMessage(),
+							Toast.LENGTH_LONG).show();
+				}
 				stopRecordingService();
 			}
 
 		});
 	}
+	private void startRecordingService() {
+
+		Intent myIntent = new Intent(this, RecordRouteService.class);
+		startService(myIntent);
+
+		showStopRecordingButton(true);
+	}
+
 	private void stopRecordingService() {
 		Intent myIntent = new Intent(getBaseContext(), RecordRouteService.class);
 		stopService(myIntent);
@@ -340,15 +359,14 @@ public class MyMapActivity extends MapActivity {
 				.setMessage(R.string.insert_route_name).setView(input)
 				.setPositiveButton(android.R.string.ok, null)
 				.setNegativeButton(android.R.string.cancel, null);
-		final AlertDialog dialog = builder.create();
-		dialog.show();
+		final AlertDialog dialogRoute = builder.create();
+		dialogRoute.show();
 
-		Button theButton = dialog.getButton(DialogInterface.BUTTON_POSITIVE);
+		Button theButton = dialogRoute.getButton(DialogInterface.BUTTON_POSITIVE);
 		theButton.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
 				final String routeName = input.getText().toString();
 				if (Helper.isValidRouteName(routeName)) {
-
 					final File fileStreamPath = getFileStreamPath(Helper
 							.getRouteFile(routeName));
 					if (fileStreamPath.exists()) {
@@ -356,21 +374,20 @@ public class MyMapActivity extends MapActivity {
 								R.string.overwrite_route_question,
 								R.string.app_name,
 								new DialogInterface.OnClickListener() {
-
 									public void onClick(DialogInterface dialog,
 											int which) {
 										fileStreamPath.delete();
-										dialog.dismiss();
+										dialogRoute.dismiss();
 										onSelected.select(routeName);
 
 									}
 								}, null);
 					} else {
-						dialog.dismiss();
+						dialogRoute.dismiss();
 						onSelected.select(routeName);
 					}
 				} else {
-					Toast.makeText(dialog.getContext(),
+					Toast.makeText(dialogRoute.getContext(),
 							R.string.insert_route_name, Toast.LENGTH_SHORT)
 							.show();
 				}
@@ -449,26 +466,21 @@ public class MyMapActivity extends MapActivity {
 
 	@Override
 	protected void onPause() {
-		myLocationOverlay.disableMyLocation();
-		myLocationOverlay.disableCompass();
-
 		super.onPause();
+		myLocationOverlay.disableMyLocation();
+		// myLocationOverlay.disableCompass();
+		MyApplication.getInstance().OnRecordingRouteUpdated
+				.removeHandler(mUpdateRoutehandler);
 	}
 
-	private void startRecordingService() {
-
-		Intent myIntent = new Intent(this, RecordRouteService.class);
-		startService(myIntent);
-
-		showStopRecordingButton(true);
-	}
 	@Override
 	protected void onResume() {
+		super.onResume();
 		if (mTrackGPSPosition)
 			myLocationOverlay.enableMyLocation();
-		myLocationOverlay.enableCompass();
-
-		super.onResume();
+		// myLocationOverlay.enableCompass();
+		MyApplication.getInstance().OnRecordingRouteUpdated
+				.addHandler(mUpdateRoutehandler);
 	}
 
 	@Override

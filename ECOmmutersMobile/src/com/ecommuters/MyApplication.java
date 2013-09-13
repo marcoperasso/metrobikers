@@ -17,8 +17,8 @@ public class MyApplication extends Application {
 	private ArrayList<Route> mRoutes;
 	private boolean connectorActivated;
 	private boolean sendingData;
-	private boolean recording;
-	
+	private RecordRouteService recordingService;
+	public EventHandler OnRecordingRouteUpdated = new EventHandler();
 	public EventHandler RouteChanged = new EventHandler();
 
 	@Override
@@ -82,9 +82,12 @@ public class MyApplication extends Application {
 		this.sendingData = sendingData;
 	}
 	public boolean isRecording() {
-		return recording;
+		return recordingService != null;
 	}
-	public void setRecording(boolean recording) {
-		this.recording = recording;
+	public RecordRouteService getRecordingService() {
+		return recordingService;
+	}
+	public void setRecordingService(RecordRouteService recordingService) {
+		this.recordingService = recordingService;
 	}
 }

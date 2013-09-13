@@ -1,6 +1,10 @@
 package com.ecommuters;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.channels.FileChannel;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -67,45 +71,69 @@ public class Helper {
 		}
 		return files;
 	}
-	
+
 	public static boolean isValidRouteName(String routeName) {
-		return !isNullOrEmpty(routeName) && routeName.replaceAll(regExp, "_").equals(routeName);
+		return !isNullOrEmpty(routeName)
+				&& routeName.replaceAll(regExp, "_").equals(routeName);
 	}
 	public static String getRouteFile(String routeName) {
-		return routeName.replaceAll(regExp, "_") + Const.ROUTEEXT;
+		return routeName + Const.ROUTEEXT;
 	}
 
-	public static String getFileToSend(String routeName) {
-		return routeName + '.' + Const.TOSENDEXT;
+	public static String getRouteFileToSend(String routeName) {
+		return routeName + Const.TOSENDEXT;
 	}
-	public static String getRouteNameFromFileToSend(String file) {
-		int endIdx = file.indexOf('.');
-		return file.substring(0, endIdx);
+	public static void copyFile(File aSourceFile, File aTargetFile, boolean aAppend) throws IOException {
+		FileChannel inChannel = null;
+		FileChannel outChannel = null;
+		FileInputStream inStream = null;
+		FileOutputStream outStream = null;
+		try {
+			inStream = new FileInputStream(aSourceFile);
+			inChannel = inStream.getChannel();
+			outStream = new FileOutputStream(aTargetFile, aAppend);
+			outChannel = outStream.getChannel();
+			long bytesTransferred = 0;
+			// defensive loop - there's usually only a single iteration :
+			while (bytesTransferred < inChannel.size()) {
+				bytesTransferred += inChannel.transferTo(0, inChannel.size(),
+						outChannel);
+			}
+		} finally {
+			// being defensive about closing all channels and streams
+			if (inChannel != null)
+				inChannel.close();
+			if (outChannel != null)
+				outChannel.close();
+			if (inStream != null)
+				inStream.close();
+			if (outStream != null)
+				outStream.close();
+		}
 	}
-	
+
 	public static final String md5(final String s) {
-	    try {
-	        // Create MD5 Hash
-	        MessageDigest digest = java.security.MessageDigest
-	                .getInstance("MD5");
-	        digest.update(s.getBytes());
-	        byte messageDigest[] = digest.digest();
+		try {
+			// Create MD5 Hash
+			MessageDigest digest = java.security.MessageDigest
+					.getInstance("MD5");
+			digest.update(s.getBytes());
+			byte messageDigest[] = digest.digest();
 
-	        // Create Hex String
-	        StringBuffer hexString = new StringBuffer();
-	        for (int i = 0; i < messageDigest.length; i++) {
-	            String h = Integer.toHexString(0xFF & messageDigest[i]);
-	            while (h.length() < 2)
-	                h = "0" + h;
-	            hexString.append(h);
-	        }
-	        return hexString.toString();
+			// Create Hex String
+			StringBuffer hexString = new StringBuffer();
+			for (int i = 0; i < messageDigest.length; i++) {
+				String h = Integer.toHexString(0xFF & messageDigest[i]);
+				while (h.length() < 2)
+					h = "0" + h;
+				hexString.append(h);
+			}
+			return hexString.toString();
 
-	    } catch (NoSuchAlgorithmException e) {
-	        e.printStackTrace();
-	    }
-	    return "";
+		} catch (NoSuchAlgorithmException e) {
+			e.printStackTrace();
+		}
+		return "";
 	}
 
-	
 }
