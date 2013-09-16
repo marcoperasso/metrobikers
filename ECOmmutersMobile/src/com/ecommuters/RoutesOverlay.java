@@ -52,13 +52,6 @@ public class RoutesOverlay extends ItemizedOverlay<OverlayItem> {
 		mTitleTextView.setTextColor(Color.YELLOW);
 		map.addView(mTitleTextView, mlp);
 
-		/*
-		 * map.setOnDrawListener(new MyMapView.OnDrawListener() {
-		 * 
-		 * public void onDraw() { if (mMap.getZoomLevel() != currentZoomLevel) {
-		 * currentZoomLevel = mMap.getZoomLevel(); // resizeBitmap(); }
-		 * mContext.checkTracks(); } });
-		 */
 		setLastFocusedIndex(-1);
 		populate();
 	}
@@ -149,10 +142,6 @@ public class RoutesOverlay extends ItemizedOverlay<OverlayItem> {
 		}
 	}
 	
-	public Route[] getRoutes() {
-		return routes;
-	}
-
 	public void setRoutes(Route[] mRoutes) {
 		this.routes = mRoutes;
 	}
