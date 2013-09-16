@@ -18,6 +18,7 @@ public class MyApplication extends Application {
 	private boolean connectorActivated;
 	private boolean sendingData;
 	private RecordRouteService recordingService;
+	private ConnectorService connectorService;
 	public EventHandler OnRecordingRouteUpdated = new EventHandler();
 	public EventHandler RouteChanged = new EventHandler();
 
@@ -89,5 +90,13 @@ public class MyApplication extends Application {
 	}
 	public void setRecordingService(RecordRouteService recordingService) {
 		this.recordingService = recordingService;
+	}
+	public void setConnectorService(ConnectorService connectorService) {
+		this.connectorService = connectorService;
+		
+	}
+	public ConnectorService getConnectorService() {
+		return this.connectorService;
+		
 	}
 }

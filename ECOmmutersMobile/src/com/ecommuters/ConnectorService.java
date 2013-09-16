@@ -4,32 +4,99 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
+import org.apache.http.client.ClientProtocolException;
 import org.json.JSONException;
 
 import android.app.IntentService;
+import android.content.Context;
 import android.content.Intent;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
+import android.os.Bundle;
 
 public class ConnectorService extends IntentService {
+
+	private boolean working = false;
+	private LocationManager mlocManager;
+	private LocationListener mLocationListener;
+	private RoutePoint routePoint;
 
 	public ConnectorService() {
 		super("ConnectorService");
 	}
 	@Override
 	public void onCreate() {
+		working = true;
+		
+		mlocManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+		mLocationListener = new LocationListener() {
+
+			
+			public void onLocationChanged(Location location) {
+				routePoint = new RoutePoint(0, (int) (location
+						.getLatitude() * 1E6), (int) (location
+						.getLongitude() * 1E6), location
+						.getAltitude(), (long) (System
+						.currentTimeMillis() / 1E3));
+				try {
+					RequestBuilder.sendPositionData(routePoint);
+				} catch (ClientProtocolException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (JSONException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+
+			public void onProviderDisabled(String provider) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			public void onProviderEnabled(String provider) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			public void onStatusChanged(String provider, int status,
+					Bundle extras) {
+				// TODO Auto-generated method stub
+				
+			}};
+		//mlocManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
+		//		15000/* 15 secondi */, 2/* due metri */, mLocationListener);
+		
+		MyApplication.getInstance().setConnectorService(this);
 		super.onCreate();
 	}
 	@Override
 	public void onDestroy() {
+		working = false;
+		MyApplication.getInstance().setConnectorService(null);
+		//mlocManager.removeUpdates(mLocationListener);
 		super.onDestroy();
 	}
 	protected void onHandleIntent(Intent intent) {
-		try {
-			if (Helper.isOnline(this)) {
-				sendLocations();
-			}
-		} catch (Exception e) {
+		while (working ) {
+			try {
+				if (Helper.isOnline(this)) {
+					sendLocations();
+				}
+			} catch (Exception e) {
 
-			e.printStackTrace();
+				e.printStackTrace();
+			}
+			try {
+				Thread.sleep(30000);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 	}
 

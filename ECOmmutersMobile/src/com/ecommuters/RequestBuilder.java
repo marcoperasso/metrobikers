@@ -27,13 +27,15 @@ import android.webkit.CookieManager;
 public class RequestBuilder {
 	// private static final String host = "http://10.0.2.2:8888/ecommuters/";
 	private static final String host = "http://www.ecommuters.com/";
-	private static final String getGetVersionRequest = host + "mobile/version";
+	private static final String getVersionRequest = host + "mobile/version";
 	private static final String getUserRequest = host + "mobile/user";
 	private static final String getUserLoggedRequest = host
 			+ "mobile/user_logged";
-	private static final String getSendRouteDataRequest = host
+	private static final String sendRouteDataRequest = host
 			+ "mobile/save_route";
-	private static final String getGetRoutesRequest = host
+	private static final String sendPositionDataRequest = host
+			+ "mobile/update_position";
+	private static final String getRoutesRequest = host
 			+ "mobile/get_routes";
 	public static final String HTTP_WWW_ECOMMUTERS_COM_LOGIN = host + "login";
 
@@ -110,7 +112,7 @@ public class RequestBuilder {
 	static int getProtocolVersion() {
 		JSONObject obj;
 		try {
-			obj = sendRequestForObject(getGetVersionRequest, false);
+			obj = sendRequestForObject(getVersionRequest, false);
 			return obj == null ? -1 : obj.getInt("version");
 		} catch (ClientProtocolException e) {
 			Log.e("json", e.toString());
@@ -152,7 +154,7 @@ public class RequestBuilder {
 	public static boolean sendRouteData(Route route) throws JSONException,
 			ClientProtocolException, IOException {
 
-		JSONObject response = postRequest(getSendRouteDataRequest, route, true);
+		JSONObject response = postRequest(sendRouteDataRequest, route, true);
 		return response.has("saved") && response.getBoolean("saved");
 
 	}
@@ -160,11 +162,16 @@ public class RequestBuilder {
 	public static List<Route> getRoutes() throws ClientProtocolException,
 			JSONException, IOException {
 		List<Route> routes = new ArrayList<Route>();
-		JSONArray response = sendRequestForArray(getGetRoutesRequest, true);
+		JSONArray response = sendRequestForArray(getRoutesRequest, true);
 		for (int i = 0; i < response.length(); i++) {
 			routes.add(Route.parseJSON(response.getJSONObject(i)));
 		}
 		return routes;
+	}
+	public static boolean sendPositionData(RoutePoint routePoint) throws JSONException, ClientProtocolException, IOException {
+		JSONObject response = postRequest(sendPositionDataRequest, routePoint, true);
+		return response.has("saved") && response.getBoolean("saved");
+		
 	}
 
 }

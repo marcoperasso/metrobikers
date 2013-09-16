@@ -114,9 +114,7 @@ public class MyMapActivity extends MapActivity {
 
 		MyApplication.getInstance().activateConnector(this);
 
-		IntentFilter intentFilter = new IntentFilter(Const.SERVICE_STOPPED);
-		registerReceiver(recordingServiceStoppedReceiver, intentFilter);
-
+		
 		// testo le credenziali
 		Credentials credential = MySettings.readCredentials(this);
 		if (credential.isEmpty()) {
@@ -169,8 +167,6 @@ public class MyMapActivity extends MapActivity {
 				mMap.invalidate();
 			}
 		};
-		MyApplication.getInstance().RouteChanged
-				.addHandler(mRoutesChangedHandler);
 		mController.setZoom(zoomLevel);
 
 		Button btn = (Button) findViewById(R.id.buttonRecord);
@@ -285,9 +281,6 @@ public class MyMapActivity extends MapActivity {
 	}
 	@Override
 	protected void onStop() {
-		MyApplication.getInstance().RouteChanged
-				.removeHandler(mRoutesChangedHandler);
-		unregisterReceiver(recordingServiceStoppedReceiver);
 		super.onStop();
 	}
 	@Override
@@ -507,6 +500,9 @@ public class MyMapActivity extends MapActivity {
 		// myLocationOverlay.disableCompass();
 		MyApplication.getInstance().OnRecordingRouteUpdated
 				.removeHandler(mUpdateRoutehandler);
+		
+		MyApplication.getInstance().RouteChanged.removeHandler(mRoutesChangedHandler);
+		unregisterReceiver(recordingServiceStoppedReceiver);
 	}
 
 	@Override
@@ -517,6 +513,11 @@ public class MyMapActivity extends MapActivity {
 		// myLocationOverlay.enableCompass();
 		MyApplication.getInstance().OnRecordingRouteUpdated
 				.addHandler(mUpdateRoutehandler);
+		IntentFilter intentFilter = new IntentFilter(Const.SERVICE_STOPPED);
+		registerReceiver(recordingServiceStoppedReceiver, intentFilter);
+		MyApplication.getInstance().RouteChanged.addHandler(mRoutesChangedHandler);
+
+		showStopRecordingButton(MyApplication.getInstance().isRecording());
 	}
 
 	@Override
