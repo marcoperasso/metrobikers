@@ -20,6 +20,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup.LayoutParams;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.LinearInterpolator;
@@ -124,18 +125,7 @@ public class MyMapActivity extends MapActivity {
 			// facendo una login, altrimenti controllando che non siano vuote),
 			// se non sono buone esco
 			showCredentialsDialog(true);
-		} else {
-			// se ci sono le credenziali e sono online, le testo
-			credential.testLogin(this, new OnAsyncResponse() {
-				public void response(boolean success, String message) {
-					if (success)
-						writeUserInfo();
-					else
-						finish();
-
-				}
-			});
-		}
+		} 
 
 		mTrackGPSPosition = MySettings.getTrackGPSPosition(this);
 
@@ -216,12 +206,21 @@ public class MyMapActivity extends MapActivity {
 
 	private void showStopRecordingButton(Boolean show) {
 		Button btn = (Button) findViewById(R.id.buttonRecord);
+		final float scale = getResources().getDisplayMetrics().density;
+		
 		if (show) {
 			btn.setAnimation(mAnimation);
-			btn.setVisibility(View.VISIBLE);
+			
+			LayoutParams layoutParams = btn.getLayoutParams();
+			layoutParams.width = (int) (100 * scale + 0.5f);
+			layoutParams.height = (int) (100 * scale + 0.5f);
+			btn.setLayoutParams(layoutParams);
 			mAnimation.start();
 		} else {
-			btn.setVisibility(View.GONE);
+			LayoutParams layoutParams = btn.getLayoutParams();
+			layoutParams.width = (int) (50 * scale + 0.5f);
+			layoutParams.height = (int) (50 * scale + 0.5f);
+			btn.setLayoutParams(layoutParams);
 			btn.setAnimation(null);
 			mAnimation.cancel();
 		}
