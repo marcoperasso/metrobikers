@@ -35,24 +35,6 @@ table.heading
 .invalid{
     outline: red solid 2px;
 }
-.button {
-    background-color: #FF7D04;
-    font: inherit;
-    text-decoration: none;
-    color: inherit;
-    padding: 2px 6px 2px 6px;
-    border-top: 1px solid #CCCCCC;
-    border-right: 1px solid #333333;
-    border-bottom: 1px solid #333333;
-    border-left: 1px solid #CCCCCC;
-    border-radius: 5px;
-}
-.button:active {
-    border-top: 1px solid #333333;
-    border-right: 1px solid #CCCCCC;
-    border-bottom: 1px solid #CCCCCC;
-    border-left: 1px solid #333333;
-}
 .video {
     width: 500px;
     height: 300px;
@@ -67,4 +49,22 @@ table.heading
 }
 .centercontent{
     text-align: center;
+}
+
+/*Bootstrap overrides*/
+.btn-default {
+  color: #FFFFFF;
+  background-color: #FF7D04;
+  background-image: none;
+  background-repeat: none;
+  -webkit-border-radius: 10px;
+  -moz-border-radius: 10px;
+  border-radius: 10px;
+  text-shadow: none;
+  font-weight:bold;
+}
+.btn-default:hover,
+.btn-default:focus {
+  color: #FFFFFF;
+  background-color: #FF7D30;
 }
