@@ -1,9 +1,5 @@
 package com.ecommuters;
 
-import java.io.File;
-import java.util.HashMap;
-import java.util.List;
-
 import android.app.Activity;
 import android.content.DialogInterface;
 import android.os.Bundle;
@@ -64,7 +60,6 @@ public class MyRoutesActivity extends Activity {
 
 		if (mRoutes.length == 0)
 			sb.append(getString(R.string.no_routes));
-		List<File> files = Helper.getFiles(this, Const.TOSENDEXT);
 		
 		TextView tvDescri = (TextView) findViewById(R.id.textViewDescription);
 		tvDescri.setText(sb.toString());

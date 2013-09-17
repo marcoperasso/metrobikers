@@ -16,7 +16,6 @@ public class MyApplication extends Application {
 
 	private ArrayList<Route> mRoutes;
 	private boolean connectorActivated;
-	private boolean sendingData;
 	private RecordRouteService recordingService;
 	private ConnectorService connectorService;
 	public EventHandler OnRecordingRouteUpdated = new EventHandler();
@@ -76,12 +75,7 @@ public class MyApplication extends Application {
 				30 * 1000, pintent);
 		connectorActivated = true;
 	}
-	public boolean isSendingData() {
-		return sendingData;
-	}
-	public void setSendingData(boolean sendingData) {
-		this.sendingData = sendingData;
-	}
+	
 	public boolean isRecording() {
 		return recordingService != null;
 	}

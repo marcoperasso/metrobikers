@@ -4,100 +4,160 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
-import org.apache.http.client.ClientProtocolException;
 import org.json.JSONException;
 
 import android.app.IntentService;
+import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.Debug;
+import android.os.Handler;
+import android.os.IBinder;
+import android.os.Looper;
+import android.os.Message;
+import android.util.Log;
 
-public class ConnectorService extends IntentService {
+public class ConnectorService extends Service {
 
-	private boolean working = false;
 	private LocationManager mlocManager;
 	private LocationListener mLocationListener;
-	private RoutePoint routePoint;
+	private long sendRecordingInterval = 30000;// 30 secondi
+	private long sendPositionInterval = 30000;// 30 secondi
+	private boolean isRequestingLocation = false;
+	private long latestSendPositionTime = 0;
+	private long latestSendRecordingTime = 0;
+	private boolean isSendingData;
+	private Thread mWorkerThread;
+	private Handler mHandler;
+	private Runnable threadProcedureRunnable;
 
 	public ConnectorService() {
-		super("ConnectorService");
 	}
-	@Override
 	public void onCreate() {
-		working = true;
-		
+		mWorkerThread = new Thread(new Runnable() {
+
+			public void run() {
+
+				Looper.prepare();
+				mHandler = new Handler();
+				onThreadProcedure();
+				Looper.loop();
+				Log.d("ECOMMUTERS", "Worker thread ended");
+
+				mlocManager.removeUpdates(mLocationListener);
+				isRequestingLocation = false;
+
+			}
+		});
+
+		threadProcedureRunnable = new Runnable() {
+			public void run() {
+				onThreadProcedure();
+			}
+		};
+
+		mWorkerThread.setDaemon(true);
+		mWorkerThread.start();
 		mlocManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 		mLocationListener = new LocationListener() {
 
-			
 			public void onLocationChanged(Location location) {
-				routePoint = new RoutePoint(0, (int) (location
-						.getLatitude() * 1E6), (int) (location
-						.getLongitude() * 1E6), location
-						.getAltitude(), (long) (System
-						.currentTimeMillis() / 1E3));
-				try {
-					RequestBuilder.sendPositionData(routePoint);
-				} catch (ClientProtocolException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (JSONException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+				recordLocation(location);
 			}
 
 			public void onProviderDisabled(String provider) {
-				// TODO Auto-generated method stub
-				
 			}
 
 			public void onProviderEnabled(String provider) {
-				// TODO Auto-generated method stub
-				
 			}
-
 			public void onStatusChanged(String provider, int status,
 					Bundle extras) {
-				// TODO Auto-generated method stub
-				
-			}};
-		//mlocManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
-		//		15000/* 15 secondi */, 2/* due metri */, mLocationListener);
-		
+			}
+		};
+
 		MyApplication.getInstance().setConnectorService(this);
 		super.onCreate();
 	}
+
+	private void recordLocation(Location location) {
+		RoutePoint routePoint = new RoutePoint(0,
+				(int) (location.getLatitude() * 1E6),
+				(int) (location.getLongitude() * 1E6),
+				(long) (System.currentTimeMillis() / 1E3));
+		mlocManager.removeUpdates(mLocationListener);
+		isRequestingLocation = false;
+		sendMyPosition(routePoint);
+	}
+	private void sendMyPosition(final RoutePoint routePoint) {
+		if (!Helper.isOnline(ConnectorService.this))
+			return;
+
+		testCredentials(new OnAsyncResponse() {
+			public void response(boolean success, String message) {
+
+				if (!success)
+					return;
+				try {
+					RequestBuilder.sendPositionData(routePoint);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+
+			}
+		});
+		latestSendPositionTime = System.currentTimeMillis();
+	}
+
 	@Override
 	public void onDestroy() {
-		working = false;
 		MyApplication.getInstance().setConnectorService(null);
-		//mlocManager.removeUpdates(mLocationListener);
+		mHandler.post(new Runnable() {
+
+			public void run() {
+				Looper.myLooper().quit();
+
+			}
+		});
 		super.onDestroy();
 	}
-	protected void onHandleIntent(Intent intent) {
-		while (working ) {
-			try {
-				if (Helper.isOnline(this)) {
-					sendLocations();
-				}
-			} catch (Exception e) {
 
-				e.printStackTrace();
+	protected void onThreadProcedure() {
+		try {
+			if (Helper.isOnline(this)) {
+				if (!isSendingData
+						&& (System.currentTimeMillis() - latestSendRecordingTime) > sendRecordingInterval) {
+					sendLocations();
+					latestSendRecordingTime = System.currentTimeMillis();
+				}
+
+				if (!isRequestingLocation
+						&& (System.currentTimeMillis() - latestSendPositionTime) > sendPositionInterval
+						&& mlocManager
+								.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+					mlocManager.requestLocationUpdates(
+							LocationManager.GPS_PROVIDER, 0, 0,
+							mLocationListener);
+					isRequestingLocation = true;
+				}
 			}
-			try {
-				Thread.sleep(30000);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+		} catch (Exception e) {
+
+			e.printStackTrace();
 		}
+		try {
+			Thread.sleep(1000);
+
+			mHandler.post(threadProcedureRunnable);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 	}
 
 	private void downloadRoutes() throws IOException, JSONException {
@@ -133,13 +193,13 @@ public class ConnectorService extends IntentService {
 	}
 
 	private void sendLocations() {
-		if (MyApplication.getInstance().isSendingData())
+		if (isSendingData)
 			return;
-		MyApplication.getInstance().setSendingData(true);
+		isSendingData = true;
 		final List<File> files = Helper.getFiles(this, Const.TOSENDEXT);
 
 		if (files.size() == 0) {
-			MyApplication.getInstance().setSendingData(false);
+			isSendingData = false;
 			return;
 		}
 
@@ -156,13 +216,13 @@ public class ConnectorService extends IntentService {
 							if (route != null
 									&& RequestBuilder.sendRouteData(route))
 								file.delete();
-							// TODO refresh dei soli frammenti da mandare
+
 						} catch (Exception e) {
 							e.printStackTrace();
 						}
 					}
 				} finally {
-
+					isSendingData = false;
 				}
 
 			}
@@ -181,5 +241,10 @@ public class ConnectorService extends IntentService {
 			return;
 		}
 		credential.testLogin(this, testResponse);
+	}
+	@Override
+	public IBinder onBind(Intent intent) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

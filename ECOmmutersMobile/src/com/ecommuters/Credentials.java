@@ -60,7 +60,7 @@ public class Credentials {
 		final WebView webView = new WebView(context);
 		class AutologinObject {
 			boolean timeout = false;
-			Timer timer = new Timer();
+			Timer timer = new Timer(true);
 			
 			@SuppressWarnings("unused")
 			public String getUser() {

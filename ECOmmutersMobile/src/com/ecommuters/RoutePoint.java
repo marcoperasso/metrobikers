@@ -15,8 +15,8 @@ public class RoutePoint extends GpsPoint
 	private static final long serialVersionUID = 4639726905468751875L;
 	int id;
 
-	public RoutePoint(int id, int lat, int lon, double ele, long unixTime) {
-		super(lat, lon, ele, unixTime);
+	public RoutePoint(int id, int lat, int lon, long unixTime) {
+		super(lat, lon, unixTime);
 		this.id = id;
 	}
 
@@ -25,7 +25,6 @@ public class RoutePoint extends GpsPoint
 		obj.put("id", id);
 		obj.put("lat", lat);
 		obj.put("lon", lon);
-		obj.put("ele", ele);
 		obj.put("time", unixTime);
 		return obj;
 	}
@@ -34,6 +33,6 @@ public class RoutePoint extends GpsPoint
 			throws JSONException {
 		return new RoutePoint(jsonObject.getInt("id"),
 				jsonObject.getInt("lat"), jsonObject.getInt("lon"),
-				jsonObject.getDouble("ele"), jsonObject.getLong("time"));
+				jsonObject.getLong("time"));
 	}
 }

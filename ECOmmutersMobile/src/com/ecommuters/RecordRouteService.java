@@ -125,8 +125,8 @@ public class RecordRouteService extends IntentService {
 					mRoute.getPoints().add(
 							new RoutePoint(getPoints(), (int) (location
 									.getLatitude() * 1E6), (int) (location
-									.getLongitude() * 1E6), location
-									.getAltitude(), (long) (System
+									.getLongitude() * 1E6), 
+									(long) (System
 									.currentTimeMillis() / 1E3)));
 					routeModified = true;
 
