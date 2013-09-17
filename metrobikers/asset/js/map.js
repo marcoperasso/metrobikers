@@ -4893,7 +4893,6 @@ function GV_Load_Markers_From_Data_Object(data) {
                                     var parts = pm['Point'][p]['coordinates'].split(',');
                                     marker_data['lon'] = parseFloat(parts[0]);
                                     marker_data['lat'] = parseFloat(parts[1]);
-                                    marker_data['ele'] = parseFloat(parts[2]);
                                     if (isNaN(marker_data['lat']) || isNaN(marker_data['lon']) || (marker_data['lat'] == 0 && marker_data['lon'] == 0) || Math.abs(marker_data['lat']) > 90 || Math.abs(marker_data['lon']) > 180 || marker_data['lat'] == undefined || marker_data['lon'] == undefined) {
                                         // invalid coordinates; but note that bad coordinates are the ONLY thing that will prevent a marker from being added to the map
                                     } else {
@@ -5110,7 +5109,6 @@ function GV_Load_Markers_From_Data_Object(data) {
                                         var parts = coords[l].split(',');
                                         var lon = parseFloat(parts[0]);
                                         var lat = parseFloat(parts[1]);
-                                        var ele = parseFloat(parts[2]);
                                         if (Math.abs(lat) <= 90 && Math.abs(lon) <= 180) {
                                             pts.push(new GLatLng(lat, lon));
                                             lat_sum += lat;

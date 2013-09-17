@@ -6,7 +6,6 @@ class Route_points_model extends MY_Model {
     var $routeid;
     var $lat;
     var $lon;
-    var $ele;
     var $time;
 
     public function __construct() {

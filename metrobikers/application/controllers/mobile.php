@@ -62,6 +62,40 @@ class Mobile extends MY_Controller {
                 ->set_output(json_encode($response));
     }
 
+    public function update_position() {
+        $user = get_user();
+        $response = NULL;
+        if ($user == NULL) {
+            $response = array(
+                'saved' => FALSE,
+                'message' => lang('login_requested'));
+        } else {
+            $json = $this->input->post("route");
+            $point = json_decode($json);
+            $this->load->model("User_position_model");
+
+            $this->User_position_model->userid = $user->id;
+            $this->User_position_model->lat = $point->lat;
+            $this->User_position_model->lon = $point->lon;
+            $this->User_position_model->time = date('Y-m-d H:i:s', $point->time);
+            $this->User_position_model->save_position();
+
+            $response = array('saved' => TRUE);
+        }
+        $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode($response));
+    }
+
+    public function get_positions($left, $top, $right, $bottom) {
+        $this->load->model("User_position_model");
+        $this->User_position_model->purge_positions();
+        $response = $this->User_position_model->get_positions($left, $top, $right, $bottom);
+        $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode($response)); 
+    }
+
     public function save_route() {
         $user = get_user();
         $response = NULL;
@@ -82,23 +116,22 @@ class Mobile extends MY_Controller {
                     $this->Route_model->latestupdate = max(array(date('Y-m-d H:i:s', $route->latestupdate), $this->Route_model->latestupdate));
                     $this->Route_model->update_route();
                 }
-                
+
                 $this->Route_points_model->delete_points();
-                
+
                 foreach ($route->points as $point) {
                     $this->Route_points_model->id = $point->id;
                     $this->Route_points_model->routeid = $this->Route_model->id;
                     $this->Route_points_model->lat = $point->lat;
                     $this->Route_points_model->lon = $point->lon;
-                    $this->Route_points_model->ele = $point->ele;
                     $this->Route_points_model->time = date('Y-m-d H:i:s', $point->time);
                     $this->Route_points_model->create_point();
                 }
                 $this->db->trans_commit();
                 if ($this->db->_error_message()) {
                     $response = array(
-                    'saved' => FALSE,
-                    'message' => $this->db->_error_message());
+                        'saved' => FALSE,
+                        'message' => $this->db->_error_message());
                 } else {
                     $response = array(
                         'saved' => TRUE

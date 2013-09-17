@@ -39,7 +39,6 @@ class Download extends MY_Controller {
 
         foreach ($points as $point) {
             $xml .='<trkpt lat="' . $point->lat/1000000 . '" lon="' . $point->lon/1000000 . '">
-        <ele>' . $point->ele . '</ele>
         <time>' . $point->time . '</time>
       </trkpt>';
         };
