@@ -179,32 +179,49 @@
 
     function addTracks()
     {
-<?php if (isset($routes)) {
+<?php
+if (isset($routes)) {
     $index = 0;
-    foreach ($routes as $route) { ?>
-            t = <?php echo$index++; ?>;
-            track = [];
-            trk_info[t] = track;
-            track['name'] = '<?php echo $route->name; ?>';
-            track['desc'] = '<?php echo $route->name; ?>';
-            track['clickable'] = true;
-            track['width'] = 3;
-            track['opacity'] = 0.9;
-            track['outline_color'] = '#000000';
-            track['outline_width'] = 0;
-            track['fill_color'] = '#E60000';
-            track['fill_opacity'] = 0;
+    foreach ($routes as $route) {
+        ?>
+                        t = <?php echo$index++; ?>;
+                        track = [];
+                        trk_info[t] = track;
+                        track['name'] = '<?php echo $route->name; ?>';
+                        track['desc'] = '<?php echo $route->name; ?>';
+                        track['clickable'] = true;
+                        track['width'] = 3;
+                        track['opacity'] = 0.9;
+                        track['outline_color'] = '#000000';
+                        track['outline_width'] = 0;
+                        track['fill_color'] = '#E60000';
+                        track['fill_opacity'] = 0;
 
-            trkSeg = [];
-            trk_segments[t] = trkSeg;
-        <?php for ($i = 0; $i < count($route->points)-1; $i++) { 
+                        trkSeg = [];
+                        trk_segments[t] = trkSeg;
+        <?php
+        for ($i = 0; $i < count($route->points) - 1; $i++) {
             $p1 = $route->points[$i];
-            $p2 = $route->points[$i+1];?>
-                trkSeg.push({color: 'red', points: [[<?php echo $p1->lat/1000000; ?>, <?php echo $p1->lon/1000000; ?>], [<?php echo $p2->lat/1000000; ?>, <?php echo $p2->lon/1000000; ?>]]});
+            $p2 = $route->points[$i + 1];
+            ?>
+                                trkSeg.push({color: 'red', points: [[<?php echo $p1->lat / 1000000; ?>, <?php echo $p1->lon / 1000000; ?>], [<?php echo $p2->lat / 1000000; ?>, <?php echo $p2->lon / 1000000; ?>]]});
         <?php } ?>
-            GV_Draw_Track(t);
-    <?php }
-} ?>
+                        GV_Draw_Track(t);
+        <?php
+    }
+}
+?>
+    }
+   
+    function addMarkers(){
+        jQuery.get("<?php echo base_url() ?>mobile/get_positions/0/0/6000000000/600000000", null, function(data) {
+            if (!data)
+                return;
+            for (var i = 0; i < data.length; i++) {
+                var obj = data[i];
+                GV_Draw_Marker({ lat: obj.lat / 1000000, lon: obj.lon / 1000000, name: obj.name, desc: '', color: 'red' });
+            }
+        });
     }
     function GV_Map() {
         if (GBrowserIsCompatible()) {
@@ -215,7 +232,7 @@
             GV_Setup_Map(gv_options);
             addTracks();
             //GV_Add_Track_to_Tracklist({bullet:'- ',name:trk_info[t]['name'],desc:trk_info[t]['desc'],color:trk_info[t]['color'],number:t});
-            //addMarkers();
+            addMarkers();
 
             if (google.loader.ClientLocation) {
                 var marker = {};

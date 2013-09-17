@@ -1,4 +1,4 @@
-SELECT * FROM metrobikers.userpositions;delimiter $$
+delimiter $$
 
 CREATE TABLE `routepoints` (
   `id` int(11) NOT NULL,
