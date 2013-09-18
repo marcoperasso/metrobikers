@@ -11,8 +11,8 @@
                 <?php $this->load->view('templates/visualheader'); ?>
              </div>
         <div class="row">
-            <div class="col-md-2"></div>
-            <div class="col-md-8">
+            <div class="col-md-1"></div>
+            <div class="col-md-10">
                 <blockquote>
                 <p class="text-center">Sono le azioni che contano.<br />
                     I nostri pensieri, per quanto buoni possano essere, sono perle false fintanto che non vengono trasformati 
@@ -53,7 +53,7 @@
                 ?>
                 <?php $this->load->view('templates/footer'); ?>                
             </div>
-            <div class="col-md-2"></div>
+            <div class="col-md-1"></div>
           </div>
     </body>
 </html>
