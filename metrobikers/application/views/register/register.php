@@ -18,7 +18,7 @@
         <?php echo validation_errors(); ?>
 
         <?php echo form_open('register/register') ?>
-        <div class="centercontent">
+        <div class="text-center">
             <label for="name">Nome</label> 
             <input type="input" name="name" class="required"/><br />
             <label for="surname">Cognome</label> 

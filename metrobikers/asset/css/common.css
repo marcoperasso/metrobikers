@@ -47,9 +47,6 @@ table.heading
     margin-left: auto;
     margin-right: auto;
 }
-.centercontent{
-    text-align: center;
-}
 
 /*Bootstrap overrides*/
 .btn-default {

@@ -83,7 +83,7 @@
         <?php echo validation_errors(); ?>
 
         <?php echo form_open('register/activate',  array('id' => 'completeForm')) ?>
-        <div class="centercontent">
+        <div class="text-center">
             <label for="password1">Choose password</label> 
             <input type="password" name="password1" id="password1" class="required"/><br />
             <label for="password2">Repeat password</label> 
