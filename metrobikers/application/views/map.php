@@ -64,7 +64,6 @@
 if (isset($routes)) {
     foreach ($routes as $route) {
         ?>
-alert("");
                 points = [];
         <?php
         for ($i = 0; $i < count($route->points); $i++) {
