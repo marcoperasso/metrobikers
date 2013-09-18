@@ -3,10 +3,11 @@ package com.ecommuters;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import org.json.JSONException;
 
-import android.app.IntentService;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -14,26 +15,26 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
-import android.os.Debug;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
-import android.os.Message;
 import android.util.Log;
 
 public class ConnectorService extends Service {
 
+	private static final long getLocationTimeout = 10000; // 10 secondi
 	private LocationManager mlocManager;
 	private LocationListener mLocationListener;
-	private long sendRecordingInterval = 30000;// 30 secondi
-	private long sendPositionInterval = 30000;// 30 secondi
-	private boolean isRequestingLocation = false;
-	private long latestSendPositionTime = 0;
-	private long latestSendRecordingTime = 0;
+	private long sendRoutesInterval = 30000;// 30 secondi
+	private long sendPositionInterval = 60000;// 60 secondi
 	private boolean isSendingData;
 	private Thread mWorkerThread;
 	private Handler mHandler;
-	private Runnable threadProcedureRunnable;
+	private Runnable sendRoutesProcedureRunnable;
+	private Runnable sendPositionProcedureRunnable;
+	private Timer requestingLocationTimeout = new Timer(true);
+	private TimerTask getLocationTimerTask;
+	private Runnable removeUpdatesRunnable;
 
 	public ConnectorService() {
 	}
@@ -44,28 +45,43 @@ public class ConnectorService extends Service {
 
 				Looper.prepare();
 				mHandler = new Handler();
-				onThreadProcedure();
+				sendRoutesProcedure();
+				sendPositionProcedure();
 				Looper.loop();
-				Log.d("ECOMMUTERS", "Worker thread ended");
-
 				mlocManager.removeUpdates(mLocationListener);
-				isRequestingLocation = false;
+				getLocationTimerTask = null;
+				Log.d("ECOMMUTERS", "Worker thread ended");
 
 			}
 		});
 
-		threadProcedureRunnable = new Runnable() {
+		sendRoutesProcedureRunnable = new Runnable() {
 			public void run() {
-				onThreadProcedure();
+				sendRoutesProcedure();
+			}
+		};
+		sendPositionProcedureRunnable = new Runnable() {
+			public void run() {
+				sendPositionProcedure();
 			}
 		};
 
+		removeUpdatesRunnable = new Runnable() {
+			public void run() {
+				if (getLocationTimerTask!=null) {
+					mlocManager.removeUpdates(mLocationListener);
+					getLocationTimerTask = null;
+				}
+
+			}
+		};
 		mWorkerThread.setDaemon(true);
 		mWorkerThread.start();
 		mlocManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 		mLocationListener = new LocationListener() {
 
 			public void onLocationChanged(Location location) {
+
 				recordLocation(location);
 			}
 
@@ -89,7 +105,8 @@ public class ConnectorService extends Service {
 				(int) (location.getLongitude() * 1E6),
 				(long) (System.currentTimeMillis() / 1E3));
 		mlocManager.removeUpdates(mLocationListener);
-		isRequestingLocation = false;
+		getLocationTimerTask.cancel();
+		getLocationTimerTask = null;
 		sendMyPosition(routePoint);
 	}
 	private void sendMyPosition(final RoutePoint routePoint) {
@@ -110,7 +127,6 @@ public class ConnectorService extends Service {
 
 			}
 		});
-		latestSendPositionTime = System.currentTimeMillis();
 	}
 
 	@Override
@@ -125,39 +141,36 @@ public class ConnectorService extends Service {
 		});
 		super.onDestroy();
 	}
-
-	protected void onThreadProcedure() {
+	private void sendRoutesProcedure() {
 		try {
-			if (Helper.isOnline(this)) {
-				if (!isSendingData
-						&& (System.currentTimeMillis() - latestSendRecordingTime) > sendRecordingInterval) {
-					sendLocations();
-					latestSendRecordingTime = System.currentTimeMillis();
-				}
-
-				if (!isRequestingLocation
-						&& (System.currentTimeMillis() - latestSendPositionTime) > sendPositionInterval
-						&& mlocManager
-								.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-					mlocManager.requestLocationUpdates(
-							LocationManager.GPS_PROVIDER, 0, 0,
-							mLocationListener);
-					isRequestingLocation = true;
-				}
+			if (Helper.isOnline(this) && !isSendingData)
+				sendLocations();
+		} finally {
+			mHandler.postDelayed(sendRoutesProcedureRunnable,
+					sendRoutesInterval);
+		}
+	}
+	private void sendPositionProcedure() {
+		try {
+			if (Helper.isOnline(this)
+					&& getLocationTimerTask == null
+					&& mlocManager
+							.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+				mlocManager.requestLocationUpdates(
+						LocationManager.GPS_PROVIDER, 0, 0, mLocationListener);
+				getLocationTimerTask = new TimerTask() {
+					@Override
+					public void run() {
+						requestingLocationTimeout.purge();
+						mHandler.post(removeUpdatesRunnable);
+					}
+				};
+				requestingLocationTimeout.schedule(getLocationTimerTask, getLocationTimeout);
 			}
-		} catch (Exception e) {
-
-			e.printStackTrace();
+		} finally {
+			mHandler.postDelayed(sendPositionProcedureRunnable,
+					sendPositionInterval);
 		}
-		try {
-			Thread.sleep(1000);
-
-			mHandler.post(threadProcedureRunnable);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
 	}
 
 	private void downloadRoutes() throws IOException, JSONException {
