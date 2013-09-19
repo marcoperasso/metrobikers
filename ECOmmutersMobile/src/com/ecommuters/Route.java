@@ -113,8 +113,11 @@ public class Route implements IJsonSerializable, Serializable {
 
 		final List<File> files = Helper.getFiles(context, Const.ROUTEEXT);
 		ArrayList<Route> routes = new ArrayList<Route>();
-		for (File f : files)
-			routes.add(readRoute(context, f.getName()));
+		for (File f : files) {
+			Route readRoute = readRoute(context, f.getName());
+			if (readRoute!=null)
+				routes.add(readRoute);
+		}
 		return routes;
 	}
 	public long getLatestUpdate() {
