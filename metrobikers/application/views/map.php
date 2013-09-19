@@ -117,10 +117,10 @@ if (isset($routes)) {
     }
     var map;
     var positions_markers = [];
-    function initialize(position) {
+    function initialize(lat, lon) {
         var mapOptions = {
             zoom: 8,
-            center: new google.maps.LatLng(position.coords.latitude, position.coords.longitude),
+            center: new google.maps.LatLng(lat, lon),
             mapTypeId: google.maps.MapTypeId.ROADMAP
         };
         map = new google.maps.Map(document.getElementById('gmap_div'),
@@ -136,7 +136,20 @@ if (isset($routes)) {
     }
     if (navigator.geolocation)
     {
-        navigator.geolocation.getCurrentPosition(initialize, null);
+        navigator.geolocation.getCurrentPosition(initializeLocation, initializeNoLocation);
+    }
+    else
+    {
+        initializeNoLocation();
+    }
+
+    function initializeLocation(position)
+    {
+        initialize(position.coords.latitude, position.coords.longitude);
+    }
+    function initializeNoLocation()
+    {
+        initialize(44.403373, 8.949738);
     }
 
 </script>
