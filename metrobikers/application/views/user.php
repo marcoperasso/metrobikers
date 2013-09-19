@@ -14,7 +14,7 @@
         <div class="row">
             <div class="col-md-12">
             <h3>I miei dati</h3>
-                email: <?php echo $user->email; ?><br/>
+                email: <?php echo $user->mail; ?><br/>
                 name: <?php echo $user->name; ?><br/>
                 surname: <?php echo $user->surname; ?><br/>
                 birthdate: <?php echo $user->birthdate; ?><br/>
