@@ -93,4 +93,13 @@ public class MyApplication extends Application {
 		return this.connectorService;
 		
 	}
+	public Boolean isLiveTracking() {
+		return connectorService!= null && connectorService.isLiveTracking();
+	}
+	
+	public void setLiveTracking(boolean b)
+	{
+		if (connectorService!= null)
+			connectorService.setLiveTracking(b);
+	}
 }

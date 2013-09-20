@@ -49,5 +49,8 @@
     <string name="record">Record</string>
     <string name="overwrite_route_question">Itinerario già esistente, vuoi sovrascriverlo?</string>
     <string name="maintain_recording_question">Vuoi mantenere i dati registrati?</string>
+    <string name="livetracking">Traccia posizione in tempo reale</string>
+    <string name="live_tracking_on">Live tracking attivato</string>
+    <string name="live_tracking_off">Live tracking disattivato</string>
 
 </resources>

@@ -14,6 +14,7 @@ import android.graphics.drawable.Drawable;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -114,7 +115,6 @@ public class MyMapActivity extends MapActivity {
 
 		MyApplication.getInstance().activateConnector(this);
 
-		
 		// testo le credenziali
 		Credentials credential = MySettings.readCredentials(this);
 		if (credential.isEmpty()) {
@@ -123,7 +123,7 @@ public class MyMapActivity extends MapActivity {
 			// facendo una login, altrimenti controllando che non siano vuote),
 			// se non sono buone esco
 			showCredentialsDialog(true);
-		} 
+		}
 
 		mTrackGPSPosition = MySettings.getTrackGPSPosition(this);
 
@@ -143,7 +143,11 @@ public class MyMapActivity extends MapActivity {
 				mController);
 		myLocationOverlay.runOnFirstFix(new Runnable() {
 			public void run() {
-				mController.animateTo(myLocationOverlay.getMyLocation());
+				try {
+					mController.animateTo(myLocationOverlay.getMyLocation());
+				} catch (Exception ex) {
+					Log.e(getClass().getName(), ex.getLocalizedMessage());
+				}
 			}
 		});
 
@@ -192,21 +196,59 @@ public class MyMapActivity extends MapActivity {
 			}
 		});
 
-		showStopRecordingButton(MyApplication.getInstance().isRecording());
+		btn = (Button) findViewById(R.id.buttonLiveTracking);
+		btn.setOnClickListener(new OnClickListener() {
+			public void onClick(final View view) {
+				toggleLiveTracking();
+			}
+
+		});
+
 		// mTracksOverlay.drawRoutes();
 		// // Look up the AdView as a resource and load a request.
 		// AdView adView = (com.google.ads.AdView) this.findViewById(R.id.ad);
 		// adView.loadAd(new com.google.ads.AdRequest());
 
 	}
+	private void toggleLiveTracking() {
+		boolean b = !MyApplication.getInstance().isLiveTracking();
+		MyApplication.getInstance().setLiveTracking(b);
+		showTrackingButton(MyApplication.getInstance().isLiveTracking());
+		Toast.makeText(MyMapActivity.this,
+				b ? R.string.live_tracking_on : R.string.live_tracking_off,
+				Toast.LENGTH_LONG).show();
 
+	}
 	private void showStopRecordingButton(Boolean show) {
 		Button btn = (Button) findViewById(R.id.buttonRecord);
 		final float scale = getResources().getDisplayMetrics().density;
-		
+
 		if (show) {
 			btn.setAnimation(mAnimation);
-			
+
+			LayoutParams layoutParams = btn.getLayoutParams();
+			layoutParams.width = (int) (100 * scale + 0.5f);
+			layoutParams.height = (int) (100 * scale + 0.5f);
+			btn.setLayoutParams(layoutParams);
+			mAnimation.start();
+		} else {
+			LayoutParams layoutParams = btn.getLayoutParams();
+			layoutParams.width = (int) (50 * scale + 0.5f);
+			layoutParams.height = (int) (50 * scale + 0.5f);
+			btn.setLayoutParams(layoutParams);
+			btn.setAnimation(null);
+			mAnimation.cancel();
+		}
+
+	}
+
+	private void showTrackingButton(Boolean show) {
+		Button btn = (Button) findViewById(R.id.buttonLiveTracking);
+		final float scale = getResources().getDisplayMetrics().density;
+
+		if (show) {
+			btn.setAnimation(mAnimation);
+
 			LayoutParams layoutParams = btn.getLayoutParams();
 			layoutParams.width = (int) (100 * scale + 0.5f);
 			layoutParams.height = (int) (100 * scale + 0.5f);
@@ -377,8 +419,9 @@ public class MyMapActivity extends MapActivity {
 				if (!f.exists())
 					return;
 				Helper.dialogMessage(MyMapActivity.this,
-						R.string.maintain_recording_question, R.string.app_name,
-						null, new DialogInterface.OnClickListener() {
+						R.string.maintain_recording_question,
+						R.string.app_name, null,
+						new DialogInterface.OnClickListener() {
 
 							public void onClick(DialogInterface dialog,
 									int which) {
@@ -500,8 +543,9 @@ public class MyMapActivity extends MapActivity {
 		// myLocationOverlay.disableCompass();
 		MyApplication.getInstance().OnRecordingRouteUpdated
 				.removeHandler(mUpdateRoutehandler);
-		
-		MyApplication.getInstance().RouteChanged.removeHandler(mRoutesChangedHandler);
+
+		MyApplication.getInstance().RouteChanged
+				.removeHandler(mRoutesChangedHandler);
 		unregisterReceiver(recordingServiceStoppedReceiver);
 	}
 
@@ -515,9 +559,11 @@ public class MyMapActivity extends MapActivity {
 				.addHandler(mUpdateRoutehandler);
 		IntentFilter intentFilter = new IntentFilter(Const.SERVICE_STOPPED);
 		registerReceiver(recordingServiceStoppedReceiver, intentFilter);
-		MyApplication.getInstance().RouteChanged.addHandler(mRoutesChangedHandler);
+		MyApplication.getInstance().RouteChanged
+				.addHandler(mRoutesChangedHandler);
 
 		showStopRecordingButton(MyApplication.getInstance().isRecording());
+		showTrackingButton(MyApplication.getInstance().isLiveTracking());
 	}
 
 	@Override

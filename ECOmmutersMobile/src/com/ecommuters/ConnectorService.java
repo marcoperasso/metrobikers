@@ -35,6 +35,8 @@ public class ConnectorService extends Service {
 	private Timer requestingLocationTimeout = new Timer(true);
 	private TimerTask getLocationTimerTask;
 	private Runnable removeUpdatesRunnable;
+	private boolean requestingLocation = false;
+	private boolean liveTracking = false;
 
 	public ConnectorService() {
 	}
@@ -50,6 +52,7 @@ public class ConnectorService extends Service {
 				Looper.loop();
 				mlocManager.removeUpdates(mLocationListener);
 				getLocationTimerTask = null;
+				requestingLocation = false;
 				Log.d("ECOMMUTERS", "Worker thread ended");
 
 			}
@@ -68,8 +71,9 @@ public class ConnectorService extends Service {
 
 		removeUpdatesRunnable = new Runnable() {
 			public void run() {
-				if (getLocationTimerTask!=null) {
+				if (requestingLocation) {
 					mlocManager.removeUpdates(mLocationListener);
+					requestingLocation = false;
 					getLocationTimerTask = null;
 				}
 
@@ -104,9 +108,13 @@ public class ConnectorService extends Service {
 				(int) (location.getLatitude() * 1E6),
 				(int) (location.getLongitude() * 1E6),
 				(long) (System.currentTimeMillis() / 1E3));
-		mlocManager.removeUpdates(mLocationListener);
-		getLocationTimerTask.cancel();
-		getLocationTimerTask = null;
+		if (!liveTracking) {
+			mlocManager.removeUpdates(mLocationListener);
+			if (getLocationTimerTask != null)
+				getLocationTimerTask.cancel();
+			getLocationTimerTask = null;
+			requestingLocation = false;
+		}
 		sendMyPosition(routePoint);
 	}
 	private void sendMyPosition(final RoutePoint routePoint) {
@@ -153,19 +161,27 @@ public class ConnectorService extends Service {
 	private void sendPositionProcedure() {
 		try {
 			if (Helper.isOnline(this)
-					&& getLocationTimerTask == null
+					&& !requestingLocation
 					&& mlocManager
 							.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
 				mlocManager.requestLocationUpdates(
-						LocationManager.GPS_PROVIDER, 0, 0, mLocationListener);
-				getLocationTimerTask = new TimerTask() {
-					@Override
-					public void run() {
-						requestingLocationTimeout.purge();
-						mHandler.post(removeUpdatesRunnable);
-					}
-				};
-				requestingLocationTimeout.schedule(getLocationTimerTask, getLocationTimeout);
+						LocationManager.GPS_PROVIDER, 10000/* 10 secondi */, 2/*
+																		 * due
+																		 * metri
+																		 */,
+						mLocationListener);
+				requestingLocation = true;
+				if (!liveTracking) {
+					getLocationTimerTask = new TimerTask() {
+						@Override
+						public void run() {
+							requestingLocationTimeout.purge();
+							mHandler.post(removeUpdatesRunnable);
+						}
+					};
+					requestingLocationTimeout.schedule(getLocationTimerTask,
+							getLocationTimeout);
+				}
 			}
 		} finally {
 			mHandler.postDelayed(sendPositionProcedureRunnable,
@@ -260,4 +276,14 @@ public class ConnectorService extends Service {
 		// TODO Auto-generated method stub
 		return null;
 	}
+	public boolean isLiveTracking() {
+		return liveTracking;
+	}
+	public void setLiveTracking(boolean b)
+	{
+		this.liveTracking = b;
+		if (!b)
+			mHandler.post(removeUpdatesRunnable);
+	}
+	
 }
