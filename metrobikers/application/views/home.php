@@ -107,11 +107,7 @@
                         verso un futuro in cui in città 
                         saranno poche auto a transitare tra migliaia di biciclette. </p>
                     <br />
-<<<<<<< HEAD
                     <p>Ti riconosci in questi valori? Allora fai il salto, <a href="register" class="btn btn-default">diventa anche tu un ECOmmuter!</a></p>
-=======
-                    <p>Ti riconosci in questi valori? Allora fai il salto: <a href="register" class="btn btn-default">diventa anche tu un ECOmmuter!</a></p>
->>>>>>> 85e8fa0e0fa963108c0976f2eaa3615cb00d5eb4
                     <br />
                     <br />
                     <br />
