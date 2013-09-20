@@ -40,7 +40,7 @@
                         verso un futuro in cui in città 
                         saranno poche auto a transitare tra migliaia di biciclette. </p>
                     <br />
-                    <p>Ti riconosci in questi valori? Bene, <a href="register" class="btn btn-default">diventa anche tu un ECOmmuter!</a></p>
+                    <p>Ti riconosci in questi valori? Allora fai il salto, <a href="register" class="btn btn-default">diventa anche tu un ECOmmuter!</a></p>
                     <br />
                     <br />
                     <br />

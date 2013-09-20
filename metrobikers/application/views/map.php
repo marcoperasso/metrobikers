@@ -85,7 +85,7 @@ if (isset($routes)) {
 
     function refreshPositionMarkers() {
         for (i = 0; i < positions_markers.length; i++)
-            positions_markers[0].setMap(null);
+            positions_markers[i].setMap(null);
         positions_markers.length = 0;
 
         var bounds = map.getBounds();
@@ -129,7 +129,7 @@ if (isset($routes)) {
         addTracks();
 
         google.maps.event.addListener(map, 'bounds_changed', refreshPositionMarkers);
-        setInterval(refreshPositionMarkers, 30000);
+        setInterval(refreshPositionMarkers, 5000);
 
 
 
