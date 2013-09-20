@@ -35,8 +35,9 @@ public class RequestBuilder {
 			+ "mobile/save_route";
 	private static final String sendPositionDataRequest = host
 			+ "mobile/update_position";
-	private static final String getRoutesRequest = host
-			+ "mobile/get_routes";
+	private static final String getRoutesRequest = host + "mobile/get_routes";
+	private static final String getPositionsRequest = host
+			+ "mobile/get_positions";
 	public static final String HTTP_WWW_ECOMMUTERS_COM_LOGIN = host + "login";
 
 	static JSONObject sendRequestForObject(String reqString, Boolean useSession)
@@ -168,10 +169,26 @@ public class RequestBuilder {
 		}
 		return routes;
 	}
-	public static boolean sendPositionData(RoutePoint routePoint) throws JSONException, ClientProtocolException, IOException {
-		JSONObject response = postRequest(sendPositionDataRequest, routePoint, true);
+	public static boolean sendPositionData(RoutePoint routePoint)
+			throws JSONException, ClientProtocolException, IOException {
+		JSONObject response = postRequest(sendPositionDataRequest, routePoint,
+				true);
 		return response.has("saved") && response.getBoolean("saved");
+
+	}
+	public static List<ECommuterPosition> getPositions(int lat1, int lon1, int lat2,
+			int lon2) {
+			List<ECommuterPosition> list = new ArrayList<ECommuterPosition>();
+		try {
+			JSONArray points = sendRequestForArray(
+					getPositionsRequest + "/" + lat2 + "/" + lon1 + "/" + lat1
+							+ "/" + lon2, false);
+			for (int i = 0; i < points.length(); i++)
+				list.add(ECommuterPosition.parseJSON(points.getJSONObject(i)));
+			return list;
+		} catch (Exception e) {
+			return list;
+		}
 		
 	}
-
 }

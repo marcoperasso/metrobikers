@@ -13,6 +13,7 @@ import android.content.IntentFilter;
 import android.graphics.drawable.Drawable;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.Gravity;
@@ -47,12 +48,10 @@ public class MyMapActivity extends MapActivity {
 	private MyLocationOverlay myLocationOverlay;
 	MenuItem mMenuItemTrackGpsPosition;
 
-	private GeoPoint upperLeft;
-	private GeoPoint bottomRight;
-	private boolean retrievingTracks;
-
 	private Route[] mRoutes;
+	private LocationManager mlocManager;
 
+	private Animation mAnimation;
 	private GenericEvent mRoutesChangedHandler;
 	private GenericEvent mUpdateRoutehandler = new GenericEvent() {
 
@@ -95,9 +94,9 @@ public class MyMapActivity extends MapActivity {
 			});
 		}
 	};
-	private LocationManager mlocManager;
 
-	private Animation mAnimation;
+	private Handler mHandler;
+
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -149,6 +148,8 @@ public class MyMapActivity extends MapActivity {
 					Log.e(getClass().getName(), ex.getLocalizedMessage());
 				}
 			}
+			
+			
 		});
 
 		mapOverlays.add(myLocationOverlay);
@@ -203,11 +204,11 @@ public class MyMapActivity extends MapActivity {
 			}
 
 		});
+mHandler = new Handler(){
+	
+};
 
-		// mTracksOverlay.drawRoutes();
-		// // Look up the AdView as a resource and load a request.
-		// AdView adView = (com.google.ads.AdView) this.findViewById(R.id.ad);
-		// adView.loadAd(new com.google.ads.AdRequest());
+		downloadPositions();
 
 	}
 	private void toggleLiveTracking() {
@@ -241,6 +242,23 @@ public class MyMapActivity extends MapActivity {
 		}
 
 	}
+	
+	public void downloadPositions() {
+			GeoPoint ul = mMap.getProjection().fromPixels(0, 0);
+			GeoPoint br = mMap.getProjection().fromPixels(mMap.getWidth(),
+					mMap.getHeight());
+
+			List<ECommuterPosition> positions = RequestBuilder.getPositions(ul.getLatitudeE6(), ul.getLongitudeE6(), br.getLatitudeE6(), br.getLongitudeE6());
+			mTracksOverlay.setPositions(positions);
+			
+			mHandler.postDelayed(new Runnable(){
+
+				public void run() {
+					downloadPositions();
+					
+				}}, 5000);
+	}
+
 
 	private void showTrackingButton(Boolean show) {
 		Button btn = (Button) findViewById(R.id.buttonLiveTracking);
@@ -505,20 +523,6 @@ public class MyMapActivity extends MapActivity {
 			myLocationOverlay.disableMyLocation();
 	}
 
-	public void checkTracks() {
-		if (!retrievingTracks) {
-			GeoPoint ul = mMap.getProjection().fromPixels(0, 0);
-			GeoPoint br = mMap.getProjection().fromPixels(mMap.getWidth(),
-					mMap.getHeight());
-
-			if (!ul.equals(upperLeft) || !br.equals(bottomRight)) {
-				upperLeft = ul;
-				bottomRight = br;
-
-			}
-		}
-
-	}
 
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {

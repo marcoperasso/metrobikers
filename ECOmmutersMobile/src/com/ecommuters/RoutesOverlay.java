@@ -1,5 +1,8 @@
 package com.ecommuters;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -25,6 +28,7 @@ public class RoutesOverlay extends ItemizedOverlay<OverlayItem> {
 	GeoPoint trackRectOrigin;
 	private TextView mTitleTextView;
 	int currentZoomLevel = -1;
+	private ArrayList<PositionOverlayItem> mOverlays = new ArrayList<PositionOverlayItem>();
 
 	public RoutesOverlay(Drawable defaultMarker, MyMapActivity context,
 			MyMapView map) {
@@ -53,17 +57,18 @@ public class RoutesOverlay extends ItemizedOverlay<OverlayItem> {
 		map.addView(mTitleTextView, mlp);
 
 		setLastFocusedIndex(-1);
+
 		populate();
 	}
 
 	@Override
 	protected OverlayItem createItem(int i) {
-		return null;
+		return mOverlays.get(i);
 	}
 
 	@Override
 	public int size() {
-		return 0;
+		return mOverlays.size();
 	}
 
 	@Override
@@ -86,19 +91,23 @@ public class RoutesOverlay extends ItemizedOverlay<OverlayItem> {
 		for (Route r : routes) {
 			if (MySettings.isHiddenRoute(mContext, r.getName()))
 				continue;
-			drawRoute(Color.BLUE, r, invertX, invertY, topLeft, bottomRight, prj, canvas);
+			drawRoute(Color.BLUE, r, invertX, invertY, topLeft, bottomRight,
+					prj, canvas);
 		}
-		RecordRouteService recordingService = MyApplication.getInstance().getRecordingService();
-		if (recordingService != null)
-		{
+		RecordRouteService recordingService = MyApplication.getInstance()
+				.getRecordingService();
+		if (recordingService != null) {
 			Route route = recordingService.getRoute();
 			synchronized (route) {
-				drawRoute(Color.RED, route, invertX, invertY, topLeft, bottomRight, prj, canvas);
+				drawRoute(Color.RED, route, invertX, invertY, topLeft,
+						bottomRight, prj, canvas);
 			}
 		}
 
 	}
-	private void drawRoute(int color, Route r, boolean invertX, boolean invertY, GeoPoint topLeft, GeoPoint bottomRight, Projection prj, Canvas canvas) {
+	private void drawRoute(int color, Route r, boolean invertX,
+			boolean invertY, GeoPoint topLeft, GeoPoint bottomRight,
+			Projection prj, Canvas canvas) {
 		pnt.setColor(color);
 		Point p1 = new Point(), p2 = new Point();
 		RoutePoint rp1 = null;
@@ -127,8 +136,7 @@ public class RoutesOverlay extends ItemizedOverlay<OverlayItem> {
 
 				if (null != rp1) {
 					if (!p1Calculated) {
-						prj.toPixels(
-								new GeoPoint(rp1.lat, rp1.lon), p1);
+						prj.toPixels(new GeoPoint(rp1.lat, rp1.lon), p1);
 						p1Calculated = true;
 					}
 					prj.toPixels(new GeoPoint(pt.lat, pt.lon), p2);
@@ -141,9 +149,21 @@ public class RoutesOverlay extends ItemizedOverlay<OverlayItem> {
 			}
 		}
 	}
-	
+
 	public void setRoutes(Route[] mRoutes) {
 		this.routes = mRoutes;
 	}
-	
+
+	public void setPositions(List<ECommuterPosition> positions) {
+		mOverlays.clear();
+		for (ECommuterPosition pt : positions) {
+			GeoPoint point = new GeoPoint(pt.lat, pt.lon);
+			PositionOverlayItem overlayitem = new PositionOverlayItem(point,
+					"aa", "bb");
+			mOverlays.add(overlayitem);
+		}
+		populate();
+
+	}
+
 }
