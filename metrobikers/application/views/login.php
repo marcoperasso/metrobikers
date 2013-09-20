@@ -40,7 +40,7 @@
                     if (!data.success)
                         alert(data.message);
                     else
-                        location.reload(true);
+                        window.location.href = "<?php echo base_url_considering_mobile() ?>user";
                 }
             });
         }, "text");
