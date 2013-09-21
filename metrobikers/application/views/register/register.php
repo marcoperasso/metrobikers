@@ -10,7 +10,9 @@
 
         <div class="row">
             <div class="col-md-12">
-                <?php $this->load->view('templates/visualheader'); ?> 
+                <a href="/" title="Vai alla pagina principale">
+                    <img src="<?php echo base_url() ?>asset/img/logo.png" id="ecommuter_logo" class="logo">
+                </a>
             </div>
         </div>
 
