@@ -182,7 +182,7 @@ public class RequestBuilder {
 		try {
 			JSONArray points = sendRequestForArray(
 					getPositionsRequest + "/" + lat2 + "/" + lon1 + "/" + lat1
-							+ "/" + lon2, false);
+							+ "/" + lon2, isLogged());
 			for (int i = 0; i < points.length(); i++)
 				list.add(ECommuterPosition.parseJSON(points.getJSONObject(i)));
 			return list;

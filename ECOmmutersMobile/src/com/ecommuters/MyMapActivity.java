@@ -13,7 +13,6 @@ import android.content.IntentFilter;
 import android.graphics.drawable.Drawable;
 import android.location.LocationManager;
 import android.os.Bundle;
-import android.os.Handler;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.Gravity;
@@ -53,6 +52,9 @@ public class MyMapActivity extends MapActivity {
 
 	private Animation mAnimation;
 	private GenericEvent mRoutesChangedHandler;
+	
+	private PositionsDownlader mPositionsDownloader;
+	
 	private GenericEvent mUpdateRoutehandler = new GenericEvent() {
 
 		@Override
@@ -95,7 +97,9 @@ public class MyMapActivity extends MapActivity {
 		}
 	};
 
-	private Handler mHandler;
+	private Runnable downloadPositionsRunnable;
+
+	
 
 	/** Called when the activity is first created. */
 	@Override
@@ -148,8 +152,7 @@ public class MyMapActivity extends MapActivity {
 					Log.e(getClass().getName(), ex.getLocalizedMessage());
 				}
 			}
-			
-			
+
 		});
 
 		mapOverlays.add(myLocationOverlay);
@@ -204,13 +207,11 @@ public class MyMapActivity extends MapActivity {
 			}
 
 		});
-mHandler = new Handler(){
-	
-};
-
-		downloadPositions();
+		mPositionsDownloader = new PositionsDownlader(mMap, mTracksOverlay, this);
+		
 
 	}
+
 	private void toggleLiveTracking() {
 		boolean b = !MyApplication.getInstance().isLiveTracking();
 		MyApplication.getInstance().setLiveTracking(b);
@@ -220,6 +221,7 @@ mHandler = new Handler(){
 				Toast.LENGTH_LONG).show();
 
 	}
+
 	private void showStopRecordingButton(Boolean show) {
 		Button btn = (Button) findViewById(R.id.buttonRecord);
 		final float scale = getResources().getDisplayMetrics().density;
@@ -242,23 +244,8 @@ mHandler = new Handler(){
 		}
 
 	}
+
 	
-	public void downloadPositions() {
-			GeoPoint ul = mMap.getProjection().fromPixels(0, 0);
-			GeoPoint br = mMap.getProjection().fromPixels(mMap.getWidth(),
-					mMap.getHeight());
-
-			List<ECommuterPosition> positions = RequestBuilder.getPositions(ul.getLatitudeE6(), ul.getLongitudeE6(), br.getLatitudeE6(), br.getLongitudeE6());
-			mTracksOverlay.setPositions(positions);
-			
-			mHandler.postDelayed(new Runnable(){
-
-				public void run() {
-					downloadPositions();
-					
-				}}, 5000);
-	}
-
 
 	private void showTrackingButton(Boolean show) {
 		Button btn = (Button) findViewById(R.id.buttonLiveTracking);
@@ -282,6 +269,7 @@ mHandler = new Handler(){
 		}
 
 	}
+
 	protected void writeUserInfo() {
 		runOnUiThread(new Runnable() {
 			public void run() {
@@ -306,6 +294,7 @@ mHandler = new Handler(){
 		}
 		return true;
 	}
+
 	private void enableGPS() {
 		if (!mlocManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
 
@@ -325,6 +314,7 @@ mHandler = new Handler(){
 			return;
 		}
 	}
+
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		if (requestCode == Const.ACTIVATE_GPS_RESULT) {
@@ -339,23 +329,25 @@ mHandler = new Handler(){
 		}
 		super.onActivityResult(requestCode, resultCode, data);
 	}
+
 	@Override
 	protected void onStop() {
+		
 		super.onStop();
 	}
+
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.mymap_menu, menu);
 		mMenuItemTrackGpsPosition = menu.findItem(R.id.itemTrackGpsPosition);
-		mMenuItemTrackGpsPosition.setTitleCondensed(getString(mTrackGPSPosition
-				? R.string.hide_position_menu
-				: R.string.show_position_menu));
+		mMenuItemTrackGpsPosition
+				.setTitleCondensed(getString(mTrackGPSPosition ? R.string.hide_position_menu
+						: R.string.show_position_menu));
 
 		MenuItem menuItemRecordRoute = menu.findItem(R.id.itemRecordRoute);
 		menuItemRecordRoute.setTitleCondensed(getString(MyApplication
-				.getInstance().isRecording()
-				? R.string.stop_recording
+				.getInstance().isRecording() ? R.string.stop_recording
 				: R.string.record_route));
 
 		return super.onCreateOptionsMenu(menu);
@@ -371,24 +363,23 @@ mHandler = new Handler(){
 
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
-			case R.id.itemTrackGpsPosition :
-				setTrackGPSPosition(!mTrackGPSPosition);
-				break;
-			case R.id.itemVisibleRoutes :
-				chooseRoutes();
-				return true;
-			case R.id.itemRecordRoute :
-				toggleRecording();
-				return true;
-			case R.id.itemCredentials :
-				showCredentialsDialog(false);
-				return true;
-				/*
-				 * case R.id.itemDownloadRoutes : downloadRoutes(); return true;
-				 * case R.id.itemMyRoutes : Intent myIntent = new Intent(this,
-				 * MyRoutesActivity.class); startActivity(myIntent); return
-				 * true;
-				 */
+		case R.id.itemTrackGpsPosition:
+			setTrackGPSPosition(!mTrackGPSPosition);
+			break;
+		case R.id.itemVisibleRoutes:
+			chooseRoutes();
+			return true;
+		case R.id.itemRecordRoute:
+			toggleRecording();
+			return true;
+		case R.id.itemCredentials:
+			showCredentialsDialog(false);
+			return true;
+			/*
+			 * case R.id.itemDownloadRoutes : downloadRoutes(); return true;
+			 * case R.id.itemMyRoutes : Intent myIntent = new Intent(this,
+			 * MyRoutesActivity.class); startActivity(myIntent); return true;
+			 */
 		}
 		return super.onOptionsItemSelected(item);
 	}
@@ -414,6 +405,7 @@ mHandler = new Handler(){
 		stopService(myIntent);
 		showStopRecordingButton(false);
 	}
+
 	private void askRouteName(final OnRouteSelected onSelected) {
 
 		// Set an EditText view to get user input
@@ -513,16 +505,15 @@ mHandler = new Handler(){
 		mTrackGPSPosition = b;
 
 		MySettings.setTrackGPSPosition(this, mTrackGPSPosition);
-		mMenuItemTrackGpsPosition.setTitleCondensed(getString(mTrackGPSPosition
-				? R.string.hide_position_menu
-				: R.string.show_position_menu));
+		mMenuItemTrackGpsPosition
+				.setTitleCondensed(getString(mTrackGPSPosition ? R.string.hide_position_menu
+						: R.string.show_position_menu));
 
 		if (mTrackGPSPosition)
 			myLocationOverlay.enableMyLocation();
 		else
 			myLocationOverlay.disableMyLocation();
 	}
-
 
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
@@ -551,6 +542,8 @@ mHandler = new Handler(){
 		MyApplication.getInstance().RouteChanged
 				.removeHandler(mRoutesChangedHandler);
 		unregisterReceiver(recordingServiceStoppedReceiver);
+		mPositionsDownloader.stop();
+		
 	}
 
 	@Override
@@ -568,6 +561,7 @@ mHandler = new Handler(){
 
 		showStopRecordingButton(MyApplication.getInstance().isRecording());
 		showTrackingButton(MyApplication.getInstance().isLiveTracking());
+		mPositionsDownloader.start();
 	}
 
 	@Override
@@ -575,6 +569,7 @@ mHandler = new Handler(){
 		// TODO Auto-generated method stub
 		return false;
 	}
+
 	public void chooseRoutes() {
 
 		final CharSequence[] items = new CharSequence[mRoutes.length];

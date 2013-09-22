@@ -9,5 +9,5 @@ public class PositionOverlayItem extends OverlayItem {
 		super(point, title, snippet);
 		// TODO Auto-generated constructor stub
 	}
-
+	
 }

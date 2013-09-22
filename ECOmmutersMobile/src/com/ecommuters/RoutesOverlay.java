@@ -3,6 +3,7 @@ package com.ecommuters;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.app.AlertDialog;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -10,6 +11,7 @@ import android.graphics.Point;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.ItemizedOverlay;
@@ -62,6 +64,13 @@ public class RoutesOverlay extends ItemizedOverlay<OverlayItem> {
 	}
 
 	@Override
+	protected boolean onTap(int index) {
+		OverlayItem item = mOverlays.get(index);
+		Toast.makeText(mContext, item.getSnippet(), Toast.LENGTH_LONG).show();
+		return true;
+	}
+
+	@Override
 	protected OverlayItem createItem(int i) {
 		return mOverlays.get(i);
 	}
@@ -105,6 +114,7 @@ public class RoutesOverlay extends ItemizedOverlay<OverlayItem> {
 		}
 
 	}
+
 	private void drawRoute(int color, Route r, boolean invertX,
 			boolean invertY, GeoPoint topLeft, GeoPoint bottomRight,
 			Projection prj, Canvas canvas) {
@@ -156,10 +166,17 @@ public class RoutesOverlay extends ItemizedOverlay<OverlayItem> {
 
 	public void setPositions(List<ECommuterPosition> positions) {
 		mOverlays.clear();
+		Drawable drawable = mContext.getResources().getDrawable(
+				R.drawable.ic_routemarker);
+		drawable.setBounds(0, 0, drawable.getIntrinsicWidth(),
+				drawable.getIntrinsicHeight());
+
 		for (ECommuterPosition pt : positions) {
 			GeoPoint point = new GeoPoint(pt.lat, pt.lon);
 			PositionOverlayItem overlayitem = new PositionOverlayItem(point,
-					"aa", "bb");
+					mContext.getString(R.string.app_name), pt.name + " "
+							+ pt.surname);
+			overlayitem.setMarker(drawable);
 			mOverlays.add(overlayitem);
 		}
 		populate();
