@@ -166,17 +166,13 @@ public class RoutesOverlay extends ItemizedOverlay<OverlayItem> {
 
 	public void setPositions(List<ECommuterPosition> positions) {
 		mOverlays.clear();
-		Drawable drawable = mContext.getResources().getDrawable(
-				R.drawable.ic_routemarker);
-		drawable.setBounds(0, 0, drawable.getIntrinsicWidth(),
-				drawable.getIntrinsicHeight());
+		
 
 		for (ECommuterPosition pt : positions) {
 			GeoPoint point = new GeoPoint(pt.lat, pt.lon);
 			PositionOverlayItem overlayitem = new PositionOverlayItem(point,
 					mContext.getString(R.string.app_name), pt.name + " "
 							+ pt.surname);
-			overlayitem.setMarker(drawable);
 			mOverlays.add(overlayitem);
 		}
 		populate();
