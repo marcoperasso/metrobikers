@@ -1,12 +1,14 @@
 package com.ecommuters;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.method.LinkMovementMethod;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 public class CredentialsActivity extends Activity {
@@ -42,6 +44,11 @@ public class CredentialsActivity extends Activity {
 				}
 
 				credentials = new Credentials(mail, pwd);
+				final ProgressDialog progressBar = new ProgressDialog(v.getContext());
+				progressBar.setMessage(getString(R.string.verifying_credentials));
+				progressBar.setCancelable(false);
+				progressBar.setIndeterminate(true);
+				progressBar.show();
 				credentials.testLogin(context, new OnAsyncResponse() {
 
 					public void response(boolean success, String message) {
@@ -51,6 +58,7 @@ public class CredentialsActivity extends Activity {
 							setResult(RESULT_OK, returnIntent);
 							finish();
 						}
+						progressBar.dismiss();
 					}
 				});
 

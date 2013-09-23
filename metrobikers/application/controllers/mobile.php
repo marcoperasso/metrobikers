@@ -70,7 +70,7 @@ class Mobile extends MY_Controller {
                 'saved' => FALSE,
                 'message' => lang('login_requested'));
         } else {
-            $json = $this->input->post("route");
+            $json = $this->input->post("data");
             $point = json_decode($json);
             $this->load->model("User_position_model");
 
@@ -91,16 +91,20 @@ class Mobile extends MY_Controller {
         $this->load->model("User_position_model");
         $this->User_position_model->purge_positions();
         $response = $this->User_position_model->get_positions($left, $top, $right, $bottom);
+        
+        foreach ($response as &$point) {
+            $point["time"] = strtotime($point["time"]);   
+        }  
         $this->output
                 ->set_content_type('application/json')
-                ->set_output(json_encode($response)); 
+                ->set_output(json_encode($response));
     }
 
     public function save_route() {
         $user = get_user();
         $response = NULL;
         if ($user != NULL) {
-            $json = $this->input->post("route");
+            $json = $this->input->post("data");
             $route = json_decode($json);
             $this->load->model("Route_model");
             $this->load->model("Route_points_model");

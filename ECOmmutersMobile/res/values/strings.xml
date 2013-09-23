@@ -52,5 +52,6 @@
     <string name="livetracking">Traccia posizione in tempo reale</string>
     <string name="live_tracking_on">Live tracking attivato</string>
     <string name="live_tracking_off">Live tracking disattivato</string>
+    <string name="verifying_credentials">Sto verificando le credenziali...</string>
 
 </resources>

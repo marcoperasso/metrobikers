@@ -31,6 +31,7 @@ class User_position_model extends MY_Model {
         $this->db->select("lon");
         $this->db->select("name");
         $this->db->select("surname");
+        $this->db->select("time");
         $this->db->select("mail");
         $this->db->join('users', 'users.id = userpositions.userid');
         $query = $this->db->get_where('userpositions ', array('lat >' => $left, 'lat <' => $right, 'lon >' => $top, 'lon <' => $bottom));

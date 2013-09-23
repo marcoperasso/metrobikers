@@ -9,18 +9,20 @@ public class ECommuterPosition implements IJsonSerializable, Serializable {
 
 	int lat;
 	int lon;
+	long time;
 	String name;
 	String surname;
 	String mail;
 	private static final long serialVersionUID = -5703092633640293472L;
 
 	public ECommuterPosition(int lat, int lon, String name,
-			String surname, String mail) {
+			String surname, String mail, long time) {
 		this.lat = lat;
 		this.lon = lon;
 		this.name = name;
 		this.surname = surname;
 		this.mail = mail;
+		this.time = time;
 	}
 
 	public JSONObject toJson() throws JSONException {
@@ -31,7 +33,7 @@ public class ECommuterPosition implements IJsonSerializable, Serializable {
 	public static ECommuterPosition parseJSON(JSONObject jsonObject) throws JSONException {
 		return new ECommuterPosition(jsonObject.getInt("lat"),
 				jsonObject.getInt("lon"), jsonObject.getString("name"),
-				jsonObject.getString("surname"), jsonObject.getString("mail"));
+				jsonObject.getString("surname"), jsonObject.getString("mail"), jsonObject.getLong("time"));
 	}
 
 }

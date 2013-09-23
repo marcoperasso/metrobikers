@@ -1,9 +1,10 @@
 package com.ecommuters;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
-import android.app.AlertDialog;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -30,7 +31,7 @@ public class RoutesOverlay extends ItemizedOverlay<OverlayItem> {
 	GeoPoint trackRectOrigin;
 	private TextView mTitleTextView;
 	int currentZoomLevel = -1;
-	private ArrayList<PositionOverlayItem> mOverlays = new ArrayList<PositionOverlayItem>();
+	private ArrayList<OverlayItem> mOverlays = new ArrayList<OverlayItem>();
 
 	public RoutesOverlay(Drawable defaultMarker, MyMapActivity context,
 			MyMapView map) {
@@ -173,9 +174,11 @@ public class RoutesOverlay extends ItemizedOverlay<OverlayItem> {
 
 		for (ECommuterPosition pt : positions) {
 			GeoPoint point = new GeoPoint(pt.lat, pt.lon);
-			PositionOverlayItem overlayitem = new PositionOverlayItem(point,
+			Date df = new java.util.Date(pt.time);
+			String vv = new SimpleDateFormat("MM dd, yyyy hh:mma").format(df);
+			OverlayItem overlayitem = new OverlayItem(point,
 					mContext.getString(R.string.app_name), pt.name + " "
-							+ pt.surname);
+							+ pt.surname + "\r\n" + vv);
 			overlayitem.setMarker(drawable);
 			mOverlays.add(overlayitem);
 		}

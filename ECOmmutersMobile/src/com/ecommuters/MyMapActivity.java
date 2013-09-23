@@ -97,9 +97,6 @@ public class MyMapActivity extends MapActivity {
 		}
 	};
 
-	private Runnable downloadPositionsRunnable;
-
-	
 
 	/** Called when the activity is first created. */
 	@Override
