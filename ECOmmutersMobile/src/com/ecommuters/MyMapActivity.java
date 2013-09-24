@@ -37,6 +37,8 @@ import com.google.android.maps.Overlay;
 
 public class MyMapActivity extends MapActivity {
 
+	private static final String MY_MAP_ACTIVITY = "MyMapActivity";
+
 	private MyMapView mMap;
 
 	private MapController mController;
@@ -105,10 +107,12 @@ public class MyMapActivity extends MapActivity {
 		setContentView(R.layout.activity_mymap);
 
 		// prima di tutto testo la versione (solo se sono online)
-		if (!testVersion()) {
-			finish();
-			return;
-		}
+		//if (!testVersion()) {
+		//	finish();
+		//	return;
+		//}
+		
+		
 		mlocManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
 		enableGPS();
@@ -146,7 +150,7 @@ public class MyMapActivity extends MapActivity {
 				try {
 					mController.animateTo(myLocationOverlay.getMyLocation());
 				} catch (Exception ex) {
-					Log.e(getClass().getName(), ex.getLocalizedMessage());
+					Log.e(MY_MAP_ACTIVITY, ex.toString());
 				}
 			}
 

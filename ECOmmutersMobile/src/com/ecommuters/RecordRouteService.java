@@ -49,9 +49,9 @@ public class RecordRouteService extends IntentService {
 					archiveData();
 
 			} catch (InterruptedException e) {
-				Log.e(Const.LogTag, e.getMessage(), e);
+				Log.e(Const.LogTag, e.toString(), e);
 			} catch (IOException e) {
-				Log.e(Const.LogTag, e.getMessage(), e);
+				Log.e(Const.LogTag, e.toString(), e);
 			}
 		}
 

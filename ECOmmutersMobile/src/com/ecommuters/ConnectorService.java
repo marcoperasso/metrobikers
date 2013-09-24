@@ -20,26 +20,29 @@ import android.os.IBinder;
 import android.os.Looper;
 import android.util.Log;
 
-public class ConnectorService extends Service {
+public class ConnectorService extends Service implements LocationListener {
 
+	private static final String CONNECTOR_SERVICE = "ConnectorService";
 	private static final long getLocationTimeout = 10000; // 10 secondi
 	private LocationManager mlocManager;
-	private LocationListener mLocationListener;
 	private long sendRoutesInterval = 30000;// 30 secondi
-	private long sendPositionInterval = 60000;// 60 secondi
+	private long checkPositionInterval = 60000;// 60 secondi
+	private long sendLatestPositionInterval = 5000;// 5 secondi
 	private boolean isSendingData;
 	private Thread mWorkerThread;
 	private Handler mHandler;
 	private Runnable sendRoutesProcedureRunnable;
-	private Runnable sendPositionProcedureRunnable;
+	private Runnable checkPositionProcedureRunnable;
 	private Timer requestingLocationTimeout = new Timer(true);
 	private TimerTask getLocationTimerTask;
 	private Runnable removeUpdatesRunnable;
+	private Runnable sendLatestPositionProcedureRunnable;
 	private boolean requestingLocation = false;
-	
+	private ECommuterPosition mLocation;
 
 	public ConnectorService() {
 	}
+
 	public void onCreate() {
 		mWorkerThread = new Thread(new Runnable() {
 
@@ -48,9 +51,10 @@ public class ConnectorService extends Service {
 				Looper.prepare();
 				mHandler = new Handler();
 				sendRoutesProcedure();
-				sendPositionProcedure();
+				checkPositionProcedure();
+				sendLatestPositionProcedure();
 				Looper.loop();
-				mlocManager.removeUpdates(mLocationListener);
+				mlocManager.removeUpdates(ConnectorService.this);
 				getLocationTimerTask = null;
 				requestingLocation = false;
 				Log.d("ECOMMUTERS", "Worker thread ended");
@@ -63,16 +67,23 @@ public class ConnectorService extends Service {
 				sendRoutesProcedure();
 			}
 		};
-		sendPositionProcedureRunnable = new Runnable() {
+		checkPositionProcedureRunnable = new Runnable() {
 			public void run() {
-				sendPositionProcedure();
+				checkPositionProcedure();
 			}
 		};
+		sendLatestPositionProcedureRunnable = new Runnable() {
 
+			public void run() {
+				sendLatestPositionProcedure();
+
+			}
+
+		};
 		removeUpdatesRunnable = new Runnable() {
 			public void run() {
 				if (requestingLocation) {
-					mlocManager.removeUpdates(mLocationListener);
+					mlocManager.removeUpdates(ConnectorService.this);
 					requestingLocation = false;
 					getLocationTimerTask = null;
 				}
@@ -82,43 +93,42 @@ public class ConnectorService extends Service {
 		mWorkerThread.setDaemon(true);
 		mWorkerThread.start();
 		mlocManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-		mLocationListener = new LocationListener() {
-
-			public void onLocationChanged(Location location) {
-
-				recordLocation(location);
-			}
-
-			public void onProviderDisabled(String provider) {
-			}
-
-			public void onProviderEnabled(String provider) {
-			}
-			public void onStatusChanged(String provider, int status,
-					Bundle extras) {
-			}
-		};
 
 		MyApplication.getInstance().setConnectorService(this);
 		super.onCreate();
 	}
 
-	private void recordLocation(Location location) {
-		ECommuterPosition routePoint = new ECommuterPosition(
-				(int) (location.getLatitude() * 1E6),
+	public void onLocationChanged(Location location) {
+		mLocation = new ECommuterPosition((int) (location.getLatitude() * 1E6),
 				(int) (location.getLongitude() * 1E6),
 				(long) (System.currentTimeMillis() / 1E3));
-		if (!MyApplication.getInstance().isLiveTracking()) {
-			mlocManager.removeUpdates(mLocationListener);
+		if (!liveTracking()) {
+			mlocManager.removeUpdates(this);
 			if (getLocationTimerTask != null)
 				getLocationTimerTask.cancel();
 			getLocationTimerTask = null;
 			requestingLocation = false;
 		}
-		sendMyPosition(routePoint);
 	}
-	private void sendMyPosition(final ECommuterPosition position) {
-		if (!Helper.isOnline(ConnectorService.this))
+
+	public void onProviderDisabled(String provider) {
+	}
+
+	public void onProviderEnabled(String provider) {
+	}
+
+	public void onStatusChanged(String provider, int status, Bundle extras) {
+	}
+
+	private void sendLatestPositionProcedure() {
+		sendLatestPosition();
+		mHandler.postDelayed(sendLatestPositionProcedureRunnable,
+				sendLatestPositionInterval);
+
+	}
+
+	private void sendLatestPosition() {
+		if (mLocation == null || !liveTracking() || !Helper.isOnline(ConnectorService.this))
 			return;
 
 		testCredentials(new OnAsyncResponse() {
@@ -127,10 +137,10 @@ public class ConnectorService extends Service {
 				if (!success)
 					return;
 				try {
-					RequestBuilder.sendPositionData(position);
+					if (RequestBuilder.sendPositionData(mLocation))
+						mLocation = null;
 				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					Log.e(CONNECTOR_SERVICE, e.toString());
 				}
 
 			}
@@ -149,28 +159,29 @@ public class ConnectorService extends Service {
 		});
 		super.onDestroy();
 	}
+
 	private void sendRoutesProcedure() {
 		try {
 			if (Helper.isOnline(this) && !isSendingData)
-				sendLocations();
+				sendRoutes();
 		} finally {
 			mHandler.postDelayed(sendRoutesProcedureRunnable,
 					sendRoutesInterval);
 		}
 	}
-	private void sendPositionProcedure() {
+
+	private void checkPositionProcedure() {
 		try {
 			if (!requestingLocation
 					&& mlocManager
 							.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
 				mlocManager.requestLocationUpdates(
-						LocationManager.GPS_PROVIDER, 10000/* 10 secondi */, 2/*
-																		 * due
-																		 * metri
-																		 */,
-						mLocationListener);
+						LocationManager.GPS_PROVIDER, 10000/* 10 secondi */,
+						5/*
+						 * due metri
+						 */, this);
 				requestingLocation = true;
-				if (!MyApplication.getInstance().isLiveTracking()) {
+				if (!liveTracking()) {
 					getLocationTimerTask = new TimerTask() {
 						@Override
 						public void run() {
@@ -182,10 +193,17 @@ public class ConnectorService extends Service {
 							getLocationTimeout);
 				}
 			}
+			
+		} catch (Exception e) {
+			Log.e(CONNECTOR_SERVICE, e.toString());
 		} finally {
-			mHandler.postDelayed(sendPositionProcedureRunnable,
-					sendPositionInterval);
+			mHandler.postDelayed(checkPositionProcedureRunnable,
+					checkPositionInterval);
 		}
+	}
+
+	private Boolean liveTracking() {
+		return MyApplication.getInstance().isLiveTracking();
 	}
 
 	private void downloadRoutes() throws IOException, JSONException {
@@ -220,7 +238,7 @@ public class ConnectorService extends Service {
 
 	}
 
-	private void sendLocations() {
+	private void sendRoutes() {
 		if (isSendingData)
 			return;
 		isSendingData = true;
@@ -270,15 +288,11 @@ public class ConnectorService extends Service {
 		}
 		credential.testLogin(this, testResponse);
 	}
+
 	@Override
 	public IBinder onBind(Intent intent) {
 		// TODO Auto-generated method stub
 		return null;
 	}
-	
-	public void setLiveTracking(boolean b)
-	{
-		MyApplication.getInstance().setLiveTracking(b);
-	}
-	
+
 }

@@ -80,7 +80,7 @@ public class Route implements IJsonSerializable, Serializable {
 					try {
 						return (Route) in.readObject();
 					} catch (Exception ex) {
-						Log.e("ec", ex.getMessage(), ex);
+						Log.e("ec", ex.toString(), ex);
 					}
 				} catch (Exception e) {
 					e.printStackTrace();
