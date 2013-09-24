@@ -169,9 +169,9 @@ public class RequestBuilder {
 		}
 		return routes;
 	}
-	public static boolean sendPositionData(RoutePoint routePoint)
+	public static boolean sendPositionData(ECommuterPosition position)
 			throws JSONException, ClientProtocolException, IOException {
-		JSONObject response = postRequest(sendPositionDataRequest, routePoint,
+		JSONObject response = postRequest(sendPositionDataRequest, position,
 				true);
 		return response.has("saved") && response.getBoolean("saved");
 

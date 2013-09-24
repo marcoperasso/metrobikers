@@ -18,6 +18,7 @@ public class MyApplication extends Application {
 	private boolean connectorActivated;
 	private RecordRouteService recordingService;
 	private ConnectorService connectorService;
+	private boolean liveTracking = false;
 	public EventHandler OnRecordingRouteUpdated = new EventHandler();
 	public EventHandler RouteChanged = new EventHandler();
 
@@ -94,12 +95,11 @@ public class MyApplication extends Application {
 		
 	}
 	public Boolean isLiveTracking() {
-		return connectorService!= null && connectorService.isLiveTracking();
+		return liveTracking;
 	}
 	
 	public void setLiveTracking(boolean b)
 	{
-		if (connectorService!= null)
-			connectorService.setLiveTracking(b);
+		liveTracking = b;
 	}
 }

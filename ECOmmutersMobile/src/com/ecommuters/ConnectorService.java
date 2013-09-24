@@ -36,7 +36,7 @@ public class ConnectorService extends Service {
 	private TimerTask getLocationTimerTask;
 	private Runnable removeUpdatesRunnable;
 	private boolean requestingLocation = false;
-	private boolean liveTracking = false;
+	
 
 	public ConnectorService() {
 	}
@@ -104,11 +104,11 @@ public class ConnectorService extends Service {
 	}
 
 	private void recordLocation(Location location) {
-		RoutePoint routePoint = new RoutePoint(0,
+		ECommuterPosition routePoint = new ECommuterPosition(
 				(int) (location.getLatitude() * 1E6),
 				(int) (location.getLongitude() * 1E6),
 				(long) (System.currentTimeMillis() / 1E3));
-		if (!liveTracking) {
+		if (!MyApplication.getInstance().isLiveTracking()) {
 			mlocManager.removeUpdates(mLocationListener);
 			if (getLocationTimerTask != null)
 				getLocationTimerTask.cancel();
@@ -117,7 +117,7 @@ public class ConnectorService extends Service {
 		}
 		sendMyPosition(routePoint);
 	}
-	private void sendMyPosition(final RoutePoint routePoint) {
+	private void sendMyPosition(final ECommuterPosition position) {
 		if (!Helper.isOnline(ConnectorService.this))
 			return;
 
@@ -127,7 +127,7 @@ public class ConnectorService extends Service {
 				if (!success)
 					return;
 				try {
-					RequestBuilder.sendPositionData(routePoint);
+					RequestBuilder.sendPositionData(position);
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -160,8 +160,7 @@ public class ConnectorService extends Service {
 	}
 	private void sendPositionProcedure() {
 		try {
-			if (Helper.isOnline(this)
-					&& !requestingLocation
+			if (!requestingLocation
 					&& mlocManager
 							.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
 				mlocManager.requestLocationUpdates(
@@ -171,7 +170,7 @@ public class ConnectorService extends Service {
 																		 */,
 						mLocationListener);
 				requestingLocation = true;
-				if (!liveTracking) {
+				if (!MyApplication.getInstance().isLiveTracking()) {
 					getLocationTimerTask = new TimerTask() {
 						@Override
 						public void run() {
@@ -276,14 +275,10 @@ public class ConnectorService extends Service {
 		// TODO Auto-generated method stub
 		return null;
 	}
-	public boolean isLiveTracking() {
-		return liveTracking;
-	}
+	
 	public void setLiveTracking(boolean b)
 	{
-		this.liveTracking = b;
-		if (!b)
-			mHandler.post(removeUpdatesRunnable);
+		MyApplication.getInstance().setLiveTracking(b);
 	}
 	
 }

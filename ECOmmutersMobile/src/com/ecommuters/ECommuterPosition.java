@@ -25,9 +25,26 @@ public class ECommuterPosition implements IJsonSerializable, Serializable {
 		this.time = time;
 	}
 
+	public ECommuterPosition(int lat, int lon, long time) {
+		this.lat = lat;
+		this.lon = lon;
+		this.name = null;
+		this.surname = null;
+		this.mail = null;
+		this.time = time;
+	}
 	public JSONObject toJson() throws JSONException {
-		// TODO Auto-generated method stub
-		return null;
+		JSONObject obj = new JSONObject();
+		obj.put("lat", lat);
+		obj.put("lon", lon);
+		obj.put("time", time);
+		if (name != null)
+			obj.put("name", name);
+		if (surname != null)
+			obj.put("surname", surname);
+		if (mail != null)
+			obj.put("mail", mail);
+		return obj;
 	}
 
 	public static ECommuterPosition parseJSON(JSONObject jsonObject) throws JSONException {

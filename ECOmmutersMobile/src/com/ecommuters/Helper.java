@@ -18,12 +18,13 @@ import android.net.ConnectivityManager;
 public class Helper {
 
 	private static final String regExp = "[^a-zA-Z0-9.-]";
-
+static boolean b = true;
 	static boolean isOnline(Context context) {
 		try {
-			ConnectivityManager cm = (ConnectivityManager) context
+			return b;
+			/*ConnectivityManager cm = (ConnectivityManager) context
 					.getSystemService(Context.CONNECTIVITY_SERVICE);
-			return cm.getActiveNetworkInfo().isConnectedOrConnecting();
+			return cm.getActiveNetworkInfo().isConnected();*/
 		} catch (Exception e) {
 			return false;
 		}
