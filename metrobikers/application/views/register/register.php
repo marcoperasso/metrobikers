@@ -53,12 +53,12 @@
                             <input type="input" name="birthdate" class="dateinput form-control"
                                    id="birthdate" class="required form-control"/>
                         </div>
-                        <div class="form-group">
+                       <!-- <div class="form-group">
                             Codice di controllo:
-                            <?php echo $cap['image']; ?><br/>
+                            <br/>
                             <label for="captcha">Inserisci qui il codice di controllo</label>
                             <input type="text" name="captcha" id="captcha" class="required form-control" value="" />
-                        </div>
+                        </div>-->
                         <input type="submit" name="submit" id="submit" value="Diventa un ECOmmuter!" class="btn btn-default form-control" />
                     </div>
                     </form>

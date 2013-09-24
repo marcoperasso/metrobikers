@@ -6,7 +6,7 @@
     </head>
 
     <body>
-        <?php $this->load->view('templates/visualheader'); ?>
+        <?php $this->load->view('templates/publicvisualheader'); ?>
         <h1>Invalid activation key</h1>
         <p>Invalid activation key: <?php echo $key?></p>
         <?php $this->load->view('templates/footer'); ?>

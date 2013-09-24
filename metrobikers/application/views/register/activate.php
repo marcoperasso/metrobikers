@@ -78,7 +78,7 @@
     </head>
 
     <body>
-        <?php $this->load->view('templates/visualheader'); ?>
+        <?php $this->load->view('templates/publicvisualheader'); ?>
         <h1>Complete registration</h1>
         <?php echo validation_errors(); ?>
 

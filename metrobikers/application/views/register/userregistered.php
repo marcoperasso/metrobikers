@@ -6,7 +6,7 @@
     </head>
     
     <body>
-        <?php $this->load->view('templates/visualheader'); ?>
+        <?php $this->load->view('templates/publicvisualheader'); ?>
         <h1>User registered</h1>
         <p>Thank you <?php echo $user->name." ".$user->surname?> for registering to ECOmmuters; your account needs to be activated, 
             please follow the instructions we sent to your email address <?php echo $user->mail?>.</p>
