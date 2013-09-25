@@ -6,16 +6,16 @@ import java.util.List;
 import android.os.Handler;
 import android.os.Looper;
 
-class TEventHandler<TSender, TArgs> {
-	private List<TEvent<TSender, TArgs>> handler_list = new LinkedList<TEvent<TSender, TArgs>>();
+class TEvent<TSender, TArgs> {
+	private List<TEventItem<TSender, TArgs>> handler_list = new LinkedList<TEventItem<TSender, TArgs>>();
 
-	public Boolean addHandler(TEvent<TSender, TArgs> handler) {
+	public Boolean addHandler(TEventItem<TSender, TArgs> handler) {
 		synchronized (handler_list) {
 			return handler_list.add(handler);
 		}
 
 	}
-	public Boolean removeHandler(TEvent<TSender, TArgs> handler) {
+	public Boolean removeHandler(TEventItem<TSender, TArgs> handler) {
 		synchronized (handler_list) {
 			return handler_list.remove(handler);
 		}
@@ -27,15 +27,15 @@ class TEventHandler<TSender, TArgs> {
 	}
 	public void fire(TSender sender, TArgs args) {
 		synchronized (handler_list) {
-			for (TEvent<TSender, TArgs> e : handler_list)
+			for (TEventItem<TSender, TArgs> e : handler_list)
 				e.fire(sender, args);
 		}
 	}
 }
 
-abstract class TEvent<TSender, TArgs> {
+abstract class TEventItem<TSender, TArgs> {
 	private Handler handler;
-	public TEvent() {
+	public TEventItem() {
 		handler = new Handler(Looper.myLooper());
 	}
 	public void fire(final TSender sender, final TArgs args) {
@@ -48,13 +48,13 @@ abstract class TEvent<TSender, TArgs> {
 	public abstract void onEvent(TSender sender, TArgs args);
 }
 
-abstract class GenericEvent extends TEvent<Object, EventArgs> {
+abstract class GenericEvent extends TEventItem<Object, EventArgs> {
 }
 
 class EventArgs {
 	public static EventArgs Empty = new EventArgs();
 }
 
-class EventHandler extends TEventHandler<Object, EventArgs> {
+class Event extends TEvent<Object, EventArgs> {
 
 }

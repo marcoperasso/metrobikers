@@ -25,6 +25,7 @@ import android.util.Log;
 import android.webkit.CookieManager;
 
 public class RequestBuilder {
+	private static final String JSON = "json";
 	// private static final String host = "http://10.0.2.2:8888/ecommuters/";
 	private static final String host = "http://www.ecommuters.com/";
 	private static final String getVersionRequest = host + "mobile/version";
@@ -110,19 +111,16 @@ public class RequestBuilder {
 		return cookie.toString();
 	}
 
-	static int getProtocolVersion() {
+	static int getProtocolVersion() throws Exception {
 		JSONObject obj;
 		try {
 			obj = sendRequestForObject(getVersionRequest, false);
-			return obj == null ? -1 : obj.getInt("version");
-		} catch (ClientProtocolException e) {
-			Log.e("json", e.toString());
-		} catch (JSONException e) {
-			Log.e("json", e.toString());
-		} catch (IOException e) {
-			Log.e("json", e.toString());
+			if (obj != null)
+				return obj.getInt("version");
+		} catch (Exception e) {
+			Log.e(JSON, e.toString());
 		}
-		return -1;
+		throw new Exception();
 	}
 
 	public static void fillCredentialsData(Credentials c) {
@@ -133,11 +131,11 @@ public class RequestBuilder {
 			c.setName(obj.getString("name"));
 			c.setSurname(obj.getString("surname"));
 		} catch (ClientProtocolException e) {
-			Log.e("json", e.toString());
+			Log.e(JSON, e.toString());
 		} catch (JSONException e) {
-			Log.e("json", e.toString());
+			Log.e(JSON, e.toString());
 		} catch (IOException e) {
-			Log.e("json", e.toString());
+			Log.e(JSON, e.toString());
 		}
 	}
 
@@ -176,19 +174,18 @@ public class RequestBuilder {
 		return response.has("saved") && response.getBoolean("saved");
 
 	}
-	public static List<ECommuterPosition> getPositions(int lat1, int lon1, int lat2,
-			int lon2) {
-			List<ECommuterPosition> list = new ArrayList<ECommuterPosition>();
+	public static List<ECommuterPosition> getPositions(int lat1, int lon1,
+			int lat2, int lon2) {
+		List<ECommuterPosition> list = new ArrayList<ECommuterPosition>();
 		try {
-			JSONArray points = sendRequestForArray(
-					getPositionsRequest + "/" + lat2 + "/" + lon1 + "/" + lat1
-							+ "/" + lon2, isLogged());
+			JSONArray points = sendRequestForArray(getPositionsRequest + "/"
+					+ lat2 + "/" + lon1 + "/" + lat1 + "/" + lon2, isLogged());
 			for (int i = 0; i < points.length(); i++)
 				list.add(ECommuterPosition.parseJSON(points.getJSONObject(i)));
 			return list;
 		} catch (Exception e) {
 			return list;
 		}
-		
+
 	}
 }

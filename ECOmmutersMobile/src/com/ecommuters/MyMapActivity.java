@@ -286,7 +286,7 @@ public class MyMapActivity extends MapActivity {
 	}
 
 	private boolean testVersion() {
-		if (Helper.isOnline(this) && !Helper.matchProtocolVersion()) {
+		if (Helper.isOnline(this) && !Helper.matchProtocolVersion(this)) {
 			Toast t = Toast.makeText(this, R.string.wrong_version,
 					Toast.LENGTH_LONG);
 			t.setGravity(Gravity.CENTER, 0, 0);
@@ -536,7 +536,7 @@ public class MyMapActivity extends MapActivity {
 	protected void onPause() {
 		super.onPause();
 		myLocationOverlay.disableMyLocation();
-		// myLocationOverlay.disableCompass();
+		myLocationOverlay.disableCompass();
 		MyApplication.getInstance().OnRecordingRouteUpdated
 				.removeHandler(mUpdateRoutehandler);
 
@@ -552,7 +552,7 @@ public class MyMapActivity extends MapActivity {
 		super.onResume();
 		if (mTrackGPSPosition)
 			myLocationOverlay.enableMyLocation();
-		// myLocationOverlay.enableCompass();
+		myLocationOverlay.enableCompass();
 		MyApplication.getInstance().OnRecordingRouteUpdated
 				.addHandler(mUpdateRoutehandler);
 		IntentFilter intentFilter = new IntentFilter(Const.SERVICE_STOPPED);

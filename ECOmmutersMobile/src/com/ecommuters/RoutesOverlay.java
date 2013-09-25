@@ -175,9 +175,10 @@ public class RoutesOverlay extends ItemizedOverlay<OverlayItem> {
 			GeoPoint point = new GeoPoint(pt.lat, pt.lon);
 			java.text.DateFormat timeFormat = DateFormat.getTimeFormat(mContext);
 			Date df = new java.util.Date((long) (pt.time*1e3));
+			String text = pt.name + " "
+					+ pt.surname + " (" + timeFormat.format(df) + ")";
 			OverlayItem	overlayitem = new OverlayItem(point,
-					mContext.getString(R.string.app_name), pt.name + " "
-							+ pt.surname + "\r\n" + timeFormat.format(df));
+					mContext.getString(R.string.app_name), text);
 			mOverlays.add(overlayitem);
 		}
 		populate();

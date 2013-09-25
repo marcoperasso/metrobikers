@@ -19,9 +19,9 @@ public class MyApplication extends Application {
 	private RecordRouteService recordingService;
 	private ConnectorService connectorService;
 	private boolean liveTracking = false;
-	public EventHandler OnRecordingRouteUpdated = new EventHandler();
-	public EventHandler RouteChanged = new EventHandler();
-
+	public Event OnRecordingRouteUpdated = new Event();
+	public Event RouteChanged = new Event();
+	public Event LiveTrackingChanged= new Event();
 	@Override
 	public void onCreate() {
 		super.onCreate();
@@ -101,5 +101,6 @@ public class MyApplication extends Application {
 	public void setLiveTracking(boolean b)
 	{
 		liveTracking = b;
+		LiveTrackingChanged.fire(this, EventArgs.Empty);
 	}
 }

@@ -46,8 +46,26 @@ public class ConnectorService extends Service implements LocationListener {
 	public void onCreate() {
 		mWorkerThread = new Thread(new Runnable() {
 
-			public void run() {
+			private GenericEvent onLiveTrackingChanged = new GenericEvent() {
 
+				@Override
+				public void onEvent(Object sender, EventArgs args) {
+					if (liveTracking()) {
+						if (!requestingLocation)
+							checkPositionProcedure();
+					}
+					else
+					{
+						//se sto ascoltando il GPS, faccio partire il timer
+						if (requestingLocation)
+							startTimeoutTimer();
+					}
+				}
+			};
+
+			public void run() {
+				MyApplication.getInstance().LiveTrackingChanged
+						.addHandler(onLiveTrackingChanged);
 				Looper.prepare();
 				mHandler = new Handler();
 				sendRoutesProcedure();
@@ -57,6 +75,8 @@ public class ConnectorService extends Service implements LocationListener {
 				mlocManager.removeUpdates(ConnectorService.this);
 				getLocationTimerTask = null;
 				requestingLocation = false;
+				MyApplication.getInstance().LiveTrackingChanged
+						.removeHandler(onLiveTrackingChanged);
 				Log.d("ECOMMUTERS", "Worker thread ended");
 
 			}
@@ -128,7 +148,8 @@ public class ConnectorService extends Service implements LocationListener {
 	}
 
 	private void sendLatestPosition() {
-		if (mLocation == null || !liveTracking() || !Helper.isOnline(ConnectorService.this))
+		if (mLocation == null || !liveTracking()
+				|| !Helper.isOnline(ConnectorService.this))
 			return;
 
 		testCredentials(new OnAsyncResponse() {
@@ -182,24 +203,30 @@ public class ConnectorService extends Service implements LocationListener {
 						 */, this);
 				requestingLocation = true;
 				if (!liveTracking()) {
-					getLocationTimerTask = new TimerTask() {
-						@Override
-						public void run() {
-							requestingLocationTimeout.purge();
-							mHandler.post(removeUpdatesRunnable);
-						}
-					};
-					requestingLocationTimeout.schedule(getLocationTimerTask,
-							getLocationTimeout);
+					startTimeoutTimer();
 				}
 			}
-			
+
 		} catch (Exception e) {
 			Log.e(CONNECTOR_SERVICE, e.toString());
 		} finally {
 			mHandler.postDelayed(checkPositionProcedureRunnable,
 					checkPositionInterval);
 		}
+	}
+
+	private void startTimeoutTimer() {
+		if (getLocationTimerTask!=null)
+			return;
+		getLocationTimerTask = new TimerTask() {
+			@Override
+			public void run() {
+				requestingLocationTimeout.purge();
+				mHandler.post(removeUpdatesRunnable);
+			}
+		};
+		requestingLocationTimeout.schedule(getLocationTimerTask,
+				getLocationTimeout);
 	}
 
 	private Boolean liveTracking() {

@@ -105,10 +105,11 @@ if (isset($routes)) {
                 return;
             for (var i = 0; i < data.length; i++) {
                 var obj = data[i];
-                var marker = new google.maps.Marker({
+				var date = new Date(obj.time*1000);
+				 var marker = new google.maps.Marker({
                     position: new google.maps.LatLng(obj.lat / 1000000, obj.lon / 1000000),
-                    title: obj.name + " " + obj.surname,
-                    icon: "asset/img/marker1.png"
+                    title: obj.name + " " + obj.surname + " (" + date.getHours()+ ":" + date.getMinutes() + ")",
+                    icon: "asset/img/routemarker.png"
                 });
                 marker.setMap(map);
                 positions_markers.push(marker);

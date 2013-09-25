@@ -13,26 +13,31 @@ import java.util.List;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.net.ConnectivityManager;
 
 public class Helper {
 
 	private static final String regExp = "[^a-zA-Z0-9.-]";
-static boolean b = true;
 	static boolean isOnline(Context context) {
 		try {
-			return b;
-			/*ConnectivityManager cm = (ConnectivityManager) context
+			ConnectivityManager cm = (ConnectivityManager) context
 					.getSystemService(Context.CONNECTIVITY_SERVICE);
-			return cm.getActiveNetworkInfo().isConnected();*/
+			return cm.getActiveNetworkInfo().isConnected();
 		} catch (Exception e) {
 			return false;
 		}
 
 	}
 
-	static boolean matchProtocolVersion() {
-		return Const.PROTOCOL_VERSION.equals(RequestBuilder
-				.getProtocolVersion());
+	static boolean matchProtocolVersion(Context context) {
+		try {
+			if (!isOnline(context))
+				return true;
+			return Const.PROTOCOL_VERSION.equals(RequestBuilder
+					.getProtocolVersion());
+		} catch (Exception e) {
+			return true;//se ho problemi di comunicazione, nel dubbio considero buona la versione
+		}
 	}
 
 	public static boolean isNullOrEmpty(String s) {
