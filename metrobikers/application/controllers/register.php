@@ -52,26 +52,9 @@ class Register extends MY_Controller {
         $this->form_validation->set_rules('name', 'First Name', 'required');
         $this->form_validation->set_rules('surname', 'Last Name', 'required');
         $this->form_validation->set_rules('mail', 'E Mail', 'required');
-        $this->form_validation->set_rules('birthdate', 'Birth date', 'required');
-        $this->form_validation->set_rules('captcha', 'Verification code', 'required');
         if ($this->form_validation->run() === FALSE) {
-            $this->load->helper('captcha');
-            $vals = array(
-                'img_path' => './asset/captcha/',
-                'img_url' => base_url() . 'asset/captcha/',
-                'img_width'  => 150,
-                'img_height' => 50,
-                'font_path'  => './system/fonts/texb.ttf' 
-            );
-
-            $cap = create_captcha($vals);
-            $_SESSION['captcha'] = $cap['word'];
-            $this->load->view('register/register', array('cap' => $cap));
+            $this->load->view('register/register');
         } else {
-            $captcha = $_SESSION["captcha"];
-            $word = $this->input->post("captcha");
-            if (strcasecmp($captcha, $word) != 0)
-                show_error (lang('error_invalid_verification_code'));
             $this->db->trans_begin();
             $this->User_model->create_user();
             $this->Validation_key_model->create_key($this->User_model->id);
