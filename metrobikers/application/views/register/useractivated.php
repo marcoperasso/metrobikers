@@ -7,8 +7,34 @@
 
     <body>
         <?php $this->load->view('templates/publicvisualheader'); ?>
-        <h1>User activated</h1>
-        <p>Congratulations, <?php echo $user->name . ' ' . $user->surname?>, your registration is now active, welcome to the ECOmmuters community!</p>
+        <div class="row">
+            <div class="col-md-3">
+                
+            </div>
+
+            <div class="col-md-6">
+                <div class="container">
+                    <br />
+                    <h2 class="text-center">Complimenti!</h2><br />
+                    <div class="col-md-2">
+                
+                    </div>
+        
+                    <div class="col-md-8">
+                    <p class="text-center">
+                        <?php echo $user->name?> la tua registrazione é stata attivata, benvenuto nella community di ECOmmuters!.
+                    </p>
+                    </div>
+                    <div class="col-md-2">
+                        
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                
+            </div>
+            
+        </div>
         <?php $this->load->view('templates/footer'); ?>
     </body>
 </html>

@@ -79,24 +79,63 @@
 
     <body>
         <?php $this->load->view('templates/publicvisualheader'); ?>
-        <h1>Complete registration</h1>
-        <?php echo validation_errors(); ?>
+        <div class="row">
+            <div class="col-md-3">
+                
+            </div>
 
-        <?php echo form_open('register/activate',  array('id' => 'completeForm')) ?>
-        <div class="text-center">
-            <label for="password1">Choose password</label> 
-            <input type="password" name="password1" id="password1" class="required"/><br />
-            <label for="password2">Repeat password</label> 
-            <input type="password" name="password2" id="password2" class="required"/><br />
-            <label
-                for="pwdmeter">Password strength:</label>
-            <div  class="pwdmetercontainer"><div id ="pwdmeter" class="pwdmeter"></div></div>
-
-            <input id="userkey" name="userkey" type="hidden" value="<?php echo $key;?>"/>
-            <input id="password" name="password" type="hidden" />
-            <input type="submit" name="submitbtn" id="submitbtn" value="Submit" /> 
+            <div class="col-md-6">
+                <div class="container">
+                    <br />
+                    <h2 class="text-center">Completa la registrazione</h2><br />
+                    <?php echo validation_errors(); ?>
+                    <div class="col-md-2">
+                
+                    </div>
+        
+                    <div class="col-md-8">
+                        <?php echo form_open('register/activate',  array('id' => 'completeForm')) ?>
+                            <div class="col-md-3">
+                
+                            </div>
+                
+                            <div class="col-md-6">
+                                <div class="text-center">
+                                    <div class="form-group">
+                                        <input type="password" name="password1" id="password1" class="required form-control" placeholder="Scegli una password"/>
+                                    </div>
+                                    <div class="form-group">
+                                        <input type="password" name="password2" id="password2" class="required form-control" placeholder="Ripeti la password password"/>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="pwdmeter">Sicurezza della password:</label>
+                                        <div  class="pwdmetercontainer">
+                                            <div id ="pwdmeter" class="pwdmeter">
+                                                
+                                            </div>
+                                        </div>
+                                    </div>
+                        
+                                    <input id="userkey" name="userkey" type="hidden" value="<?php echo $key;?>"/>
+                                    <input id="password" name="password" type="hidden" />
+                                    <input type="submit" name="submitbtn" id="submitbtn" value="Completa la registrazione" class="btn btn-default form-control"/> 
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                
+                            </div>
+                        </form>
+                    </div>
+                    <div class="col-md-2">
+                        
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                
+            </div>
+            
         </div>
-    </form>
     <?php $this->load->view('templates/footer'); ?>
 </body>
 </html>
