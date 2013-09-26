@@ -49,7 +49,6 @@ public class MyMapActivity extends MapActivity {
 	private MyLocationOverlay myLocationOverlay;
 	MenuItem mMenuItemTrackGpsPosition;
 
-	private Route[] mRoutes;
 	private LocationManager mlocManager;
 
 	private Animation mAnimation;
@@ -164,13 +163,9 @@ public class MyMapActivity extends MapActivity {
 			zoomLevel = savedInstanceState.getInt(Const.ZoomLevel, 15);
 		}
 
-		mRoutes = MyApplication.getInstance().getRoutes();
-		mTracksOverlay.setRoutes(mRoutes);
 		mRoutesChangedHandler = new GenericEvent() {
 			public void onEvent(Object sender, EventArgs args) {
-				mRoutes = MyApplication.getInstance().getRoutes();
-				mTracksOverlay.setRoutes(mRoutes);
-
+				mTracksOverlay.setRoutes(MyApplication.getInstance().getRoutes());
 				mMap.invalidate();
 			}
 		};
@@ -500,7 +495,6 @@ public class MyMapActivity extends MapActivity {
 			outState.putInt(Const.MAPLONGITUDE, mMap.getMapCenter()
 					.getLongitudeE6());
 			outState.putInt(Const.ZoomLevel, mMap.getZoomLevel());
-			outState.putSerializable(Const.ROUTES, mRoutes);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -549,10 +543,11 @@ public class MyMapActivity extends MapActivity {
 
 	public void chooseRoutes() {
 
-		final CharSequence[] items = new CharSequence[mRoutes.length];
-		boolean[] checkedItems = new boolean[mRoutes.length];
+		Route[] routes = MyApplication.getInstance().getRoutes();
+		final CharSequence[] items = new CharSequence[routes.length];
+		boolean[] checkedItems = new boolean[routes.length];
 		int i = 0;
-		for (Route r : mRoutes) {
+		for (Route r : routes) {
 			items[i] = r.getName();
 			checkedItems[i] = !MySettings.isHiddenRoute(this, r.getName());
 			i++;

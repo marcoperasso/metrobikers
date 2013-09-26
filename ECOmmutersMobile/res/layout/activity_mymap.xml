@@ -5,29 +5,6 @@
     android:layout_height="fill_parent"
     android:orientation="vertical" >
 
-<!--     <LinearLayout -->
-<!--         android:id="@+id/layoutNotification" -->
-<!--         android:layout_width="fill_parent" -->
-<!--         android:layout_height="wrap_content" -->
-<!--         android:baselineAligned="true" -->
-<!--         android:orientation="horizontal" -->
-<!--         android:padding="5dip" -->
-<!--         android:visibility="gone" > -->
-
-<!--         <ProgressBar -->
-<!--             android:id="@+id/progressBarNotification" -->
-<!--             style="?android:attr/progressBarStyleSmall" -->
-<!--             android:layout_width="wrap_content" -->
-<!--             android:layout_height="wrap_content" -->
-<!--             android:layout_margin="2dip" /> -->
-
-<!--         <TextView -->
-<!--             android:id="@+id/textViewNotification" -->
-<!--             android:layout_width="match_parent" -->
-<!--             android:layout_height="match_parent" -->
-<!--             android:layout_gravity="top" /> -->
-<!--     </LinearLayout> -->
-
     <com.ecommuters.MyMapView
         android:id="@+id/mapview1"
         android:layout_width="fill_parent"
@@ -38,25 +15,31 @@
         android:clickable="true"
         android:enabled="true" />
 
-    <Button
-        android:id="@+id/buttonRecord"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
+    <LinearLayout
+        android:id="@+id/layoutCommands"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
-        android:background="@drawable/recordbutton"
-        android:contentDescription="@string/record" 
-        android:layout_marginRight="10dp"
-        android:layout_marginBottom="10dp" />
+        android:baselineAligned="true"
+        android:orientation="horizontal"
+        android:padding="5dip" >
 
-    <Button
-        android:id="@+id/buttonLiveTracking"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:layout_alignBaseline="@+id/buttonRecord"
-        android:layout_alignBottom="@+id/buttonRecord"
-        android:layout_centerHorizontal="true"
-        android:background="@drawable/livetrackingbutton"
-        android:contentDescription="@string/livetracking" />
+        <Button
+            android:id="@+id/buttonLiveTracking"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:background="@drawable/livetrackingbutton"
+            android:contentDescription="@string/livetracking" />
+
+        <Button
+            android:id="@+id/buttonRecord"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_marginBottom="10dp"
+            android:layout_marginRight="10dp"
+            android:background="@drawable/recordbutton"
+            android:contentDescription="@string/record" />
+    </LinearLayout>
 
 </RelativeLayout>

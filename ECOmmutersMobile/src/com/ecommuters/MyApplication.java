@@ -21,12 +21,13 @@ public class MyApplication extends Application {
 	private boolean liveTracking = false;
 	public Event OnRecordingRouteUpdated = new Event();
 	public Event RouteChanged = new Event();
-	public Event LiveTrackingChanged= new Event();
+	public Event LiveTrackingChanged = new Event();
+	public Object routeSemaphore = new Object();
 	@Override
 	public void onCreate() {
 		super.onCreate();
 		sInstance = this;
-		mRoutes = Route.readAllRoutes(getApplicationContext());
+
 	}
 	@Override
 	public void onTerminate() {
@@ -39,19 +40,32 @@ public class MyApplication extends Application {
 	}
 
 	Route[] getRoutes() {
-		synchronized (mRoutes) {
-			Route[] list = new Route[mRoutes.size()];
+		Route[] list;
+		boolean routeChanged = false;
+		synchronized (routeSemaphore) {
+			if (mRoutes == null)
+			{
+				mRoutes = Route.readAllRoutes(getApplicationContext());
+				routeChanged = true;
+			}
+			list = new Route[mRoutes.size()];
 			mRoutes.toArray(list);
-			return list;
+			
 		}
+		if (routeChanged)
+			RouteChanged.fire(this, EventArgs.Empty);
+		return list;
 
 	}
 	public void refreshRoutes() {
-		mRoutes = Route.readAllRoutes(getApplicationContext());
+		synchronized (routeSemaphore) {
+			mRoutes = Route.readAllRoutes(getApplicationContext());
+		}
 		RouteChanged.fire(this, EventArgs.Empty);
+
 	}
 	public void removeRoute(Route route) {
-		synchronized (mRoutes) {
+		synchronized (routeSemaphore) {
 			String routeFile = Helper.getRouteFile(route.getName());
 			final File file = getFileStreamPath(routeFile);
 			file.delete();
@@ -76,7 +90,7 @@ public class MyApplication extends Application {
 				30 * 1000, pintent);
 		connectorActivated = true;
 	}
-	
+
 	public boolean isRecording() {
 		return recordingService != null;
 	}
@@ -88,18 +102,17 @@ public class MyApplication extends Application {
 	}
 	public void setConnectorService(ConnectorService connectorService) {
 		this.connectorService = connectorService;
-		
+
 	}
 	public ConnectorService getConnectorService() {
 		return this.connectorService;
-		
+
 	}
 	public Boolean isLiveTracking() {
 		return liveTracking;
 	}
-	
-	public void setLiveTracking(boolean b)
-	{
+
+	public void setLiveTracking(boolean b) {
 		liveTracking = b;
 		LiveTrackingChanged.fire(this, EventArgs.Empty);
 	}

@@ -8,6 +8,7 @@ import java.nio.channels.FileChannel;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import android.app.AlertDialog;
@@ -150,4 +151,21 @@ public class Helper {
 		return "";
 	}
 
+	public static int compare(Date a, Date b) {
+		Integer ha = a.getHours();
+		Integer hb = b.getHours();
+		int cmp = ha.compareTo(hb);
+		if (cmp != 0)
+			return cmp;
+		Integer ma = a.getMinutes();
+		Integer mb = b.getMinutes();
+		cmp = ma.compareTo(mb);
+		if (cmp != 0)
+			return cmp;
+		
+		Integer sa = a.getSeconds();
+		Integer sb = b.getSeconds();
+		cmp = sa.compareTo(sb);
+		return cmp;
+	}
 }

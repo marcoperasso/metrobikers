@@ -45,7 +45,7 @@ class Mobile extends MY_Controller {
             $this->load->model("Route_model");
             $this->load->model("Route_points_model");
             $this->Route_model->userid = $user->id;
-            $response = $this->Route_model->get_routes($latestupdate);
+            $response = $this->Route_model->get_routes(date('Y-m-d H:i:s', $latestupdate));
             foreach ($response as $route) {
                 $route->latestupdate = strtotime($route->latestupdate);
                 $this->Route_points_model->routeid = $route->id;

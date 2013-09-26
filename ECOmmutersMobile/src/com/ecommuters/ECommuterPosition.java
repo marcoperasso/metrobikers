@@ -5,33 +5,26 @@ import java.io.Serializable;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class ECommuterPosition implements IJsonSerializable, Serializable {
+public class ECommuterPosition extends GpsPoint implements IJsonSerializable, Serializable {
 
-	int lat;
-	int lon;
-	long time;
 	String name;
 	String surname;
 	String mail;
 	private static final long serialVersionUID = -5703092633640293472L;
 
 	public ECommuterPosition(int lat, int lon, String name,
-			String surname, String mail, long time) {
-		this.lat = lat;
-		this.lon = lon;
+			String surname, String mail, long time)  {
+		super(lat,lon,time);
 		this.name = name;
 		this.surname = surname;
 		this.mail = mail;
-		this.time = time;
 	}
 
 	public ECommuterPosition(int lat, int lon, long time) {
-		this.lat = lat;
-		this.lon = lon;
+		super(lat,lon,time);
 		this.name = null;
 		this.surname = null;
 		this.mail = null;
-		this.time = time;
 	}
 	public JSONObject toJson() throws JSONException {
 		JSONObject obj = new JSONObject();

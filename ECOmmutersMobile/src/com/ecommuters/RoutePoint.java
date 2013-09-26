@@ -25,7 +25,7 @@ public class RoutePoint extends GpsPoint
 		obj.put("id", id);
 		obj.put("lat", lat);
 		obj.put("lon", lon);
-		obj.put("time", unixTime);
+		obj.put("time", time);
 		return obj;
 	}
 
@@ -35,4 +35,6 @@ public class RoutePoint extends GpsPoint
 				jsonObject.getInt("lat"), jsonObject.getInt("lon"),
 				jsonObject.getLong("time"));
 	}
+
+	
 }
