@@ -28,7 +28,7 @@ class Home extends MY_Controller {
             $this->load->model("Route_model");
             $this->load->model("Route_points_model");
             $this->Route_model->userid = $user->id;
-            $routes = $this->Route_model->get_routes();
+            $routes = $this->Route_model->get_routes(0);
             foreach ($routes as $route) {
                 $this->Route_points_model->routeid = $route->id;
                 $route->points = $this->Route_points_model->get_points();
