@@ -36,7 +36,7 @@ public class RequestBuilder {
 			+ "mobile/save_route";
 	private static final String sendPositionDataRequest = host
 			+ "mobile/update_position";
-	private static final String getRoutesRequest = host + "mobile/get_routes";
+	private static final String getRoutesRequest = host + "mobile/get_routes/";
 	private static final String getPositionsRequest = host
 			+ "mobile/get_positions";
 	public static final String HTTP_WWW_ECOMMUTERS_COM_LOGIN = host + "login";
@@ -158,10 +158,10 @@ public class RequestBuilder {
 
 	}
 
-	public static List<Route> getRoutes() throws ClientProtocolException,
+	public static List<Route> getRoutes(long latestUpdate) throws ClientProtocolException,
 			JSONException, IOException {
 		List<Route> routes = new ArrayList<Route>();
-		JSONArray response = sendRequestForArray(getRoutesRequest, true);
+		JSONArray response = sendRequestForArray(getRoutesRequest + latestUpdate, true);
 		for (int i = 0; i < response.length(); i++) {
 			routes.add(Route.parseJSON(response.getJSONObject(i)));
 		}

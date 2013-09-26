@@ -39,13 +39,13 @@ class Mobile extends MY_Controller {
                 ->set_output(json_encode($response));
     }
 
-    public function get_routes() {
+    public function get_routes($latestupdate) {
         $user = get_user();
         if ($user != NULL) {
             $this->load->model("Route_model");
             $this->load->model("Route_points_model");
             $this->Route_model->userid = $user->id;
-            $response = $this->Route_model->get_routes();
+            $response = $this->Route_model->get_routes($latestupdate);
             foreach ($response as $route) {
                 $route->latestupdate = strtotime($route->latestupdate);
                 $this->Route_points_model->routeid = $route->id;

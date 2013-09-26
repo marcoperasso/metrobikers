@@ -81,9 +81,7 @@ public class MyMapActivity extends MapActivity {
 						r.setName(routeName);
 						r.save(MyMapActivity.this,
 								Helper.getRouteFile(routeName));
-						r.save(MyMapActivity.this,
-								Helper.getRouteFileToSend(routeName));
-
+						
 						final File recordingFile = getFileStreamPath(Const.RECORDING_ROUTE_FILE);
 						recordingFile.delete();
 						MyApplication.getInstance().refreshRoutes();
@@ -479,29 +477,7 @@ public class MyMapActivity extends MapActivity {
 		});
 	}
 
-	/*
-	 * private void doRecord() { String routeFile =
-	 * Helper.getRouteFile(routeName); final File file =
-	 * getFileStreamPath(routeFile); if (file.exists()) { new
-	 * AlertDialog.Builder(this) .setIcon(android.R.drawable.ic_dialog_alert)
-	 * .setTitle(getString(R.string.app_name)) .setMessage(
-	 * getString(R.string.existing_route_question, routeName))
-	 * .setPositiveButton(R.string.overwrite, new
-	 * DialogInterface.OnClickListener() { public void onClick(DialogInterface
-	 * dialog, int which) { file.delete(); startRecordingService(routeName);
-	 * 
-	 * } }) .setNegativeButton(android.R.string.cancel, null)
-	 * .setNeutralButton(R.string.append, new DialogInterface.OnClickListener()
-	 * { public void onClick(DialogInterface dialog, int which) {
-	 * startRecordingService(routeName); }
-	 * 
-	 * }).show();
-	 * 
-	 * } else { startRecordingService(routeName); }
-	 * 
-	 * }
-	 */
-
+	
 	private void setTrackGPSPosition(boolean b) {
 		mTrackGPSPosition = b;
 
@@ -536,7 +512,7 @@ public class MyMapActivity extends MapActivity {
 	protected void onPause() {
 		super.onPause();
 		myLocationOverlay.disableMyLocation();
-		myLocationOverlay.disableCompass();
+		//myLocationOverlay.disableCompass();
 		MyApplication.getInstance().OnRecordingRouteUpdated
 				.removeHandler(mUpdateRoutehandler);
 
@@ -552,7 +528,7 @@ public class MyMapActivity extends MapActivity {
 		super.onResume();
 		if (mTrackGPSPosition)
 			myLocationOverlay.enableMyLocation();
-		myLocationOverlay.enableCompass();
+		//myLocationOverlay.enableCompass();
 		MyApplication.getInstance().OnRecordingRouteUpdated
 				.addHandler(mUpdateRoutehandler);
 		IntentFilter intentFilter = new IntentFilter(Const.SERVICE_STOPPED);

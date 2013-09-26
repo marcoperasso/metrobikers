@@ -43,7 +43,17 @@ public class MySettings {
 		editor.putBoolean(Const.VISIBLE_ROUTES + routeName, b);
 		editor.commit();
 	}
+
+	public static long getLatestSyncDate(Context context) {
+		SharedPreferences settings = context.getSharedPreferences(Const.PREFS_NAME, 0);
+		return settings.getLong(Const.LATEST_SYNC, 0L);
+	}
 	
-	
+	public static void setLatestSyncDate(Context context, long date) {
+		SharedPreferences settings = context.getSharedPreferences(Const.PREFS_NAME, 0);
+		SharedPreferences.Editor editor = settings.edit();
+		editor.putLong(Const.LATEST_SYNC, date);
+		editor.commit();
+	}
 
 }

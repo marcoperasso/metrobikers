@@ -28,7 +28,7 @@ public class ConnectorService extends Service implements LocationListener {
 	private long sendRoutesInterval = 30000;// 30 secondi
 	private long checkPositionInterval = 60000;// 60 secondi
 	private long sendLatestPositionInterval = 5000;// 5 secondi
-	private boolean isSendingData;
+	private boolean isSynchingData;
 	private Thread mWorkerThread;
 	private Handler mHandler;
 	private Runnable sendRoutesProcedureRunnable;
@@ -53,10 +53,8 @@ public class ConnectorService extends Service implements LocationListener {
 					if (liveTracking()) {
 						if (!requestingLocation)
 							checkPositionProcedure();
-					}
-					else
-					{
-						//se sto ascoltando il GPS, faccio partire il timer
+					} else {
+						// se sto ascoltando il GPS, faccio partire il timer
 						if (requestingLocation)
 							startTimeoutTimer();
 					}
@@ -68,7 +66,7 @@ public class ConnectorService extends Service implements LocationListener {
 						.addHandler(onLiveTrackingChanged);
 				Looper.prepare();
 				mHandler = new Handler();
-				sendRoutesProcedure();
+				syncRoutesProcedure();
 				checkPositionProcedure();
 				sendLatestPositionProcedure();
 				Looper.loop();
@@ -84,7 +82,7 @@ public class ConnectorService extends Service implements LocationListener {
 
 		sendRoutesProcedureRunnable = new Runnable() {
 			public void run() {
-				sendRoutesProcedure();
+				syncRoutesProcedure();
 			}
 		};
 		checkPositionProcedureRunnable = new Runnable() {
@@ -181,10 +179,10 @@ public class ConnectorService extends Service implements LocationListener {
 		super.onDestroy();
 	}
 
-	private void sendRoutesProcedure() {
+	private void syncRoutesProcedure() {
 		try {
-			if (Helper.isOnline(this) && !isSendingData)
-				sendRoutes();
+			if (Helper.isOnline(this) && !isSynchingData)
+				syncRoutes();
 		} finally {
 			mHandler.postDelayed(sendRoutesProcedureRunnable,
 					sendRoutesInterval);
@@ -216,7 +214,7 @@ public class ConnectorService extends Service implements LocationListener {
 	}
 
 	private void startTimeoutTimer() {
-		if (getLocationTimerTask!=null)
+		if (getLocationTimerTask != null)
 			return;
 		getLocationTimerTask = new TimerTask() {
 			@Override
@@ -233,48 +231,10 @@ public class ConnectorService extends Service implements LocationListener {
 		return MyApplication.getInstance().isLiveTracking();
 	}
 
-	private void downloadRoutes() throws IOException, JSONException {
-
-		if (!Helper.isOnline(this)) {
+	private void syncRoutes() {
+		if (isSynchingData)
 			return;
-		}
-		List<Route> rr = RequestBuilder.getRoutes();
-		StringBuilder message = new StringBuilder();
-		int saved = 0;
-		for (Route r : rr) {
-			String routeFile = Helper.getRouteFile(r.getName());
-			if (getFileStreamPath(routeFile).exists()) {
-				Route existing = Route.readRoute(ConnectorService.this,
-						routeFile);
-				if (existing != null
-						&& existing.getLatestUpdate() >= r.getLatestUpdate()) {
-					message.append(String.format(
-							getString(R.string.route_already_existing),
-							r.getName()));
-					continue;
-				}
-			}
-			r.save(ConnectorService.this, routeFile);
-			saved++;
-		}
-		if (saved > 0)
-			MyApplication.getInstance().refreshRoutes();
-
-		message.append(String.format(
-				getString(R.string.route_succesfully_downloaded), saved));
-
-	}
-
-	private void sendRoutes() {
-		if (isSendingData)
-			return;
-		isSendingData = true;
-		final List<File> files = Helper.getFiles(this, Const.TOSENDEXT);
-
-		if (files.size() == 0) {
-			isSendingData = false;
-			return;
-		}
+		isSynchingData = true;
 
 		testCredentials(new OnAsyncResponse() {
 			public void response(boolean success, String message) {
@@ -282,20 +242,35 @@ public class ConnectorService extends Service implements LocationListener {
 				try {
 					if (!success)
 						return;
-					for (File file : files) {
-						try {
-							Route route = Route.readRoute(
-									ConnectorService.this, file.getName());
-							if (route != null
-									&& RequestBuilder.sendRouteData(route))
-								file.delete();
 
-						} catch (Exception e) {
-							e.printStackTrace();
-						}
+					long latestUpdate = MySettings
+							.getLatestSyncDate(ConnectorService.this);
+
+					for (Route r : MyApplication.getInstance().getRoutes()) {
+						if (r.getLatestUpdate() > latestUpdate
+								&& !RequestBuilder.sendRouteData(r))
+							throw new Exception("Cannot send route to server: " + r.getName());
+
 					}
+
+					List<Route> rr = RequestBuilder.getRoutes(latestUpdate);
+					boolean saved = false;
+					for (Route r : rr) {
+						String routeFile = Helper.getRouteFile(r.getName());
+						r.save(ConnectorService.this, routeFile);
+						saved = true;
+					}
+
+					if (saved)
+						MyApplication.getInstance().refreshRoutes();
+
+					MySettings.setLatestSyncDate(ConnectorService.this,
+							(long) (System.currentTimeMillis() / 1e3));
+				} catch (Exception e) {
+					Log.e(CONNECTOR_SERVICE, e.toString());
+
 				} finally {
-					isSendingData = false;
+					isSynchingData = false;
 				}
 
 			}

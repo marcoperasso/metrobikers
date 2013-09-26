@@ -20,8 +20,8 @@ class Route_model extends MY_Model {
         return FALSE;
     }
 
-    public function get_routes() {
-        $query = $this->db->get_where('routes ', array('userid' => $this->userid));
+    public function get_routes($latestupdate) {
+        $query = $this->db->get_where('routes ', array('userid' => $this->userid, 'latestupdate >' => $latestupdate));
         $result = array();
         foreach ($query->result_array() as $row) {
             $item = new Route_model();

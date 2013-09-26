@@ -96,9 +96,7 @@ public class Helper {
 		return routeName + Const.ROUTEEXT;
 	}
 
-	public static String getRouteFileToSend(String routeName) {
-		return routeName + Const.TOSENDEXT;
-	}
+	
 	public static void copyFile(File aSourceFile, File aTargetFile, boolean aAppend) throws IOException {
 		FileChannel inChannel = null;
 		FileChannel outChannel = null;
