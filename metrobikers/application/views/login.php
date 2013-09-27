@@ -1,21 +1,32 @@
-<div id="loginform" title="Login" class="messagedialog">
-    <form>
-        <fieldset class="centered loginfieldset">
-            <label for="email">Email</label>
-            <input type="text" name="email" id="loginemail" value="" class="logininput" />
-            <label for="loginpassword">Password</label>
-            <input type="password" name="password" id="loginpassword" value="" class="logininput" />
-            <br>
-            <label for="forget">Forgot your password?</label>
-            <input type="button" name="forget" id="loginforget" value="Reset password" class="logininput" />
-
-        </fieldset>
-    </form>
-</div>
+<div class="modal fade" id="loginModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title">Accedi ad ECOmmuters</h4>
+      </div>
+      <div class="modal-body">
+        <form id="loginform">
+            <fieldset>
+                <input type="text" name="email" id="loginemail" value="" placeholder="Email" class="required form-control"/><br>
+                <input type="password" name="password" id="loginpassword" value="" placeholder="Password" class="required form-control"/>
+                <br>
+                <p class="text-center"><small><a href="#" id="loginforget">Hai dimenticato la password?</a></small></p>
+            </fieldset>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" id="dologin">Accedi</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<script type="text/javascript" src="<?php echo base_url_considering_mobile() ?>asset/js/modal.js"></script>
 <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
 <script type="text/javascript" src="<?php echo base_url_considering_mobile() ?>asset/js/md5-min.js"></script>
 <script type="text/javascript">
     $("#loginforget").click(resetPassword);
+    $("#dologin").click(doLogin);
     var _autologin = this.autologin;
     function doLogin()
     {
