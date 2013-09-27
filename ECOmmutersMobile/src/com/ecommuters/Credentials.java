@@ -123,4 +123,17 @@ public class Credentials {
 	public void setSurname(String surname) {
 		this.surname = surname;
 	}
+	
+	public static void testCredentials(Context context, OnAsyncResponse testResponse) {
+		if (RequestBuilder.isLogged()) {
+			testResponse.response(true, "");
+			return;
+		}
+		Credentials credential = MySettings.readCredentials(context);
+		if (credential.isEmpty()) {
+			testResponse.response(false, "");
+			return;
+		}
+		credential.testLogin(context, testResponse);
+	}
 }

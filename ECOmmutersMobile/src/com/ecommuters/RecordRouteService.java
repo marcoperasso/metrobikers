@@ -63,7 +63,9 @@ public class RecordRouteService extends IntentService {
 	}
 
 	private void setNotification(String message) {
-		Notification notification = new Notification(R.drawable.ic_launcher,
+		if (!working)
+			return;
+		Notification notification = new Notification(R.drawable.record,
 				getString(R.string.recording), System.currentTimeMillis());
 		notification.flags = Notification.FLAG_ONGOING_EVENT;
 		Intent intent = new Intent(this, MyMapActivity.class);

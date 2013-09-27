@@ -4,7 +4,10 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
+import junit.framework.TestCase;
+
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -29,6 +32,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.ecommuters.PositionList;
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapActivity;
 import com.google.android.maps.MapController;
@@ -53,9 +57,9 @@ public class MyMapActivity extends MapActivity {
 
 	private Animation mAnimation;
 	private GenericEvent mRoutesChangedHandler;
-	
+
 	private PositionsDownlader mPositionsDownloader;
-	
+
 	private GenericEvent mUpdateRoutehandler = new GenericEvent() {
 
 		@Override
@@ -80,7 +84,7 @@ public class MyMapActivity extends MapActivity {
 						r.setName(routeName);
 						r.save(MyMapActivity.this,
 								Helper.getRouteFile(routeName));
-						
+
 						final File recordingFile = getFileStreamPath(Const.RECORDING_ROUTE_FILE);
 						recordingFile.delete();
 						MyApplication.getInstance().refreshRoutes();
@@ -96,20 +100,19 @@ public class MyMapActivity extends MapActivity {
 		}
 	};
 
-
 	/** Called when the activity is first created. */
+	@SuppressWarnings("unchecked")
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_mymap);
 
 		// prima di tutto testo la versione (solo se sono online)
-		//if (!testVersion()) {
-		//	finish();
-		//	return;
-		//}
-		
-		
+		// if (!testVersion()) {
+		// finish();
+		// return;
+		// }
+
 		mlocManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
 		enableGPS();
@@ -161,11 +164,15 @@ public class MyMapActivity extends MapActivity {
 			mController.animateTo(new GeoPoint(late6, lone6));
 
 			zoomLevel = savedInstanceState.getInt(Const.ZoomLevel, 15);
+
+			mTracksOverlay.setPositions((PositionList) savedInstanceState
+					.getSerializable(Const.POSITIONS));
 		}
 
 		mRoutesChangedHandler = new GenericEvent() {
 			public void onEvent(Object sender, EventArgs args) {
-				mTracksOverlay.setRoutes(MyApplication.getInstance().getRoutes());
+				mTracksOverlay.setRoutes(MyApplication.getInstance()
+						.getRoutes());
 				mMap.invalidate();
 			}
 		};
@@ -201,9 +208,10 @@ public class MyMapActivity extends MapActivity {
 			}
 
 		});
-		mPositionsDownloader = new PositionsDownlader(mMap, mTracksOverlay, this);
-		
+		mPositionsDownloader = new PositionsDownlader(mMap, mTracksOverlay,
+				this);
 
+		mTracksOverlay.setRoutes(MyApplication.getInstance().getRoutes());
 	}
 
 	private void toggleLiveTracking() {
@@ -238,8 +246,6 @@ public class MyMapActivity extends MapActivity {
 		}
 
 	}
-
-	
 
 	private void showTrackingButton(Boolean show) {
 		Button btn = (Button) findViewById(R.id.buttonLiveTracking);
@@ -326,7 +332,7 @@ public class MyMapActivity extends MapActivity {
 
 	@Override
 	protected void onStop() {
-		
+
 		super.onStop();
 	}
 
@@ -335,13 +341,14 @@ public class MyMapActivity extends MapActivity {
 		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.mymap_menu, menu);
 		mMenuItemTrackGpsPosition = menu.findItem(R.id.itemTrackGpsPosition);
-		mMenuItemTrackGpsPosition
-				.setTitleCondensed(getString(mTrackGPSPosition ? R.string.hide_position_menu
-						: R.string.show_position_menu));
+		mMenuItemTrackGpsPosition.setTitleCondensed(getString(mTrackGPSPosition
+				? R.string.hide_position_menu
+				: R.string.show_position_menu));
 
 		MenuItem menuItemRecordRoute = menu.findItem(R.id.itemRecordRoute);
 		menuItemRecordRoute.setTitleCondensed(getString(MyApplication
-				.getInstance().isRecording() ? R.string.stop_recording
+				.getInstance().isRecording()
+				? R.string.stop_recording
 				: R.string.record_route));
 
 		return super.onCreateOptionsMenu(menu);
@@ -357,25 +364,65 @@ public class MyMapActivity extends MapActivity {
 
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
-		case R.id.itemTrackGpsPosition:
-			setTrackGPSPosition(!mTrackGPSPosition);
-			break;
-		case R.id.itemVisibleRoutes:
-			chooseRoutes();
-			return true;
-		case R.id.itemRecordRoute:
-			toggleRecording();
-			return true;
-		case R.id.itemCredentials:
-			showCredentialsDialog(false);
-			return true;
-			/*
-			 * case R.id.itemDownloadRoutes : downloadRoutes(); return true;
-			 * case R.id.itemMyRoutes : Intent myIntent = new Intent(this,
-			 * MyRoutesActivity.class); startActivity(myIntent); return true;
-			 */
+			case R.id.itemTrackGpsPosition :
+				setTrackGPSPosition(!mTrackGPSPosition);
+				break;
+			case R.id.itemVisibleRoutes :
+				chooseRoutes();
+				return true;
+			case R.id.itemRecordRoute :
+				toggleRecording();
+				return true;
+			case R.id.itemCredentials :
+				showCredentialsDialog(false);
+				return true;
+			case R.id.itemDownloadRoutes :
+				downloadRoutes();
+				return true;
+				/*
+				 * case R.id.itemMyRoutes : Intent myIntent = new Intent(this,
+				 * MyRoutesActivity.class); startActivity(myIntent); return
+				 * true;
+				 */
 		}
 		return super.onOptionsItemSelected(item);
+	}
+
+	private void downloadRoutes() {
+
+		final ProgressDialog progressBar = new ProgressDialog(this);
+		progressBar.setMessage(getString(R.string.downloading));
+		progressBar.setCancelable(false);
+		progressBar.setIndeterminate(true);
+		progressBar.show();
+		try {
+			Credentials.testCredentials(this, new OnAsyncResponse() {
+				public void response(boolean success, String message) {
+
+					if (!success)
+						return;
+					try {
+						List<Route> rr = RequestBuilder.getRoutes(0);
+						boolean saved = false;
+						for (Route r : rr) {
+							String routeFile = Helper.getRouteFile(r.getName());
+							r.save(MyMapActivity.this, routeFile);
+							saved = true;
+						}
+
+						if (saved)
+							MyApplication.getInstance().refreshRoutes();
+					} catch (Exception e) {
+						Log.e(MY_MAP_ACTIVITY, e.toString());
+					} finally {
+						progressBar.dismiss();
+					}
+				}
+			});
+
+		} catch (Exception e) {
+			Log.e(MY_MAP_ACTIVITY, e.toString());
+		}
 	}
 
 	void showCredentialsDialog(boolean compulsory) {
@@ -472,14 +519,13 @@ public class MyMapActivity extends MapActivity {
 		});
 	}
 
-	
 	private void setTrackGPSPosition(boolean b) {
 		mTrackGPSPosition = b;
 
 		MySettings.setTrackGPSPosition(this, mTrackGPSPosition);
-		mMenuItemTrackGpsPosition
-				.setTitleCondensed(getString(mTrackGPSPosition ? R.string.hide_position_menu
-						: R.string.show_position_menu));
+		mMenuItemTrackGpsPosition.setTitleCondensed(getString(mTrackGPSPosition
+				? R.string.hide_position_menu
+				: R.string.show_position_menu));
 
 		if (mTrackGPSPosition)
 			myLocationOverlay.enableMyLocation();
@@ -495,6 +541,8 @@ public class MyMapActivity extends MapActivity {
 			outState.putInt(Const.MAPLONGITUDE, mMap.getMapCenter()
 					.getLongitudeE6());
 			outState.putInt(Const.ZoomLevel, mMap.getZoomLevel());
+			outState.putSerializable(Const.POSITIONS,
+					mTracksOverlay.getPositions());
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -506,7 +554,7 @@ public class MyMapActivity extends MapActivity {
 	protected void onPause() {
 		super.onPause();
 		myLocationOverlay.disableMyLocation();
-		//myLocationOverlay.disableCompass();
+		// myLocationOverlay.disableCompass();
 		MyApplication.getInstance().OnRecordingRouteUpdated
 				.removeHandler(mUpdateRoutehandler);
 
@@ -514,7 +562,7 @@ public class MyMapActivity extends MapActivity {
 				.removeHandler(mRoutesChangedHandler);
 		unregisterReceiver(recordingServiceStoppedReceiver);
 		mPositionsDownloader.stop();
-		
+
 	}
 
 	@Override
@@ -522,7 +570,7 @@ public class MyMapActivity extends MapActivity {
 		super.onResume();
 		if (mTrackGPSPosition)
 			myLocationOverlay.enableMyLocation();
-		//myLocationOverlay.enableCompass();
+		// myLocationOverlay.enableCompass();
 		MyApplication.getInstance().OnRecordingRouteUpdated
 				.addHandler(mUpdateRoutehandler);
 		IntentFilter intentFilter = new IntentFilter(Const.SERVICE_STOPPED);

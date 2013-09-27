@@ -21,6 +21,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.ecommuters.PositionList;
+
 import android.util.Log;
 import android.webkit.CookieManager;
 
@@ -174,9 +176,9 @@ public class RequestBuilder {
 		return response.has("saved") && response.getBoolean("saved");
 
 	}
-	public static List<ECommuterPosition> getPositions(int lat1, int lon1,
+	public static PositionList getPositions(int lat1, int lon1,
 			int lat2, int lon2) {
-		List<ECommuterPosition> list = new ArrayList<ECommuterPosition>();
+		PositionList list = new PositionList();
 		try {
 			JSONArray points = sendRequestForArray(getPositionsRequest + "/"
 					+ lat2 + "/" + lon1 + "/" + lat1 + "/" + lon2, isLogged());

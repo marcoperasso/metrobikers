@@ -22,24 +22,27 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
         android:baselineAligned="true"
-        android:orientation="horizontal"
-        android:padding="5dip" >
+        android:orientation="horizontal" >
 
         <Button
             android:id="@+id/buttonLiveTracking"
             android:layout_width="100dp"
             android:layout_height="100dp"
+            android:layout_margin="5dp"
             android:background="@drawable/livetrackingbutton"
-            android:contentDescription="@string/livetracking" />
+            android:contentDescription="@string/livetracking" 
+            android:padding="10dp"
+            />
 
         <Button
             android:id="@+id/buttonRecord"
             android:layout_width="100dp"
             android:layout_height="100dp"
-            android:layout_marginBottom="10dp"
-            android:layout_marginRight="10dp"
-            android:background="@drawable/recordbutton"
-            android:contentDescription="@string/record" />
+            android:layout_margin="5dp"
+             android:background="@drawable/recordbutton"
+            android:contentDescription="@string/record"
+            />
+
     </LinearLayout>
 
 </RelativeLayout>

@@ -1,8 +1,8 @@
 package com.ecommuters;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -22,6 +22,9 @@ import com.google.android.maps.OverlayItem;
 import com.google.android.maps.Projection;
 
 public class RoutesOverlay extends ItemizedOverlay<OverlayItem> {
+	
+	
+	
 	private MyMapActivity mContext;
 	private Route[] routes;
 	// private ImageView mImageView;
@@ -32,6 +35,7 @@ public class RoutesOverlay extends ItemizedOverlay<OverlayItem> {
 	private TextView mTitleTextView;
 	int currentZoomLevel = -1;
 	private ArrayList<OverlayItem> mOverlays = new ArrayList<OverlayItem>();
+	private PositionList mPositions;
 
 	public RoutesOverlay(Drawable defaultMarker, MyMapActivity context,
 			MyMapView map) {
@@ -168,7 +172,8 @@ public class RoutesOverlay extends ItemizedOverlay<OverlayItem> {
 		this.routes = mRoutes;
 	}
 
-	public void setPositions(List<ECommuterPosition> positions) {
+	public void setPositions(PositionList positions) {
+		mPositions = positions;
 		mOverlays.clear();
 
 		for (ECommuterPosition pt : positions) {
@@ -185,4 +190,15 @@ public class RoutesOverlay extends ItemizedOverlay<OverlayItem> {
 
 	}
 
+	public PositionList getPositions() {
+		return mPositions;
+	}
+
+}
+class PositionList extends ArrayList<ECommuterPosition> implements Serializable {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 2803974611634610031L;
 }

@@ -6,11 +6,7 @@
         android:checkable="true"
         android:titleCondensed="@string/hide_position_menu">
     </item>
-    <item
-        android:id="@+id/itemVisibleRoutes"
-        android:checkable="true"
-        android:titleCondensed="@string/visible_routes">
-    </item>
+   
 <item android:id="@+id/itemRecordRoute" android:titleCondensed="@string/record_route"></item>
     
 </menu>

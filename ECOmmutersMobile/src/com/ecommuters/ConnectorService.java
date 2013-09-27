@@ -1,7 +1,6 @@
 package com.ecommuters;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Timer;
@@ -20,19 +19,14 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
+import android.text.format.DateFormat;
 import android.util.Log;
 
 public class ConnectorService extends Service implements LocationListener {
 
-	private static final int distanceMeters = 2;
 	private static final String CONNECTOR_SERVICE = "ConnectorService";
 	private static final long getLocationTimeout = 30000; // 30 secondi tempo a
-	private static final int toleranceMinutes = 15;
-															// disposizione del
-															// gps per
-															// connettersi e
-															// trovare la
-															// posizione
+
 	private LocationManager mlocManager;
 	private boolean isSynchingData;
 	private Thread mWorkerThread;
@@ -55,7 +49,7 @@ public class ConnectorService extends Service implements LocationListener {
 	private Runnable removeUpdatesRunnable;
 	private boolean requestingLocation = false;
 	private ECommuterPosition mLocation;
-	private List<Route> mTrackingRoutes;
+	private TrackingManager mTrackManager = new TrackingManager();
 	private NotificationManager mNotificationManager;
 
 	public ConnectorService() {
@@ -77,7 +71,7 @@ public class ConnectorService extends Service implements LocationListener {
 					}
 				}
 			};
-			
+
 			public void run() {
 				MyApplication.getInstance().LiveTrackingChanged
 						.addHandler(onLiveTrackingChanged);
@@ -140,8 +134,9 @@ public class ConnectorService extends Service implements LocationListener {
 		mLocation = new ECommuterPosition((int) (location.getLatitude() * 1E6),
 				(int) (location.getLongitude() * 1E6),
 				(long) (System.currentTimeMillis() / 1E3));
-
-		mTrackingRoutes = getRoutesByPosition(mLocation);
+		if (!requestingLocation)
+			return;
+		mTrackManager.locationChanged(mLocation);
 
 		if (!liveTracking()) {
 			mlocManager.removeUpdates(this);
@@ -169,7 +164,7 @@ public class ConnectorService extends Service implements LocationListener {
 
 	}
 	private void setNotification(String message) {
-		Notification notification = new Notification(R.drawable.livetrackingbutton,
+		Notification notification = new Notification(R.drawable.livetracking,
 				message, System.currentTimeMillis());
 		notification.flags = Notification.FLAG_ONGOING_EVENT;
 		Intent intent = new Intent(this, MyMapActivity.class);
@@ -184,9 +179,13 @@ public class ConnectorService extends Service implements LocationListener {
 		if (mLocation == null || !liveTracking()
 				|| !Helper.isOnline(ConnectorService.this))
 			return;
-		setNotification("Sto tracciando la tua posizione");
+		java.text.DateFormat timeFormat = DateFormat.getTimeFormat(this);
+		Date df = new java.util.Date((long) (mLocation.time * 1e3));
+		String text = timeFormat.format(df) + ": "
+				+ getString(R.string.tracking_position);
+		setNotification(text);
 
-		testCredentials(new OnAsyncResponse() {
+		Credentials.testCredentials(this, new OnAsyncResponse() {
 			public void response(boolean success, String message) {
 
 				if (!success)
@@ -227,7 +226,7 @@ public class ConnectorService extends Service implements LocationListener {
 
 	private void checkPositionProcedure() {
 		try {
-			if (isTimeForTracking())
+			if (mTrackManager.isTimeForTracking())
 				activateGPSIfNeeded();
 		} catch (Exception e) {
 			Log.e(CONNECTOR_SERVICE, e.toString());
@@ -235,48 +234,6 @@ public class ConnectorService extends Service implements LocationListener {
 			mHandler.postDelayed(checkPositionProcedureRunnable,
 					checkPositionInterval);
 		}
-	}
-
-	private boolean isTimeForTracking() {
-		return getRoutesByTime().size() > 0;
-	}
-	private List<Route> getRoutesByPosition(ECommuterPosition position) {
-		List<Route> trackingRoutesByTime = getRoutesByTime();
-		List<Route> trackingRoutes = new ArrayList<Route>();
-		for (Route r : trackingRoutesByTime) {
-			for (RoutePoint pt : r.getPoints()) {
-				if (position.distance(pt) < distanceMeters)// due metri
-				{
-					trackingRoutes.add(r);
-					break;
-				}
-			}
-		}
-		return trackingRoutes;
-
-	}
-
-	private List<Route> getRoutesByTime() {
-		ArrayList<Route> arrayList = new ArrayList<Route>();
-		for (Route r : MyApplication.getInstance().getRoutes()) 
-			arrayList.add(r);
-		return arrayList;
-		/*List<Route> trackingRoutes = new ArrayList<Route>();
-		Calendar cal = Calendar.getInstance();
-		cal.add(Calendar.MINUTE, toleranceMinutes);
-		Date nowForward = cal.getTime();
-		cal = Calendar.getInstance();
-		cal.add(Calendar.MINUTE, -toleranceMinutes);
-		Date nowBackward = cal.getTime();
-		for (Route r : MyApplication.getInstance().getRoutes()) {
-			Date from = new Date((long) (r.getPoints().get(0).time*1e3));
-			Date to = new Date((long) (r.getPoints().get(r.getPoints().size() - 1).time*1e3));
-			if (Helper.compare(nowForward, from) > 0 && Helper.compare(nowBackward, to) < 0)
-			{
-				trackingRoutes.add(r);
-			}
-		}
-		return trackingRoutes;*/
 	}
 
 	private void activateGPSIfNeeded() {
@@ -308,21 +265,23 @@ public class ConnectorService extends Service implements LocationListener {
 	}
 
 	private Boolean liveTracking() {
-		return (mTrackingRoutes != null && mTrackingRoutes.size() > 0) || MyApplication.getInstance().isLiveTracking();
+		return mTrackManager.liveTracking()
+				|| MyApplication.getInstance().isLiveTracking();
 	}
 
 	private void syncRoutes() {
 		if (isSynchingData)
 			return;
 		isSynchingData = true;
-		long latestUpdate = MySettings.getLatestSyncDate(ConnectorService.this);
+		final long latestUpdate = MySettings
+				.getLatestSyncDate(ConnectorService.this);
 
 		final List<Route> newRoutes = getNewRoutes(latestUpdate);
 		if (newRoutes.size() == 0) {
 			isSynchingData = false;
 			return;
 		}
-		testCredentials(new OnAsyncResponse() {
+		Credentials.testCredentials(this, new OnAsyncResponse() {
 			public void response(boolean success, String message) {
 
 				try {
@@ -334,15 +293,6 @@ public class ConnectorService extends Service implements LocationListener {
 							throw new Exception("Cannot send route to server: "
 									+ r.getName());
 					}
-
-					/*
-					 * List<Route> rr = RequestBuilder.getRoutes(latestUpdate);
-					 * boolean saved = false; for (Route r : rr) { String
-					 * routeFile = Helper.getRouteFile(r.getName());
-					 * r.save(ConnectorService.this, routeFile); saved = true; }
-					 * 
-					 * if (saved) MyApplication.getInstance().refreshRoutes();
-					 */
 
 					MySettings.setLatestSyncDate(ConnectorService.this,
 							(long) (System.currentTimeMillis() / 1e3));
@@ -365,19 +315,6 @@ public class ConnectorService extends Service implements LocationListener {
 				newRoutes.add(r);
 		}
 		return newRoutes;
-	}
-
-	private void testCredentials(OnAsyncResponse testResponse) {
-		if (RequestBuilder.isLogged()) {
-			testResponse.response(true, "");
-			return;
-		}
-		Credentials credential = MySettings.readCredentials(this);
-		if (credential.isEmpty()) {
-			testResponse.response(false, "");
-			return;
-		}
-		credential.testLogin(this, testResponse);
 	}
 
 	@Override

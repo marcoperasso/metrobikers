@@ -39,7 +39,7 @@ class Download extends MY_Controller {
 
         foreach ($points as $point) {
             $xml .='<trkpt lat="' . $point->lat/1000000 . '" lon="' . $point->lon/1000000 . '">
-        <time>' . $point->time . '</time>
+        <time>' . gmdate("Y-m-d\TH:i:s\Z", strtotime($point->time)) . '</time>
       </trkpt>';
         };
         $xml .=
@@ -47,7 +47,7 @@ class Download extends MY_Controller {
   </trk>
 </gpx>';
         header('Content-Type: text/xml;charset=UTF-8');
-        //header("Content-Disposition", "attachment;filename=a.gpx");
+        header("Content-Disposition:attachment; filename='" . $route_name. ".gpx'");
         echo $xml;
     }
 
