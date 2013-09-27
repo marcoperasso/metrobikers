@@ -78,27 +78,28 @@
     </head>
 
     <body>
-        <?php $this->load->view('templates/publicvisualheader'); ?>
-        <div class="row">
-            <div class="col-md-3">
-                
-            </div>
+        <div class="container">
+            <?php $this->load->view('templates/publicvisualheader'); ?>
+            <div class="row body">
+                <div class="col-md-3">
 
-            <div class="col-md-6">
-                <div class="container">
-                    <br />
-                    <h2 class="text-center">Completa la registrazione</h2><br />
-                    <?php echo validation_errors(); ?>
-                    <div class="col-md-2">
-                
-                    </div>
-        
-                    <div class="col-md-8">
-                        <?php echo form_open('register/activate',  array('id' => 'completeForm')) ?>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="container">
+                        <br />
+                        <h2 class="text-center">Completa la registrazione</h2><br />
+                        <?php echo validation_errors(); ?>
+                        <div class="col-md-2">
+
+                        </div>
+
+                        <div class="col-md-8">
+                            <?php echo form_open('register/activate', array('id' => 'completeForm')) ?>
                             <div class="col-md-3">
-                
+
                             </div>
-                
+
                             <div class="col-md-6">
                                 <div class="text-center">
                                     <div class="form-group">
@@ -111,31 +112,32 @@
                                         <label for="pwdmeter">Sicurezza della password:</label>
                                         <div  class="pwdmetercontainer">
                                             <div id ="pwdmeter" class="pwdmeter">
-                                                
+
                                             </div>
                                         </div>
                                     </div>
-                        
-                                    <input id="userkey" name="userkey" type="hidden" value="<?php echo $key;?>"/>
+
+                                    <input id="userkey" name="userkey" type="hidden" value="<?php echo $key; ?>"/>
                                     <input id="password" name="password" type="hidden" />
                                     <input type="submit" name="submitbtn" id="submitbtn" value="Completa la registrazione" class="btn btn-default form-control"/> 
                                 </div>
                             </div>
                             <div class="col-md-3">
-                                
+
                             </div>
-                        </form>
-                    </div>
-                    <div class="col-md-2">
-                        
+                            </form>
+                        </div>
+                        <div class="col-md-2">
+
+                        </div>
                     </div>
                 </div>
+                <div class="col-md-3">
+
+                </div>
+
             </div>
-            <div class="col-md-3">
-                
-            </div>
-            
+            <?php $this->load->view('templates/footer'); ?>
         </div>
-    <?php $this->load->view('templates/footer'); ?>
-</body>
+    </body>
 </html>

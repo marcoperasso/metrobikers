@@ -6,11 +6,12 @@
     </head>
 
     <body>
-            <div class="row">
+        <div class="container">
+            <div class="row header">
                 <div class="col-md-12">
-                   <div class="row">
+                    <div class="row">
                         <div class="col-md-3">
-                        
+
                         </div>
                         <div class="col-md-6">
                             <a href="/" title="Vai alla pagina principale">
@@ -20,21 +21,21 @@
                         <div class="col-md-3">
                             <!-- Button trigger modal -->
                             <?php $this->load->view('login'); ?>
-                             <a data-toggle="modal" href="#loginModal" data-backdrop="static" class="btn btn-default btn-lg">Accedi</a>
+                            <a data-toggle="modal" href="#loginModal" data-backdrop="static" class="btn btn-default btn-lg">Accedi</a>
                         </div>
                     </div>
-                    
+
                 </div>
             </div>
-            <div class="row">
+            <div class="row body">
                 <div class="col-md-1"></div>
                 <div class="col-md-10">
                     <blockquote>
-                    <p class="text-center">Sono le azioni che contano.<br />
-                        I nostri pensieri, per quanto buoni possano essere, sono perle false fintanto che non vengono trasformati 
+                        <p class="text-center">Sono le azioni che contano.<br />
+                            I nostri pensieri, per quanto buoni possano essere, sono perle false fintanto che non vengono trasformati 
                             in azioni.<br />
                             <b>Sii il cambiamento che vuoi vedere nel mondo.</b></p>
-                    <p class="text-center"><small><cite title="Mahatma Gandhi"><a target="gandhi" href="http://it.wikipedia.org/wiki/Mahatma_Gandhi">Mahatma Gandhi</a></cite></small></p>
+                        <p class="text-center"><small><cite title="Mahatma Gandhi"><a target="gandhi" href="http://it.wikipedia.org/wiki/Mahatma_Gandhi">Mahatma Gandhi</a></cite></small></p>
                     </blockquote>
                     <p>Spostarsi in auto in città spesso significa sopportare ore di coda, perdere 
                         tempo alla ricerca di parcheggi, stress, costi di carburante, assicurazioni, 
@@ -68,10 +69,12 @@
                     $data = isset($this->routes) ? array('routes' => $this->routes) : array();
                     $this->load->view('map', $data);
                     ?>
-                     
+
                 </div>
                 <div class="col-md-1"></div>
-          </div>
-        <?php $this->load->view('templates/footer'); ?>               
+            </div>
+
+            <?php $this->load->view('templates/footer'); ?>
+        </div>               
     </body>
 </html>

@@ -14,42 +14,70 @@
 /*Bootstrap overrides*/
 body{
     font-family: Cantarell, Georgia, Helvetica, Arial, sans-serif;
-    margin:20px;
-    position: relative;
+
+    height: 100%;
 }
+
+html{
+    height: 100%;
+}
+
+div.footer
+{
+    position:absolute;
+    bottom:0;
+    width:100%;
+    line-height: 60px;
+    height:60px;   /* Height of the footer */
+    background:#c8e5bc;
+}
+
+div.container {
+    min-height:100%;
+    position:relative;
+}
+div.header {
+     padding:10px;
+}
+div.body {
+    padding:10px;
+    padding-bottom:60px;   /* Height of the footer */
+}
+
+
 h1,
 h2,
 h3,
 h4,
 h5,
 h6 {
-  color: #FF7D04;
+    color: #FF7D04;
 }
 .container {
     border: 1px solid rgba(0, 0, 0, 0.1);
     border-radius: 6px 6px 6px 6px;
 }
 .form-control:focus {
-  border-color: #52FF3F;
-  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(201, 255, 167, 0.6);
-          box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(201, 255, 167, 0.6);
+    border-color: #52FF3F;
+    -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(201, 255, 167, 0.6);
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(201, 255, 167, 0.6);
 }
 
 .btn-default {
-  color: #FFFFFF;
-  background-color: #FF7D04;
-  background-image: none;
-  background-repeat: none;
-  -webkit-border-radius: 10px;
-  -moz-border-radius: 10px;
-  border-radius: 10px;
-  text-shadow: none;
-  font-weight:bold;
+    color: #FFFFFF;
+    background-color: #FF7D04;
+    background-image: none;
+    background-repeat: none;
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
+    border-radius: 10px;
+    text-shadow: none;
+    font-weight:bold;
 }
 .btn-default:hover,
 .btn-default:focus {
-  color: #FFFFFF;
-  background-color: #FF7D30;
+    color: #FFFFFF;
+    background-color: #FF7D30;
 }
 /*End of bootstrap overrides*/
 
@@ -62,8 +90,8 @@ img.logo {
 }
 img.headercommand
 {
-width: auto;
-height: 70px;
+    width: auto;
+    height: 70px;
 }
 table.heading
 {
@@ -83,11 +111,4 @@ table.heading
 .centered{
     margin-left: auto;
     margin-right: auto;
-}
-div.footer
-{
-    position: absolute;
-    width: 100%;
-    bottom: 0px;
-    background-color: #F0EBE7;
 }

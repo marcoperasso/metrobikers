@@ -6,7 +6,10 @@
     </head>
 
     <body>
-        <?php $this->load->view('templates/visualheader'); ?>
-        <?php $this->load->view('templates/footer'); ?>
+        <div class="container">
+            <?php $this->load->view('templates/visualheader'); ?>
+            <div class="body"></div>
+            <?php $this->load->view('templates/footer'); ?>
+        </div>
     </body>
 </html>
