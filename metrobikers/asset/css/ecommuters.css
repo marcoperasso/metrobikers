@@ -14,6 +14,8 @@
 /*Bootstrap overrides*/
 body{
     font-family: Cantarell, Georgia, Helvetica, Arial, sans-serif;
+    margin:20px;
+    position: relative;
 }
 h1,
 h2,
@@ -81,4 +83,11 @@ table.heading
 .centered{
     margin-left: auto;
     margin-right: auto;
+}
+div.footer
+{
+    position: absolute;
+    width: 100%;
+    bottom: 0px;
+    background-color: #F0EBE7;
 }

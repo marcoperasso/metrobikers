@@ -68,9 +68,10 @@
                     $data = isset($this->routes) ? array('routes' => $this->routes) : array();
                     $this->load->view('map', $data);
                     ?>
-                    <?php $this->load->view('templates/footer'); ?>                
+                     
                 </div>
                 <div class="col-md-1"></div>
           </div>
+        <?php $this->load->view('templates/footer'); ?>               
     </body>
 </html>
