@@ -75,13 +75,13 @@ public class TrackingManager {
 		Integer index = mIndexMap.get(r.getName());
 		return index == null ? 0 : index;
 	}
-	private List<Route> getRoutesByTime() {
+	private List<Route> getRoutesByTimeDebug() {
 		List<Route> trackingRoutes = new ArrayList<Route>();
 		for (Route r : MyApplication.getInstance().getRoutes())
 			trackingRoutes.add(r);
 		return trackingRoutes;
 	}
-	private List<Route> getRoutesByTime1() {
+	private List<Route> getRoutesByTime() {
 		List<Route> trackingRoutes = new ArrayList<Route>();
 
 		Calendar cal = Calendar.getInstance();
