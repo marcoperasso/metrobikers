@@ -26,7 +26,18 @@ class User extends MY_Controller {
         $user = get_user();
         if ($user != NULL) {
             $data['user'] = $user;
+
+            $this->load->model("Route_model");
+            $this->load->model("Route_points_model");
+            $this->Route_model->userid = $user->id;
+            $routes = $this->Route_model->get_routes('0000-00-00 00:00:00');
+            foreach ($routes as $route) {
+                $this->Route_points_model->routeid = $route->id;
+                $route->points = $this->Route_points_model->get_points();
+            }
+            $data['routes'] = $routes;
         }
+
         $this->load->view('user', $data);
     }
 

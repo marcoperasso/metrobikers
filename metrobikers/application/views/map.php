@@ -4,7 +4,7 @@
     <div id="gmap_div" style="width: 800px; height: 600px; margin: 0px; margin-right: auto; margin-left: auto;
          background-color: #F0F0F0; overflow: hidden;">
         <p align="center" style="font: 10px Arial;">
-            Attendere il caricamento della mappa prego...</p>
+            Per favore attendi, sto caricando la mappa...</p>
     </div>
     <div id="gv_legend_container" style="display: none;">
         <table id="gv_legend_table" style="position: relative; filter: alpha(opacity=95);
