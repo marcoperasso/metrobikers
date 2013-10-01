@@ -131,7 +131,7 @@ public class ConnectorService extends Service implements LocationListener {
 	}
 
 	public void onLocationChanged(Location location) {
-		mLocation = new ECommuterPosition((int) (location.getLatitude() * 1E6),
+		mLocation = new ECommuterPosition(MySettings.CurrentCredentials.getUserId(), (int) (location.getLatitude() * 1E6),
 				(int) (location.getLongitude() * 1E6),
 				(long) (System.currentTimeMillis() / 1E3));
 		if (!requestingLocation)
@@ -185,20 +185,12 @@ public class ConnectorService extends Service implements LocationListener {
 				+ getString(R.string.tracking_position);
 		setNotification(text);
 
-		Credentials.testCredentials(this, new OnAsyncResponse() {
-			public void response(boolean success, String message) {
-
-				if (!success)
-					return;
-				try {
-					if (RequestBuilder.sendPositionData(mLocation))
-						mLocation = null;
-				} catch (Exception e) {
-					Log.e(CONNECTOR_SERVICE, e.toString());
-				}
-
-			}
-		});
+		try {
+			if (RequestBuilder.sendPositionData(mLocation))
+				mLocation = null;
+		} catch (Exception e) {
+			Log.e(CONNECTOR_SERVICE, e.toString());
+		}
 	}
 
 	@Override

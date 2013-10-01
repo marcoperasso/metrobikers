@@ -19,13 +19,14 @@ public class MySettings {
 	
 	public static Credentials readCredentials(Context context) {
 		SharedPreferences settings = context.getSharedPreferences(Const.PREFS_NAME, 0);
-		CurrentCredentials = new Credentials(settings.getString(Const.EMAIL, ""), settings.getString(Const.PASSWORD, ""));
+		CurrentCredentials = new Credentials(settings.getInt(Const.USERID, 0), settings.getString(Const.EMAIL, ""), settings.getString(Const.PASSWORD, ""));
 		return CurrentCredentials;
 	}
 	
 	public static void setCredentials(Context context, Credentials c) {
 		SharedPreferences settings = context.getSharedPreferences(Const.PREFS_NAME, 0);
 		SharedPreferences.Editor editor = settings.edit();
+		editor.putInt(Const.USERID, c.getUserId());
 		editor.putString(Const.EMAIL, c.getEmail());
 		editor.putString(Const.PASSWORD, c.getPassword());
 		editor.commit();

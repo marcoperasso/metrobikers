@@ -25,6 +25,7 @@ class Mobile extends MY_Controller {
         if ($user != NULL) {
             $response = array(
                 'logged' => TRUE,
+                'userid' => $user->id,
                 'name' => $user->name,
                 'surname' => $user->surname,
                 'birthdate' => $user->birthdate,
@@ -63,25 +64,19 @@ class Mobile extends MY_Controller {
     }
 
     public function update_position() {
-        $user = get_user();
-        $response = NULL;
-        if ($user == NULL) {
-            $response = array(
-                'saved' => FALSE,
-                'message' => lang('login_requested'));
-        } else {
-            $json = $this->input->post("data");
-            $point = json_decode($json);
-            $this->load->model("User_position_model");
 
-            $this->User_position_model->userid = $user->id;
-            $this->User_position_model->lat = $point->lat;
-            $this->User_position_model->lon = $point->lon;
-            $this->User_position_model->time = date('Y-m-d H:i:s', $point->time);
-            $this->User_position_model->save_position();
+        $json = $this->input->post("data");
+        $point = json_decode($json);
+        $this->load->model("User_position_model");
 
-            $response = array('saved' => TRUE);
-        }
+        $this->User_position_model->userid = $point->userid;
+        $this->User_position_model->lat = $point->lat;
+        $this->User_position_model->lon = $point->lon;
+        $this->User_position_model->time = date('Y-m-d H:i:s', $point->time);
+        $this->User_position_model->save_position();
+
+        $response = array('saved' => TRUE);
+
         $this->output
                 ->set_content_type('application/json')
                 ->set_output(json_encode($response));
@@ -91,10 +86,10 @@ class Mobile extends MY_Controller {
         $this->load->model("User_position_model");
         $this->User_position_model->purge_positions();
         $response = $this->User_position_model->get_positions($left, $top, $right, $bottom);
-        
+
         foreach ($response as &$point) {
-            $point["time"] = strtotime($point["time"]);   
-        }  
+            $point["time"] = strtotime($point["time"]);
+        }
         $this->output
                 ->set_content_type('application/json')
                 ->set_output(json_encode($response));

@@ -99,16 +99,19 @@ if (isset($routes)) {
                 Math.round(NE.lat() * 1000000) +
                 "/" +
                 Math.round(NE.lng() * 1000000);
-
+        function zeroPad(num, places) {
+            var zero = places - num.toString().length + 1;
+            return Array(+(zero > 0 && zero)).join("0") + num;
+        }
         jQuery.get(url, null, function(data) {
             if (!data)
                 return;
             for (var i = 0; i < data.length; i++) {
                 var obj = data[i];
-				var date = new Date(obj.time*1000);
-				 var marker = new google.maps.Marker({
+                var date = new Date(obj.time * 1000);
+                var marker = new google.maps.Marker({
                     position: new google.maps.LatLng(obj.lat / 1000000, obj.lon / 1000000),
-                    title: obj.name + " " + obj.surname + " (" + date.getHours()+ ":" + date.getMinutes() + ")",
+                    title: obj.name + " " + obj.surname + " (" + zeroPad(date.getHours(), 2) + ":" + zeroPad(date.getMinutes(), 2) + ")",
                     icon: "asset/img/routemarker.png"
                 });
                 marker.setMap(map);

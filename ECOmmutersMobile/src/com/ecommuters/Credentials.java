@@ -11,7 +11,7 @@ import android.webkit.WebView;
 import android.widget.Toast;
 
 public class Credentials {
-
+	private int userId;
 	private String email;
 	private String password;
 	private String name;
@@ -24,7 +24,8 @@ public class Credentials {
 		return name + " " + surname;
 	}
 
-	public Credentials(String mail, String pwd) {
+	public Credentials(int userId, String mail, String pwd) {
+		this.userId = userId;
 		this.email = mail;
 		this.password = pwd;
 	}
@@ -48,7 +49,13 @@ public class Credentials {
 	void setEmail(String email) {
 		this.email = email;
 	}
+	public int getUserId() {
+		return userId;
+	}
 
+	public void setUserId(int userId) {
+		this.userId = userId;
+	}
 	@SuppressLint("SetJavaScriptEnabled")
 	public void testLogin(final Context context,
 			final OnAsyncResponse onResponse) {
@@ -61,7 +68,7 @@ public class Credentials {
 		class AutologinObject {
 			boolean timeout = false;
 			Timer timer = new Timer(true);
-			
+
 			@SuppressWarnings("unused")
 			public String getUser() {
 				return c.getEmail();
@@ -76,7 +83,7 @@ public class Credentials {
 			public void completed(boolean success, String message) {
 				if (timeout)
 					return;
-				
+
 				timer.cancel();
 				if (!success) {
 					Toast t = Toast.makeText(context, message,
@@ -84,7 +91,10 @@ public class Credentials {
 					t.setGravity(Gravity.CENTER, 0, 0);
 					t.show();
 				} else {
+					int id = c.getUserId();
 					RequestBuilder.fillCredentialsData(c);
+					if (id != c.getUserId())
+						MySettings.setCredentials(context, c);
 				}
 				onResponse.response(success, message);
 			}
@@ -97,7 +107,7 @@ public class Credentials {
 						timer.cancel();
 						onResponse.response(false, "Timeout!");
 					}
-				}, 30000);//30 secondi
+				}, 30000);// 30 secondi
 			}
 		}
 		webView.setVisibility(View.INVISIBLE);
@@ -123,8 +133,9 @@ public class Credentials {
 	public void setSurname(String surname) {
 		this.surname = surname;
 	}
-	
-	public static void testCredentials(Context context, OnAsyncResponse testResponse) {
+
+	public static void testCredentials(Context context,
+			OnAsyncResponse testResponse) {
 		if (RequestBuilder.isLogged()) {
 			testResponse.response(true, "");
 			return;
@@ -136,4 +147,6 @@ public class Credentials {
 		}
 		credential.testLogin(context, testResponse);
 	}
+
+	
 }

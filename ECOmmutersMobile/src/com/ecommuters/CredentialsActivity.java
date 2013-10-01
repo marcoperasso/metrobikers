@@ -42,7 +42,7 @@ public class CredentialsActivity extends Activity {
 					return;
 				}
 
-				credentials = new Credentials(mail, pwd);
+				credentials = new Credentials(0, mail, pwd);
 				final ProgressDialog progressBar = new ProgressDialog(v.getContext());
 				progressBar.setMessage(getString(R.string.verifying_credentials));
 				progressBar.setCancelable(false);

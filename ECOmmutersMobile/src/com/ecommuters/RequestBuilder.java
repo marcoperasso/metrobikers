@@ -132,6 +132,7 @@ public class RequestBuilder {
 			obj = sendRequestForObject(getUserRequest, true);
 			c.setName(obj.getString("name"));
 			c.setSurname(obj.getString("surname"));
+			c.setUserId(obj.getInt("userid"));
 		} catch (ClientProtocolException e) {
 			Log.e(JSON, e.toString());
 		} catch (JSONException e) {
@@ -172,7 +173,7 @@ public class RequestBuilder {
 	public static boolean sendPositionData(ECommuterPosition position)
 			throws JSONException, ClientProtocolException, IOException {
 		JSONObject response = postRequest(sendPositionDataRequest, position,
-				true);
+				false);
 		return response.has("saved") && response.getBoolean("saved");
 
 	}
