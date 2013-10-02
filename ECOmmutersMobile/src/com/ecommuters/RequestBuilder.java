@@ -165,7 +165,8 @@ public class RequestBuilder {
 			JSONException, IOException {
 		List<Route> routes = new ArrayList<Route>();
 		JSONArray response = sendRequestForArray(getRoutesRequest + latestUpdate, true);
-		for (int i = 0; i < response.length(); i++) {
+		int length = response.length();
+		for (int i = 0; i < length; i++) {
 			routes.add(Route.parseJSON(response.getJSONObject(i)));
 		}
 		return routes;
@@ -183,7 +184,8 @@ public class RequestBuilder {
 		try {
 			JSONArray points = sendRequestForArray(getPositionsRequest + "/"
 					+ lat2 + "/" + lon1 + "/" + lat1 + "/" + lon2, isLogged());
-			for (int i = 0; i < points.length(); i++)
+			int length = points.length();
+			for (int i = 0; i < length; i++)
 				list.add(ECommuterPosition.parseJSON(points.getJSONObject(i)));
 			return list;
 		} catch (Exception e) {
