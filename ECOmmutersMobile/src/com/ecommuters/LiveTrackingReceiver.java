@@ -1,7 +1,5 @@
 package com.ecommuters;
 
-import java.io.Serializable;
-
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -11,7 +9,7 @@ public class LiveTrackingReceiver extends BroadcastReceiver {
 		START_TRACKING, STOP_TRACKING
 	};
 	public static final String ID = "ID";
-	public static final String INTERVAL = "INTERVAL";
+	public static final String ROUTENAME = "ROUTENAME";
 
 	public LiveTrackingReceiver() {
 	}
@@ -23,9 +21,9 @@ public class LiveTrackingReceiver extends BroadcastReceiver {
 		if (connectorService == null)
 			return;
 		EventType id = (EventType) intent.getSerializableExtra(ID);
-		TimeInterval timeInterval = (TimeInterval) intent.getExtras()
-				.getSerializable(INTERVAL);
+		String routeName =  intent.getExtras()
+				.getString(ROUTENAME);
 
-		//connectorService.updateLiveTrackingData();
+		connectorService.updateLiveTrackingData(id, routeName);
 	}
 }

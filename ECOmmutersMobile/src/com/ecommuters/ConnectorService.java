@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import com.ecommuters.LiveTrackingReceiver.EventType;
+
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -37,7 +39,7 @@ public class ConnectorService extends Service implements LocationListener {
 	private Runnable sendLatestPositionProcedureRunnable;
 
 	private Runnable stopGPSRunnable;
-	private boolean requestingLocation = false;
+	private int requestingLocation = 0;
 	private ECommuterPosition mLocation;
 	private TrackingManager mTrackManager = new TrackingManager();
 	private NotificationManager mNotificationManager;
@@ -100,9 +102,9 @@ public class ConnectorService extends Service implements LocationListener {
 		MyApplication.getInstance().setConnectorService(this);
 		super.onCreate();
 	}
+
 	private void activateGPS() {
-		if (!requestingLocation
-				&& mlocManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+		if (requestingLocation == 0) {
 			String text = getTimeString(System.currentTimeMillis()) + ": "
 					+ getString(R.string.live_tracking_on);
 			setNotification(text);
@@ -110,24 +112,26 @@ public class ConnectorService extends Service implements LocationListener {
 					10000/* 10 secondi */, 5/*
 											 * due metri
 											 */, this);
-			requestingLocation = true;
-
+			
 		}
+		requestingLocation++;
 	}
+
 	private void stopGPS() {
-		if (requestingLocation) {
+		requestingLocation--;
+		if (requestingLocation == 0) {
 			mlocManager.removeUpdates(ConnectorService.this);
-			requestingLocation = false;
 			mNotificationManager.cancel(Const.TRACKING_NOTIFICATION_ID);
 		}
 	}
+
 	public void onLocationChanged(Location location) {
 		mLocation = new ECommuterPosition(
 				MySettings.CurrentCredentials.getUserId(),
 				(int) (location.getLatitude() * 1E6),
 				(int) (location.getLongitude() * 1E6),
 				(long) (System.currentTimeMillis() / 1E3));
-		if (!requestingLocation)
+		if (requestingLocation == 0)
 			return;
 		mTrackManager.locationChanged(mLocation);
 	}
@@ -147,6 +151,7 @@ public class ConnectorService extends Service implements LocationListener {
 				sendLatestPositionInterval);
 
 	}
+
 	private void setNotification(String message) {
 		Notification notification = new Notification(R.drawable.livetracking,
 				message, System.currentTimeMillis());
@@ -159,6 +164,7 @@ public class ConnectorService extends Service implements LocationListener {
 		mNotificationManager.notify(Const.TRACKING_NOTIFICATION_ID,
 				notification);
 	}
+
 	private void sendLatestPosition() {
 		if (mLocation == null || !liveTracking()
 				|| !Helper.isOnline(ConnectorService.this))
@@ -262,6 +268,32 @@ public class ConnectorService extends Service implements LocationListener {
 	public IBinder onBind(Intent intent) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	private void internalUpdateLiveTrackingData(EventType id, String routeName) {
+		switch (id) {
+		case START_TRACKING:
+			activateGPS();
+			break;
+		case STOP_TRACKING:
+			stopGPS();
+			break;
+		default:
+			break;
+		}
+
+	}
+
+	public void updateLiveTrackingData(final EventType id,
+			final String routeName) {
+		mHandler.post(new Runnable() {
+
+			public void run() {
+				internalUpdateLiveTrackingData(id, routeName);
+			}
+
+		});
+
 	}
 
 }

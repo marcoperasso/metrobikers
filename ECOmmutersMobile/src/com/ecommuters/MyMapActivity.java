@@ -162,8 +162,10 @@ public class MyMapActivity extends MapActivity {
 
 			zoomLevel = savedInstanceState.getInt(Const.ZoomLevel, 15);
 
-			mTracksOverlay.setPositions((PositionList) savedInstanceState
-					.getSerializable(Const.POSITIONS));
+			PositionList positions = (PositionList) savedInstanceState
+					.getSerializable(Const.POSITIONS);
+			if (positions != null)
+				mTracksOverlay.setPositions(positions);
 		}
 
 		mRoutesChangedHandler = new GenericEvent() {
