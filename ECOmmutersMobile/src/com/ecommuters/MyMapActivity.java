@@ -114,7 +114,7 @@ public class MyMapActivity extends MapActivity {
 
 		enableGPS();
 
-		MyApplication.getInstance().activateConnector(this);
+		MyApplication.getInstance().activateConnector();
 
 		// testo le credenziali
 		Credentials credential = MySettings.readCredentials(this);

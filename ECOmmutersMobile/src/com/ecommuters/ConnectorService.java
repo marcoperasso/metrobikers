@@ -3,8 +3,6 @@ package com.ecommuters;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -25,8 +23,6 @@ import android.util.Log;
 public class ConnectorService extends Service implements LocationListener {
 
 	private static final String CONNECTOR_SERVICE = "ConnectorService";
-	private static final long getLocationTimeout = 30000; // 30 secondi tempo a
-
 	private LocationManager mlocManager;
 	private boolean isSynchingData;
 	private Thread mWorkerThread;
@@ -36,17 +32,11 @@ public class ConnectorService extends Service implements LocationListener {
 	private long syncRoutesInterval = 300000;// 5 minuti
 	private Runnable syncRoutesProcedureRunnable;
 
-	// procedura di controllo della posizione se necessario
-	private long checkPositionInterval = 60000;// 60 secondi
-	private Runnable checkPositionProcedureRunnable;
-
 	// procedura di invio della posizione corrente
 	private long sendLatestPositionInterval = 30000;// 30 secondi
 	private Runnable sendLatestPositionProcedureRunnable;
 
-	private Timer requestingLocationTimeout = new Timer(true);
-	private TimerTask getLocationTimerTask;
-	private Runnable removeUpdatesRunnable;
+	private Runnable stopGPSRunnable;
 	private boolean requestingLocation = false;
 	private ECommuterPosition mLocation;
 	private TrackingManager mTrackManager = new TrackingManager();
@@ -63,11 +53,9 @@ public class ConnectorService extends Service implements LocationListener {
 				@Override
 				public void onEvent(Object sender, EventArgs args) {
 					if (liveTracking()) {
-						activateGPSIfNeeded();
+						activateGPS();
 					} else {
-						// se sto ascoltando il GPS, faccio partire il timer
-						if (requestingLocation)
-							startTimeoutTimer();
+						stopGPS();
 					}
 				}
 			};
@@ -79,13 +67,9 @@ public class ConnectorService extends Service implements LocationListener {
 				mNotificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 				mHandler = new Handler();
 				syncRoutesProcedure();
-				checkPositionProcedure();
 				sendLatestPositionProcedure();
 				Looper.loop();
-				mlocManager.removeUpdates(ConnectorService.this);
-				getLocationTimerTask = null;
-				requestingLocation = false;
-				mNotificationManager.cancel(Const.TRACKING_NOTIFICATION_ID);
+				stopGPS();
 				MyApplication.getInstance().LiveTrackingChanged
 						.removeHandler(onLiveTrackingChanged);
 				Log.d("ECOMMUTERS", "Worker thread ended");
@@ -98,28 +82,15 @@ public class ConnectorService extends Service implements LocationListener {
 				syncRoutesProcedure();
 			}
 		};
-		checkPositionProcedureRunnable = new Runnable() {
-			public void run() {
-				checkPositionProcedure();
-			}
-		};
-		sendLatestPositionProcedureRunnable = new Runnable() {
 
+		sendLatestPositionProcedureRunnable = new Runnable() {
 			public void run() {
 				sendLatestPositionProcedure();
-
 			}
-
 		};
-		removeUpdatesRunnable = new Runnable() {
+		stopGPSRunnable = new Runnable() {
 			public void run() {
-				if (requestingLocation) {
-					mlocManager.removeUpdates(ConnectorService.this);
-					requestingLocation = false;
-					getLocationTimerTask = null;
-					mNotificationManager.cancel(Const.TRACKING_NOTIFICATION_ID);
-				}
-
+				stopGPS();
 			}
 		};
 		mWorkerThread.setDaemon(true);
@@ -129,23 +100,36 @@ public class ConnectorService extends Service implements LocationListener {
 		MyApplication.getInstance().setConnectorService(this);
 		super.onCreate();
 	}
+	private void activateGPS() {
+		if (!requestingLocation
+				&& mlocManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+			String text = getTimeString(System.currentTimeMillis()) + ": "
+					+ getString(R.string.live_tracking_on);
+			setNotification(text);
+			mlocManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
+					10000/* 10 secondi */, 5/*
+											 * due metri
+											 */, this);
+			requestingLocation = true;
 
+		}
+	}
+	private void stopGPS() {
+		if (requestingLocation) {
+			mlocManager.removeUpdates(ConnectorService.this);
+			requestingLocation = false;
+			mNotificationManager.cancel(Const.TRACKING_NOTIFICATION_ID);
+		}
+	}
 	public void onLocationChanged(Location location) {
-		mLocation = new ECommuterPosition(MySettings.CurrentCredentials.getUserId(), (int) (location.getLatitude() * 1E6),
+		mLocation = new ECommuterPosition(
+				MySettings.CurrentCredentials.getUserId(),
+				(int) (location.getLatitude() * 1E6),
 				(int) (location.getLongitude() * 1E6),
 				(long) (System.currentTimeMillis() / 1E3));
 		if (!requestingLocation)
 			return;
 		mTrackManager.locationChanged(mLocation);
-
-		if (!liveTracking()) {
-			mlocManager.removeUpdates(this);
-			if (getLocationTimerTask != null)
-				getLocationTimerTask.cancel();
-			getLocationTimerTask = null;
-			requestingLocation = false;
-			mNotificationManager.cancel(Const.TRACKING_NOTIFICATION_ID);
-		}
 	}
 
 	public void onProviderDisabled(String provider) {
@@ -179,9 +163,7 @@ public class ConnectorService extends Service implements LocationListener {
 		if (mLocation == null || !liveTracking()
 				|| !Helper.isOnline(ConnectorService.this))
 			return;
-		java.text.DateFormat timeFormat = DateFormat.getTimeFormat(this);
-		Date df = new java.util.Date((long) (mLocation.time * 1e3));
-		String text = timeFormat.format(df) + ": "
+		String text = getTimeString((long) (mLocation.time * 1e3)) + ": "
 				+ getString(R.string.tracking_position);
 		setNotification(text);
 
@@ -191,6 +173,13 @@ public class ConnectorService extends Service implements LocationListener {
 		} catch (Exception e) {
 			Log.e(CONNECTOR_SERVICE, e.toString());
 		}
+	}
+
+	private String getTimeString(long time) {
+		java.text.DateFormat timeFormat = DateFormat.getTimeFormat(this);
+		Date df = new java.util.Date(time);
+		String format = timeFormat.format(df);
+		return format;
 	}
 
 	@Override
@@ -214,46 +203,6 @@ public class ConnectorService extends Service implements LocationListener {
 			mHandler.postDelayed(syncRoutesProcedureRunnable,
 					syncRoutesInterval);
 		}
-	}
-
-	private void checkPositionProcedure() {
-		try {
-			if (mTrackManager.isTimeForTracking())
-				activateGPSIfNeeded();
-		} catch (Exception e) {
-			Log.e(CONNECTOR_SERVICE, e.toString());
-		} finally {
-			mHandler.postDelayed(checkPositionProcedureRunnable,
-					checkPositionInterval);
-		}
-	}
-
-	private void activateGPSIfNeeded() {
-		if (!requestingLocation
-				&& mlocManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-			mlocManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
-					10000/* 10 secondi */, 5/*
-											 * due metri
-											 */, this);
-			requestingLocation = true;
-			if (!liveTracking()) {
-				startTimeoutTimer();
-			}
-		}
-	}
-
-	private void startTimeoutTimer() {
-		if (getLocationTimerTask != null)
-			return;
-		getLocationTimerTask = new TimerTask() {
-			@Override
-			public void run() {
-				requestingLocationTimeout.purge();
-				mHandler.post(removeUpdatesRunnable);
-			}
-		};
-		requestingLocationTimeout.schedule(getLocationTimerTask,
-				getLocationTimeout);
 	}
 
 	private Boolean liveTracking() {
