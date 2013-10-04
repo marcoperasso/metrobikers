@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.util.List;
 
 import android.app.AlertDialog;
-import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -339,14 +338,13 @@ public class MyMapActivity extends MapActivity {
 		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.mymap_menu, menu);
 		mMenuItemTrackGpsPosition = menu.findItem(R.id.itemTrackGpsPosition);
-		mMenuItemTrackGpsPosition.setTitleCondensed(getString(mTrackGPSPosition
-				? R.string.hide_position_menu
-				: R.string.show_position_menu));
+		mMenuItemTrackGpsPosition
+				.setTitleCondensed(getString(mTrackGPSPosition ? R.string.hide_position_menu
+						: R.string.show_position_menu));
 
 		MenuItem menuItemRecordRoute = menu.findItem(R.id.itemRecordRoute);
 		menuItemRecordRoute.setTitleCondensed(getString(MyApplication
-				.getInstance().isRecording()
-				? R.string.stop_recording
+				.getInstance().isRecording() ? R.string.stop_recording
 				: R.string.record_route));
 
 		return super.onCreateOptionsMenu(menu);
@@ -362,66 +360,29 @@ public class MyMapActivity extends MapActivity {
 
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
-			case R.id.itemTrackGpsPosition :
-				setTrackGPSPosition(!mTrackGPSPosition);
-				break;
-			case R.id.itemVisibleRoutes :
-				chooseRoutes();
-				return true;
-			case R.id.itemRecordRoute :
-				toggleRecording();
-				return true;
-			case R.id.itemCredentials :
-				showCredentialsDialog(false);
-				return true;
-			case R.id.itemDownloadRoutes :
-				downloadRoutes();
-				return true;
-				/*
-				 * case R.id.itemMyRoutes : Intent myIntent = new Intent(this,
-				 * MyRoutesActivity.class); startActivity(myIntent); return
-				 * true;
-				 */
+		case R.id.itemTrackGpsPosition:
+			setTrackGPSPosition(!mTrackGPSPosition);
+			break;
+		case R.id.itemVisibleRoutes:
+			chooseRoutes();
+			return true;
+		case R.id.itemRecordRoute:
+			toggleRecording();
+			return true;
+		case R.id.itemCredentials:
+			showCredentialsDialog(false);
+			return true;
+
+		case R.id.itemMyRoutes:
+			Intent myIntent = new Intent(this, MyRoutesActivity.class);
+			startActivity(myIntent);
+			return true;
+
 		}
 		return super.onOptionsItemSelected(item);
 	}
 
-	private void downloadRoutes() {
-
-		final ProgressDialog progressBar = new ProgressDialog(this);
-		progressBar.setMessage(getString(R.string.downloading));
-		progressBar.setCancelable(false);
-		progressBar.setIndeterminate(true);
-		progressBar.show();
-		try {
-			Credentials.testCredentials(this, new OnAsyncResponse() {
-				public void response(boolean success, String message) {
-
-					if (!success)
-						return;
-					try {
-						List<Route> rr = RequestBuilder.getRoutes(0);
-						boolean saved = false;
-						for (Route r : rr) {
-							String routeFile = Helper.getRouteFile(r.getName());
-							r.save(MyMapActivity.this, routeFile);
-							saved = true;
-						}
-
-						if (saved)
-							MyApplication.getInstance().refreshRoutes();
-					} catch (Exception e) {
-						Log.e(MY_MAP_ACTIVITY, e.toString());
-					} finally {
-						progressBar.dismiss();
-					}
-				}
-			});
-
-		} catch (Exception e) {
-			Log.e(MY_MAP_ACTIVITY, e.toString());
-		}
-	}
+	
 
 	void showCredentialsDialog(boolean compulsory) {
 		Intent intent = new Intent(this, CredentialsActivity.class);
@@ -521,9 +482,9 @@ public class MyMapActivity extends MapActivity {
 		mTrackGPSPosition = b;
 
 		MySettings.setTrackGPSPosition(this, mTrackGPSPosition);
-		mMenuItemTrackGpsPosition.setTitleCondensed(getString(mTrackGPSPosition
-				? R.string.hide_position_menu
-				: R.string.show_position_menu));
+		mMenuItemTrackGpsPosition
+				.setTitleCondensed(getString(mTrackGPSPosition ? R.string.hide_position_menu
+						: R.string.show_position_menu));
 
 		if (mTrackGPSPosition)
 			myLocationOverlay.enableMyLocation();

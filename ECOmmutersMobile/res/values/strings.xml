@@ -33,7 +33,7 @@
     <string name="gps_disabled">GPS disabilitato</string>
     <string name="title_activity_credentials">CredentialsActivity</string>
     <string name="hello_world">Hello world!</string>
-    <string name="download_routes">Scarica i miei itinerari</string>
+    <string name="download_routes">Scarica itinerari</string>
     <string name="visible_routes">Itinerari visualizzati</string>
     <string name="routes">Itinerari</string>
     <string name="title_activity_my_routes">I miei itinerari</string>

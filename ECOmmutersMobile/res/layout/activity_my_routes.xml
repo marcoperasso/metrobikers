@@ -21,11 +21,11 @@
         android:layout_weight="0.02" />
 
     <Button
-        android:id="@+id/btn_new_route"
+        android:id="@+id/btn_download_routes"
         android:layout_width="fill_parent"
         android:layout_height="50dp"
         android:layout_margin="1dp"
-        android:text="@string/btn_new_route" />
+        android:text="@string/download_routes" />
 
    
 

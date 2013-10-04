@@ -58,7 +58,7 @@ public class Helper {
 	public static void dialogMessage(final Context context, String message,
 			DialogInterface.OnClickListener okListener,
 			DialogInterface.OnClickListener cancelListener) {
-		dialogMessage(context, message, okListener, cancelListener);
+		dialogMessage(context, message, context.getString(R.string.app_name), okListener, cancelListener);
 
 	}
 	public static void dialogMessage(final Context context, int message,

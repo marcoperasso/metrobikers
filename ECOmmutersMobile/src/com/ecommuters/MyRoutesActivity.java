@@ -1,8 +1,12 @@
 package com.ecommuters;
 
+import java.util.List;
+
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Menu;
@@ -10,6 +14,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -17,31 +22,32 @@ public class MyRoutesActivity extends Activity {
 
 	private static final int menuDeleteLocal = 0;
 
+	protected static final String MY_ROUTES_ACTIVITY = "MYROUTES";
 
 	private Route[] mRoutes;
 
 	private Route mActiveRoute;
 
 	private GenericEventHandler mRoutesChangedHandler;
-	private GenericEventHandler updateRoutehandler = new GenericEventHandler() {
 
-		@Override
-		public void onEvent(Object sender, EventArgs args) {
-			populate();
-		}
-	};
-	
 	@Override
 	protected void onStop() {
 		MyApplication.getInstance().RouteChanged
 				.removeHandler(mRoutesChangedHandler);
 		super.onStop();
 	}
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_my_routes);
+		Button btnDownload = (Button) findViewById(R.id.btn_download_routes);
+		btnDownload.setOnClickListener(new View.OnClickListener() {
 
+			public void onClick(View v) {
+				downloadRoutes();
+			}
+		});
 		mRoutes = MyApplication.getInstance().getRoutes();
 		mRoutesChangedHandler = new GenericEventHandler() {
 			public void onEvent(Object sender, EventArgs args) {
@@ -53,14 +59,52 @@ public class MyRoutesActivity extends Activity {
 				.addHandler(mRoutesChangedHandler);
 		ListView lv = populate();
 		registerForContextMenu(lv);
-		
+
 	}
+
+	private void downloadRoutes() {
+
+		final ProgressDialog progressBar = new ProgressDialog(this);
+		progressBar.setMessage(getString(R.string.downloading));
+		progressBar.setCancelable(false);
+		progressBar.setIndeterminate(true);
+		progressBar.show();
+		try {
+			Credentials.testCredentials(this, new OnAsyncResponse() {
+				public void response(boolean success, String message) {
+
+					if (!success)
+						return;
+					try {
+						List<Route> rr = RequestBuilder.getRoutes(0);
+						boolean saved = false;
+						for (Route r : rr) {
+							String routeFile = Helper.getRouteFile(r.getName());
+							r.save(MyRoutesActivity.this, routeFile);
+							saved = true;
+						}
+
+						if (saved)
+							MyApplication.getInstance().refreshRoutes();
+					} catch (Exception e) {
+						Log.e(MY_ROUTES_ACTIVITY, e.toString());
+					} finally {
+						progressBar.dismiss();
+					}
+				}
+			});
+
+		} catch (Exception e) {
+			Log.e(MY_ROUTES_ACTIVITY, e.toString());
+		}
+	}
+
 	private ListView populate() {
 		StringBuilder sb = new StringBuilder();
 
 		if (mRoutes.length == 0)
 			sb.append(getString(R.string.no_routes));
-		
+
 		TextView tvDescri = (TextView) findViewById(R.id.textViewDescription);
 		tvDescri.setText(sb.toString());
 
@@ -70,7 +114,7 @@ public class MyRoutesActivity extends Activity {
 		lv.setAdapter(adapter);
 		return lv;
 	}
-	
+
 	@Override
 	public void onCreateContextMenu(ContextMenu menu, View v,
 			ContextMenuInfo menuInfo) {
@@ -82,34 +126,34 @@ public class MyRoutesActivity extends Activity {
 			menu.add(Menu.NONE, menuDeleteLocal, 0, "Elimina");
 		}
 	}
-	
+
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
-			case menuDeleteLocal :
-				Helper.dialogMessage(
-						this,
-						String.format(
-								"Confermi la cancellazione dell'itinerario %s? Potrai comunque scaricarlo nuovamente dal server.",
-								mActiveRoute.getName()), 
-						new DialogInterface.OnClickListener() {
+		case menuDeleteLocal:
+			Helper.dialogMessage(
+					this,
+					String.format(
+							"Confermi la cancellazione dell'itinerario %s? Potrai comunque scaricarlo nuovamente dal server.",
+							mActiveRoute.getName()),
+					new DialogInterface.OnClickListener() {
 
-							public void onClick(DialogInterface dialog,
-									int which) {
-								removeActiveRoute();
-							}
+						public void onClick(DialogInterface dialog, int which) {
+							removeActiveRoute();
+						}
 
-						}, null);
+					}, null);
 
-				break;
+			break;
 
 		}
 		return true;
 	}
+
 	private void removeActiveRoute() {
 
 		MyApplication.getInstance().removeRoute(mActiveRoute);
 
 	}
-	
+
 }

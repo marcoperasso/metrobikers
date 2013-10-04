@@ -5,19 +5,16 @@
         android:id="@+id/itemCredentials"
         android:titleCondensed="@string/user_credentials">
     </item>
-    <item
-        android:id="@+id/itemDownloadRoutes"
-        android:titleCondensed="@string/download_routes">
-    </item>
+    
      <item
         android:id="@+id/itemVisibleRoutes"
         android:checkable="true"
         android:titleCondensed="@string/visible_routes">
     </item>
-<!--     <item -->
-<!--         android:id="@+id/itemMyRoutes" -->
-<!--         android:titleCondensed="@string/my_routes"> -->
-<!--     </item> -->
+    <item
+        android:id="@+id/itemMyRoutes"
+        android:titleCondensed="@string/my_routes">
+    </item>
     <item
         android:id="@+id/itemTrackGpsPosition"
         android:titleCondensed="@string/show_position_menu">
