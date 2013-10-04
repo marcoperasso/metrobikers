@@ -12,9 +12,9 @@ public class TimeInterval implements Serializable {
 	private static final long serialVersionUID = 4252274440166137504L;
 	private Date start;
 	private Date end;
-	private String routeName;
+	private Route route;
 	public TimeInterval(Route r, long time) {
-		this.routeName = r.getName();
+		this.route = r;
 		Calendar cal = Calendar.getInstance();
 		cal.setTime(new Date(time));
 		cal.add(Calendar.MINUTE, -15);
@@ -38,11 +38,12 @@ public class TimeInterval implements Serializable {
 		Date now = new Date(System.currentTimeMillis());
 		return Helper.compare(now, start) > 0 && Helper.compare(now, end) < 0;
 	}
-	public String getRouteName() {
-		return routeName;
+	public Route getRoute() {
+		return route;
 	}
-	public void setRouteName(String routeName) {
-		this.routeName = routeName;
+	public void setRoute(Route route) {
+		this.route = route;
 	}
+	
 
 }

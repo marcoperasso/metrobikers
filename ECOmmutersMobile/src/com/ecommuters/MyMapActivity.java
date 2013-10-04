@@ -53,11 +53,11 @@ public class MyMapActivity extends MapActivity {
 	private LocationManager mlocManager;
 
 	private Animation mAnimation;
-	private GenericEvent mRoutesChangedHandler;
+	private GenericEventHandler mRoutesChangedHandler;
 
 	private PositionsDownlader mPositionsDownloader;
 
-	private GenericEvent mUpdateRoutehandler = new GenericEvent() {
+	private GenericEventHandler mUpdateRoutehandler = new GenericEventHandler() {
 
 		@Override
 		public void onEvent(Object sender, EventArgs args) {
@@ -98,7 +98,6 @@ public class MyMapActivity extends MapActivity {
 	};
 
 	/** Called when the activity is first created. */
-	@SuppressWarnings("unchecked")
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -168,7 +167,7 @@ public class MyMapActivity extends MapActivity {
 				mTracksOverlay.setPositions(positions);
 		}
 
-		mRoutesChangedHandler = new GenericEvent() {
+		mRoutesChangedHandler = new GenericEventHandler() {
 			public void onEvent(Object sender, EventArgs args) {
 				mTracksOverlay.setRoutes(MyApplication.getInstance()
 						.getRoutes());

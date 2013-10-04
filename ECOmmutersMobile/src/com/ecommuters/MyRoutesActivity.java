@@ -22,8 +22,8 @@ public class MyRoutesActivity extends Activity {
 
 	private Route mActiveRoute;
 
-	private GenericEvent mRoutesChangedHandler;
-	private GenericEvent updateRoutehandler = new GenericEvent() {
+	private GenericEventHandler mRoutesChangedHandler;
+	private GenericEventHandler updateRoutehandler = new GenericEventHandler() {
 
 		@Override
 		public void onEvent(Object sender, EventArgs args) {
@@ -43,7 +43,7 @@ public class MyRoutesActivity extends Activity {
 		setContentView(R.layout.activity_my_routes);
 
 		mRoutes = MyApplication.getInstance().getRoutes();
-		mRoutesChangedHandler = new GenericEvent() {
+		mRoutesChangedHandler = new GenericEventHandler() {
 			public void onEvent(Object sender, EventArgs args) {
 				mRoutes = MyApplication.getInstance().getRoutes();
 				populate();

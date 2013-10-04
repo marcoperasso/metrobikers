@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import com.ecommuters.LiveTrackingReceiver.EventType;
-
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -38,10 +36,9 @@ public class ConnectorService extends Service implements LocationListener {
 	private long sendLatestPositionInterval = 30000;// 30 secondi
 	private Runnable sendLatestPositionProcedureRunnable;
 
-	private Runnable stopGPSRunnable;
 	private int requestingLocation = 0;
 	private ECommuterPosition mLocation;
-	private TrackingManager mTrackManager = new TrackingManager();
+	private TrackingManager mTrackManager;
 	private NotificationManager mNotificationManager;
 
 	public ConnectorService() {
@@ -50,11 +47,11 @@ public class ConnectorService extends Service implements LocationListener {
 	public void onCreate() {
 		mWorkerThread = new Thread(new Runnable() {
 
-			private GenericEvent onLiveTrackingChanged = new GenericEvent() {
+			private LiveTrackingEventHandler onLiveTrackingChanged = new LiveTrackingEventHandler() {
 
 				@Override
-				public void onEvent(Object sender, EventArgs args) {
-					if (liveTracking()) {
+				public void onEvent(Object sender, LiveTrackingEventArgs args) {
+					if (args.isActive()) {
 						activateGPS();
 					} else {
 						stopGPS();
@@ -62,17 +59,40 @@ public class ConnectorService extends Service implements LocationListener {
 				}
 			};
 
+			private GenericEventHandler onRoutesChanged = new GenericEventHandler() {
+
+				@Override
+				public void onEvent(Object sender, EventArgs args) {
+					mTrackManager.scheduleLiveTracking();
+				}
+			};
+
 			public void run() {
-				MyApplication.getInstance().LiveTrackingChanged
+				MyApplication.getInstance().ManualLiveTrackingChanged
 						.addHandler(onLiveTrackingChanged);
+				MyApplication.getInstance().RouteChanged
+						.addHandler(onRoutesChanged);
+
 				Looper.prepare();
 				mNotificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 				mHandler = new Handler();
+				mlocManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+
+				mTrackManager = new TrackingManager(mHandler,
+						ConnectorService.this);
+				mTrackManager.LiveTrackingEvent
+						.addHandler(onLiveTrackingChanged);
+				mTrackManager.scheduleLiveTracking();
 				syncRoutesProcedure();
 				sendLatestPositionProcedure();
 				Looper.loop();
-				stopGPS();
-				MyApplication.getInstance().LiveTrackingChanged
+				mlocManager.removeUpdates(ConnectorService.this);
+				mNotificationManager.cancel(Const.TRACKING_NOTIFICATION_ID);
+				MyApplication.getInstance().ManualLiveTrackingChanged
+						.removeHandler(onLiveTrackingChanged);
+				MyApplication.getInstance().RouteChanged
+						.removeHandler(onRoutesChanged);
+				mTrackManager.LiveTrackingEvent
 						.removeHandler(onLiveTrackingChanged);
 				Log.d("ECOMMUTERS", "Worker thread ended");
 
@@ -90,15 +110,10 @@ public class ConnectorService extends Service implements LocationListener {
 				sendLatestPositionProcedure();
 			}
 		};
-		stopGPSRunnable = new Runnable() {
-			public void run() {
-				stopGPS();
-			}
-		};
+
 		mWorkerThread.setDaemon(true);
 		mWorkerThread.start();
-		mlocManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-
+		
 		MyApplication.getInstance().setConnectorService(this);
 		super.onCreate();
 	}
@@ -112,7 +127,7 @@ public class ConnectorService extends Service implements LocationListener {
 					10000/* 10 secondi */, 5/*
 											 * due metri
 											 */, this);
-			
+
 		}
 		requestingLocation++;
 	}
@@ -212,7 +227,7 @@ public class ConnectorService extends Service implements LocationListener {
 	}
 
 	private Boolean liveTracking() {
-		return mTrackManager.liveTracking()
+		return mTrackManager.isLiveTracking()
 				|| MyApplication.getInstance().isLiveTracking();
 	}
 
@@ -270,8 +285,8 @@ public class ConnectorService extends Service implements LocationListener {
 		return null;
 	}
 
-	private void internalUpdateLiveTrackingData(EventType id, String routeName) {
-		switch (id) {
+	public void OnExecuteTask(Task task) {
+		switch (task.getType()) {
 		case START_TRACKING:
 			activateGPS();
 			break;
@@ -281,18 +296,6 @@ public class ConnectorService extends Service implements LocationListener {
 		default:
 			break;
 		}
-
-	}
-
-	public void updateLiveTrackingData(final EventType id,
-			final String routeName) {
-		mHandler.post(new Runnable() {
-
-			public void run() {
-				internalUpdateLiveTrackingData(id, routeName);
-			}
-
-		});
 
 	}
 

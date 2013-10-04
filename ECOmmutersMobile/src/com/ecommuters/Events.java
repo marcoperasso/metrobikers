@@ -48,13 +48,34 @@ abstract class TEventItem<TSender, TArgs> {
 	public abstract void onEvent(TSender sender, TArgs args);
 }
 
-abstract class GenericEvent extends TEventItem<Object, EventArgs> {
+abstract class GenericEventHandler extends TEventItem<Object, EventArgs> {
 }
 
+abstract class LiveTrackingEventHandler extends TEventItem<Object, LiveTrackingEventArgs> {
+}
 class EventArgs {
 	public static EventArgs Empty = new EventArgs();
 }
 
+class LiveTrackingEventArgs {
+	private boolean active;
+
+	public LiveTrackingEventArgs(boolean liveTracking) {
+		this.active = liveTracking;
+	}
+
+	public boolean isActive() {
+		return active;
+	}
+
+	public void setActive(boolean active) {
+		this.active = active;
+	}
+}
+
 class Event extends TEvent<Object, EventArgs> {
+
+}
+class LiveTrackingEvent extends TEvent<Object, LiveTrackingEventArgs> {
 
 }
