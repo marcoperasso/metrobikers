@@ -1,8 +1,4 @@
-<?php
-$user = get_user();
-if ($user == NULL) {
-        redirect('/');
-} ?>
+<?php $this->load->view('templates/redirectnotlogged'); ?>
 <div class="row header">
     <div class="col-md-3">
 

@@ -26,6 +26,17 @@ class User extends MY_Controller {
         $user = get_user();
         if ($user != NULL) {
             $data['user'] = $user;
+        }
+
+        $this->load->view('user', $data);
+    }
+    
+    public function tracks() {
+
+        $data = array();
+        $user = get_user();
+        if ($user != NULL) {
+            $data['user'] = $user;
 
             $this->load->model("Route_model");
             $this->load->model("Route_points_model");
@@ -38,7 +49,7 @@ class User extends MY_Controller {
             $data['routes'] = $routes;
         }
 
-        $this->load->view('user', $data);
+        $this->load->view('tracks', $data);
     }
 
 }

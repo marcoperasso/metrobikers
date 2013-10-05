@@ -66,7 +66,7 @@
                     <a href="/asset/other/ECOmmutersMobile.apk" >Scarica la App per Android</a>
                     <br />
                     <?php
-                    $data = isset($this->routes) ? array('routes' => $this->routes) : array();
+                    $data = array();
                     $this->load->view('map', $data);
                     ?>
 
