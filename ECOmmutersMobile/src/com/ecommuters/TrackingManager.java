@@ -14,7 +14,7 @@ import com.ecommuters.Task.EventType;
 public class TrackingManager {
 
 	private static final int TIMEOUT = 600000;
-	
+
 	private static final int distanceMeters = 2;
 
 	private static final int MAX_OUT_OF_TRACK_COUNT = 20;
@@ -24,7 +24,7 @@ public class TrackingManager {
 	// connettersi e
 	// trovare la
 	// posizione
-	
+
 	private Handler mHandler;
 	private List<Task> mTasks = new ArrayList<Task>();
 	List<Route> mRoutesInTimeInterval = new ArrayList<Route>();
@@ -33,13 +33,7 @@ public class TrackingManager {
 	public LiveTrackingEvent LiveTrackingEvent = new LiveTrackingEvent();
 	private Timer mTimer = new Timer(true);
 
-	private TimerTask timerTask = new TimerTask() {
-		
-		@Override
-		public void run() {
-			setLiveTracking(false);
-		}
-	};
+	private TimerTask timerTask = null;
 
 	private int outOfTrackCount;
 
@@ -48,22 +42,31 @@ public class TrackingManager {
 		mService = service;
 	}
 
-	
-
 	public void locationChanged(ECommuterPosition mLocation) {
 		List<Route> trackingRoutes = getRoutesByPosition(mLocation);
-		
-		boolean b = trackingRoutes != null && trackingRoutes.size() > 0;
-		timerTask.cancel();
-		if (b)
-		{
+
+		boolean b = trackingRoutes.size() > 0;
+		if (timerTask != null) {
+			timerTask.cancel();
+			timerTask = null;
+		}
+		if (b) {
+			timerTask = new TimerTask() {
+
+				@Override
+				public void run() {
+					setLiveTracking(false);
+				}
+			};
 			mTimer.schedule(timerTask, TIMEOUT);
 		}
 		if (b == liveTracking)
 			return;
-		//se non sono più sulla traccia, non mi metto subito fuori dal live tracking, aspetto un po', 
-		//magari ci rientro... dopo MAX_OUT_OF_TRACK_COUNT che entro qui dentro, allora mi considero fuori traccia
-		if (!b){
+		// se non sono più sulla traccia, non mi metto subito fuori dal live
+		// tracking, aspetto un po',
+		// magari ci rientro... dopo MAX_OUT_OF_TRACK_COUNT che entro qui
+		// dentro, allora mi considero fuori traccia
+		if (!b) {
 			outOfTrackCount++;
 			if (outOfTrackCount < MAX_OUT_OF_TRACK_COUNT)
 				return;
@@ -76,6 +79,7 @@ public class TrackingManager {
 		liveTracking = b;
 		LiveTrackingEvent.fire(this, new LiveTrackingEventArgs(liveTracking));
 	}
+
 	public boolean isLiveTracking() {
 		return liveTracking;
 	}
