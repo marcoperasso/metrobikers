@@ -55,8 +55,11 @@ p {
 </head>
 <body>
 	<div id="container">
+            gggggggggggggggggg
+            <img src="../../asset/img/404FrogCrash1"/>
 		<h1><?php echo $heading; ?></h1>
-		<?php echo $message; ?>
+               <?php echo $message; ?>
+               <img src="../../asset/img/404FrogCrash2"/>
 	</div>
 </body>
 </html>
