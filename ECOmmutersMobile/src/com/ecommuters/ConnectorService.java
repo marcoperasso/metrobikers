@@ -52,9 +52,9 @@ public class ConnectorService extends Service implements LocationListener {
 				@Override
 				public void onEvent(Object sender, LiveTrackingEventArgs args) {
 					if (args.isActive()) {
-						activateGPS();
+						activateGPS(TimeInterval.MAX_WEIGHT);
 					} else {
-						stopGPS();
+						stopGPS(TimeInterval.MAX_WEIGHT);
 					}
 				}
 			};
@@ -118,7 +118,7 @@ public class ConnectorService extends Service implements LocationListener {
 		super.onCreate();
 	}
 
-	private void activateGPS() {
+	private void activateGPS(int i) {
 		if (requestingLocation == 0) {
 			String text = getTimeString(System.currentTimeMillis()) + ": "
 					+ getString(R.string.live_tracking_on);
@@ -132,7 +132,7 @@ public class ConnectorService extends Service implements LocationListener {
 		requestingLocation++;
 	}
 
-	private void stopGPS() {
+	private void stopGPS(int i) {
 		requestingLocation--;
 		if (requestingLocation == 0) {
 			mlocManager.removeUpdates(ConnectorService.this);
@@ -288,10 +288,10 @@ public class ConnectorService extends Service implements LocationListener {
 	public void OnExecuteTask(Task task) {
 		switch (task.getType()) {
 		case START_TRACKING:
-			activateGPS();
+			activateGPS(task.getWeight());
 			break;
 		case STOP_TRACKING:
-			stopGPS();
+			stopGPS(task.getWeight());
 			break;
 		default:
 			break;

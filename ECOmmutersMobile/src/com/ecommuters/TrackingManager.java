@@ -140,10 +140,10 @@ public class TrackingManager {
 		for (TimeInterval interval : intervals) {
 
 			Task startingTask = schedule(interval.getStart(),
-					interval.getRoute(), EventType.START_TRACKING);
+					interval.getRoute(), interval.getWeight(), EventType.START_TRACKING);
 
 			schedule(interval.getEnd(), interval.getRoute(),
-					EventType.STOP_TRACKING);
+					interval.getWeight(),EventType.STOP_TRACKING);
 
 			if (interval.isActiveNow()) {
 				startingTask.execute();
@@ -161,8 +161,8 @@ public class TrackingManager {
 		mTasks.clear();
 	}
 
-	private Task schedule(Date time, Route route, EventType type) {
-		Task task = new Task(this, mHandler, time, type, route);
+	private Task schedule(Date time, Route route, int weight, EventType type) {
+		Task task = new Task(this, mHandler, time, type, weight, route);
 		task.activate();
 		mTasks.add(task);
 		return task;
@@ -172,7 +172,7 @@ public class TrackingManager {
 		ArrayList<TimeInterval> intervals = new ArrayList<TimeInterval>();
 		for (Route r : MyApplication.getInstance().getRoutes()) {
 			intervals.add(new TimeInterval(r,
-					(long) (r.getPoints().get(0).time * 1e3)));
+					(long) (r.getPoints().get(0).time * 1e3), 0));
 		}
 		return intervals;
 
@@ -181,10 +181,12 @@ public class TrackingManager {
 	public void OnExecuteTask(Task task) {
 		switch (task.getType()) {
 		case START_TRACKING:
-			mRoutesInTimeInterval.add(task.getRoute());
+			if (!mRoutesInTimeInterval.contains(task.getRoute()))
+				mRoutesInTimeInterval.add(task.getRoute());
 			break;
 		case STOP_TRACKING:
-			mRoutesInTimeInterval.remove(task.getRoute());
+			if (mRoutesInTimeInterval.contains(task.getRoute()))
+				mRoutesInTimeInterval.remove(task.getRoute());
 			break;
 		default:
 			break;

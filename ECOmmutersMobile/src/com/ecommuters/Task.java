@@ -17,8 +17,10 @@ public class Task implements Runnable {
 	private Route mRouteName;
 	private TrackingManager mTrackingManager;
 	private EventType type;
-	public Task(TrackingManager manager, Handler handler, Date time, EventType type, Route route) {
+	private int weight;
+	public Task(TrackingManager manager, Handler handler, Date time, EventType type, int weight, Route route) {
 		this.type = type;
+		this.weight = weight;
 		this.mTrackingManager = manager;
 		this.mHandler = handler;
 		this.time = time;
@@ -73,5 +75,10 @@ public class Task implements Runnable {
 		this.mRouteName = route;
 	}
 
+	public int getWeight() {
+		return weight;
+	}
+
+	
 
 }
