@@ -23,6 +23,10 @@ class Home extends MY_Controller {
     public function index() {
         $this->load->view('home');
     }
+    
+    public function mission() {
+        $this->load->view('mission');
+    }
 
 }
 

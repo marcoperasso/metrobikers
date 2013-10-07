@@ -29,7 +29,7 @@ footer
     width:100%;
     line-height: 60px;
     height:60px;   /* Height of the footer */
-    background:#F4FFA6;
+    background:inherit;
 }
 
 div.container {
@@ -53,6 +53,21 @@ h5,
 h6 {
     color: #FF7D04;
 }
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.h1,
+.h2,
+.h3,
+.h4,
+.h5,
+.h6 {
+    font-family: inherit;
+}
+
 .container {
     border: 1px solid rgba(0, 0, 0, 0.1);
     border-radius: 6px 6px 6px 6px;
@@ -127,15 +142,15 @@ h6 {
     background-repeat: none;
     filter: none;
 }
+
+.jumbotron {
+    background-color: inherit;
+}
+.jumbotron p {
+    color: #999;
+}
 /*End of bootstrap overrides*/
 
-img.logo {
-    height: 250px;
-    width: 400px;
-    margin-left: auto;
-    margin-right: auto;
-    display: block;
-}
 img.headercommand
 {
     width: auto;
