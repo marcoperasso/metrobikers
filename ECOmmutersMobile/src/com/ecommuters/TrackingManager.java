@@ -161,10 +161,10 @@ public class TrackingManager {
 		for (Route r : MyApplication.getInstance().getRoutes()) {
 			for (int i  = 0; i < GPSManager.MAX_GPS_LEVELS; i++)
 				intervals.add(new TimeInterval(r, r.getPoints().get(0).time *1000, i));
-			
-			long currentTimeMillis = System.currentTimeMillis();
-			for (int i  = 0; i < GPSManager.MAX_GPS_LEVELS; i++)
-				intervals.add(new TimeInterval(r, currentTimeMillis, i));
+			//per debug
+			//long currentTimeMillis = System.currentTimeMillis();
+			//for (int i  = 0; i < GPSManager.MAX_GPS_LEVELS; i++)
+			//	intervals.add(new TimeInterval(r, currentTimeMillis, i));
 		}
 		
 		
