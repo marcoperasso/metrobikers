@@ -3,9 +3,8 @@ package com.ecommuters;
 import java.util.Calendar;
 import java.util.Date;
 
-class TimeInterval  {
+class TimeInterval {
 
-	protected static final int MAX_WEIGHT = 10;
 	/**
 	 * 
 	 */
@@ -13,15 +12,16 @@ class TimeInterval  {
 	private Date end;
 	private Route route;
 	private int weigth;
-	final int maxTimeBefore = 10;
-	final int maxTimeAfter = 20;
+	private final static int[] beforeMap = { 15, 10, 7, 5, 3, 2, 1 };
+	private final static int[] afterMap = { 30, 20, 14, 10, 6, 4, 2 };
+	protected static final int MAX_WEIGHT = beforeMap.length;
 
 	public TimeInterval(Route r, long time, int weight) {
-
+		assert (weight < MAX_WEIGHT);
 		this.route = r;
 		this.weigth = weight;
-		int before = maxTimeBefore - weight * 2;
-		int after = maxTimeAfter - weight * 2;
+		int before = beforeMap[weight];
+		int after = afterMap[weight];
 		Calendar cal = Calendar.getInstance();
 		cal.setTime(new Date(time));
 		cal.add(Calendar.MINUTE, -before);

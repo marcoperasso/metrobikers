@@ -141,8 +141,9 @@ public class ConnectorService extends Service implements LocationListener {
 	}
 
 	public void onLocationChanged(Location location) {
+		Credentials currentCredentials = MySettings.CurrentCredentials;
 		mLocation = new ECommuterPosition(
-				MySettings.CurrentCredentials.getUserId(),
+				currentCredentials == null ? 0 : currentCredentials.getUserId(),
 				(int) (location.getLatitude() * 1E6),
 				(int) (location.getLongitude() * 1E6),
 				(long) (System.currentTimeMillis() / 1E3));

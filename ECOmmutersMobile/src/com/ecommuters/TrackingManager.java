@@ -18,7 +18,7 @@ public class TrackingManager {
 	private static final int distanceMeters = 2;
 
 	private static final int MAX_OUT_OF_TRACK_COUNT = 20;
-	private Hashtable<String, Integer> mIndexMap = new Hashtable<String, Integer>();
+	private Hashtable<Route, Integer> mIndexMap = new Hashtable<Route, Integer>();
 	// disposizione del
 	// gps per
 	// connettersi e
@@ -27,7 +27,7 @@ public class TrackingManager {
 
 	private Handler mHandler;
 	private List<Task> mTasks = new ArrayList<Task>();
-	List<Route> mRoutesInTimeInterval = new ArrayList<Route>();
+	Hashtable<Route, Integer> mRoutesInTimeInterval = new Hashtable<Route, Integer>();
 	private ConnectorService mService;
 	private boolean liveTracking;
 	public LiveTrackingEvent LiveTrackingEvent = new LiveTrackingEvent();
@@ -36,6 +36,8 @@ public class TrackingManager {
 	private TimerTask timerTask = null;
 
 	private int outOfTrackCount;
+
+	private List<Route> trackingRoutes = new ArrayList<Route>();;
 
 	public TrackingManager(Handler handler, ConnectorService service) {
 		mHandler = handler;
@@ -85,51 +87,37 @@ public class TrackingManager {
 	}
 
 	private List<Route> getRoutesByPosition(ECommuterPosition position) {
-		List<Route> trackingRoutes = new ArrayList<Route>();
+		trackingRoutes.clear();
 		resetIndexMap(mRoutesInTimeInterval);
-		for (Route r : mRoutesInTimeInterval) {
+		for (Route r : mRoutesInTimeInterval.keySet()) {
 			boolean tracked = false;
 			for (int i = getStartingIndex(r); i < r.getPoints().size(); i++) {
 				RoutePoint pt = r.getPoints().get(i);
 				if (position.distance(pt) < distanceMeters)// due metri
 				{
 					trackingRoutes.add(r);
-					addToIndexMap(r, i);
+					mIndexMap.put(r, i);
 					tracked = true;
 					break;
 				}
 			}
 			if (!tracked)
-				removeFromIndexMap(r);
+				mIndexMap.remove(r);
 		}
 		return trackingRoutes;
 
 	}
 
-	private void resetIndexMap(List<Route> trackingRoutesByTime) {
-		for (String name : mIndexMap.keySet()) {
-			if (!contains(trackingRoutesByTime, name))
-				mIndexMap.put(name, 0);
+	private void resetIndexMap(Hashtable<Route, Integer> routesInTimeInterval) {
+		for (Route r : mIndexMap.keySet()) {
+			Integer integer = routesInTimeInterval.get(r);
+			if (integer == 0 || integer == null)
+				mIndexMap.put(r, 0);
 		}
 	}
 
-	private boolean contains(List<Route> trackingRoutesByTime, String name) {
-		for (Route r : trackingRoutesByTime)
-			if (r.getName().equals(name))
-				return true;
-		return false;
-	}
-
-	private void removeFromIndexMap(Route r) {
-		mIndexMap.remove(r.getName());
-	}
-
-	private void addToIndexMap(Route r, int i) {
-		mIndexMap.put(r.getName(), i);
-	}
-
 	private int getStartingIndex(Route r) {
-		Integer index = mIndexMap.get(r.getName());
+		Integer index = mIndexMap.get(r);
 		return index == null ? 0 : index;
 	}
 
@@ -173,24 +161,37 @@ public class TrackingManager {
 		for (Route r : MyApplication.getInstance().getRoutes()) {
 			intervals.add(new TimeInterval(r,
 					(long) (r.getPoints().get(0).time * 1e3), 0));
+			
+			long currentTimeMillis = System.currentTimeMillis();
+			intervals.add(new TimeInterval(r, currentTimeMillis, 0));
+			intervals.add(new TimeInterval(r, currentTimeMillis, 1));
+			intervals.add(new TimeInterval(r, currentTimeMillis, 2));
 		}
+		
+		
 		return intervals;
 
 	}
 
 	public void OnExecuteTask(Task task) {
+		Integer i = mRoutesInTimeInterval.get(task.getRoute());
+		if (i == null)
+			i = 0;
 		switch (task.getType()) {
 		case START_TRACKING:
-			if (!mRoutesInTimeInterval.contains(task.getRoute()))
-				mRoutesInTimeInterval.add(task.getRoute());
+				i++;
 			break;
 		case STOP_TRACKING:
-			if (mRoutesInTimeInterval.contains(task.getRoute()))
-				mRoutesInTimeInterval.remove(task.getRoute());
+				i--;
+				assert(i>=0);
 			break;
 		default:
 			break;
 		}
+		if (i == 0)
+			mRoutesInTimeInterval.remove(task.getRoute());
+		else
+			mRoutesInTimeInterval.put(task.getRoute(), i);
 		mService.OnExecuteTask(task);
 	}
 }
