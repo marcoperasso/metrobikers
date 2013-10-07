@@ -216,7 +216,7 @@ public class MyMapActivity extends MapActivity {
 		MyApplication.getInstance().setLiveTracking(b);
 		showTrackingButton(MyApplication.getInstance().isLiveTracking());
 		Toast.makeText(MyMapActivity.this,
-				b ? R.string.live_tracking_on : R.string.live_tracking_off,
+				b ? R.string.manual_live_tracking_on : R.string.manual_live_tracking_off,
 				Toast.LENGTH_LONG).show();
 
 	}

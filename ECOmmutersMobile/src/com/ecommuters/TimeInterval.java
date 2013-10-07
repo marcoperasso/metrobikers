@@ -12,16 +12,13 @@ class TimeInterval {
 	private Date end;
 	private Route route;
 	private int weigth;
-	private final static int[] beforeMap = { 15, 10, 7, 5, 3, 2, 1 };
-	private final static int[] afterMap = { 30, 20, 14, 10, 6, 4, 2 };
-	protected static final int MAX_WEIGHT = beforeMap.length;
-
+	
 	public TimeInterval(Route r, long time, int weight) {
-		assert (weight < MAX_WEIGHT);
+		assert (weight < GPSManager.MAX_GPS_LEVELS);
 		this.route = r;
 		this.weigth = weight;
-		int before = beforeMap[weight];
-		int after = afterMap[weight];
+		int before = GPSManager.minutesBeforeStart[weight];
+		int after = GPSManager.minitesAfterStart[weight];
 		Calendar cal = Calendar.getInstance();
 		cal.setTime(new Date(time));
 		cal.add(Calendar.MINUTE, -before);

@@ -1,7 +1,6 @@
 package com.ecommuters;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import android.app.Notification;
@@ -17,7 +16,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
-import android.text.format.DateFormat;
 import android.util.Log;
 
 public class ConnectorService extends Service implements LocationListener {
@@ -36,7 +34,7 @@ public class ConnectorService extends Service implements LocationListener {
 	private long sendLatestPositionInterval = 30000;// 30 secondi
 	private Runnable sendLatestPositionProcedureRunnable;
 
-	private int requestingLocation = 0;
+	private GPSManager mGPSManager = new GPSManager();
 	private ECommuterPosition mLocation;
 	private TrackingManager mTrackManager;
 	private NotificationManager mNotificationManager;
@@ -52,9 +50,9 @@ public class ConnectorService extends Service implements LocationListener {
 				@Override
 				public void onEvent(Object sender, LiveTrackingEventArgs args) {
 					if (args.isActive()) {
-						activateGPS(TimeInterval.MAX_WEIGHT);
+						activateGPS(GPSManager.MAX_GPS_LEVELS);
 					} else {
-						stopGPS(TimeInterval.MAX_WEIGHT);
+						stopGPS(GPSManager.MAX_GPS_LEVELS);
 					}
 				}
 			};
@@ -113,41 +111,73 @@ public class ConnectorService extends Service implements LocationListener {
 
 		mWorkerThread.setDaemon(true);
 		mWorkerThread.start();
-		
+
 		MyApplication.getInstance().setConnectorService(this);
 		super.onCreate();
 	}
 
-	private void activateGPS(int i) {
-		if (requestingLocation == 0) {
-			String text = getTimeString(System.currentTimeMillis()) + ": "
-					+ getString(R.string.live_tracking_on);
-			setNotification(text);
+	private void activateGPS(int level) {
+		boolean wasListening = mGPSManager.requestingLocation();
+		// se cambio di livello, cambio anche il listener 8cambia la sensibilit'
+		// di tracciatura(
+		if (mGPSManager.startGPS(level)) {
+			// se entro qui dentro è perché il livello è cambiato
+			if (!wasListening) {
+				// per prima cosa elimino il listener corrente
+				mlocManager.removeUpdates(this);
+				// solo quando inizio a tracciare mando il messaggio di tracking
+				// attivato
+				String text = getString(R.string.live_tracking_on) + " " +
+						getString(R.string.live_tracking_frequency,
+								mGPSManager.getMinTimeSeconds(),
+						mGPSManager.getMinDinstanceMeters());
+				setNotification(text);
+			} else {
+				String text = getString(R.string.live_tracking_frequency,
+						mGPSManager.getMinTimeSeconds(),
+						mGPSManager.getMinDinstanceMeters());
+				setNotification(text);
+			}
 			mlocManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
-					10000/* 10 secondi */, 5/*
-											 * due metri
-											 */, this);
+					mGPSManager.getMinTimeSeconds() * 1000,
+					mGPSManager.getMinDinstanceMeters(), this);
 
 		}
-		requestingLocation++;
 	}
 
-	private void stopGPS(int i) {
-		requestingLocation--;
-		if (requestingLocation == 0) {
-			mlocManager.removeUpdates(ConnectorService.this);
-			mNotificationManager.cancel(Const.TRACKING_NOTIFICATION_ID);
+	private void stopGPS(int level) {
+		// se sono arrivato a livello zero, fermo il gps, altrimenti aggiusto la
+		// frequenza di aggiornamento
+		if (mGPSManager.stopGPS(level)) {
+			// se entro qui dentro è perché il livello è cambiato
+			// per prima cosa elimino il listener corrente
+			mlocManager.removeUpdates(this);
+			if (mGPSManager.requestingLocation()) {
+
+				String text = getString(R.string.live_tracking_frequency,
+						mGPSManager.getMinTimeSeconds(),
+						mGPSManager.getMinDinstanceMeters());
+				setNotification(text);
+
+				// poi, se devo continuare a registrare su un livello diverso,
+				// mi ri registro
+				mlocManager.requestLocationUpdates(
+						LocationManager.GPS_PROVIDER, mGPSManager.getMinTimeSeconds()*1000,
+						mGPSManager.getMinDinstanceMeters(), this);
+			} else {
+				mNotificationManager.cancel(Const.TRACKING_NOTIFICATION_ID);
+			}
 		}
 	}
 
 	public void onLocationChanged(Location location) {
 		Credentials currentCredentials = MySettings.CurrentCredentials;
-		mLocation = new ECommuterPosition(
-				currentCredentials == null ? 0 : currentCredentials.getUserId(),
+		mLocation = new ECommuterPosition(currentCredentials == null ? 0
+				: currentCredentials.getUserId(),
 				(int) (location.getLatitude() * 1E6),
 				(int) (location.getLongitude() * 1E6),
 				(long) (System.currentTimeMillis() / 1E3));
-		if (requestingLocation == 0)
+		if (!mGPSManager.requestingLocation())
 			return;
 		mTrackManager.locationChanged(mLocation);
 	}
@@ -185,8 +215,7 @@ public class ConnectorService extends Service implements LocationListener {
 		if (mLocation == null || !liveTracking()
 				|| !Helper.isOnline(ConnectorService.this))
 			return;
-		String text = getTimeString((long) (mLocation.time * 1e3)) + ": "
-				+ getString(R.string.tracking_position);
+		String text = getString(R.string.tracking_position);
 		setNotification(text);
 
 		try {
@@ -195,13 +224,6 @@ public class ConnectorService extends Service implements LocationListener {
 		} catch (Exception e) {
 			Log.e(CONNECTOR_SERVICE, e.toString());
 		}
-	}
-
-	private String getTimeString(long time) {
-		java.text.DateFormat timeFormat = DateFormat.getTimeFormat(this);
-		Date df = new java.util.Date(time);
-		String format = timeFormat.format(df);
-		return format;
 	}
 
 	@Override

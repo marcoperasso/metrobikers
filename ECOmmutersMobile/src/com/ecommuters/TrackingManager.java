@@ -159,13 +159,12 @@ public class TrackingManager {
 	private ArrayList<TimeInterval> getLiveTrackingTimeIntervals() {
 		ArrayList<TimeInterval> intervals = new ArrayList<TimeInterval>();
 		for (Route r : MyApplication.getInstance().getRoutes()) {
-			intervals.add(new TimeInterval(r,
-					(long) (r.getPoints().get(0).time * 1e3), 0));
+			for (int i  = 0; i < GPSManager.MAX_GPS_LEVELS; i++)
+				intervals.add(new TimeInterval(r, r.getPoints().get(0).time *1000, i));
 			
 			long currentTimeMillis = System.currentTimeMillis();
-			intervals.add(new TimeInterval(r, currentTimeMillis, 0));
-			intervals.add(new TimeInterval(r, currentTimeMillis, 1));
-			intervals.add(new TimeInterval(r, currentTimeMillis, 2));
+			for (int i  = 0; i < GPSManager.MAX_GPS_LEVELS; i++)
+				intervals.add(new TimeInterval(r, currentTimeMillis, i));
 		}
 		
 		

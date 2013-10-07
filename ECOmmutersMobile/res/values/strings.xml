@@ -50,8 +50,11 @@
     <string name="overwrite_route_question">Itinerario già esistente, vuoi sovrascriverlo?</string>
     <string name="maintain_recording_question">Vuoi mantenere i dati registrati?</string>
     <string name="livetracking">Traccia posizione in tempo reale</string>
-    <string name="live_tracking_on">Live tracking attivato</string>
-    <string name="live_tracking_off">Live tracking disattivato</string>
+    <string name="manual_live_tracking_on">Live tracking manuale attivato</string>
+    <string name="live_tracking_on">Live tracking attivo.</string>
+    <string name="live_tracking_frequency">La tua posizione viene aggiornata ogni %1$d secondi e %2$d metri</string>
+    <string name="manual_live_tracking_off">Live tracking manuale disattivato</string>
+    <string name="live_tracking_off">Live tracking disattivato.</string>
     <string name="verifying_credentials">Sto verificando le credenziali...</string>
     <string name="tracking_position">Sto tracciando la tua posizione</string>
 
