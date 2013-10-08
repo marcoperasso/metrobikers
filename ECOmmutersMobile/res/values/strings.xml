@@ -56,6 +56,6 @@
     <string name="manual_live_tracking_off">Live tracking manuale disattivato</string>
     <string name="live_tracking_off">Live tracking disattivato.</string>
     <string name="verifying_credentials">Sto verificando le credenziali...</string>
-    <string name="tracking_position">Sto tracciando la tua posizione</string>
+    <string name="tracking_position">Sto inviando la tua posizione via Internet</string>
 
 </resources>

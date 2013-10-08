@@ -3,9 +3,9 @@ package com.ecommuters;
 public class GPSManager {
 	int[] levels = new int[MAX_GPS_LEVELS + 1];
 	int currentLevel = -1;
-	public final static int[] minDistanceMetres = { 100, 50, 30, 20, 10, 5, 2 };
-	public final static long[] minTimeSecs = { 300, 150, 100, 60, 30, 15, 6 };
-	public final static int[] minutesBeforeStart = { 15, 10, 7, 5, 3, 1 };// minuti
+	public final static int[] minDistanceMetres = { 30, 20, 10, 5 };
+	public final static long[] minTimeSecs = { 120, 90, 60, 30 };
+	public final static int[] minutesBeforeStart = { 10, 5, 3 };// minuti
 																			// prima
 																			// della
 																			// partenza
@@ -18,7 +18,7 @@ public class GPSManager {
 																			// attivo
 																			// il
 																			// GPS
-	public final static int[] minitesAfterStart = { 30, 20, 14, 10, 6, 2 };// minuti
+	public final static int[] minutesAfterStart = { 20, 10, 6 };// minuti
 																			// dopo
 																			// la
 																			// partenza

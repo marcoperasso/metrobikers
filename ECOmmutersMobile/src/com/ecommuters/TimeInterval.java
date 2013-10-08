@@ -18,7 +18,7 @@ class TimeInterval {
 		this.route = r;
 		this.weigth = weight;
 		int before = GPSManager.minutesBeforeStart[weight];
-		int after = GPSManager.minitesAfterStart[weight];
+		int after = GPSManager.minutesAfterStart[weight];
 		Calendar cal = Calendar.getInstance();
 		cal.setTime(new Date(time));
 		cal.add(Calendar.MINUTE, -before);

@@ -140,7 +140,7 @@ public class ConnectorService extends Service implements LocationListener {
 								+ getString(R.string.live_tracking_frequency,
 										mGPSManager.getMinTimeSeconds(),
 										mGPSManager.getMinDinstanceMeters());
-						setNotification(text);
+						setNotification(text, true);
 					} else {
 						// per prima cosa elimino il listener corrente
 						mlocManager.removeUpdates(ConnectorService.this);
@@ -148,7 +148,7 @@ public class ConnectorService extends Service implements LocationListener {
 								R.string.live_tracking_frequency,
 								mGPSManager.getMinTimeSeconds(),
 								mGPSManager.getMinDinstanceMeters());
-						setNotification(text);
+						setNotification(text, false);
 					}
 					mlocManager.requestLocationUpdates(
 							LocationManager.GPS_PROVIDER,
@@ -180,7 +180,7 @@ public class ConnectorService extends Service implements LocationListener {
 								R.string.live_tracking_frequency,
 								mGPSManager.getMinTimeSeconds(),
 								mGPSManager.getMinDinstanceMeters());
-						setNotification(text);
+						setNotification(text, false);
 
 						// poi, se devo continuare a registrare su un livello
 						// diverso,
@@ -248,17 +248,19 @@ public class ConnectorService extends Service implements LocationListener {
 
 	}
 
-	private void setNotification(String message) {
+	private void setNotification(String message, boolean vibrate) {
 		PendingIntent contentIntent = PendingIntent.getActivity(
 				getApplicationContext(), 0, new Intent(), // add this
 				PendingIntent.FLAG_UPDATE_CURRENT);
 		NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(
-				this).setSmallIcon(R.drawable.livetracking)
-				.setContentTitle(getString(R.string.app_name))
-				.setContentText(message).setContentIntent(contentIntent);
+				this).setSmallIcon(R.drawable.livetracking);
 
 		Notification notification = mBuilder.build();
-		notification.flags = Notification.FLAG_ONGOING_EVENT;
+		notification.flags |= Notification.FLAG_ONGOING_EVENT | Notification.FLAG_AUTO_CANCEL;
+		notification.setLatestEventInfo(this, getString(R.string.app_name),
+				message, contentIntent);
+		if (vibrate)
+			notification.defaults |= Notification.DEFAULT_VIBRATE;
 		mNotificationManager.notify(Const.TRACKING_NOTIFICATION_ID,
 				notification);
 	}
@@ -268,7 +270,7 @@ public class ConnectorService extends Service implements LocationListener {
 				|| !Helper.isOnline(ConnectorService.this))
 			return;
 		String text = getString(R.string.tracking_position);
-		setNotification(text);
+		setNotification(text, false);
 
 		try {
 			if (RequestBuilder.sendPositionData(mLocation))
