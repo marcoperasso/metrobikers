@@ -16,8 +16,13 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
+import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
+/**
+ * @author perasso
+ * 
+ */
 public class ConnectorService extends Service implements LocationListener {
 
 	private static final String CONNECTOR_SERVICE = "ConnectorService";
@@ -73,6 +78,7 @@ public class ConnectorService extends Service implements LocationListener {
 
 				Looper.prepare();
 				mNotificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+
 				mHandler = new Handler();
 				mlocManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
@@ -82,7 +88,7 @@ public class ConnectorService extends Service implements LocationListener {
 						.addHandler(onLiveTrackingChanged);
 				mTrackManager.scheduleLiveTracking();
 				syncRoutesProcedure();
-				sendLatestPositionProcedure();
+				//sendLatestPositionProcedure();
 				Looper.loop();
 				mlocManager.removeUpdates(ConnectorService.this);
 				mNotificationManager.cancel(Const.TRACKING_NOTIFICATION_ID);
@@ -116,58 +122,101 @@ public class ConnectorService extends Service implements LocationListener {
 		super.onCreate();
 	}
 
-	private void activateGPS(int level) {
-		boolean wasListening = mGPSManager.requestingLocation();
-		// se cambio di livello, cambio anche il listener 8cambia la sensibilit'
-		// di tracciatura(
-		if (mGPSManager.startGPS(level)) {
-			// se entro qui dentro è perché il livello è cambiato
-			if (!wasListening) {
-				// per prima cosa elimino il listener corrente
-				mlocManager.removeUpdates(this);
-				// solo quando inizio a tracciare mando il messaggio di tracking
-				// attivato
-				String text = getString(R.string.live_tracking_on) + " " +
-						getString(R.string.live_tracking_frequency,
+	private void activateGPS(final int level) {
+		mHandler.post(new Runnable() {
+			public void run() {
+				boolean wasListening = mGPSManager.requestingLocation();
+				// se cambio di livello, cambio anche il listener 8cambia la
+				// sensibilit'
+				// di tracciatura(
+				if (mGPSManager.startGPS(level)) {
+					// se entro qui dentro è perché il livello è cambiato
+					if (!wasListening) {
+						// solo quando inizio a tracciare mando il messaggio di
+						// tracking
+						// attivato
+						String text = getString(R.string.live_tracking_on)
+								+ " "
+								+ getString(R.string.live_tracking_frequency,
+										mGPSManager.getMinTimeSeconds(),
+										mGPSManager.getMinDinstanceMeters());
+						setNotification(text);
+					} else {
+						// per prima cosa elimino il listener corrente
+						mlocManager.removeUpdates(ConnectorService.this);
+						String text = getString(
+								R.string.live_tracking_frequency,
 								mGPSManager.getMinTimeSeconds(),
-						mGPSManager.getMinDinstanceMeters());
-				setNotification(text);
-			} else {
-				String text = getString(R.string.live_tracking_frequency,
-						mGPSManager.getMinTimeSeconds(),
-						mGPSManager.getMinDinstanceMeters());
-				setNotification(text);
-			}
-			mlocManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
-					mGPSManager.getMinTimeSeconds() * 1000,
-					mGPSManager.getMinDinstanceMeters(), this);
+								mGPSManager.getMinDinstanceMeters());
+						setNotification(text);
+					}
+					mlocManager.requestLocationUpdates(
+							LocationManager.GPS_PROVIDER,
+							mGPSManager.getMinTimeSeconds() * 1000,
+							mGPSManager.getMinDinstanceMeters(),
+							ConnectorService.this);
 
-		}
+				}
+
+			}
+		});
+
 	}
 
-	private void stopGPS(int level) {
-		// se sono arrivato a livello zero, fermo il gps, altrimenti aggiusto la
-		// frequenza di aggiornamento
-		if (mGPSManager.stopGPS(level)) {
-			// se entro qui dentro è perché il livello è cambiato
-			// per prima cosa elimino il listener corrente
-			mlocManager.removeUpdates(this);
-			if (mGPSManager.requestingLocation()) {
+	private void stopGPS(final int level) {
+		mHandler.post(new Runnable() {
 
-				String text = getString(R.string.live_tracking_frequency,
-						mGPSManager.getMinTimeSeconds(),
-						mGPSManager.getMinDinstanceMeters());
-				setNotification(text);
+			public void run() {
+				// se sono arrivato a livello zero, fermo il gps, altrimenti
+				// aggiusto la
+				// frequenza di aggiornamento
+				if (mGPSManager.stopGPS(level)) {
+					// se entro qui dentro è perché il livello è cambiato
+					// per prima cosa elimino il listener corrente
+					mlocManager.removeUpdates(ConnectorService.this);
+					if (mGPSManager.requestingLocation()) {
 
-				// poi, se devo continuare a registrare su un livello diverso,
-				// mi ri registro
-				mlocManager.requestLocationUpdates(
-						LocationManager.GPS_PROVIDER, mGPSManager.getMinTimeSeconds()*1000,
-						mGPSManager.getMinDinstanceMeters(), this);
-			} else {
-				mNotificationManager.cancel(Const.TRACKING_NOTIFICATION_ID);
+						String text = getString(
+								R.string.live_tracking_frequency,
+								mGPSManager.getMinTimeSeconds(),
+								mGPSManager.getMinDinstanceMeters());
+						setNotification(text);
+
+						// poi, se devo continuare a registrare su un livello
+						// diverso,
+						// mi ri registro
+						mlocManager.requestLocationUpdates(
+								LocationManager.GPS_PROVIDER,
+								mGPSManager.getMinTimeSeconds() * 1000,
+								mGPSManager.getMinDinstanceMeters(),
+								ConnectorService.this);
+					} else {
+						mNotificationManager
+								.cancel(Const.TRACKING_NOTIFICATION_ID);
+					}
+				}
+
 			}
-		}
+		});
+
+	}
+
+	/**
+	 * Spegne il GPS, a meno che non siamo in livetracking manuale
+	 */
+	public void resetGPS() {
+		mHandler.post(new Runnable() {
+
+			public void run() {
+				if (mGPSManager.resetLevels()
+						&& !mGPSManager.requestingLocation()) {
+					mlocManager.removeUpdates(ConnectorService.this);
+					mNotificationManager.cancel(Const.TRACKING_NOTIFICATION_ID);
+				}
+
+			}
+		});
+
 	}
 
 	public void onLocationChanged(Location location) {
@@ -180,6 +229,7 @@ public class ConnectorService extends Service implements LocationListener {
 		if (!mGPSManager.requestingLocation())
 			return;
 		mTrackManager.locationChanged(mLocation);
+		sendLatestPosition();
 	}
 
 	public void onProviderDisabled(String provider) {
@@ -199,14 +249,16 @@ public class ConnectorService extends Service implements LocationListener {
 	}
 
 	private void setNotification(String message) {
-		Notification notification = new Notification(R.drawable.livetracking,
-				message, System.currentTimeMillis());
+		PendingIntent contentIntent = PendingIntent.getActivity(
+				getApplicationContext(), 0, new Intent(), // add this
+				PendingIntent.FLAG_UPDATE_CURRENT);
+		NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(
+				this).setSmallIcon(R.drawable.livetracking)
+				.setContentTitle(getString(R.string.app_name))
+				.setContentText(message).setContentIntent(contentIntent);
+
+		Notification notification = mBuilder.build();
 		notification.flags = Notification.FLAG_ONGOING_EVENT;
-		Intent intent = new Intent(this, MyMapActivity.class);
-		PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
-				intent, PendingIntent.FLAG_UPDATE_CURRENT);
-		notification.setLatestEventInfo(this, getString(R.string.app_name),
-				message, contentIntent);
 		mNotificationManager.notify(Const.TRACKING_NOTIFICATION_ID,
 				notification);
 	}

@@ -2,7 +2,6 @@ package com.ecommuters;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Hashtable;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -18,7 +17,6 @@ public class TrackingManager {
 	private static final int distanceMeters = 2;
 
 	private static final int MAX_OUT_OF_TRACK_COUNT = 20;
-	private Hashtable<Route, Integer> mIndexMap = new Hashtable<Route, Integer>();
 	// disposizione del
 	// gps per
 	// connettersi e
@@ -27,7 +25,6 @@ public class TrackingManager {
 
 	private Handler mHandler;
 	private List<Task> mTasks = new ArrayList<Task>();
-	Hashtable<Route, Integer> mRoutesInTimeInterval = new Hashtable<Route, Integer>();
 	private ConnectorService mService;
 	private boolean liveTracking;
 	public LiveTrackingEvent LiveTrackingEvent = new LiveTrackingEvent();
@@ -37,7 +34,8 @@ public class TrackingManager {
 
 	private int outOfTrackCount;
 
-	private List<Route> trackingRoutes = new ArrayList<Route>();;
+	private Route[] mRoutes;
+	private List<Route> mRoutesByPosition = new ArrayList<Route>();
 
 	public TrackingManager(Handler handler, ConnectorService service) {
 		mHandler = handler;
@@ -45,9 +43,9 @@ public class TrackingManager {
 	}
 
 	public void locationChanged(ECommuterPosition mLocation) {
-		List<Route> trackingRoutes = getRoutesByPosition(mLocation);
+		calculateRoutesByPosition(mLocation);
 
-		boolean b = trackingRoutes.size() > 0;
+		boolean b = mRoutesByPosition.size() > 0;
 		if (timerTask != null) {
 			timerTask.cancel();
 			timerTask = null;
@@ -86,41 +84,26 @@ public class TrackingManager {
 		return liveTracking;
 	}
 
-	private List<Route> getRoutesByPosition(ECommuterPosition position) {
-		trackingRoutes.clear();
-		resetIndexMap(mRoutesInTimeInterval);
-		for (Route r : mRoutesInTimeInterval.keySet()) {
+	private void calculateRoutesByPosition(ECommuterPosition position) {
+		mRoutesByPosition.clear();
+		for (Route r : mRoutes) {
 			boolean tracked = false;
-			for (int i = getStartingIndex(r); i < r.getPoints().size(); i++) {
+			for (int i = r.latestIndex; i < r.getPoints().size(); i++) {
 				RoutePoint pt = r.getPoints().get(i);
 				if (position.distance(pt) < distanceMeters)// due metri
 				{
-					trackingRoutes.add(r);
-					mIndexMap.put(r, i);
+					mRoutesByPosition.add(r);
+					r.latestIndex = i;
 					tracked = true;
 					break;
 				}
 			}
 			if (!tracked)
-				mIndexMap.remove(r);
-		}
-		return trackingRoutes;
-
-	}
-
-	private void resetIndexMap(Hashtable<Route, Integer> routesInTimeInterval) {
-		for (Route r : mIndexMap.keySet()) {
-			Integer integer = routesInTimeInterval.get(r);
-			if (integer == 0 || integer == null)
-				mIndexMap.put(r, 0);
+				r.latestIndex = 0;
 		}
 	}
 
-	private int getStartingIndex(Route r) {
-		Integer index = mIndexMap.get(r);
-		return index == null ? 0 : index;
-	}
-
+	
 	public void scheduleLiveTracking() {
 		clearSchedules();
 
@@ -128,10 +111,11 @@ public class TrackingManager {
 		for (TimeInterval interval : intervals) {
 
 			Task startingTask = schedule(interval.getStart(),
-					interval.getRoute(), interval.getWeight(), EventType.START_TRACKING);
+					interval.getRoute(), interval.getWeight(),
+					EventType.START_TRACKING);
 
 			schedule(interval.getEnd(), interval.getRoute(),
-					interval.getWeight(),EventType.STOP_TRACKING);
+					interval.getWeight(), EventType.STOP_TRACKING);
 
 			if (interval.isActiveNow()) {
 				startingTask.execute();
@@ -141,16 +125,23 @@ public class TrackingManager {
 	}
 
 	private void clearSchedules() {
-		mRoutesInTimeInterval.clear();
+		// prima elimino i pending task
+		mRoutes = MyApplication.getInstance().getRoutes();
+		for (Route r : mRoutes)
+			r.latestIndex = 0;
 		for (Task t : mTasks) {
 			mHandler.removeCallbacks(t);
 
 		}
 		mTasks.clear();
+		// poi disabilito il GPS
+		mService.resetGPS();
+
 	}
 
 	private Task schedule(Date time, Route route, int weight, EventType type) {
-		Task task = new Task(this, mHandler, time, type, weight, route);
+		Task task = new Task(this, mHandler, time, type, weight,
+				route);
 		task.activate();
 		mTasks.add(task);
 		return task;
@@ -159,38 +150,22 @@ public class TrackingManager {
 	private ArrayList<TimeInterval> getLiveTrackingTimeIntervals() {
 		ArrayList<TimeInterval> intervals = new ArrayList<TimeInterval>();
 		for (Route r : MyApplication.getInstance().getRoutes()) {
-			for (int i  = 0; i < GPSManager.MAX_GPS_LEVELS; i++)
-				intervals.add(new TimeInterval(r, r.getPoints().get(0).time *1000, i));
-			//per debug
-			//long currentTimeMillis = System.currentTimeMillis();
-			//for (int i  = 0; i < GPSManager.MAX_GPS_LEVELS; i++)
-			//	intervals.add(new TimeInterval(r, currentTimeMillis, i));
+			for (int i = 0; i < GPSManager.MAX_GPS_LEVELS; i++)
+				intervals.add(new TimeInterval(r,
+						r.getPoints().get(0).time * 1000, i));
+			// per debug
+			long currentTimeMillis = System.currentTimeMillis();
+			for (int i = 0; i < GPSManager.MAX_GPS_LEVELS; i++)
+				intervals.add(new TimeInterval(r, currentTimeMillis, i));
 		}
-		
-		
+
 		return intervals;
 
 	}
 
 	public void OnExecuteTask(Task task) {
-		Integer i = mRoutesInTimeInterval.get(task.getRoute());
-		if (i == null)
-			i = 0;
-		switch (task.getType()) {
-		case START_TRACKING:
-				i++;
-			break;
-		case STOP_TRACKING:
-				i--;
-				assert(i>=0);
-			break;
-		default:
-			break;
-		}
-		if (i == 0)
-			mRoutesInTimeInterval.remove(task.getRoute());
-		else
-			mRoutesInTimeInterval.put(task.getRoute(), i);
 		mService.OnExecuteTask(task);
 	}
+	
+	
 }

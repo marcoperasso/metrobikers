@@ -2,9 +2,12 @@ package com.ecommuters;
 
 import java.util.List;
 
+import com.google.android.maps.MyLocationOverlay;
+
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.ContextMenu;
@@ -66,37 +69,51 @@ public class MyRoutesActivity extends Activity {
 
 		final ProgressDialog progressBar = new ProgressDialog(this);
 		progressBar.setMessage(getString(R.string.downloading));
-		progressBar.setCancelable(false);
+		progressBar.setCancelable(true);
 		progressBar.setIndeterminate(true);
 		progressBar.show();
+
 		try {
-			Credentials.testCredentials(this, new OnAsyncResponse() {
-				public void response(boolean success, String message) {
+			Credentials.testCredentials(MyRoutesActivity.this,
+					new OnAsyncResponse() {
+						public void response(boolean success, String message) {
 
-					if (!success)
-						return;
-					try {
-						List<Route> rr = RequestBuilder.getRoutes(0);
-						boolean saved = false;
-						for (Route r : rr) {
-							String routeFile = Helper.getRouteFile(r.getName());
-							r.save(MyRoutesActivity.this, routeFile);
-							saved = true;
+							if (!success)
+								return;
+							
+							AsyncTask<Void, Void, Void> task = new AsyncTask<Void, Void, Void>(){
+
+								@Override
+								protected Void doInBackground(Void... params) {
+									try {
+										List<Route> rr = RequestBuilder.getRoutes(0);
+										boolean saved = false;
+										for (Route r : rr) {
+											String routeFile = Helper.getRouteFile(r
+													.getName());
+											r.save(MyRoutesActivity.this, routeFile);
+											saved = true;
+										}
+
+										if (saved)
+											MyApplication.getInstance().refreshRoutes();
+									} catch (Exception e) {
+										Log.e(MY_ROUTES_ACTIVITY, e.toString());
+									} finally {
+										progressBar.dismiss();
+									}
+									return null;
+								}};
+							
+							task.execute((Void)null);
+							
 						}
-
-						if (saved)
-							MyApplication.getInstance().refreshRoutes();
-					} catch (Exception e) {
-						Log.e(MY_ROUTES_ACTIVITY, e.toString());
-					} finally {
-						progressBar.dismiss();
-					}
-				}
-			});
+					});
 
 		} catch (Exception e) {
 			Log.e(MY_ROUTES_ACTIVITY, e.toString());
 		}
+
 	}
 
 	private ListView populate() {

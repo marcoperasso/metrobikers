@@ -5,7 +5,6 @@ import java.util.Date;
 
 import android.os.Handler;
 import android.os.SystemClock;
-import android.util.Log;
 
 public class Task implements Runnable {
 	public enum EventType {
@@ -14,21 +13,23 @@ public class Task implements Runnable {
 
 	private Handler mHandler;
 	private Date time;
-	private Route mRouteName;
+	private Route mRoute;
 	private TrackingManager mTrackingManager;
 	private EventType type;
 	private int weight;
-	public Task(TrackingManager manager, Handler handler, Date time, EventType type, int weight, Route route) {
+
+	public Task(TrackingManager manager, Handler handler, Date time,
+			EventType type, int weight, Route route) {
 		this.type = type;
 		this.weight = weight;
 		this.mTrackingManager = manager;
 		this.mHandler = handler;
 		this.time = time;
-		this.mRouteName = route;
+		this.mRoute = route;
 	}
 
 	public void run() {
-		
+
 		execute();
 		activate();
 
@@ -36,7 +37,7 @@ public class Task implements Runnable {
 
 	public void execute() {
 		mTrackingManager.OnExecuteTask(this);
-		
+
 	}
 
 	public void activate() {
@@ -47,16 +48,12 @@ public class Task implements Runnable {
 		calendar.set(Calendar.MINUTE, time.getMinutes());
 		calendar.set(Calendar.SECOND, time.getSeconds());
 		Date next = calendar.getTime();
-		if (next.getTime() < now.getTime())
-		{
+		if (next.getTime() < now.getTime()) {
 			calendar.add(Calendar.DAY_OF_MONTH, 1);
 			next = calendar.getTime();
 		}
-		long delta = System.currentTimeMillis()-SystemClock.uptimeMillis();
+		long delta = System.currentTimeMillis() - SystemClock.uptimeMillis();
 		mHandler.postAtTime(this, next.getTime() - delta);
-		
-		Log.d("SCHEDULER", mRouteName + " - " + next.toLocaleString());
-		
 	}
 
 	public EventType getType() {
@@ -68,17 +65,13 @@ public class Task implements Runnable {
 	}
 
 	public Route getRoute() {
-		return mRouteName;
-	}
-
-	public void setRoute(Route route) {
-		this.mRouteName = route;
+		return mRoute;
 	}
 
 	public int getWeight() {
 		return weight;
 	}
 
-	
-
 }
+
+

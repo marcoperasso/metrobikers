@@ -120,17 +120,21 @@ public class RoutesOverlay extends ItemizedOverlay<OverlayItem> {
 						bottomRight, prj, canvas);
 			}
 		}
-
+		
+		
 	}
 
 	private void drawRoute(int color, Route r, boolean invertX,
 			boolean invertY, GeoPoint topLeft, GeoPoint bottomRight,
 			Projection prj, Canvas canvas) {
-		pnt.setColor(color);
 		Point p1 = new Point(), p2 = new Point();
 		RoutePoint rp1 = null;
 		boolean p1Calculated = false;
 		for (int i = 0; i < r.getPoints().size(); i++) {
+			if (i < r.latestIndex)
+				pnt.setColor(Color.GREEN);
+			else
+				pnt.setColor(color);
 			RoutePoint pt = r.getPoints().get(i);
 			try {
 				if (invertX) {

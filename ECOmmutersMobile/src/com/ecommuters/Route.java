@@ -28,6 +28,9 @@ public class Route implements IJsonSerializable, Serializable {
 	private long latestUpdate;
 	private List<RoutePoint> points = new ArrayList<RoutePoint>();
 	
+	//da non serializzare, servono solo per il motore di tracciatura
+	public int latestIndex = 0;
+
 	@Override
 	public String toString() {
 		return name;

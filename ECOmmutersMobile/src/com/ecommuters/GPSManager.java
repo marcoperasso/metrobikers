@@ -1,13 +1,33 @@
 package com.ecommuters;
 
-
 public class GPSManager {
-	int[] levels = new int[MAX_GPS_LEVELS+1];
+	int[] levels = new int[MAX_GPS_LEVELS + 1];
 	int currentLevel = -1;
-	public final static int[] minDistanceMetres = 	{100, 50, 30, 20, 10, 5, 2};
-	public final static long[] minTimeSecs = 		{300,150,100, 60, 30, 15,6};
-	public final static int[] minutesBeforeStart = 	{ 15, 10,  7,  5,  3, 1 };//minuti prima della partenza della traccia a partire dai quali attivo il GPS
-	public final static int[] minitesAfterStart = 	{ 30, 20, 14, 10,  6, 2 };//minuti dopo la partenza dopo i quali disattivo il GPS
+	public final static int[] minDistanceMetres = { 100, 50, 30, 20, 10, 5, 2 };
+	public final static long[] minTimeSecs = { 300, 150, 100, 60, 30, 15, 6 };
+	public final static int[] minutesBeforeStart = { 15, 10, 7, 5, 3, 1 };// minuti
+																			// prima
+																			// della
+																			// partenza
+																			// della
+																			// traccia
+																			// a
+																			// partire
+																			// dai
+																			// quali
+																			// attivo
+																			// il
+																			// GPS
+	public final static int[] minitesAfterStart = { 30, 20, 14, 10, 6, 2 };// minuti
+																			// dopo
+																			// la
+																			// partenza
+																			// dopo
+																			// i
+																			// quali
+																			// disattivo
+																			// il
+																			// GPS
 	protected static final int MAX_GPS_LEVELS = minutesBeforeStart.length;
 
 	public boolean startGPS(int level) {
@@ -47,6 +67,12 @@ public class GPSManager {
 
 	public long getMinTimeSeconds() {
 		return minTimeSecs[currentLevel];
+	}
+
+	public boolean resetLevels() {
+		for (int i = 0; i < MAX_GPS_LEVELS; i++)
+			levels[i] = 0;
+		return updateCurrentLevel(); 
 	}
 
 }
