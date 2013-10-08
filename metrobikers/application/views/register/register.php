@@ -10,7 +10,7 @@
         <div class="container">
             <div class="row header">
                 <div class="col-md-12">
-                    <a href="/" title="Vai alla pagina principale">
+                    <a href="<?php echo base_url() ?>" title="Vai alla pagina principale">
                         <img src="<?php echo base_url() ?>asset/img/logo.png" id="ecommuter_logo" class="logo">
                     </a>
                 </div>
@@ -27,11 +27,11 @@
                         <br />
                         <h2 class="text-center">Stai per diventare un ECOmmuter!</h2><br />
                         <?php echo form_open('register/register') ?>
-                        <div class="col-md-3">
+                        <div class="col-md-1">
 
                         </div>
 
-                        <div class="col-md-6">
+                        <div class="col-md-10">
                             <div class="form-group">
                                 <div class="form-group">
                                     <input type="input" name="name" class="required form-control" placeholder="Nome"/>
@@ -48,7 +48,7 @@
                                 <br /><br />
                             </div>
                         </div>
-                        <div class="col-md-3">
+                        <div class="col-md-1">
 
                         </div>
                         </form>
