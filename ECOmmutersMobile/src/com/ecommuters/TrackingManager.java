@@ -7,6 +7,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import android.os.Handler;
+import android.widget.Toast;
 
 import com.ecommuters.Task.EventType;
 
@@ -88,10 +89,13 @@ public class TrackingManager {
 		float error = distanceMeters * (2 - position.accuracy); // due metri + u
 		mRoutesByPosition.clear();
 		for (Route r : mRoutes) {
+			double minDistance = Double.MAX_VALUE;
 			boolean tracked = false;
 			for (int i = r.latestIndex; i < r.getPoints().size(); i++) {
 				RoutePoint pt = r.getPoints().get(i);
-				if (position.distance(pt) < error) {
+				double distance = position.distance(pt);
+				minDistance = Math.min(minDistance, distance);
+				if (distance < error) {
 					mRoutesByPosition.add(r);
 					r.latestIndex = i;
 					tracked = true;
@@ -100,6 +104,8 @@ public class TrackingManager {
 			}
 			if (!tracked)
 				r.latestIndex = 0;
+			
+			Toast.makeText(mService,  r.getName() + ": " + minDistance, Toast.LENGTH_LONG).show();
 		}
 	}
 
