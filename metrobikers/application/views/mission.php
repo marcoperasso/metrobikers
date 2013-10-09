@@ -7,13 +7,14 @@
 
     <body>
         <div class="row header">
+            <div class="col-md-1"></div>
             <div class="col-md-4">
                 <a href="<?php echo base_url() ?>" title="Vai alla pagina principale">
-                    <img src="<?php echo base_url() ?>asset/img/logo.png" id="ecommuter_logo" class="logo">
+                    <img src="<?php echo base_url() ?>asset/img/logo.png" id="ecommuter_logo">
                 </a>
             </div>
             <div class="col-md-1"></div>
-            <div class="col-md-6">
+            <div class="col-md-5">
                 <blockquote>
                     <br /><br /><br /><br /><br /><br /><br /><br /><br />
                     <p>Sono le azioni che contano.<br />
@@ -27,8 +28,7 @@
         </div>
         <div class="row body">
             <div class="col-md-1"></div>
-            <div class="col-md-10">
-                
+            <div class="col-md-5">
                 <p>Spostarsi in auto in città spesso significa sopportare ore di coda, perdere 
                     tempo alla ricerca di parcheggi, stress, costi di carburante, assicurazioni, 
                     manutenzione, inquinamento; ridurre questi aspetti negativi contribuirebbe a migliorare la qualità della vita di 
@@ -48,9 +48,11 @@
                     verso un futuro in cui in città 
                     saranno poche auto a transitare tra migliaia di biciclette. </p>
                 <br />
-                <p>Ti riconosci in questi valori? Allora fai il salto, <a href="<?php echo base_url() ?>register" class="btn btn-default">diventa anche tu un ECOmmuter!</a></p>
             </div>
-            <div class="col-md-1"></div>
+            <div class="col-md-6">
+                <h3 style="margin-top: 0px; margin-bottom: 0px;">Ti riconosci in questi valori? Allora fai il salto, </h3><br />
+                <a href="<?php echo base_url() ?>register" class="btn btn-primary">diventa anche tu un ECOmmuter!</a>
+            </div>
         </div>
 
         <?php $this->load->view('templates/footer'); ?>              

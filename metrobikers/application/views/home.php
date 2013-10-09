@@ -36,7 +36,10 @@
                         <h1><b>Benvenuto in ECOmmuters!</b></h1>
                             <p>Condividi i tuoi spostamenti con altre persone,<br />
                              cerca nuovi compagni di viaggio con cui condividere i tuoi spostamenti.</p>
-                        <p><a href="<?php echo base_url() ?>home/mission" class="btn btn-default btn-lg">Approfondisci</a></p>
+                        <p>
+                            <a href="<?php echo base_url() ?>register" class="btn btn-primary btn-lg">Diventa anche tu un ECOmmuter!</a>
+                            <a href="<?php echo base_url() ?>home/mission" class="btn btn-default btn-lg">Cos'è sta roba?</a>
+                        </p>
                     </div>
                 </div>
             </div>

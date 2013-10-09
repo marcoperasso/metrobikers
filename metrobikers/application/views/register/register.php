@@ -7,18 +7,20 @@
     </head>
 
     <body>
-        <div class="container">
-            <div class="row header">
-                <div class="col-md-12">
-                    <a href="<?php echo base_url() ?>" title="Vai alla pagina principale">
-                        <img src="<?php echo base_url() ?>asset/img/logo.png" id="ecommuter_logo" class="logo">
-                    </a>
-                </div>
+        <div class="row">
+            <div class="col-md-5">
             </div>
-
+            <div class="col-md-6">
+               
+            </div>
+            <div class="col-md-1">
+            </div>
+        </div>
             <div class="row body">
-                <div class="col-md-3">
-
+                <div class="col-md-5">
+                    <a href="<?php echo base_url() ?>" title="Vai alla pagina principale">
+                        <img src="<?php echo base_url() ?>asset/img/logo.png" id="ecommuter_logo">
+                    </a>
                 </div>
 
                 <div class="col-md-6">
@@ -44,7 +46,7 @@
                                            form-control" placeholder="Email"/>
                                 </div>
                                 <br /><br />
-                                <input type="submit" name="submit" id="submit" value="Diventa un ECOmmuter!" class="btn btn-default form-control" />
+                                <input type="submit" name="submit" id="submit" value="Diventa un ECOmmuter!" class="btn btn-primary form-control" />
                                 <br /><br />
                             </div>
                         </div>
@@ -54,12 +56,11 @@
                         </form>
                     </div>
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-1">
 
                 </div>
             </div>
 
             <?php $this->load->view('templates/footer'); ?>
-        </div>
     </body>
 </html>

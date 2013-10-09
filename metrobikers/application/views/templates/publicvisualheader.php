@@ -4,7 +4,7 @@
     </div>
     <div class="col-md-6">
         <a href="/" title="Vai alla pagina principale">
-            <img src="<?php echo base_url() ?>asset/img/logo.png" id="ecommuter_logo" class="logo">
+            <img src="<?php echo base_url() ?>asset/img/logo.png" id="ecommuter_logo">
         </a>
     </div>
     
