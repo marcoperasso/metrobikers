@@ -86,10 +86,8 @@ public class Credentials {
 
 				timer.cancel();
 				if (!success) {
-					Toast t = Toast.makeText(context, message,
-							Toast.LENGTH_LONG);
-					t.setGravity(Gravity.CENTER, 0, 0);
-					t.show();
+					Toast.makeText(context, message,
+							Toast.LENGTH_LONG).show();
 				} else {
 					int id = c.getUserId();
 					RequestBuilder.fillCredentialsData(c);
@@ -105,7 +103,10 @@ public class Credentials {
 					public void run() {
 						timeout = true;
 						timer.cancel();
-						onResponse.response(false, "Timeout!");
+						String message = "Timeout!";
+						Toast.makeText(context, message,
+								Toast.LENGTH_LONG).show();
+						onResponse.response(false, message);
 					}
 				}, 30000);// 30 secondi
 			}
