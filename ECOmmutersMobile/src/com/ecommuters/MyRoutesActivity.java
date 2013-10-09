@@ -2,11 +2,10 @@ package com.ecommuters;
 
 import java.util.List;
 
-import com.google.android.maps.MyLocationOverlay;
-
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -16,6 +15,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
@@ -24,6 +24,7 @@ import android.widget.TextView;
 public class MyRoutesActivity extends Activity {
 
 	private static final int menuDeleteLocal = 0;
+	private static final int menuDetails = 1;
 
 	protected static final String MY_ROUTES_ACTIVITY = "MYROUTES";
 
@@ -80,33 +81,37 @@ public class MyRoutesActivity extends Activity {
 
 							if (!success)
 								return;
-							
-							AsyncTask<Void, Void, Void> task = new AsyncTask<Void, Void, Void>(){
+
+							AsyncTask<Void, Void, Void> task = new AsyncTask<Void, Void, Void>() {
 
 								@Override
 								protected Void doInBackground(Void... params) {
 									try {
-										List<Route> rr = RequestBuilder.getRoutes(0);
+										List<Route> rr = RequestBuilder
+												.getRoutes(0);
 										boolean saved = false;
 										for (Route r : rr) {
-											String routeFile = Helper.getRouteFile(r
-													.getName());
-											r.save(MyRoutesActivity.this, routeFile);
+											String routeFile = Helper
+													.getRouteFile(r.getName());
+											r.save(MyRoutesActivity.this,
+													routeFile);
 											saved = true;
 										}
 
 										if (saved)
-											MyApplication.getInstance().refreshRoutes();
+											MyApplication.getInstance()
+													.refreshRoutes();
 									} catch (Exception e) {
 										Log.e(MY_ROUTES_ACTIVITY, e.toString());
 									} finally {
 										progressBar.dismiss();
 									}
 									return null;
-								}};
-							
-							task.execute((Void)null);
-							
+								}
+							};
+
+							task.execute((Void) null);
+
 						}
 					});
 
@@ -125,10 +130,18 @@ public class MyRoutesActivity extends Activity {
 		TextView tvDescri = (TextView) findViewById(R.id.textViewDescription);
 		tvDescri.setText(sb.toString());
 
-		ListView lv = (ListView) findViewById(R.id.list_routes);
+		final ListView lv = (ListView) findViewById(R.id.list_routes);
 		ArrayAdapter<Route> adapter = new ArrayAdapter<Route>(this,
 				android.R.layout.simple_list_item_1, mRoutes);
 		lv.setAdapter(adapter);
+		lv.setOnItemClickListener(new OnItemClickListener() {
+
+			public void onItemClick(AdapterView<?> arg0, View arg1,
+					int position, long arg3) {
+				Route r = (Route) lv.getItemAtPosition(position);
+				showRouteDetails(r.getName());
+			}
+		});
 		return lv;
 	}
 
@@ -140,7 +153,8 @@ public class MyRoutesActivity extends Activity {
 			mActiveRoute = mRoutes[info.position];
 			menu.setHeaderTitle(mActiveRoute.toString());
 
-			menu.add(Menu.NONE, menuDeleteLocal, 0, "Elimina");
+			menu.add(Menu.NONE, menuDeleteLocal, 0, R.string.delete_route);
+			menu.add(Menu.NONE, menuDetails, 0, R.string.route_properties);
 		}
 	}
 
@@ -148,28 +162,37 @@ public class MyRoutesActivity extends Activity {
 	public boolean onContextItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case menuDeleteLocal:
-			Helper.dialogMessage(
-					this,
-					String.format(
-							"Confermi la cancellazione dell'itinerario %s? Potrai comunque scaricarlo nuovamente dal server.",
-							mActiveRoute.getName()),
+			Helper.dialogMessage(this, String.format(
+					getString(R.string.confirm_delete_route),
+					mActiveRoute.getName()),
 					new DialogInterface.OnClickListener() {
 
 						public void onClick(DialogInterface dialog, int which) {
-							removeActiveRoute();
+							deleteActiveRoute();
 						}
 
 					}, null);
 
 			break;
 
+		case menuDetails:
+			showRouteDetails(mActiveRoute.getName());
+			break;
+
 		}
+
 		return true;
 	}
 
-	private void removeActiveRoute() {
+	private void showRouteDetails(String routename) {
+		Intent intent = new Intent(this, RouteDetailActivity.class);
+		intent.putExtra(Const.ROUTE_EXTRA, routename);
+		startActivity(intent);
+	}
 
-		MyApplication.getInstance().removeRoute(mActiveRoute);
+	private void deleteActiveRoute() {
+
+		MyApplication.getInstance().deleteRoute(mActiveRoute);
 
 	}
 

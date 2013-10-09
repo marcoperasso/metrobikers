@@ -57,5 +57,10 @@
     <string name="live_tracking_off">Live tracking disattivato.</string>
     <string name="verifying_credentials">Sto verificando le credenziali...</string>
     <string name="tracking_position">Sto inviando la tua posizione via Internet</string>
+    <string name="title_activity_route_detail">Dettagli itinerario</string>
+    <string name="delete_route">Elimina</string>
+    <string name="route_properties">Proprietà...</string>
+    <string name="confirm_delete_route">Confermi la cancellazione dell\'itinerario %s? Potrai comunque scaricarlo nuovamente dal server.</string>
+    <string name="sample">sample</string>
 
 </resources>

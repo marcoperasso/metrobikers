@@ -168,4 +168,11 @@ public class Helper {
 		cmp = sa.compareTo(sb);
 		return cmp;
 	}
+
+	public static String formatElapsedTime(long totalTimeSeconds) { 
+		int seconds = (int) (totalTimeSeconds) % 60 ;
+		int minutes = (int) ((totalTimeSeconds / (60)) % 60);
+		int hours   = (int) ((totalTimeSeconds / (60*60)) % 24);
+		return String.format("%dh,  %dm, %ds", hours, minutes, seconds);
+	}
 }

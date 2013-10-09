@@ -257,7 +257,6 @@ public class ConnectorService extends Service implements LocationListener {
 				this).setSmallIcon(R.drawable.livetracking);
 
 		Notification notification = mBuilder.build();
-		notification.flags |= Notification.FLAG_ONGOING_EVENT | Notification.FLAG_AUTO_CANCEL;
 		notification.setLatestEventInfo(this, getString(R.string.app_name),
 				message, contentIntent);
 		if (noisy)

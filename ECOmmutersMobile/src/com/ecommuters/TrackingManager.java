@@ -91,8 +91,7 @@ public class TrackingManager {
 			boolean tracked = false;
 			for (int i = r.latestIndex; i < r.getPoints().size(); i++) {
 				RoutePoint pt = r.getPoints().get(i);
-				if (position.distance(pt) < error)
-				{
+				if (position.distance(pt) < error) {
 					mRoutesByPosition.add(r);
 					r.latestIndex = i;
 					tracked = true;
@@ -104,25 +103,24 @@ public class TrackingManager {
 		}
 	}
 
-	
 	public void scheduleLiveTracking() {
 		clearSchedules();
 
-		ArrayList<TimeInterval> intervals = getLiveTrackingTimeIntervals();
-		for (TimeInterval interval : intervals) {
+		Route[] routes = MyApplication.getInstance().getRoutes();
+		for (Route r : routes) {
+			for (TimeInterval interval : r.getIntervals()) {
+				Task startingTask = schedule(interval.getStart(),
+						interval.getRoute(), interval.getWeight(),
+						EventType.START_TRACKING);
 
-			Task startingTask = schedule(interval.getStart(),
-					interval.getRoute(), interval.getWeight(),
-					EventType.START_TRACKING);
+				schedule(interval.getEnd(), interval.getRoute(),
+						interval.getWeight(), EventType.STOP_TRACKING);
 
-			schedule(interval.getEnd(), interval.getRoute(),
-					interval.getWeight(), EventType.STOP_TRACKING);
-
-			if (interval.isActiveNow()) {
-				startingTask.execute();
+				if (interval.isActiveNow()) {
+					startingTask.execute();
+				}
 			}
 		}
-
 	}
 
 	private void clearSchedules() {
@@ -141,32 +139,14 @@ public class TrackingManager {
 	}
 
 	private Task schedule(Date time, Route route, int weight, EventType type) {
-		Task task = new Task(this, mHandler, time, type, weight,
-				route);
+		Task task = new Task(this, mHandler, time, type, weight, route);
 		task.activate();
 		mTasks.add(task);
 		return task;
 	}
 
-	private ArrayList<TimeInterval> getLiveTrackingTimeIntervals() {
-		ArrayList<TimeInterval> intervals = new ArrayList<TimeInterval>();
-		for (Route r : MyApplication.getInstance().getRoutes()) {
-			for (int i = 0; i < GPSManager.MAX_GPS_LEVELS; i++)
-				intervals.add(new TimeInterval(r,
-						r.getPoints().get(0).time * 1000, i));
-			// per debug
-			//long currentTimeMillis = System.currentTimeMillis();
-			//for (int i = 0; i < GPSManager.MAX_GPS_LEVELS; i++)
-			//	intervals.add(new TimeInterval(r, currentTimeMillis, i));
-		}
-
-		return intervals;
-
-	}
-
 	public void OnExecuteTask(Task task) {
 		mService.OnExecuteTask(task);
 	}
-	
-	
+
 }

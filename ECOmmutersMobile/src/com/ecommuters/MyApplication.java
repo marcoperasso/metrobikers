@@ -68,7 +68,7 @@ public class MyApplication extends Application {
 		OnRouteChanged();
 
 	}
-	public void removeRoute(Route route) {
+	public void deleteRoute(Route route) {
 		synchronized (routeSemaphore) {
 			String routeFile = Helper.getRouteFile(route.getName());
 			final File file = getFileStreamPath(routeFile);
@@ -78,6 +78,8 @@ public class MyApplication extends Application {
 		OnRouteChanged();
 
 	}
+	
+	
 	public void activateConnector() {
 		if (connectorActivated)
 			return;
@@ -118,4 +120,5 @@ public class MyApplication extends Application {
 		liveTracking = b;
 		ManualLiveTrackingChanged.fire(this, new LiveTrackingEventArgs(liveTracking));
 	}
+	
 }

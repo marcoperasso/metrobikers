@@ -183,7 +183,7 @@ public class RoutesOverlay extends ItemizedOverlay<OverlayItem> {
 		for (ECommuterPosition pt : positions) {
 			GeoPoint point = new GeoPoint(pt.lat, pt.lon);
 			java.text.DateFormat timeFormat = DateFormat.getTimeFormat(mContext);
-			Date df = new java.util.Date((long) (pt.time*1e3));
+			Date df = new java.util.Date(pt.time*1000);
 			String text = pt.name + " "
 					+ pt.surname + " (" + timeFormat.format(df) + ")";
 			OverlayItem	overlayitem = new OverlayItem(point,

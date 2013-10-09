@@ -165,6 +165,10 @@ public class MyMapActivity extends MapActivity {
 			if (positions != null)
 				mTracksOverlay.setPositions(positions);
 		}
+		else
+		{
+			testVersion();
+		}
 
 		mRoutesChangedHandler = new GenericEventHandler() {
 			public void onEvent(Object sender, EventArgs args) {
