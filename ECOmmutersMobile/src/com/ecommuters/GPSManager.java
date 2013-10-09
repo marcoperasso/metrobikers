@@ -4,8 +4,8 @@ public class GPSManager {
 	int[] levels = new int[MAX_GPS_LEVELS + 1];
 	int currentLevel = -1;
 	public final static int[] minDistanceMetres = { 30, 20, 10, 5 };
-	public final static long[] minTimeSecs = { 120, 90, 60, 30 };
-	public final static int[] minutesBeforeStart = { 10, 5, 3 };// minuti
+	public final static long[] minTimeSecs = { 60, 20, 10, 5 };
+	public final static int[] minutesBeforeStart = { 10, 5, 2 };// minuti
 																			// prima
 																			// della
 																			// partenza
@@ -18,7 +18,7 @@ public class GPSManager {
 																			// attivo
 																			// il
 																			// GPS
-	public final static int[] minutesAfterStart = { 20, 10, 6 };// minuti
+	public final static int[] minutesAfterStart = { 20, 10, 3 };// minuti
 																			// dopo
 																			// la
 																			// partenza

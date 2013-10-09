@@ -13,6 +13,7 @@ public class ECommuterPosition extends GpsPoint
 	String name;
 	String surname;
 	String mail;
+	float accuracy;
 	private static final long serialVersionUID = -5703092633640293472L;
 
 	public ECommuterPosition(int userId, int lat, int lon, String name,
@@ -24,8 +25,9 @@ public class ECommuterPosition extends GpsPoint
 		this.mail = mail;
 	}
 
-	public ECommuterPosition(int userId, int lat, int lon, long time) {
+	public ECommuterPosition(int userId, int lat, int lon, float accuracy, long time) {
 		super(lat, lon, time);
+		this.accuracy = accuracy;
 		this.userId = userId;
 		this.name = null;
 		this.surname = null;
@@ -53,5 +55,6 @@ public class ECommuterPosition extends GpsPoint
 				jsonObject.getString("name"), jsonObject.getString("surname"),
 				jsonObject.getString("mail"), jsonObject.getLong("time"));
 	}
+
 
 }

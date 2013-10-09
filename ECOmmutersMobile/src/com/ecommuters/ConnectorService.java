@@ -88,7 +88,8 @@ public class ConnectorService extends Service implements LocationListener {
 						.addHandler(onLiveTrackingChanged);
 				mTrackManager.scheduleLiveTracking();
 				syncRoutesProcedure();
-				//sendLatestPositionProcedure();
+				sendLatestPositionProcedure();
+				
 				Looper.loop();
 				mlocManager.removeUpdates(ConnectorService.this);
 				mNotificationManager.cancel(Const.TRACKING_NOTIFICATION_ID);
@@ -225,11 +226,11 @@ public class ConnectorService extends Service implements LocationListener {
 				: currentCredentials.getUserId(),
 				(int) (location.getLatitude() * 1E6),
 				(int) (location.getLongitude() * 1E6),
+				location.getAccuracy(),
 				(long) (System.currentTimeMillis() / 1E3));
 		if (!mGPSManager.requestingLocation())
 			return;
 		mTrackManager.locationChanged(mLocation);
-		sendLatestPosition();
 	}
 
 	public void onProviderDisabled(String provider) {
@@ -248,7 +249,7 @@ public class ConnectorService extends Service implements LocationListener {
 
 	}
 
-	private void setNotification(String message, boolean vibrate) {
+	private void setNotification(String message, boolean noisy) {
 		PendingIntent contentIntent = PendingIntent.getActivity(
 				getApplicationContext(), 0, new Intent(), // add this
 				PendingIntent.FLAG_UPDATE_CURRENT);
@@ -259,8 +260,8 @@ public class ConnectorService extends Service implements LocationListener {
 		notification.flags |= Notification.FLAG_ONGOING_EVENT | Notification.FLAG_AUTO_CANCEL;
 		notification.setLatestEventInfo(this, getString(R.string.app_name),
 				message, contentIntent);
-		if (vibrate)
-			notification.defaults |= Notification.DEFAULT_VIBRATE;
+		if (noisy)
+			notification.defaults |= Notification.DEFAULT_ALL;
 		mNotificationManager.notify(Const.TRACKING_NOTIFICATION_ID,
 				notification);
 	}

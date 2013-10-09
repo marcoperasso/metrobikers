@@ -85,12 +85,13 @@ public class TrackingManager {
 	}
 
 	private void calculateRoutesByPosition(ECommuterPosition position) {
+		float error = distanceMeters * (2 - position.accuracy); // due metri + u
 		mRoutesByPosition.clear();
 		for (Route r : mRoutes) {
 			boolean tracked = false;
 			for (int i = r.latestIndex; i < r.getPoints().size(); i++) {
 				RoutePoint pt = r.getPoints().get(i);
-				if (position.distance(pt) < distanceMeters)// due metri
+				if (position.distance(pt) < error)
 				{
 					mRoutesByPosition.add(r);
 					r.latestIndex = i;
