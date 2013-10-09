@@ -51,7 +51,7 @@
             </div>
             <div class="col-md-6">
                 <h3 style="margin-top: 0px; margin-bottom: 0px;">Ti riconosci in questi valori? Allora fai il salto, </h3><br />
-                <a href="<?php echo base_url() ?>register" class="btn btn-primary">diventa anche tu un ECOmmuter!</a>
+                <a href="<?php echo base_url() ?>register" class="btn btn-primary btn-lg">Diventa anche tu un ECOmmuter!</a>
             </div>
         </div>
 
