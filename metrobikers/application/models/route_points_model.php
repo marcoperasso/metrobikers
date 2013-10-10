@@ -22,6 +22,7 @@ class Route_points_model extends MY_Model {
     }
 
     public function get_points() {
+        $this->db->order_by('time', 'asc');
         $query = $this->db->get_where('routepoints ', array('routeid' => $this->routeid));
         $result = array();
         foreach ($query->result_array() as $row) {
