@@ -22,9 +22,7 @@ import com.google.android.maps.OverlayItem;
 import com.google.android.maps.Projection;
 
 public class RoutesOverlay extends ItemizedOverlay<OverlayItem> {
-	
-	
-	
+
 	private MyMapActivity mContext;
 	private Route[] routes;
 	// private ImageView mImageView;
@@ -108,34 +106,38 @@ public class RoutesOverlay extends ItemizedOverlay<OverlayItem> {
 		for (Route r : routes) {
 			if (MySettings.isHiddenRoute(mContext, r.getName()))
 				continue;
-			drawRoute(Color.BLUE, r, invertX, invertY, topLeft, bottomRight,
-					prj, canvas);
+			drawRoute(false, r, invertX, invertY, topLeft, bottomRight, prj,
+					canvas);
 		}
 		RecordRouteService recordingService = MyApplication.getInstance()
 				.getRecordingService();
 		if (recordingService != null) {
 			Route route = recordingService.getRoute();
 			synchronized (route) {
-				drawRoute(Color.RED, route, invertX, invertY, topLeft,
-						bottomRight, prj, canvas);
+				drawRoute(true, route, invertX, invertY, topLeft, bottomRight,
+						prj, canvas);
 			}
 		}
-		
-		
+
 	}
 
-	private void drawRoute(int color, Route r, boolean invertX,
+	private void drawRoute(boolean recording, Route r, boolean invertX,
 			boolean invertY, GeoPoint topLeft, GeoPoint bottomRight,
 			Projection prj, Canvas canvas) {
 		Point p1 = new Point(), p2 = new Point();
 		RoutePoint rp1 = null;
 		boolean p1Calculated = false;
-		for (int i = 0; i < r.getPoints().size(); i++) {
-			if (i < r.latestIndex)
-				pnt.setColor(Color.GREEN);
-			else
-				pnt.setColor(color);
+		int size = r.getPoints().size();
+		for (int i = 0; i < size; i++) {
 			RoutePoint pt = r.getPoints().get(i);
+			if (recording || i < r.latestIndex)
+				pnt.setColor(Color.RED);
+			else {
+				if (pt.color == null) {
+					pt.color = ColorProvider.getColor((double) i / (double) size);
+				}
+				pnt.setColor(pt.color);
+			}
 			try {
 				if (invertX) {
 					if (pt.lat < bottomRight.getLatitudeE6()
@@ -182,11 +184,12 @@ public class RoutesOverlay extends ItemizedOverlay<OverlayItem> {
 
 		for (ECommuterPosition pt : positions) {
 			GeoPoint point = new GeoPoint(pt.lat, pt.lon);
-			java.text.DateFormat timeFormat = DateFormat.getTimeFormat(mContext);
-			Date df = new java.util.Date(pt.time*1000);
-			String text = pt.name + " "
-					+ pt.surname + " (" + timeFormat.format(df) + ")";
-			OverlayItem	overlayitem = new OverlayItem(point,
+			java.text.DateFormat timeFormat = DateFormat
+					.getTimeFormat(mContext);
+			Date df = new java.util.Date(pt.time * 1000);
+			String text = pt.name + " " + pt.surname + " ("
+					+ timeFormat.format(df) + ")";
+			OverlayItem overlayitem = new OverlayItem(point,
 					mContext.getString(R.string.app_name), text);
 			mOverlays.add(overlayitem);
 		}

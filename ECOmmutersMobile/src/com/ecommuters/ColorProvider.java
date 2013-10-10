@@ -6,29 +6,27 @@ import java.util.List;
 import android.graphics.Color;
 
 public class ColorProvider {
-	static List<Integer> colors = GetColorMap();
+	static List<Integer> colors = getColorMap();
 
-	public static Integer GetColor(double elevation, double minEle,
-			double maxEle) {
-		double ratio = (elevation - minEle) / (maxEle - minEle);
-		int index = (int) (ratio * (colors.size() - 1));
+	public static Integer getColor(double percentage) {
+		int index = (int) (percentage * (colors.size() - 1));
 		return colors.get(index);
 	}
 
-	private static List<Integer> GetColorMap() {
+	private static List<Integer> getColorMap() {
 		List<Integer> colors = new ArrayList<Integer>();
-		colors.addAll(GetGradients(Color.RED, Color.argb(255, 255, 165, 0), 255));
-		colors.addAll(GetGradients(Color.argb(255, 255, 165, 0), Color.YELLOW,
-				255));
-		colors.addAll(GetGradients(Color.YELLOW, Color.GREEN, 255));
-		colors.addAll(GetGradients(Color.GREEN, Color.BLUE, 255));
-		colors.addAll(GetGradients(Color.BLUE, Color.argb(255, 75, 0, 130), 255));
-		colors.addAll(GetGradients(Color.argb(255, 75, 0, 130), Color.MAGENTA,
-				255));
+		//colors.addAll(getGradients(Color.YELLOW, Color.GREEN, 255));
+		colors.addAll(getGradients(Color.GREEN, Color.BLUE, 255));
+		//colors.addAll(getGradients(Color.BLUE, Color.argb(255, 255, 165, 0), 255));
+		//colors.addAll(getGradients(Color.RED, Color.argb(255, 75, 0, 130), 255));
+		//colors.addAll(getGradients(Color.argb(255, 255, 165, 0), Color.YELLOW,
+		//		255));
+		//colors.addAll(getGradients(Color.argb(255, 75, 0, 130), Color.MAGENTA,
+		//		255));
 		return colors;
 	}
 
-	private static List<Integer> GetGradients(int start, int end, int steps) {
+	private static List<Integer> getGradients(int start, int end, int steps) {
 		int rStep = ((Color.red(end) - Color.red(start)) / (steps - 1));
 		int gStep = ((Color.green(end) - Color.green(start)) / (steps - 1));
 		int bStep = ((Color.blue(end) - Color.blue(start)) / (steps - 1));

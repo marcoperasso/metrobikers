@@ -14,6 +14,7 @@ public class RoutePoint extends GpsPoint
 	 */
 	private static final long serialVersionUID = 4639726905468751875L;
 	int id;
+	Integer color;
 
 	public RoutePoint(int id, int lat, int lon, long unixTime) {
 		super(lat, lon, unixTime);
@@ -35,6 +36,5 @@ public class RoutePoint extends GpsPoint
 				jsonObject.getInt("lat"), jsonObject.getInt("lon"),
 				jsonObject.getLong("time"));
 	}
-
 	
 }
