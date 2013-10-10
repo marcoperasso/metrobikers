@@ -61,22 +61,57 @@
     {
         var points;
 <?php
+
+function get_gradient($startcol, $endcol, $graduations = 255) {
+    $graduations--;
+
+    $RedOrigin = hexdec(substr($startcol, 0, 2));
+    $GrnOrigin = hexdec(substr($startcol, 2, 2));
+    $BluOrigin = hexdec(substr($startcol, 4, 2));
+
+    $GradientSizeRed = (hexdec(substr($endcol, 0, 2)) - $RedOrigin) / $graduations; //Graduation Size Red
+    $GradientSizeGrn = (hexdec(substr($endcol, 2, 2)) - $GrnOrigin) / $graduations;
+    $GradientSizeBlu = (hexdec(substr($endcol, 4, 2)) - $BluOrigin) / $graduations;
+
+    for ($i = 0; $i <= $graduations; $i++) {
+        $RetVal[$i] =
+                str_pad(dechex($RedOrigin + ($GradientSizeRed * $i)), 2, '0', STR_PAD_LEFT) .
+                str_pad(dechex($GrnOrigin + ($GradientSizeGrn * $i)), 2, '0', STR_PAD_LEFT) .
+                str_pad(dechex($BluOrigin + ($GradientSizeBlu * $i)), 2, '0', STR_PAD_LEFT);
+    }
+    return $RetVal;
+}
+
+function get_color($ratio, $colors) {
+    $index = ($ratio * (count($colors) - 1));
+    return "#" . $colors[$index];
+}
+
 if (isset($routes)) {
+    $colors = get_gradient("00FF00", "0000FF");
     foreach ($routes as $route) {
         ?>
                 points = [];
         <?php
-        for ($i = 0; $i < count($route->points); $i++) {
+        $count = count($route->points);
+        for ($i = 0; $i < $count; $i++) {
             $p1 = $route->points[$i];
             ?>
-                    points.push(new google.maps.LatLng(<?php echo $p1->lat / 1000000; ?>, <?php echo $p1->lon / 1000000; ?>));
+                    points.push({"lat":<?php echo $p1->lat / 1000000; ?>, "lon": <?php echo $p1->lon / 1000000; ?>, "c": '<?php echo get_color($i / $count, $colors); ?>'});
         <?php } ?>
-                new google.maps.Polyline({
-                    path: points,
-                    strokeColor: "#FF0000",
-                    strokeOpacity: 1.0,
-                    strokeWeight: 2
-                }).setMap(map);
+                for (var i = 1; i < points.length; i++)
+                {
+                    var p1 = points[i - 1];
+                    var p2 = points[i];
+
+                    new google.maps.Polyline({
+                        path: [new google.maps.LatLng(p1.lat, p1.lon), new google.maps.LatLng(p2.lat, p2.lon)],
+                        strokeColor: p1.c,
+                        strokeOpacity: 1.0,
+                        strokeWeight: 3,
+                        map: map
+                    });
+                }
         <?php
     }
 }
