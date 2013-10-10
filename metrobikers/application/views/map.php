@@ -56,10 +56,21 @@
 </div>
 
 <script type="text/javascript">
-
+    function RouteInfo(name, infoWindow)
+    {
+        var routeName = name;
+        var window = infoWindow;
+        this.onDetailRequested = function(e) {
+            window.setContent(routeName);
+            window.setPosition(e.latLng);
+            window.open(map);
+        };
+    }
     function addTracks()
     {
         var points;
+        var myInfoWindow = new google.maps.InfoWindow();
+
 <?php
 
 function get_gradient($startcol, $endcol, $graduations = 255) {
@@ -104,13 +115,18 @@ if (isset($routes)) {
                     var p1 = points[i - 1];
                     var p2 = points[i];
 
-                    new google.maps.Polyline({
+                    var poly = new google.maps.Polyline({
                         path: [new google.maps.LatLng(p1.lat, p1.lon), new google.maps.LatLng(p2.lat, p2.lon)],
                         strokeColor: p1.c,
                         strokeOpacity: 1.0,
                         strokeWeight: 3,
                         map: map
                     });
+                    var obj = new RouteInfo("<?php echo $route->name; ?>", myInfoWindow);
+                    
+                    google.maps.event.addListener(poly, 'click', obj.onDetailRequested);
+
+
                 }
         <?php
     }

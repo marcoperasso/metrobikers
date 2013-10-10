@@ -70,6 +70,11 @@ public class TrackingManager {
 			if (outOfTrackCount < MAX_OUT_OF_TRACK_COUNT)
 				return;
 		}
+		
+		if (!b)
+			for (Route r : mRoutes)
+				r.latestIndex = 0;
+		
 		setLiveTracking(b);
 	}
 
@@ -88,35 +93,18 @@ public class TrackingManager {
 		float error = distanceMeters * (2 - position.accuracy); 
 		for (Route r : mRoutes) {
 			double min = Double.MAX_VALUE;
-			boolean hit = false;
 			for (int i = r.latestIndex; i < r.getPoints().size(); i++) {
 				RoutePoint pt = r.getPoints().get(i);
 				double distance = position.distance(pt);
 				min = Math.min(min, distance);
 				if (distance < error) {
 					atLeastOneRoute = true;
-					hit = true;
 					r.latestIndex = i;
 					break;
 				}
 			}
-			if (!hit)
-				// se non sono sulla traccia, provo a ripartire dall'inizio
-				//in questo caso, considero tutta la traccia fino al latestIndex
-				
-			{
-				for (int i = 0; i < r.latestIndex; i++) {
-					RoutePoint pt = r.getPoints().get(i);
-					double distance = position.distance(pt);
-					min = Math.min(min, distance);
-					if (distance < error) {
-						atLeastOneRoute = true;
-						r.latestIndex = i;
-						break;
-					}
-				}
-			}
-			Toast.makeText(mService, r.getName() + String.format(": %.2f", min), Toast.LENGTH_SHORT).show();
+			
+			Toast.makeText(mService, String.format("%s: %.2f errore: %.2f", r.getName(), min, error), Toast.LENGTH_SHORT).show();
 		}
 		return atLeastOneRoute;
 	}
