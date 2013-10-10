@@ -5,7 +5,6 @@ import java.util.TimerTask;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.view.Gravity;
 import android.view.View;
 import android.webkit.WebView;
 import android.widget.Toast;

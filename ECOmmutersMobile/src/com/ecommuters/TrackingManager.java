@@ -13,9 +13,10 @@ import com.ecommuters.Task.EventType;
 
 public class TrackingManager {
 
+
 	private static final int TIMEOUT = 600000;
 
-	private static final int distanceMeters = 2;
+	private static final int distanceMeters = 15;
 
 	private static final int MAX_OUT_OF_TRACK_COUNT = 20;
 	// disposizione del
@@ -36,7 +37,6 @@ public class TrackingManager {
 	private int outOfTrackCount;
 
 	private Route[] mRoutes;
-	private List<Route> mRoutesByPosition = new ArrayList<Route>();
 
 	public TrackingManager(Handler handler, ConnectorService service) {
 		mHandler = handler;
@@ -44,9 +44,7 @@ public class TrackingManager {
 	}
 
 	public void locationChanged(ECommuterPosition mLocation) {
-		calculateRoutesByPosition(mLocation);
-
-		boolean b = mRoutesByPosition.size() > 0;
+		boolean b = calculateRoutesByPosition(mLocation);
 		if (timerTask != null) {
 			timerTask.cancel();
 			timerTask = null;
@@ -85,28 +83,42 @@ public class TrackingManager {
 		return liveTracking;
 	}
 
-	private void calculateRoutesByPosition(ECommuterPosition position) {
-		float error = distanceMeters * (2 - position.accuracy); // due metri + u
-		mRoutesByPosition.clear();
+	private boolean calculateRoutesByPosition(ECommuterPosition position) {
+		boolean atLeastOneRoute = false;
+		float error = distanceMeters * (2 - position.accuracy); 
 		for (Route r : mRoutes) {
-			double minDistance = Double.MAX_VALUE;
-			boolean tracked = false;
+			double min = Double.MAX_VALUE;
+			boolean hit = false;
 			for (int i = r.latestIndex; i < r.getPoints().size(); i++) {
 				RoutePoint pt = r.getPoints().get(i);
 				double distance = position.distance(pt);
-				minDistance = Math.min(minDistance, distance);
+				min = Math.min(min, distance);
 				if (distance < error) {
-					mRoutesByPosition.add(r);
+					atLeastOneRoute = true;
+					hit = true;
 					r.latestIndex = i;
-					tracked = true;
 					break;
 				}
 			}
-			if (!tracked)
-				r.latestIndex = 0;
-			
-			Toast.makeText(mService,  r.getName() + ": " + minDistance, Toast.LENGTH_LONG).show();
+			if (!hit)
+				// se non sono sulla traccia, provo a ripartire dall'inizio
+				//in questo caso, considero tutta la traccia fino al latestIndex
+				
+			{
+				for (int i = 0; i < r.latestIndex; i++) {
+					RoutePoint pt = r.getPoints().get(i);
+					double distance = position.distance(pt);
+					min = Math.min(min, distance);
+					if (distance < error) {
+						atLeastOneRoute = true;
+						r.latestIndex = i;
+						break;
+					}
+				}
+			}
+			Toast.makeText(mService, r.getName() + String.format(": %.2f", min), Toast.LENGTH_SHORT).show();
 		}
+		return atLeastOneRoute;
 	}
 
 	public void scheduleLiveTracking() {
