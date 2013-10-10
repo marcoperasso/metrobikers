@@ -7,11 +7,11 @@
     </head>
 
     <body>
-        <div class="container">
+        <div class="content">
 
             <?php
 	    $data['url'] = base_url()."user";
-	    $this->load->view('templates/navigationbar', $data);
+	    $this->load->view('templates/visualheader', $data);
 	    ?>
 
             <div class="row body">
