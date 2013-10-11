@@ -28,6 +28,8 @@ public class TrackingManager {
 	private ConnectorService mService;
 	private boolean liveTracking;
 	public LiveTrackingEvent LiveTrackingEvent = new LiveTrackingEvent();
+	public FollowedRouteEvent FollowedRoutesChanged = new FollowedRouteEvent();
+	List<Route> mFollowedRoutes = new ArrayList<Route>();
 	private Timer mTimer = new Timer(true);
 
 	private TimerTask timerTask = null;
@@ -87,15 +89,32 @@ public class TrackingManager {
 		boolean atLeastOneRoute = false;
 		float error = distanceMeters; 
 		for (Route r : mRoutes) {
-			double min = Double.MAX_VALUE;
+			
+			boolean followed = false;
 			for (int i = r.latestIndex; i < r.getPoints().size(); i++) {
 				RoutePoint pt = r.getPoints().get(i);
 				double distance = position.distance(pt);
-				min = Math.min(min, distance);
 				if (distance < error) {
 					atLeastOneRoute = true;
 					r.latestIndex = i;
+					followed = true;
 					break;
+				}
+			}
+			if (followed)
+			{
+				if (!mFollowedRoutes.contains(r))
+				{
+					mFollowedRoutes.add(r);
+					FollowedRoutesChanged.fire(this, new FollowedRouteEventArgs(true, r));
+				}
+			}
+			else
+			{
+				if (mFollowedRoutes.contains(r))
+				{
+					mFollowedRoutes.remove(r);
+					FollowedRoutesChanged.fire(this, new FollowedRouteEventArgs(false, r));
 				}
 			}
 			

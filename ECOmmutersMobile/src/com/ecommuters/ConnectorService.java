@@ -72,7 +72,17 @@ public class ConnectorService extends Service implements LocationListener {
 					mTrackManager.scheduleLiveTracking();
 				}
 			};
+			private FollowedRouteEventHandler onFollowedRouteChanged = new FollowedRouteEventHandler(){
 
+				@Override
+				public void onEvent(Object sender,
+						FollowedRouteEventArgs args) {
+					if (args.isFollowing())
+						setNotification(getString(R.string.following_route, args.getRoute().getName()), true);
+					else
+						setNotification(getString(R.string.not_following_route, args.getRoute().getName()), true);
+					
+				}};
 			public void run() {
 				MyApplication.getInstance().ManualLiveTrackingChanged
 						.addHandler(onLiveTrackingChanged);
@@ -88,6 +98,8 @@ public class ConnectorService extends Service implements LocationListener {
 				mTrackManager = new TrackingManager(ConnectorService.this);
 				mTrackManager.LiveTrackingEvent
 						.addHandler(onLiveTrackingChanged);
+				
+				mTrackManager.FollowedRoutesChanged.addHandler(onFollowedRouteChanged);
 				mTrackManager.scheduleLiveTracking();
 				syncRoutesProcedure();
 				sendLatestPositionProcedure();
@@ -103,6 +115,7 @@ public class ConnectorService extends Service implements LocationListener {
 						.removeHandler(onRoutesChanged);
 				mTrackManager.LiveTrackingEvent
 						.removeHandler(onLiveTrackingChanged);
+				mTrackManager.FollowedRoutesChanged.removeHandler(onFollowedRouteChanged);
 				Log.d("ECOMMUTERS", "Worker thread ended");
 
 			}
