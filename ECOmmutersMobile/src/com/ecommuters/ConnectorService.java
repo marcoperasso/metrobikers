@@ -1,7 +1,10 @@
 package com.ecommuters;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+
+import com.ecommuters.Task.EventType;
 
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -82,15 +85,16 @@ public class ConnectorService extends Service implements LocationListener {
 				mHandler = new Handler();
 				mlocManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
-				mTrackManager = new TrackingManager(mHandler,
-						ConnectorService.this);
+				mTrackManager = new TrackingManager(ConnectorService.this);
 				mTrackManager.LiveTrackingEvent
 						.addHandler(onLiveTrackingChanged);
 				mTrackManager.scheduleLiveTracking();
 				syncRoutesProcedure();
 				sendLatestPositionProcedure();
 				
+				
 				Looper.loop();
+				mTrackManager.clearSchedules();
 				mlocManager.removeUpdates(ConnectorService.this);
 				mNotificationManager.cancel(Const.TRACKING_NOTIFICATION_ID);
 				MyApplication.getInstance().ManualLiveTrackingChanged
@@ -363,6 +367,7 @@ public class ConnectorService extends Service implements LocationListener {
 	}
 
 	public void OnExecuteTask(Task task) {
+		mTrackManager.OnExecuteTask(task);
 		switch (task.getType()) {
 		case START_TRACKING:
 			activateGPS(task.getWeight());

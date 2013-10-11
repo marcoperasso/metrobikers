@@ -7,7 +7,6 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import android.os.Handler;
-import android.widget.Toast;
 
 import com.ecommuters.Task.EventType;
 
@@ -16,7 +15,7 @@ public class TrackingManager {
 
 	private static final int TIMEOUT = 600000;
 
-	private static final int distanceMeters = 15;
+	private static final int distanceMeters = 25;
 
 	private static final int MAX_OUT_OF_TRACK_COUNT = 20;
 	// disposizione del
@@ -25,7 +24,6 @@ public class TrackingManager {
 	// trovare la
 	// posizione
 
-	private Handler mHandler;
 	private List<Task> mTasks = new ArrayList<Task>();
 	private ConnectorService mService;
 	private boolean liveTracking;
@@ -38,8 +36,9 @@ public class TrackingManager {
 
 	private Route[] mRoutes;
 
-	public TrackingManager(Handler handler, ConnectorService service) {
-		mHandler = handler;
+	private int mTrackingCount;
+
+	public TrackingManager(ConnectorService service) {
 		mService = service;
 	}
 
@@ -71,10 +70,6 @@ public class TrackingManager {
 				return;
 		}
 		
-		if (!b)
-			for (Route r : mRoutes)
-				r.latestIndex = 0;
-		
 		setLiveTracking(b);
 	}
 
@@ -90,7 +85,7 @@ public class TrackingManager {
 
 	private boolean calculateRoutesByPosition(ECommuterPosition position) {
 		boolean atLeastOneRoute = false;
-		float error = distanceMeters * (2 - position.accuracy); 
+		float error = distanceMeters; 
 		for (Route r : mRoutes) {
 			double min = Double.MAX_VALUE;
 			for (int i = r.latestIndex; i < r.getPoints().size(); i++) {
@@ -104,14 +99,12 @@ public class TrackingManager {
 				}
 			}
 			
-			Toast.makeText(mService, String.format("%s: %.2f errore: %.2f", r.getName(), min, error), Toast.LENGTH_SHORT).show();
 		}
 		return atLeastOneRoute;
 	}
 
 	public void scheduleLiveTracking() {
 		clearSchedules();
-
 		Route[] routes = MyApplication.getInstance().getRoutes();
 		for (Route r : routes) {
 			for (TimeInterval interval : r.getIntervals()) {
@@ -129,15 +122,13 @@ public class TrackingManager {
 		}
 	}
 
-	private void clearSchedules() {
+	void clearSchedules() {
 		// prima elimino i pending task
 		mRoutes = MyApplication.getInstance().getRoutes();
 		for (Route r : mRoutes)
 			r.latestIndex = 0;
-		for (Task t : mTasks) {
-			mHandler.removeCallbacks(t);
-
-		}
+		for (Task t : mTasks)
+			t.cancel();
 		mTasks.clear();
 		// poi disabilito il GPS
 		mService.resetGPS();
@@ -145,14 +136,29 @@ public class TrackingManager {
 	}
 
 	private Task schedule(Date time, Route route, int weight, EventType type) {
-		Task task = new Task(this, mHandler, time, type, weight, route);
+		Task task = new Task(time, type, weight, route.getName());
 		task.activate();
 		mTasks.add(task);
 		return task;
 	}
 
 	public void OnExecuteTask(Task task) {
-		mService.OnExecuteTask(task);
+		
+		switch (task.getType())
+		{
+			case START_TRACKING :
+				mTrackingCount++;
+				break;
+			case STOP_TRACKING :
+				mTrackingCount--;
+				if (mTrackingCount == 0)
+					for (Route r : mRoutes)
+						r.latestIndex = 0;
+				break;
+			default :
+				break;
+			
+		}
 	}
 
 }

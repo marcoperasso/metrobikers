@@ -89,9 +89,9 @@ public class MyApplication extends Application {
 		PendingIntent pintent = PendingIntent.getService(this, 0, myIntent, 0);
 
 		AlarmManager alarm = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-		// Start every 30 seconds
+		// Start every 60 seconds
 		alarm.setRepeating(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(),
-				30 * 1000, pintent);
+				60 * 1000, pintent);
 		connectorActivated = true;
 	}
 	
