@@ -1,6 +1,7 @@
 package com.ecommuters;
 
 public class Const {
+	public static final String ECOMMUTERS_TAG = "ECOMMUTERS";
 	public static final Integer PROTOCOL_VERSION = 1;
 	public static final int ACTIVATE_GPS_RESULT = 0;
 	public static final int CREDENTIALS_RESULT = 1;

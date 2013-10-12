@@ -8,6 +8,7 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 
 public class Task implements Runnable, Serializable {
 	/**
@@ -68,6 +69,8 @@ public class Task implements Runnable, Serializable {
 		alarms.setInexactRepeating(AlarmManager.RTC_WAKEUP, next.getTime(), AlarmManager.INTERVAL_DAY,
 				pIntent);
 
+		Log.i(Const.ECOMMUTERS_TAG, String.format("Scheduling task %s with weight: %d at %s.", getType().toString(), getWeight(), next.toString()));
+		
 	}
 	
 	public void cancel()

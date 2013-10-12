@@ -1,6 +1,7 @@
 package com.ecommuters;
 
 import java.io.File;
+import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.ArrayList;
 import java.util.Calendar;
 
@@ -9,10 +10,12 @@ import android.app.Application;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import android.webkit.CookieSyncManager;
 
 public class MyApplication extends Application {
 
+	
 	private static MyApplication sInstance;
 
 	private ArrayList<Route> mRoutes;
@@ -27,6 +30,17 @@ public class MyApplication extends Application {
 	@Override
 	public void onCreate() {
 		super.onCreate();
+		//final UncaughtExceptionHandler defaultUncaughtExceptionHandler = Thread.getDefaultUncaughtExceptionHandler();
+		//Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
+			
+		//	public void uncaughtException(Thread thread, Throwable ex)  {
+		//		Log.e(Const.ECOMMUTERS_TAG, ex.toString());
+		//		for (StackTraceElement el : ex.getStackTrace())
+		//			Log.e(Const.ECOMMUTERS_TAG, el.toString());
+		//		defaultUncaughtExceptionHandler.uncaughtException(thread, ex);
+				
+		//	}
+		//});
 		sInstance = this; 
 		CookieSyncManager.createInstance (this);
 	}
