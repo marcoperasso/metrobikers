@@ -72,17 +72,22 @@ public class ConnectorService extends Service implements LocationListener {
 					mTrackManager.scheduleLiveTracking();
 				}
 			};
-			private FollowedRouteEventHandler onFollowedRouteChanged = new FollowedRouteEventHandler(){
+			private FollowedRouteEventHandler onFollowedRouteChanged = new FollowedRouteEventHandler() {
 
 				@Override
-				public void onEvent(Object sender,
-						FollowedRouteEventArgs args) {
+				public void onEvent(Object sender, FollowedRouteEventArgs args) {
 					if (args.isFollowing())
-						setNotification(getString(R.string.following_route, args.getRoute().getName()), true);
+						setNotification(
+								getString(R.string.following_route, args
+										.getRoute().getName()), false);
 					else
-						setNotification(getString(R.string.not_following_route, args.getRoute().getName()), true);
-					
-				}};
+						setNotification(
+								getString(R.string.not_following_route, args
+										.getRoute().getName()), false);
+
+				}
+			};
+
 			public void run() {
 				MyApplication.getInstance().ManualLiveTrackingChanged
 						.addHandler(onLiveTrackingChanged);
@@ -91,20 +96,18 @@ public class ConnectorService extends Service implements LocationListener {
 
 				Looper.prepare();
 				mNotificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-
 				mHandler = new Handler();
 				mlocManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
 				mTrackManager = new TrackingManager(ConnectorService.this);
 				mTrackManager.LiveTrackingEvent
 						.addHandler(onLiveTrackingChanged);
-				
-				mTrackManager.FollowedRoutesChanged.addHandler(onFollowedRouteChanged);
+
+				mTrackManager.FollowedRoutesChanged
+						.addHandler(onFollowedRouteChanged);
 				mTrackManager.scheduleLiveTracking();
 				syncRoutesProcedure();
 				sendLatestPositionProcedure();
-				
-				
 				Looper.loop();
 				mTrackManager.clearSchedules();
 				mlocManager.removeUpdates(ConnectorService.this);
@@ -115,7 +118,8 @@ public class ConnectorService extends Service implements LocationListener {
 						.removeHandler(onRoutesChanged);
 				mTrackManager.LiveTrackingEvent
 						.removeHandler(onLiveTrackingChanged);
-				mTrackManager.FollowedRoutesChanged.removeHandler(onFollowedRouteChanged);
+				mTrackManager.FollowedRoutesChanged
+						.removeHandler(onFollowedRouteChanged);
 				Log.d("ECOMMUTERS", "Worker thread ended");
 
 			}
@@ -242,8 +246,7 @@ public class ConnectorService extends Service implements LocationListener {
 		mLocation = new ECommuterPosition(currentCredentials == null ? 0
 				: currentCredentials.getUserId(),
 				(int) (location.getLatitude() * 1E6),
-				(int) (location.getLongitude() * 1E6),
-				location.getAccuracy(),
+				(int) (location.getLongitude() * 1E6), location.getAccuracy(),
 				(long) (System.currentTimeMillis() / 1E3));
 		if (!mGPSManager.requestingLocation())
 			return;
@@ -379,18 +382,23 @@ public class ConnectorService extends Service implements LocationListener {
 		return null;
 	}
 
-	public void OnExecuteTask(Task task) {
-		mTrackManager.OnExecuteTask(task);
-		switch (task.getType()) {
-		case START_TRACKING:
-			activateGPS(task.getWeight());
-			break;
-		case STOP_TRACKING:
-			stopGPS(task.getWeight());
-			break;
-		default:
-			break;
-		}
+	public void OnExecuteTask(final Task task) {
+		mHandler.post(new Runnable() {
+			public void run() {
+				mTrackManager.OnExecuteTask(task);
+				switch (task.getType()) {
+				case START_TRACKING:
+					activateGPS(task.getWeight());
+					break;
+				case STOP_TRACKING:
+					stopGPS(task.getWeight());
+					break;
+				default:
+					break;
+				}
+
+			}
+		});
 
 	}
 
