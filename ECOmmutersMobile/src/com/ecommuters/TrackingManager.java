@@ -6,8 +6,6 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import android.os.Handler;
-
 import com.ecommuters.Task.EventType;
 
 public class TrackingManager {

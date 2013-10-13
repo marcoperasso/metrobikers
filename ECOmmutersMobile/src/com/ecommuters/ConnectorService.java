@@ -1,10 +1,7 @@
 package com.ecommuters;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-
-import com.ecommuters.Task.EventType;
 
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -53,43 +50,45 @@ public class ConnectorService extends Service implements LocationListener {
 	public void onCreate() {
 		mWorkerThread = new Thread(new Runnable() {
 
-			private LiveTrackingEventHandler onLiveTrackingChanged = new LiveTrackingEventHandler() {
-
-				@Override
-				public void onEvent(Object sender, LiveTrackingEventArgs args) {
-					if (args.isActive()) {
-						activateGPS(GPSManager.MAX_GPS_LEVELS);
-					} else {
-						stopGPS(GPSManager.MAX_GPS_LEVELS);
-					}
-				}
-			};
-
-			private GenericEventHandler onRoutesChanged = new GenericEventHandler() {
-
-				@Override
-				public void onEvent(Object sender, EventArgs args) {
-					mTrackManager.scheduleLiveTracking();
-				}
-			};
-			private FollowedRouteEventHandler onFollowedRouteChanged = new FollowedRouteEventHandler() {
-
-				@Override
-				public void onEvent(Object sender, FollowedRouteEventArgs args) {
-					if (args.isFollowing())
-						setNotification(
-								getString(R.string.following_route, args
-										.getRoute().getName()), false);
-					else
-						setNotification(
-								getString(R.string.not_following_route, args
-										.getRoute().getName()), false);
-
-				}
-			};
+			
 
 			public void run() {
 				Looper.prepare();
+				
+				LiveTrackingEventHandler onLiveTrackingChanged = new LiveTrackingEventHandler() {
+
+					@Override
+					public void onEvent(Object sender, LiveTrackingEventArgs args) {
+						if (args.isActive()) {
+							activateGPS(GPSManager.MAX_GPS_LEVELS);
+						} else {
+							stopGPS(GPSManager.MAX_GPS_LEVELS);
+						}
+					}
+				};
+
+				GenericEventHandler onRoutesChanged = new GenericEventHandler() {
+
+					@Override
+					public void onEvent(Object sender, EventArgs args) {
+						mTrackManager.scheduleLiveTracking();
+					}
+				};
+				FollowedRouteEventHandler onFollowedRouteChanged = new FollowedRouteEventHandler() {
+
+					@Override
+					public void onEvent(Object sender, FollowedRouteEventArgs args) {
+						if (args.isFollowing())
+							setNotification(
+									getString(R.string.following_route, args
+											.getRoute().getName()), false);
+						else
+							setNotification(
+									getString(R.string.not_following_route, args
+											.getRoute().getName()), false);
+
+					}
+				};
 				mNotificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 				mHandler = new Handler();
 				mlocManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
