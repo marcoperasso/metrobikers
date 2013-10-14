@@ -54,8 +54,7 @@ abstract class GenericEventHandler extends TEventItem<Object, EventArgs> {
 abstract class LiveTrackingEventHandler extends TEventItem<Object, LiveTrackingEventArgs> {
 }
 
-abstract class FollowedRouteEventHandler extends TEventItem<Object, FollowedRouteEventArgs> {
-}
+
 class EventArgs {
 	public static EventArgs Empty = new EventArgs();
 }
@@ -75,33 +74,11 @@ class LiveTrackingEventArgs {
 		this.active = active;
 	}
 }
-class FollowedRouteEventArgs {
-	private boolean following;
-	private Route route;
 
-	public FollowedRouteEventArgs(boolean following, Route r) {
-		this.following = following;
-		this.route = r;
-	}
-
-	public boolean isFollowing() {
-		return following;
-	}
-
-	public Route getRoute() {
-		return route;
-	}
-
-
-}
 
 class Event extends TEvent<Object, EventArgs> {
 
 }
 class LiveTrackingEvent extends TEvent<Object, LiveTrackingEventArgs> {
-
-}
-
-class FollowedRouteEvent extends TEvent<Object, FollowedRouteEventArgs> {
 
 }

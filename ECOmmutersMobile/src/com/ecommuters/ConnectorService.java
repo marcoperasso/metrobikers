@@ -2,6 +2,8 @@ package com.ecommuters;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -25,11 +27,22 @@ import android.util.Log;
  */
 public class ConnectorService extends Service implements LocationListener {
 
+	private static final int TIMEOUT = 300000;
+
+	private static final int distanceMeters = 25;
+
+	private static final int MAX_OUT_OF_TRACK_COUNT = 20;
 	private static final String CONNECTOR_SERVICE = "ConnectorService";
 	private LocationManager mlocManager;
 	private boolean isSynchingData;
 	private Thread mWorkerThread;
 	private Handler mHandler;
+	private boolean liveTracking;
+	List<Route> mFollowedRoutes = new ArrayList<Route>();
+
+	private Route[] mRoutes;
+
+	private int mTrackingCount;
 
 	// procedura di sincronizzazione itinerari dal e verso il server
 	private long syncRoutesInterval = 300000;// 5 minuti
@@ -41,24 +54,48 @@ public class ConnectorService extends Service implements LocationListener {
 
 	private GPSManager mGPSManager = new GPSManager();
 	private ECommuterPosition mLocation;
-	private TrackingManager mTrackManager;
 	private NotificationManager mNotificationManager;
+	private Timer mTimer = new Timer(true);
+	private TimerTask timerTask = null;
+	private int outOfTrackCount;
+	private Task startupTask;
 
 	public ConnectorService() {
 	}
 
+	public void onFollowingRouteChanged(boolean following, String routeName) {
+		if (following)
+			setNotification(getString(R.string.following_route, routeName),
+					false);
+		else
+			setNotification(getString(R.string.not_following_route, routeName),
+					false);
+
+	}
+
+	@Override
+	public void onStart(Intent intent, int startId) {
+		startupTask = (Task) intent.getExtras().getSerializable(Task.TASK);
+		mWorkerThread.start();
+		super.onStart(intent, startId);
+	}
+
 	public void onCreate() {
 		mWorkerThread = new Thread(new Runnable() {
-
-			
-
 			public void run() {
 				Looper.prepare();
-				
+
+				mNotificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+				mHandler = new Handler();
+				mlocManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+
+				syncRoutesProcedure();
+				sendLatestPositionProcedure();
 				LiveTrackingEventHandler onLiveTrackingChanged = new LiveTrackingEventHandler() {
 
 					@Override
-					public void onEvent(Object sender, LiveTrackingEventArgs args) {
+					public void onEvent(Object sender,
+							LiveTrackingEventArgs args) {
 						if (args.isActive()) {
 							activateGPS(GPSManager.MAX_GPS_LEVELS);
 						} else {
@@ -67,62 +104,21 @@ public class ConnectorService extends Service implements LocationListener {
 					}
 				};
 
-				GenericEventHandler onRoutesChanged = new GenericEventHandler() {
-
-					@Override
-					public void onEvent(Object sender, EventArgs args) {
-						mTrackManager.scheduleLiveTracking();
-					}
-				};
-				FollowedRouteEventHandler onFollowedRouteChanged = new FollowedRouteEventHandler() {
-
-					@Override
-					public void onEvent(Object sender, FollowedRouteEventArgs args) {
-						if (args.isFollowing())
-							setNotification(
-									getString(R.string.following_route, args
-											.getRoute().getName()), false);
-						else
-							setNotification(
-									getString(R.string.not_following_route, args
-											.getRoute().getName()), false);
-
-					}
-				};
-				mNotificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-				mHandler = new Handler();
-				mlocManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-
-				mTrackManager = new TrackingManager(ConnectorService.this);
-				mTrackManager.scheduleLiveTracking();
-				syncRoutesProcedure();
-				sendLatestPositionProcedure();
 				MyApplication.getInstance().ManualLiveTrackingChanged
 						.addHandler(onLiveTrackingChanged);
-				MyApplication.getInstance().RouteChanged
-						.addHandler(onRoutesChanged);
-				mTrackManager.LiveTrackingEvent
-						.addHandler(onLiveTrackingChanged);
-
-				mTrackManager.FollowedRoutesChanged
-						.addHandler(onFollowedRouteChanged);
+				if (startupTask != null)
+					OnExecuteTask(startupTask);
 				Looper.loop();
-				mTrackManager.clearSchedules();
+
 				mlocManager.removeUpdates(ConnectorService.this);
 				mNotificationManager.cancel(Const.TRACKING_NOTIFICATION_ID);
 				MyApplication.getInstance().ManualLiveTrackingChanged
 						.removeHandler(onLiveTrackingChanged);
-				MyApplication.getInstance().RouteChanged
-						.removeHandler(onRoutesChanged);
-				mTrackManager.LiveTrackingEvent
-						.removeHandler(onLiveTrackingChanged);
-				mTrackManager.FollowedRoutesChanged
-						.removeHandler(onFollowedRouteChanged);
+
 				Log.d(Const.ECOMMUTERS_TAG, "Worker thread ended");
 
 			}
 		});
-
 		syncRoutesProcedureRunnable = new Runnable() {
 			public void run() {
 				syncRoutesProcedure();
@@ -136,10 +132,87 @@ public class ConnectorService extends Service implements LocationListener {
 		};
 
 		mWorkerThread.setDaemon(true);
-		mWorkerThread.start();
 
 		MyApplication.getInstance().setConnectorService(this);
 		super.onCreate();
+	}
+
+	public void locationChanged(ECommuterPosition location) {
+		boolean b = calculateRoutesByPosition(location);
+		if (timerTask != null) {
+			timerTask.cancel();
+			timerTask = null;
+		}
+		if (b) {
+			timerTask = new TimerTask() {
+
+				@Override
+				public void run() {
+					setLiveTracking(false);
+				}
+			};
+			mTimer.schedule(timerTask, TIMEOUT);
+		}
+		if (b == liveTracking)
+			return;
+		// se non sono più sulla traccia, non mi metto subito fuori dal live
+		// tracking, aspetto un po',
+		// magari ci rientro... dopo MAX_OUT_OF_TRACK_COUNT che entro qui
+		// dentro, allora mi considero fuori traccia
+		if (!b) {
+			outOfTrackCount++;
+			if (outOfTrackCount < MAX_OUT_OF_TRACK_COUNT)
+				return;
+		}
+
+		setLiveTracking(b);
+	}
+
+	private void setLiveTracking(boolean b) {
+		outOfTrackCount = 0;
+		liveTracking = b;
+
+		if (liveTracking) {
+			activateGPS(GPSManager.MAX_GPS_LEVELS);
+		} else {
+			stopGPS(GPSManager.MAX_GPS_LEVELS);
+		}
+	}
+
+	public boolean isLiveTracking() {
+		return liveTracking;
+	}
+
+	private boolean calculateRoutesByPosition(ECommuterPosition position) {
+		boolean atLeastOneRoute = false;
+		float error = distanceMeters;
+		for (Route r : mRoutes) {
+
+			boolean followed = false;
+			for (int i = r.latestIndex; i < r.getPoints().size(); i++) {
+				RoutePoint pt = r.getPoints().get(i);
+				double distance = position.distance(pt);
+				if (distance < error) {
+					atLeastOneRoute = true;
+					r.latestIndex = i;
+					followed = true;
+					break;
+				}
+			}
+			if (followed) {
+				if (!mFollowedRoutes.contains(r)) {
+					mFollowedRoutes.add(r);
+					onFollowingRouteChanged(true, r.getName());
+				}
+			} else {
+				if (mFollowedRoutes.contains(r)) {
+					mFollowedRoutes.remove(r);
+					onFollowingRouteChanged(false, r.getName());
+				}
+			}
+
+		}
+		return atLeastOneRoute;
 	}
 
 	private void activateGPS(final int level) {
@@ -248,7 +321,7 @@ public class ConnectorService extends Service implements LocationListener {
 				(long) (System.currentTimeMillis() / 1E3));
 		if (!mGPSManager.requestingLocation())
 			return;
-		mTrackManager.locationChanged(mLocation);
+		locationChanged(mLocation);
 	}
 
 	public void onProviderDisabled(String provider) {
@@ -322,8 +395,7 @@ public class ConnectorService extends Service implements LocationListener {
 	}
 
 	private Boolean liveTracking() {
-		return mTrackManager.isLiveTracking()
-				|| MyApplication.getInstance().isLiveTracking();
+		return isLiveTracking() || MyApplication.getInstance().isLiveTracking();
 	}
 
 	private void syncRoutes() {
@@ -381,15 +453,20 @@ public class ConnectorService extends Service implements LocationListener {
 	}
 
 	public void OnExecuteTask(final Task task) {
+
 		mHandler.post(new Runnable() {
 			public void run() {
-				mTrackManager.OnExecuteTask(task);
 				switch (task.getType()) {
 				case START_TRACKING:
+					mTrackingCount++;
 					activateGPS(task.getWeight());
 					break;
 				case STOP_TRACKING:
 					stopGPS(task.getWeight());
+					mTrackingCount--;
+					if (mTrackingCount == 0)
+						for (Route r : mRoutes)
+							r.latestIndex = 0;
 					break;
 				default:
 					break;

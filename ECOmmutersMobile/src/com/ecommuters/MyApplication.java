@@ -1,16 +1,9 @@
 package com.ecommuters;
 
 import java.io.File;
-import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.ArrayList;
-import java.util.Calendar;
 
-import android.app.AlarmManager;
 import android.app.Application;
-import android.app.PendingIntent;
-import android.content.Context;
-import android.content.Intent;
-import android.util.Log;
 import android.webkit.CookieSyncManager;
 
 public class MyApplication extends Application {
@@ -19,7 +12,6 @@ public class MyApplication extends Application {
 	private static MyApplication sInstance;
 
 	private ArrayList<Route> mRoutes;
-	private boolean connectorActivated;
 	private RecordRouteService recordingService;
 	private ConnectorService connectorService;
 	private boolean liveTracking = false;
@@ -27,6 +19,7 @@ public class MyApplication extends Application {
 	public Event RouteChanged = new Event();
 	public LiveTrackingEvent ManualLiveTrackingChanged = new LiveTrackingEvent();
 	private Object routeSemaphore = new Object();
+	TaskScheduler scheduler = new TaskScheduler();
 	@Override
 	public void onCreate() {
 		super.onCreate();
@@ -72,6 +65,9 @@ public class MyApplication extends Application {
 
 	}
 	private void OnRouteChanged() {
+		scheduler.clearSchedules();
+		scheduler.setRoutes(getRoutes());
+		scheduler.scheduleLiveTracking();
 		RouteChanged.fire(this, EventArgs.Empty);
 	}
 
@@ -91,22 +87,6 @@ public class MyApplication extends Application {
 		}
 		OnRouteChanged();
 
-	}
-	
-	
-	public void activateConnector() {
-		if (connectorActivated)
-			return;
-		Calendar cal = Calendar.getInstance();
-
-		Intent myIntent = new Intent(this, ConnectorService.class);
-		PendingIntent pintent = PendingIntent.getService(this, 0, myIntent, 0);
-
-		AlarmManager alarm = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-		// Start every 60 seconds
-		alarm.setRepeating(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(),
-				60 * 1000, pintent);
-		connectorActivated = true;
 	}
 	
 	public boolean isRecording() {

@@ -24,13 +24,13 @@ public class Task implements Runnable, Serializable {
 	private Date time;
 	private EventType type;
 	private int weight;
-	private String mRouteName;
+	private int id;
 
-	public Task(Date time, EventType type, int weight, String routeName) {
+	public Task(Date time, EventType type, int weight, int id) {
 		this.type = type;
 		this.weight = weight;
 		this.time = time;
-		this.mRouteName = routeName;
+		this.id = id;
 	}
 
 	public void run() {
@@ -40,9 +40,14 @@ public class Task implements Runnable, Serializable {
 	public void execute() {
 		ConnectorService connectorService = MyApplication.getInstance()
 				.getConnectorService();
-		if (connectorService == null)
+		if (connectorService != null) {
+			connectorService.OnExecuteTask(this);
 			return;
-		connectorService.OnExecuteTask(this);
+		}
+		Intent intent = new Intent(MyApplication.getInstance(),
+				ConnectorService.class);
+		intent.putExtra(TASK, this);
+		MyApplication.getInstance().startService(intent);
 	}
 
 	public void activate() {
@@ -62,39 +67,29 @@ public class Task implements Runnable, Serializable {
 				GPSTrackerReceiver.class);
 		intent.putExtra(TASK, this);
 		PendingIntent pIntent = PendingIntent.getBroadcast(
-				MyApplication.getInstance(), getAlarmId(), intent,
+				MyApplication.getInstance(), id, intent,
 				PendingIntent.FLAG_UPDATE_CURRENT);
 		AlarmManager alarms = (AlarmManager) MyApplication.getInstance()
 				.getSystemService(Context.ALARM_SERVICE);
-		alarms.setInexactRepeating(AlarmManager.RTC_WAKEUP, next.getTime(), AlarmManager.INTERVAL_DAY,
-				pIntent);
+		alarms.setInexactRepeating(AlarmManager.RTC_WAKEUP, next.getTime(),
+				AlarmManager.INTERVAL_DAY, pIntent);
 
-		Log.i(Const.ECOMMUTERS_TAG, String.format("Scheduling task %s with weight: %d at %s.", getType().toString(), getWeight(), next.toString()));
-		
+		Log.i(Const.ECOMMUTERS_TAG, String.format(
+				"Scheduling task %s with weight: %d at %s.", getType()
+						.toString(), getWeight(), next.toString()));
+
 	}
-	
-	public void cancel()
-	{
+
+	public void cancel() {
 		Intent intent = new Intent(MyApplication.getInstance(),
 				GPSTrackerReceiver.class);
 		PendingIntent pIntent = PendingIntent.getBroadcast(
-				MyApplication.getInstance(), getAlarmId(), intent,
+				MyApplication.getInstance(), id, intent,
 				PendingIntent.FLAG_UPDATE_CURRENT);
 		AlarmManager alarms = (AlarmManager) MyApplication.getInstance()
 				.getSystemService(Context.ALARM_SERVICE);
 		alarms.cancel(pIntent);
-		
-	}
-	private int getAlarmId() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + time.getHours();
-		result = prime * result + time.getMinutes();
-		result = prime * result + time.getSeconds();
-		result = prime * result + type.hashCode();
-		result = prime * result + weight;
-		result = prime * result + mRouteName.hashCode();
-		return Math.abs(result);
+
 	}
 
 	public EventType getType() {
