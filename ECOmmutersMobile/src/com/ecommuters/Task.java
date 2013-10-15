@@ -72,7 +72,7 @@ public class Task implements Runnable, Serializable {
 
 	}
 
-	public void cancel() {
+	public static void cancel(Integer id) {
 		Intent intent = new Intent(MyApplication.getInstance(),
 				GPSTrackerReceiver.class);
 		PendingIntent pIntent = PendingIntent.getBroadcast(
@@ -94,6 +94,10 @@ public class Task implements Runnable, Serializable {
 
 	public int getWeight() {
 		return weight;
+	}
+
+	public int getId() {
+		return id;
 	}
 
 }

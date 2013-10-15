@@ -17,7 +17,6 @@ public class MyApplication extends Application {
 	public Event OnRecordingRouteUpdated = new Event();
 	public Event RouteChanged = new Event();
 	private Object routeSemaphore = new Object();
-	TaskScheduler scheduler = new TaskScheduler();
 	@Override
 	public void onCreate() {
 		super.onCreate();
@@ -63,9 +62,6 @@ public class MyApplication extends Application {
 
 	}
 	private void OnRouteChanged() {
-		scheduler.clearSchedules();
-		scheduler.setRoutes(getRoutes());
-		scheduler.scheduleLiveTracking();
 		RouteChanged.fire(this, EventArgs.Empty);
 	}
 
@@ -83,6 +79,7 @@ public class MyApplication extends Application {
 			file.delete();
 			mRoutes.remove(route);
 		}
+		new TaskScheduler().scheduleLiveTracking();
 		OnRouteChanged();
 
 	}

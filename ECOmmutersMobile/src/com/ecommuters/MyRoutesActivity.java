@@ -191,9 +191,7 @@ public class MyRoutesActivity extends Activity {
 	}
 
 	private void deleteActiveRoute() {
-
 		MyApplication.getInstance().deleteRoute(mActiveRoute);
-
 	}
 
 }

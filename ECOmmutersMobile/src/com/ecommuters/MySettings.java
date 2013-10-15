@@ -1,4 +1,6 @@
 package com.ecommuters;
+import java.util.List;
+
 import android.content.Context;
 import android.content.SharedPreferences;
 
@@ -55,6 +57,11 @@ public class MySettings {
 		SharedPreferences.Editor editor = settings.edit();
 		editor.putLong(Const.LATEST_SYNC, date);
 		editor.commit();
+	}
+
+	public static List<Task> getScheduledTasks() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

@@ -72,6 +72,12 @@ public class ConnectorService extends Service implements LocationListener {
 	}
 
 	
+	public static void stopService() {
+		/*ConnectorService connectorService = MyApplication.getInstance()
+				.getConnectorService();
+		if (connectorService != null)
+			connectorService.sto? false : connectorService.isManualTracking();*/
+	}
 
 	public static void executeTask(Task t) {
 		ConnectorService connectorService = MyApplication.getInstance()
@@ -486,5 +492,6 @@ public class ConnectorService extends Service implements LocationListener {
 
 	}
 
+	
 
 }
