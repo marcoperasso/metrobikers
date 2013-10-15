@@ -2,6 +2,7 @@ package com.ecommuters;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 
 import android.app.AlertDialog;
@@ -29,6 +30,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.ecommuters.Task.EventType;
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapActivity;
 import com.google.android.maps.MapController;
@@ -55,7 +57,7 @@ public class MyMapActivity extends MapActivity {
 	private GenericEventHandler mRoutesChangedHandler;
 
 	private PositionsDownlader mPositionsDownloader;
-
+	
 	private GenericEventHandler mUpdateRoutehandler = new GenericEventHandler() {
 
 		@Override
@@ -214,13 +216,21 @@ public class MyMapActivity extends MapActivity {
 	}
 
 	private void toggleLiveTracking() {
-		boolean b = !MyApplication.getInstance().isLiveTracking();
-		MyApplication.getInstance().setLiveTracking(b);
-		showTrackingButton(MyApplication.getInstance().isLiveTracking());
+		boolean b = !isManualLiveTracking();
+		setManualLiveTracking(b);
+		showTrackingButton(b);
 		Toast.makeText(MyMapActivity.this,
 				b ? R.string.manual_live_tracking_on : R.string.manual_live_tracking_off,
 				Toast.LENGTH_LONG).show();
 
+	}
+	
+	public Boolean isManualLiveTracking() {
+		return ConnectorService.isManualLiveTracking();
+	}
+
+	public void setManualLiveTracking(boolean b) {
+		ConnectorService.executeTask(new Task(new Date(), b ? EventType.START_TRACKING : EventType.STOP_TRACKING, GPSManager.MANUAL_TRACKING, 0));
 	}
 
 	private void showStopRecordingButton(Boolean show) {
@@ -540,7 +550,7 @@ public class MyMapActivity extends MapActivity {
 				.addHandler(mRoutesChangedHandler);
 
 		showStopRecordingButton(MyApplication.getInstance().isRecording());
-		showTrackingButton(MyApplication.getInstance().isLiveTracking());
+		showTrackingButton(isManualLiveTracking());
 		mPositionsDownloader.start();
 	}
 

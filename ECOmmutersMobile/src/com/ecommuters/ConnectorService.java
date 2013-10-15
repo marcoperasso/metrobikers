@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import com.ecommuters.Task.EventType;
+
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -37,7 +39,7 @@ public class ConnectorService extends Service implements LocationListener {
 	private boolean isSynchingData;
 	private Thread mWorkerThread;
 	private Handler mHandler;
-	private boolean liveTracking;
+	private boolean automaticTracking;
 	List<Route> mFollowedRoutes = new ArrayList<Route>();
 
 	private Route[] mRoutes;
@@ -63,6 +65,29 @@ public class ConnectorService extends Service implements LocationListener {
 	public ConnectorService() {
 	}
 
+	public static boolean isManualLiveTracking() {
+		ConnectorService connectorService = MyApplication.getInstance()
+				.getConnectorService();
+		return connectorService == null ? false : connectorService.isManualTracking();
+	}
+
+	
+
+	public static void executeTask(Task t) {
+		ConnectorService connectorService = MyApplication.getInstance()
+				.getConnectorService();
+		if (connectorService != null) {
+			connectorService.OnExecuteTask(t);
+			return;
+		}
+		if (t.getType() == EventType.STOP_TRACKING)
+			return;
+		Intent intent = new Intent(MyApplication.getInstance(),
+				ConnectorService.class);
+		intent.putExtra(Task.TASK, t);
+		MyApplication.getInstance().startService(intent);
+	}
+
 	public void onFollowingRouteChanged(boolean following, String routeName) {
 		if (following)
 			setNotification(getString(R.string.following_route, routeName),
@@ -74,51 +99,42 @@ public class ConnectorService extends Service implements LocationListener {
 	}
 
 	@Override
-	public void onStart(Intent intent, int startId) {
-		startupTask = (Task) intent.getExtras().getSerializable(Task.TASK);
-		mWorkerThread.start();
-		super.onStart(intent, startId);
+	public int onStartCommand(Intent intent, int flags, int startId) {
+		if (mWorkerThread == null) {
+			startupTask = (Task) intent.getExtras().getSerializable(Task.TASK);
+			mWorkerThread = new Thread(new Runnable() {
+				public void run() {
+					Looper.prepare();
+
+					mNotificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+					mHandler = new Handler();
+					mlocManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+
+					syncRoutesProcedure();
+					sendLatestPositionProcedure();
+
+					if (startupTask != null)
+						OnExecuteTask(startupTask);
+					Looper.loop();
+
+					mlocManager.removeUpdates(ConnectorService.this);
+					mNotificationManager.cancel(Const.TRACKING_NOTIFICATION_ID);
+
+					Log.d(Const.ECOMMUTERS_TAG, "Worker thread ended");
+
+				}
+			});
+			mWorkerThread.setDaemon(true);
+			mWorkerThread.start();
+		}
+		return super.onStartCommand(intent, flags, startId);
 	}
 
+	private boolean isManualTracking() {
+		return mGPSManager.currentLevel == GPSManager.MANUAL_TRACKING;
+	}
 	public void onCreate() {
-		mWorkerThread = new Thread(new Runnable() {
-			public void run() {
-				Looper.prepare();
 
-				mNotificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-				mHandler = new Handler();
-				mlocManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-
-				syncRoutesProcedure();
-				sendLatestPositionProcedure();
-				LiveTrackingEventHandler onLiveTrackingChanged = new LiveTrackingEventHandler() {
-
-					@Override
-					public void onEvent(Object sender,
-							LiveTrackingEventArgs args) {
-						if (args.isActive()) {
-							activateGPS(GPSManager.MAX_GPS_LEVELS);
-						} else {
-							stopGPS(GPSManager.MAX_GPS_LEVELS);
-						}
-					}
-				};
-
-				MyApplication.getInstance().ManualLiveTrackingChanged
-						.addHandler(onLiveTrackingChanged);
-				if (startupTask != null)
-					OnExecuteTask(startupTask);
-				Looper.loop();
-
-				mlocManager.removeUpdates(ConnectorService.this);
-				mNotificationManager.cancel(Const.TRACKING_NOTIFICATION_ID);
-				MyApplication.getInstance().ManualLiveTrackingChanged
-						.removeHandler(onLiveTrackingChanged);
-
-				Log.d(Const.ECOMMUTERS_TAG, "Worker thread ended");
-
-			}
-		});
 		syncRoutesProcedureRunnable = new Runnable() {
 			public void run() {
 				syncRoutesProcedure();
@@ -130,9 +146,7 @@ public class ConnectorService extends Service implements LocationListener {
 				sendLatestPositionProcedure();
 			}
 		};
-
-		mWorkerThread.setDaemon(true);
-
+		mRoutes = MyApplication.getInstance().getRoutes();
 		MyApplication.getInstance().setConnectorService(this);
 		super.onCreate();
 	}
@@ -153,7 +167,7 @@ public class ConnectorService extends Service implements LocationListener {
 			};
 			mTimer.schedule(timerTask, TIMEOUT);
 		}
-		if (b == liveTracking)
+		if (b == automaticTracking)
 			return;
 		// se non sono più sulla traccia, non mi metto subito fuori dal live
 		// tracking, aspetto un po',
@@ -170,17 +184,13 @@ public class ConnectorService extends Service implements LocationListener {
 
 	private void setLiveTracking(boolean b) {
 		outOfTrackCount = 0;
-		liveTracking = b;
+		automaticTracking = b;
 
-		if (liveTracking) {
-			activateGPS(GPSManager.MAX_GPS_LEVELS);
+		if (automaticTracking) {
+			activateGPS(GPSManager.AUTOMATIC_TRACKING);
 		} else {
-			stopGPS(GPSManager.MAX_GPS_LEVELS);
+			stopGPS(GPSManager.AUTOMATIC_TRACKING);
 		}
-	}
-
-	public boolean isLiveTracking() {
-		return liveTracking;
 	}
 
 	private boolean calculateRoutesByPosition(ECommuterPosition position) {
@@ -284,8 +294,7 @@ public class ConnectorService extends Service implements LocationListener {
 								mGPSManager.getMinDinstanceMeters(),
 								ConnectorService.this);
 					} else {
-						mNotificationManager
-								.cancel(Const.TRACKING_NOTIFICATION_ID);
+						stopSelf();
 					}
 				}
 
@@ -395,7 +404,7 @@ public class ConnectorService extends Service implements LocationListener {
 	}
 
 	private Boolean liveTracking() {
-		return isLiveTracking() || MyApplication.getInstance().isLiveTracking();
+		return automaticTracking || isManualTracking();
 	}
 
 	private void syncRoutes() {
@@ -476,5 +485,6 @@ public class ConnectorService extends Service implements LocationListener {
 		});
 
 	}
+
 
 }

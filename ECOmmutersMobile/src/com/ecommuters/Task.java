@@ -38,18 +38,10 @@ public class Task implements Runnable, Serializable {
 	}
 
 	public void execute() {
-		ConnectorService connectorService = MyApplication.getInstance()
-				.getConnectorService();
-		if (connectorService != null) {
-			connectorService.OnExecuteTask(this);
-			return;
-		}
-		Intent intent = new Intent(MyApplication.getInstance(),
-				ConnectorService.class);
-		intent.putExtra(TASK, this);
-		MyApplication.getInstance().startService(intent);
+		ConnectorService.executeTask(this);
 	}
 
+	
 	public void activate() {
 		Calendar calendar = Calendar.getInstance();
 		Date now = new Date();

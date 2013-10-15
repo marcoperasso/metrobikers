@@ -145,8 +145,8 @@ public class Route implements IJsonSerializable, Serializable {
 
 	public TimeInterval[] getIntervals() {
 		if (intervals == null) {
-			intervals = new TimeInterval[GPSManager.MAX_GPS_LEVELS];
-			for (int i = 0; i < GPSManager.MAX_GPS_LEVELS; i++)
+			intervals = new TimeInterval[GPSManager.MAX_TIMER_INTERVALS];
+			for (int i = 0; i < GPSManager.MAX_TIMER_INTERVALS; i++)
 				intervals[i] = new TimeInterval(this,
 						getStartingTimeSeconds()*1000, i);
 			// per debug

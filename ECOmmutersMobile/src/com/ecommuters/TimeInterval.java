@@ -14,7 +14,7 @@ class TimeInterval {
 	private int weigth;
 	
 	public TimeInterval(Route r, long time, int weight) {
-		assert (weight < GPSManager.MAX_GPS_LEVELS);
+		assert (weight < GPSManager.MAX_TIMER_INTERVALS);
 		this.route = r;
 		this.weigth = weight;
 		int before = GPSManager.minutesBeforeStart[weight];

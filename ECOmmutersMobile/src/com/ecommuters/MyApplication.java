@@ -14,10 +14,8 @@ public class MyApplication extends Application {
 	private ArrayList<Route> mRoutes;
 	private RecordRouteService recordingService;
 	private ConnectorService connectorService;
-	private boolean liveTracking = false;
 	public Event OnRecordingRouteUpdated = new Event();
 	public Event RouteChanged = new Event();
-	public LiveTrackingEvent ManualLiveTrackingChanged = new LiveTrackingEvent();
 	private Object routeSemaphore = new Object();
 	TaskScheduler scheduler = new TaskScheduler();
 	@Override
@@ -106,13 +104,6 @@ public class MyApplication extends Application {
 		return this.connectorService;
 
 	}
-	public Boolean isLiveTracking() {
-		return liveTracking;
-	}
-
-	public void setLiveTracking(boolean b) {
-		liveTracking = b;
-		ManualLiveTrackingChanged.fire(this, new LiveTrackingEventArgs(liveTracking));
-	}
+	
 	
 }

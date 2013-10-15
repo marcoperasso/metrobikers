@@ -1,34 +1,38 @@
 package com.ecommuters;
 
 public class GPSManager {
-	int[] levels = new int[MAX_GPS_LEVELS + 1];
+	int[] levels = new int[MAX_TIMER_INTERVALS + 2];// uno aggiuntivo per il tracking
+												// automatico, uno per il
+												// tracking manuale
 	int currentLevel = -1;
-	public final static int[] minDistanceMetres = { 30, 20, 10, 5 };
-	public final static long[] minTimeSecs = { 60, 20, 10, 5 };
+	public final static int[] minDistanceMetres = { 30, 20, 10, 5, 5 };
+	public final static long[] minTimeSecs = { 60, 20, 10, 5, 5 };
 	public final static int[] minutesBeforeStart = { 10, 5, 2 };// minuti
-																			// prima
-																			// della
-																			// partenza
-																			// della
-																			// traccia
-																			// a
-																			// partire
-																			// dai
-																			// quali
-																			// attivo
-																			// il
-																			// GPS
+																// prima
+																// della
+																// partenza
+																// della
+																// traccia
+																// a
+																// partire
+																// dai
+																// quali
+																// attivo
+																// il
+																// GPS
 	public final static int[] minutesAfterStart = { 20, 10, 3 };// minuti
-																			// dopo
-																			// la
-																			// partenza
-																			// dopo
-																			// i
-																			// quali
-																			// disattivo
-																			// il
-																			// GPS
-	protected static final int MAX_GPS_LEVELS = minutesBeforeStart.length;
+																// dopo
+																// la
+																// partenza
+																// dopo
+																// i
+																// quali
+																// disattivo
+																// il
+																// GPS
+	public static final int MAX_TIMER_INTERVALS = minutesBeforeStart.length;
+	public static final int AUTOMATIC_TRACKING = MAX_TIMER_INTERVALS;
+	public static final int MANUAL_TRACKING = MAX_TIMER_INTERVALS + 1;
 
 	public boolean startGPS(int level) {
 		levels[level]++;
@@ -70,9 +74,9 @@ public class GPSManager {
 	}
 
 	public boolean resetLevels() {
-		for (int i = 0; i < MAX_GPS_LEVELS; i++)
+		for (int i = 0; i < MAX_TIMER_INTERVALS; i++)
 			levels[i] = 0;
-		return updateCurrentLevel(); 
+		return updateCurrentLevel();
 	}
 
 }
