@@ -24,13 +24,11 @@ public class Task implements Runnable, Serializable {
 	private Date time;
 	private EventType type;
 	private int weight;
-	private int id;
 
-	public Task(Date time, EventType type, int weight, int id) {
+	public Task(Date time, EventType type, int weight) {
 		this.type = type;
 		this.weight = weight;
 		this.time = time;
-		this.id = id;
 	}
 
 	public void run() {
@@ -42,7 +40,7 @@ public class Task implements Runnable, Serializable {
 	}
 
 	
-	public void activate() {
+	public void activate(int id) {
 		Calendar calendar = Calendar.getInstance();
 		Date now = new Date();
 		calendar.setTime(now);
@@ -96,8 +94,6 @@ public class Task implements Runnable, Serializable {
 		return weight;
 	}
 
-	public int getId() {
-		return id;
-	}
+	
 
 }

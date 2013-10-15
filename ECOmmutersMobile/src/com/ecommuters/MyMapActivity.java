@@ -85,7 +85,7 @@ public class MyMapActivity extends MapActivity {
 
 						final File recordingFile = getFileStreamPath(Const.RECORDING_ROUTE_FILE);
 						recordingFile.delete();
-						MyApplication.getInstance().refreshRoutes();
+						MyApplication.getInstance().refreshRoutes(true);
 					} catch (IOException e) {
 						Toast.makeText(MyMapActivity.this,
 								e.getLocalizedMessage(), Toast.LENGTH_LONG)
@@ -230,7 +230,7 @@ public class MyMapActivity extends MapActivity {
 	}
 
 	public void setManualLiveTracking(boolean b) {
-		ConnectorService.executeTask(new Task(new Date(), b ? EventType.START_TRACKING : EventType.STOP_TRACKING, GPSManager.MANUAL_TRACKING, 0));
+		ConnectorService.executeTask(new Task(new Date(), b ? EventType.START_TRACKING : EventType.STOP_TRACKING, GPSManager.MANUAL_TRACKING));
 	}
 
 	private void showStopRecordingButton(Boolean show) {

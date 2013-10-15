@@ -99,8 +99,10 @@ public class MyRoutesActivity extends Activity {
 										}
 
 										if (saved)
+										{
 											MyApplication.getInstance()
-													.refreshRoutes();
+													.refreshRoutes(true);
+										}
 									} catch (Exception e) {
 										Log.e(MY_ROUTES_ACTIVITY, e.toString());
 									} finally {

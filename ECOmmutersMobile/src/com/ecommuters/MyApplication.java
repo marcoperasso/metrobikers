@@ -8,7 +8,6 @@ import android.webkit.CookieSyncManager;
 
 public class MyApplication extends Application {
 
-	
 	private static MyApplication sInstance;
 
 	private ArrayList<Route> mRoutes;
@@ -17,23 +16,28 @@ public class MyApplication extends Application {
 	public Event OnRecordingRouteUpdated = new Event();
 	public Event RouteChanged = new Event();
 	private Object routeSemaphore = new Object();
+
 	@Override
 	public void onCreate() {
 		super.onCreate();
-		//final UncaughtExceptionHandler defaultUncaughtExceptionHandler = Thread.getDefaultUncaughtExceptionHandler();
-		//Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
-			
-		//	public void uncaughtException(Thread thread, Throwable ex)  {
-		//		Log.e(Const.ECOMMUTERS_TAG, ex.toString());
-		//		for (StackTraceElement el : ex.getStackTrace())
-		//			Log.e(Const.ECOMMUTERS_TAG, el.toString());
-		//		defaultUncaughtExceptionHandler.uncaughtException(thread, ex);
-				
-		//	}
-		//});
-		sInstance = this; 
-		CookieSyncManager.createInstance (this);
+		// final UncaughtExceptionHandler defaultUncaughtExceptionHandler =
+		// Thread.getDefaultUncaughtExceptionHandler();
+		// Thread.setDefaultUncaughtExceptionHandler(new
+		// Thread.UncaughtExceptionHandler() {
+
+		// public void uncaughtException(Thread thread, Throwable ex) {
+		// Log.e(Const.ECOMMUTERS_TAG, ex.toString());
+		// for (StackTraceElement el : ex.getStackTrace())
+		// Log.e(Const.ECOMMUTERS_TAG, el.toString());
+		// defaultUncaughtExceptionHandler.uncaughtException(thread, ex);
+
+		// }
+		// });
+		sInstance = this;
+		CookieSyncManager.createInstance(this);
+		
 	}
+
 	@Override
 	public void onTerminate() {
 		sInstance = null;
@@ -61,17 +65,20 @@ public class MyApplication extends Application {
 		return list;
 
 	}
+
 	private void OnRouteChanged() {
 		RouteChanged.fire(this, EventArgs.Empty);
 	}
 
-	public void refreshRoutes() {
+	public void refreshRoutes(boolean schedule) {
 		synchronized (routeSemaphore) {
 			mRoutes = Route.readAllRoutes(getApplicationContext());
 		}
 		OnRouteChanged();
-
+		if (schedule)
+			new TaskScheduler().scheduleLiveTracking();
 	}
+
 	public void deleteRoute(Route route) {
 		synchronized (routeSemaphore) {
 			String routeFile = Helper.getRouteFile(route.getName());
@@ -83,24 +90,27 @@ public class MyApplication extends Application {
 		OnRouteChanged();
 
 	}
-	
+
 	public boolean isRecording() {
 		return recordingService != null;
 	}
+
 	public RecordRouteService getRecordingService() {
 		return recordingService;
 	}
+
 	public void setRecordingService(RecordRouteService recordingService) {
 		this.recordingService = recordingService;
 	}
+
 	public void setConnectorService(ConnectorService connectorService) {
 		this.connectorService = connectorService;
 
 	}
+
 	public ConnectorService getConnectorService() {
 		return this.connectorService;
 
 	}
-	
-	
+
 }

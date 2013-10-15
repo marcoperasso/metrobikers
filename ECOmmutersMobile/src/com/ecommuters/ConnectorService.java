@@ -31,7 +31,7 @@ public class ConnectorService extends Service implements LocationListener {
 
 	private static final int TIMEOUT = 300000;
 
-	private static final int distanceMeters = 25;
+	private static final int distanceMeters = 40;
 
 	private static final int MAX_OUT_OF_TRACK_COUNT = 20;
 	private static final String CONNECTOR_SERVICE = "ConnectorService";
@@ -62,21 +62,25 @@ public class ConnectorService extends Service implements LocationListener {
 	private int outOfTrackCount;
 	private Task startupTask;
 
+	enum PositionStatus {
+		OUT_OF_TRACK, IN_TRACK, END_OF_TRACK
+	}
+
 	public ConnectorService() {
 	}
 
 	public static boolean isManualLiveTracking() {
 		ConnectorService connectorService = MyApplication.getInstance()
 				.getConnectorService();
-		return connectorService == null ? false : connectorService.isManualTracking();
+		return connectorService == null ? false : connectorService
+				.isManualTracking();
 	}
 
-	
-	public static void stopService() {
-		/*ConnectorService connectorService = MyApplication.getInstance()
+	public static void resetGPSStatus() {
+		ConnectorService connectorService = MyApplication.getInstance()
 				.getConnectorService();
 		if (connectorService != null)
-			connectorService.sto? false : connectorService.isManualTracking();*/
+			connectorService.resetGPS();
 	}
 
 	public static void executeTask(Task t) {
@@ -139,6 +143,7 @@ public class ConnectorService extends Service implements LocationListener {
 	private boolean isManualTracking() {
 		return mGPSManager.currentLevel == GPSManager.MANUAL_TRACKING;
 	}
+
 	public void onCreate() {
 
 		syncRoutesProcedureRunnable = new Runnable() {
@@ -158,17 +163,24 @@ public class ConnectorService extends Service implements LocationListener {
 	}
 
 	public void locationChanged(ECommuterPosition location) {
-		boolean b = calculateRoutesByPosition(location);
+		PositionStatus status = calculateRoutesByPosition(location);
 		if (timerTask != null) {
 			timerTask.cancel();
 			timerTask = null;
 		}
+		if (status == PositionStatus.END_OF_TRACK)
+		{
+			setAutomaticLiveTracking(false);
+			return;
+		}
+		
+		boolean b = status == PositionStatus.IN_TRACK;
 		if (b) {
 			timerTask = new TimerTask() {
 
 				@Override
 				public void run() {
-					setLiveTracking(false);
+					setAutomaticLiveTracking(false);
 				}
 			};
 			mTimer.schedule(timerTask, TIMEOUT);
@@ -185,10 +197,10 @@ public class ConnectorService extends Service implements LocationListener {
 				return;
 		}
 
-		setLiveTracking(b);
+		setAutomaticLiveTracking(b);
 	}
 
-	private void setLiveTracking(boolean b) {
+	private void setAutomaticLiveTracking(boolean b) {
 		outOfTrackCount = 0;
 		automaticTracking = b;
 
@@ -199,8 +211,7 @@ public class ConnectorService extends Service implements LocationListener {
 		}
 	}
 
-	private boolean calculateRoutesByPosition(ECommuterPosition position) {
-		boolean atLeastOneRoute = false;
+	private PositionStatus calculateRoutesByPosition(ECommuterPosition position) {
 		float error = distanceMeters;
 		for (Route r : mRoutes) {
 
@@ -209,7 +220,6 @@ public class ConnectorService extends Service implements LocationListener {
 				RoutePoint pt = r.getPoints().get(i);
 				double distance = position.distance(pt);
 				if (distance < error) {
-					atLeastOneRoute = true;
 					r.latestIndex = i;
 					followed = true;
 					break;
@@ -228,7 +238,15 @@ public class ConnectorService extends Service implements LocationListener {
 			}
 
 		}
-		return atLeastOneRoute;
+		if (mFollowedRoutes.size() == 0) return PositionStatus.OUT_OF_TRACK;
+		boolean end = true;
+		for (Route r : mFollowedRoutes)
+			if (r.latestIndex != r.getPoints().size() - 1)
+			{
+				end = false;
+				break;
+			}
+		return end ? PositionStatus.END_OF_TRACK : PositionStatus.IN_TRACK;
 	}
 
 	private void activateGPS(final int level) {
@@ -318,8 +336,7 @@ public class ConnectorService extends Service implements LocationListener {
 			public void run() {
 				if (mGPSManager.resetLevels()
 						&& !mGPSManager.requestingLocation()) {
-					mlocManager.removeUpdates(ConnectorService.this);
-					mNotificationManager.cancel(Const.TRACKING_NOTIFICATION_ID);
+					stopSelf();
 				}
 
 			}
@@ -491,7 +508,5 @@ public class ConnectorService extends Service implements LocationListener {
 		});
 
 	}
-
-	
 
 }

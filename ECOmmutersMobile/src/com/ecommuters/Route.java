@@ -116,8 +116,6 @@ public class Route implements IJsonSerializable, Serializable {
 			out = new ObjectOutputStream(fos);
 			out.writeObject(this);
 			out.flush();
-			
-			new TaskScheduler().scheduleLiveTracking();
 		} finally {
 			out.close();
 			fos.close();
