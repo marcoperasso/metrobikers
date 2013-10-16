@@ -40,7 +40,7 @@ public class Task implements Runnable, Serializable {
 	}
 
 	
-	public void activate(int id) {
+	public void schedule(int id) {
 		Calendar calendar = Calendar.getInstance();
 		Date now = new Date();
 		calendar.setTime(now);
@@ -54,14 +54,13 @@ public class Task implements Runnable, Serializable {
 		}
 
 		Intent intent = new Intent(MyApplication.getInstance(),
-				GPSTrackerReceiver.class);
+				ConnectorService.class);
 		intent.putExtra(TASK, this);
-		PendingIntent pIntent = PendingIntent.getBroadcast(
-				MyApplication.getInstance(), id, intent,
+		PendingIntent pIntent = PendingIntent.getService(MyApplication.getInstance(), id, intent,
 				PendingIntent.FLAG_UPDATE_CURRENT);
 		AlarmManager alarms = (AlarmManager) MyApplication.getInstance()
 				.getSystemService(Context.ALARM_SERVICE);
-		alarms.setInexactRepeating(AlarmManager.RTC_WAKEUP, next.getTime(),
+		alarms.setRepeating(AlarmManager.RTC_WAKEUP, next.getTime(),
 				AlarmManager.INTERVAL_DAY, pIntent);
 
 		Log.i(Const.ECOMMUTERS_TAG, String.format(
@@ -72,8 +71,8 @@ public class Task implements Runnable, Serializable {
 
 	public static void cancel(Integer id) {
 		Intent intent = new Intent(MyApplication.getInstance(),
-				GPSTrackerReceiver.class);
-		PendingIntent pIntent = PendingIntent.getBroadcast(
+				ConnectorService.class);
+		PendingIntent pIntent = PendingIntent.getService(
 				MyApplication.getInstance(), id, intent,
 				PendingIntent.FLAG_UPDATE_CURRENT);
 		AlarmManager alarms = (AlarmManager) MyApplication.getInstance()

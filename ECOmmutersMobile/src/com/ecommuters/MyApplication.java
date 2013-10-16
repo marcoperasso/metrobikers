@@ -20,22 +20,9 @@ public class MyApplication extends Application {
 	@Override
 	public void onCreate() {
 		super.onCreate();
-		// final UncaughtExceptionHandler defaultUncaughtExceptionHandler =
-		// Thread.getDefaultUncaughtExceptionHandler();
-		// Thread.setDefaultUncaughtExceptionHandler(new
-		// Thread.UncaughtExceptionHandler() {
-
-		// public void uncaughtException(Thread thread, Throwable ex) {
-		// Log.e(Const.ECOMMUTERS_TAG, ex.toString());
-		// for (StackTraceElement el : ex.getStackTrace())
-		// Log.e(Const.ECOMMUTERS_TAG, el.toString());
-		// defaultUncaughtExceptionHandler.uncaughtException(thread, ex);
-
-		// }
-		// });
+		
 		sInstance = this;
 		CookieSyncManager.createInstance(this);
-		
 	}
 
 	@Override

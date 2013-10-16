@@ -76,22 +76,12 @@
             android:label="@string/title_activity_my_routes" >
         </activity>
 
-        <receiver
-            android:name="com.ecommuters.LiveTrackingReceiver"
-            android:enabled="true"
-            android:exported="false" >
-        </receiver>
-
         <activity
             android:name="com.ecommuters.RouteDetailActivity"
             android:label="@string/title_activity_route_detail" >
         </activity>
 
-        <receiver
-            android:name="com.ecommuters.GPSTrackerReceiver"
-            android:enabled="true"
-            android:exported="false" >
-        </receiver>
+     
     </application>
 
 </manifest>

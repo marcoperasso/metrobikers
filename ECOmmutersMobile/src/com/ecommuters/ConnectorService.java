@@ -60,7 +60,7 @@ public class ConnectorService extends Service implements LocationListener {
 	private Timer mTimer = new Timer(true);
 	private TimerTask timerTask = null;
 	private int outOfTrackCount;
-	private Task startupTask;
+	
 
 	enum PositionStatus {
 		OUT_OF_TRACK, IN_TRACK, END_OF_TRACK
@@ -84,14 +84,7 @@ public class ConnectorService extends Service implements LocationListener {
 	}
 
 	public static void executeTask(Task t) {
-		ConnectorService connectorService = MyApplication.getInstance()
-				.getConnectorService();
-		if (connectorService != null) {
-			connectorService.OnExecuteTask(t);
-			return;
-		}
-		if (t.getType() == EventType.STOP_TRACKING)
-			return;
+		
 		Intent intent = new Intent(MyApplication.getInstance(),
 				ConnectorService.class);
 		intent.putExtra(Task.TASK, t);
@@ -110,8 +103,8 @@ public class ConnectorService extends Service implements LocationListener {
 
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
+		final Task task = (Task) intent.getExtras().getSerializable(Task.TASK);
 		if (mWorkerThread == null) {
-			startupTask = (Task) intent.getExtras().getSerializable(Task.TASK);
 			mWorkerThread = new Thread(new Runnable() {
 				public void run() {
 					Looper.prepare();
@@ -123,19 +116,23 @@ public class ConnectorService extends Service implements LocationListener {
 					syncRoutesProcedure();
 					sendLatestPositionProcedure();
 
-					if (startupTask != null)
-						OnExecuteTask(startupTask);
+					if (task != null)
+						OnExecuteTask(task);
 					Looper.loop();
 
 					mlocManager.removeUpdates(ConnectorService.this);
 					mNotificationManager.cancel(Const.TRACKING_NOTIFICATION_ID);
 
-					Log.d(Const.ECOMMUTERS_TAG, "Worker thread ended");
+					Log.d(Const.ECOMMUTERS_TAG, "Stopping connector service");
 
 				}
 			});
 			mWorkerThread.setDaemon(true);
 			mWorkerThread.start();
+		}
+		else
+		{
+			OnExecuteTask(task);
 		}
 		return super.onStartCommand(intent, flags, startId);
 	}
@@ -145,7 +142,8 @@ public class ConnectorService extends Service implements LocationListener {
 	}
 
 	public void onCreate() {
-
+		Log.i(Const.ECOMMUTERS_TAG, "Starting connector service");
+		
 		syncRoutesProcedureRunnable = new Runnable() {
 			public void run() {
 				syncRoutesProcedure();
@@ -485,7 +483,8 @@ public class ConnectorService extends Service implements LocationListener {
 	}
 
 	public void OnExecuteTask(final Task task) {
-
+		Log.i(Const.ECOMMUTERS_TAG, String.format("Executing task %s with weight: %d.", task.getType().toString(), task.getWeight()));
+		
 		mHandler.post(new Runnable() {
 			public void run() {
 				switch (task.getType()) {

@@ -33,13 +33,17 @@ public class TaskScheduler {
 			}
 		}
 
+		long now = System.currentTimeMillis();
+		schedule(new Date(now+30000), 0, EventType.START_TRACKING);
+		schedule(new Date(now+60000), 0, EventType.STOP_TRACKING);
+		
 		MySettings.setMaxTaskId(MyApplication.getInstance(), id);
 	}
 
 	private Task schedule(Date time, int weight, EventType type) {
 		id++;
 		Task task = new Task(time, type, weight);
-		task.activate(id);
+		task.schedule(id);
 		return task;
 	}
 
