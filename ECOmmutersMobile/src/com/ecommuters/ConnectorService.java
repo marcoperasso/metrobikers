@@ -29,9 +29,9 @@ public class ConnectorService extends Service implements LocationListener {
 
 	private static final int TIMEOUT = 300000;
 
-	private static final int distanceMeters = 40;
+	private static final int DISTANCE_METERS = 40;
 
-	private static final int MAX_OUT_OF_TRACK_COUNT = 20;
+	private static final int MAX_DISTANCE_FROM_TRACK_METERS = 500;
 	private static final String CONNECTOR_SERVICE = "ConnectorService";
 	private LocationManager mlocManager;
 	private Thread mWorkerThread;
@@ -43,7 +43,6 @@ public class ConnectorService extends Service implements LocationListener {
 
 	private int mTrackingCount;
 
-
 	// procedura di invio della posizione corrente
 	private long sendLatestPositionInterval = 30000;// 30 secondi
 	private Runnable sendLatestPositionProcedureRunnable;
@@ -53,12 +52,6 @@ public class ConnectorService extends Service implements LocationListener {
 	private NotificationManager mNotificationManager;
 	private Timer mTimer = new Timer(true);
 	private TimerTask timerTask = null;
-	private int outOfTrackCount;
-	
-
-	enum PositionStatus {
-		OUT_OF_TRACK, IN_TRACK, END_OF_TRACK
-	}
 
 	public ConnectorService() {
 	}
@@ -78,7 +71,7 @@ public class ConnectorService extends Service implements LocationListener {
 	}
 
 	public static void executeTask(Task t) {
-		
+
 		Intent intent = new Intent(MyApplication.getInstance(),
 				ConnectorService.class);
 		intent.putExtra(Task.TASK, t);
@@ -98,6 +91,10 @@ public class ConnectorService extends Service implements LocationListener {
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		final Task task = (Task) intent.getExtras().getSerializable(Task.TASK);
+		if (task == null) {
+			stopSelf();
+			return super.onStartCommand(intent, flags, startId);
+		}
 		if (mWorkerThread == null) {
 			mWorkerThread = new Thread(new Runnable() {
 				public void run() {
@@ -107,7 +104,6 @@ public class ConnectorService extends Service implements LocationListener {
 					mHandler = new Handler();
 					mlocManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
-					
 					sendLatestPositionProcedure();
 
 					if (task != null)
@@ -123,9 +119,7 @@ public class ConnectorService extends Service implements LocationListener {
 			});
 			mWorkerThread.setDaemon(true);
 			mWorkerThread.start();
-		}
-		else
-		{
+		} else {
 			OnExecuteTask(task);
 		}
 		return super.onStartCommand(intent, flags, startId);
@@ -137,8 +131,6 @@ public class ConnectorService extends Service implements LocationListener {
 
 	public void onCreate() {
 		Log.i(Const.ECOMMUTERS_TAG, "Starting connector service");
-		
-		
 
 		sendLatestPositionProcedureRunnable = new Runnable() {
 			public void run() {
@@ -151,23 +143,28 @@ public class ConnectorService extends Service implements LocationListener {
 	}
 
 	public void locationChanged(ECommuterPosition location) {
-		PositionStatus status = calculateRoutesByPosition(location);
+		double status = calculateRoutesByPosition(location);
 		if (timerTask != null) {
 			timerTask.cancel();
 			timerTask = null;
 		}
-		if (status == PositionStatus.END_OF_TRACK)
+		if (status == -1)// traccia terminata
 		{
 			setAutomaticLiveTracking(false);
+			Log.i(Const.ECOMMUTERS_TAG,
+					"Stop automatic tracking: reached end of route.");
 			return;
 		}
-		
-		boolean b = status == PositionStatus.IN_TRACK;
+
+		boolean b = status == 0;// sulla traccia
 		if (b) {
 			timerTask = new TimerTask() {
 
 				@Override
 				public void run() {
+					Log.i(Const.ECOMMUTERS_TAG,
+							"Stop automatic tracking: time out waiting for GPS.");
+
 					setAutomaticLiveTracking(false);
 				}
 			};
@@ -177,19 +174,20 @@ public class ConnectorService extends Service implements LocationListener {
 			return;
 		// se non sono più sulla traccia, non mi metto subito fuori dal live
 		// tracking, aspetto un po',
-		// magari ci rientro... dopo MAX_OUT_OF_TRACK_COUNT che entro qui
-		// dentro, allora mi considero fuori traccia
+		// magari ci rientro... solo se mi allontano più
+		// di 500 metri esco
 		if (!b) {
-			outOfTrackCount++;
-			if (outOfTrackCount < MAX_OUT_OF_TRACK_COUNT)
+			if (status < MAX_DISTANCE_FROM_TRACK_METERS)
 				return;
+			Log.i(Const.ECOMMUTERS_TAG,
+					"Stop automatic tracking: out of route.");
+
 		}
 
 		setAutomaticLiveTracking(b);
 	}
 
 	private void setAutomaticLiveTracking(boolean b) {
-		outOfTrackCount = 0;
 		automaticTracking = b;
 
 		if (automaticTracking) {
@@ -199,15 +197,17 @@ public class ConnectorService extends Service implements LocationListener {
 		}
 	}
 
-	private PositionStatus calculateRoutesByPosition(ECommuterPosition position) {
-		float error = distanceMeters;
+	// -1: traccia terminata; 0: sulla traccia; numero positivo: fuori traccia,
+	// distanza minima dalla traccia
+	private double calculateRoutesByPosition(ECommuterPosition position) {
+		double minDistance = Double.MAX_VALUE;
 		for (Route r : mRoutes) {
-
 			boolean followed = false;
 			for (int i = r.latestIndex; i < r.getPoints().size(); i++) {
 				RoutePoint pt = r.getPoints().get(i);
 				double distance = position.distance(pt);
-				if (distance < error) {
+				minDistance = Math.min(minDistance, distance);
+				if (distance < DISTANCE_METERS) {
 					r.latestIndex = i;
 					followed = true;
 					break;
@@ -226,15 +226,15 @@ public class ConnectorService extends Service implements LocationListener {
 			}
 
 		}
-		if (mFollowedRoutes.size() == 0) return PositionStatus.OUT_OF_TRACK;
+		if (mFollowedRoutes.size() == 0)
+			return minDistance;
 		boolean end = true;
 		for (Route r : mFollowedRoutes)
-			if (r.latestIndex != r.getPoints().size() - 1)
-			{
+			if (r.latestIndex != r.getPoints().size() - 1) {
 				end = false;
 				break;
 			}
-		return end ? PositionStatus.END_OF_TRACK : PositionStatus.IN_TRACK;
+		return end ? -1 : 0;
 	}
 
 	private void activateGPS(final int level) {
@@ -394,13 +394,15 @@ public class ConnectorService extends Service implements LocationListener {
 	@Override
 	public void onDestroy() {
 		MyApplication.getInstance().setConnectorService(null);
-		mHandler.post(new Runnable() {
+		if (mHandler != null) {
+			mHandler.post(new Runnable() {
 
-			public void run() {
-				Looper.myLooper().quit();
+				public void run() {
+					Looper.myLooper().quit();
 
-			}
-		});
+				}
+			});
+		}
 		super.onDestroy();
 	}
 
@@ -414,8 +416,10 @@ public class ConnectorService extends Service implements LocationListener {
 	}
 
 	public void OnExecuteTask(final Task task) {
-		Log.i(Const.ECOMMUTERS_TAG, String.format("Executing task %s with weight: %d.", task.getType().toString(), task.getWeight()));
-		
+		Log.i(Const.ECOMMUTERS_TAG, String.format(
+				"Executing task %s with weight: %d.",
+				task.getType().toString(), task.getWeight()));
+
 		mHandler.post(new Runnable() {
 			public void run() {
 				switch (task.getType()) {

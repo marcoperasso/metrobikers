@@ -15,7 +15,6 @@ public class Const {
 	public static final String ZoomLevel = "h";
 	public static final String TRACKINFO = "m";
 	public static final String ACTIVE_TRACK_NAME = "n";
-	public static final String LogTag = "log";
 	public static final String ROUTEEXT = ".route";
 	public static final String RECORDINGROUTEEXT = ".recording";
 	public static final int RECORDING_NOTIFICATION_ID = 1;

@@ -48,11 +48,9 @@ public class RecordRouteService extends IntentService {
 				if (routeModified)
 					archiveData();
 
-			} catch (InterruptedException e) {
-				Log.e(Const.LogTag, e.toString(), e);
-			} catch (IOException e) {
-				Log.e(Const.LogTag, e.toString(), e);
-			}
+			} catch (Exception e) {
+				Log.e(Const.ECOMMUTERS_TAG, e.toString(), e);
+			} 
 		}
 
 		Intent new_intent = new Intent();
