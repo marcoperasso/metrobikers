@@ -86,6 +86,11 @@ public class MyMapActivity extends MapActivity {
 						final File recordingFile = getFileStreamPath(Const.RECORDING_ROUTE_FILE);
 						recordingFile.delete();
 						MyApplication.getInstance().refreshRoutes(true);
+						
+						//faccio partire il servizio che lo manda al server
+						Intent service = new Intent(MyMapActivity.this, SyncService.class);
+						startService(service);
+						
 					} catch (IOException e) {
 						Toast.makeText(MyMapActivity.this,
 								e.getLocalizedMessage(), Toast.LENGTH_LONG)

@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.ArrayList;
 
 import android.app.Application;
+import android.content.Intent;
 import android.webkit.CookieSyncManager;
 
 public class MyApplication extends Application {
@@ -23,6 +24,9 @@ public class MyApplication extends Application {
 		
 		sInstance = this;
 		CookieSyncManager.createInstance(this);
+		//controllo se devo mandare degli itinerari al server
+		Intent service = new Intent(this, SyncService.class);
+		this.startService(service);
 	}
 
 	@Override

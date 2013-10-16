@@ -25,7 +25,7 @@ public class RecordRouteService extends IntentService {
 	private Route mRoute;
 	private boolean routeModified = false;
 	private NotificationManager mNotificationManager;
-
+	
 	public RecordRouteService() {
 		super("RegisterRouteService");
 	}

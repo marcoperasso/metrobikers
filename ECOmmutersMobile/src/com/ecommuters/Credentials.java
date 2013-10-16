@@ -7,7 +7,6 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.view.View;
 import android.webkit.WebView;
-import android.widget.Toast;
 
 public class Credentials {
 	private int userId;
@@ -48,6 +47,7 @@ public class Credentials {
 	void setEmail(String email) {
 		this.email = email;
 	}
+
 	public int getUserId() {
 		return userId;
 	}
@@ -55,6 +55,7 @@ public class Credentials {
 	public void setUserId(int userId) {
 		this.userId = userId;
 	}
+
 	@SuppressLint("SetJavaScriptEnabled")
 	public void testLogin(final Context context,
 			final OnAsyncResponse onResponse) {
@@ -84,10 +85,7 @@ public class Credentials {
 					return;
 
 				timer.cancel();
-				if (!success) {
-					Toast.makeText(context, message,
-							Toast.LENGTH_LONG).show();
-				} else {
+				if (success) {
 					int id = c.getUserId();
 					RequestBuilder.fillCredentialsData(c);
 					if (id != c.getUserId())
@@ -103,8 +101,6 @@ public class Credentials {
 						timeout = true;
 						timer.cancel();
 						String message = "Timeout!";
-						Toast.makeText(context, message,
-								Toast.LENGTH_LONG).show();
 						onResponse.response(false, message);
 					}
 				}, 30000);// 30 secondi
@@ -148,5 +144,4 @@ public class Credentials {
 		credential.testLogin(context, testResponse);
 	}
 
-	
 }

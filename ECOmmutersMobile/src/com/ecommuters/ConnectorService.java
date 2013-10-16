@@ -5,8 +5,6 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import com.ecommuters.Task.EventType;
-
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -36,7 +34,6 @@ public class ConnectorService extends Service implements LocationListener {
 	private static final int MAX_OUT_OF_TRACK_COUNT = 20;
 	private static final String CONNECTOR_SERVICE = "ConnectorService";
 	private LocationManager mlocManager;
-	private boolean isSynchingData;
 	private Thread mWorkerThread;
 	private Handler mHandler;
 	private boolean automaticTracking;
@@ -46,9 +43,6 @@ public class ConnectorService extends Service implements LocationListener {
 
 	private int mTrackingCount;
 
-	// procedura di sincronizzazione itinerari dal e verso il server
-	private long syncRoutesInterval = 300000;// 5 minuti
-	private Runnable syncRoutesProcedureRunnable;
 
 	// procedura di invio della posizione corrente
 	private long sendLatestPositionInterval = 30000;// 30 secondi
@@ -113,7 +107,7 @@ public class ConnectorService extends Service implements LocationListener {
 					mHandler = new Handler();
 					mlocManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
-					syncRoutesProcedure();
+					
 					sendLatestPositionProcedure();
 
 					if (task != null)
@@ -144,11 +138,7 @@ public class ConnectorService extends Service implements LocationListener {
 	public void onCreate() {
 		Log.i(Const.ECOMMUTERS_TAG, "Starting connector service");
 		
-		syncRoutesProcedureRunnable = new Runnable() {
-			public void run() {
-				syncRoutesProcedure();
-			}
-		};
+		
 
 		sendLatestPositionProcedureRunnable = new Runnable() {
 			public void run() {
@@ -414,71 +404,12 @@ public class ConnectorService extends Service implements LocationListener {
 		super.onDestroy();
 	}
 
-	private void syncRoutesProcedure() {
-		try {
-			if (Helper.isOnline(this) && !isSynchingData)
-				syncRoutes();
-		} finally {
-			mHandler.postDelayed(syncRoutesProcedureRunnable,
-					syncRoutesInterval);
-		}
-	}
-
 	private Boolean liveTracking() {
 		return automaticTracking || isManualTracking();
 	}
 
-	private void syncRoutes() {
-		if (isSynchingData)
-			return;
-		isSynchingData = true;
-		final long latestUpdate = MySettings
-				.getLatestSyncDate(ConnectorService.this);
-
-		final List<Route> newRoutes = getNewRoutes(latestUpdate);
-		if (newRoutes.size() == 0) {
-			isSynchingData = false;
-			return;
-		}
-		Credentials.testCredentials(this, new OnAsyncResponse() {
-			public void response(boolean success, String message) {
-
-				try {
-					if (!success)
-						return;
-
-					for (Route r : newRoutes) {
-						if (!RequestBuilder.sendRouteData(r))
-							throw new Exception("Cannot send route to server: "
-									+ r.getName());
-					}
-
-					MySettings.setLatestSyncDate(ConnectorService.this,
-							(long) (System.currentTimeMillis() / 1e3));
-				} catch (Exception e) {
-					Log.e(CONNECTOR_SERVICE, e.toString());
-
-				} finally {
-					isSynchingData = false;
-				}
-
-			}
-		});
-
-	}
-
-	private List<Route> getNewRoutes(long latestUpdate) {
-		List<Route> newRoutes = new ArrayList<Route>();
-		for (Route r : MyApplication.getInstance().getRoutes()) {
-			if (r.getLatestUpdate() > latestUpdate)
-				newRoutes.add(r);
-		}
-		return newRoutes;
-	}
-
 	@Override
 	public IBinder onBind(Intent intent) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 

@@ -75,13 +75,16 @@
             android:name="com.ecommuters.MyRoutesActivity"
             android:label="@string/title_activity_my_routes" >
         </activity>
-
         <activity
             android:name="com.ecommuters.RouteDetailActivity"
             android:label="@string/title_activity_route_detail" >
         </activity>
 
-     
+        <service
+            android:name="com.ecommuters.SyncService"
+            android:enabled="true"
+            android:exported="false" >
+        </service>
     </application>
 
 </manifest>
