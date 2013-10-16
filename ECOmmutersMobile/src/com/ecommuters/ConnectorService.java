@@ -41,8 +41,6 @@ public class ConnectorService extends Service implements LocationListener {
 
 	private Route[] mRoutes;
 
-	private int mTrackingCount;
-
 	// procedura di invio della posizione corrente
 	private long sendLatestPositionInterval = 30000;// 30 secondi
 	private Runnable sendLatestPositionProcedureRunnable;
@@ -109,7 +107,10 @@ public class ConnectorService extends Service implements LocationListener {
 					if (task != null)
 						OnExecuteTask(task);
 					Looper.loop();
-
+					for (Route r : mRoutes)
+					{
+						r.getTrackingInfo().reset();
+					}
 					mlocManager.removeUpdates(ConnectorService.this);
 					mNotificationManager.cancel(Const.TRACKING_NOTIFICATION_ID);
 
@@ -203,12 +204,12 @@ public class ConnectorService extends Service implements LocationListener {
 		double minDistance = Double.MAX_VALUE;
 		for (Route r : mRoutes) {
 			boolean followed = false;
-			for (int i = r.latestIndex; i < r.getPoints().size(); i++) {
+			for (int i = r.getTrackingInfo().getLatestIndex(); i < r.getPoints().size(); i++) {
 				RoutePoint pt = r.getPoints().get(i);
 				double distance = position.distance(pt);
 				minDistance = Math.min(minDistance, distance);
 				if (distance < DISTANCE_METERS) {
-					r.latestIndex = i;
+					r.getTrackingInfo().setLatestIndex(i);
 					followed = true;
 					break;
 				}
@@ -230,7 +231,7 @@ public class ConnectorService extends Service implements LocationListener {
 			return minDistance;
 		boolean end = true;
 		for (Route r : mFollowedRoutes)
-			if (r.latestIndex != r.getPoints().size() - 1) {
+			if (r.getTrackingInfo().getLatestIndex() != r.getPoints().size() - 1) {
 				end = false;
 				break;
 			}
@@ -424,15 +425,10 @@ public class ConnectorService extends Service implements LocationListener {
 			public void run() {
 				switch (task.getType()) {
 				case START_TRACKING:
-					mTrackingCount++;
 					activateGPS(task.getWeight());
 					break;
 				case STOP_TRACKING:
 					stopGPS(task.getWeight());
-					mTrackingCount--;
-					if (mTrackingCount == 0)
-						for (Route r : mRoutes)
-							r.latestIndex = 0;
 					break;
 				default:
 					break;

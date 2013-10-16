@@ -29,9 +29,9 @@ public class Route implements IJsonSerializable, Serializable {
 	private List<RoutePoint> points = new ArrayList<RoutePoint>();
 
 	// da non serializzare, servono solo per il motore di tracciatura
-	public int latestIndex = 0;
-	TimeInterval[] intervals = null;
-	private Float distance;
+	transient private TrackingInfo trackingInfo;
+	transient TimeInterval[] intervals = null;
+	transient private Float distance;
 
 	@Override
 	public String toString() {
@@ -40,11 +40,18 @@ public class Route implements IJsonSerializable, Serializable {
 
 	public Route(String name) {
 		this.name = name;
+		
 	}
 
 	public Route() {
 	}
 
+	public TrackingInfo getTrackingInfo()
+	{
+		if (trackingInfo == null)
+			trackingInfo = new TrackingInfo();
+		return trackingInfo;
+	}
 	public String getName() {
 		return name;
 	}
@@ -186,5 +193,7 @@ public class Route implements IJsonSerializable, Serializable {
 	public float getAverageSpeed() {
 		return getDistanceMetres() * 3.6f / getTotalTimeSeconds();
 	}
+
+	
 
 }

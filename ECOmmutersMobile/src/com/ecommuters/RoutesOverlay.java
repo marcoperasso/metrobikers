@@ -130,7 +130,7 @@ public class RoutesOverlay extends ItemizedOverlay<OverlayItem> {
 		int size = r.getPoints().size();
 		for (int i = 0; i < size; i++) {
 			RoutePoint pt = r.getPoints().get(i);
-			if (recording || i < r.latestIndex)
+			if (recording || i < r.getTrackingInfo().getLatestIndex())
 				pnt.setColor(Color.RED);
 			else {
 				if (pt.color == null) {

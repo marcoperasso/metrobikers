@@ -182,6 +182,11 @@ public class MyMapActivity extends MapActivity {
 				mMap.invalidate();
 			}
 		};
+		MyApplication.getInstance().RouteChanged
+		.addHandler(mRoutesChangedHandler);
+		MyApplication.getInstance().OnRecordingRouteUpdated
+		.addHandler(mUpdateRoutehandler);
+
 		mController.setZoom(zoomLevel);
 
 		Button btn = (Button) findViewById(R.id.buttonRecord);
@@ -346,6 +351,11 @@ public class MyMapActivity extends MapActivity {
 
 	@Override
 	protected void onStop() {
+		MyApplication.getInstance().OnRecordingRouteUpdated
+		.removeHandler(mUpdateRoutehandler);
+
+MyApplication.getInstance().RouteChanged
+		.removeHandler(mRoutesChangedHandler);
 
 		super.onStop();
 	}
@@ -531,11 +541,6 @@ public class MyMapActivity extends MapActivity {
 		super.onPause();
 		myLocationOverlay.disableMyLocation();
 		// myLocationOverlay.disableCompass();
-		MyApplication.getInstance().OnRecordingRouteUpdated
-				.removeHandler(mUpdateRoutehandler);
-
-		MyApplication.getInstance().RouteChanged
-				.removeHandler(mRoutesChangedHandler);
 		unregisterReceiver(recordingServiceStoppedReceiver);
 		mPositionsDownloader.stop();
 
@@ -547,12 +552,9 @@ public class MyMapActivity extends MapActivity {
 		if (mTrackGPSPosition)
 			myLocationOverlay.enableMyLocation();
 		// myLocationOverlay.enableCompass();
-		MyApplication.getInstance().OnRecordingRouteUpdated
-				.addHandler(mUpdateRoutehandler);
 		IntentFilter intentFilter = new IntentFilter(Const.SERVICE_STOPPED);
 		registerReceiver(recordingServiceStoppedReceiver, intentFilter);
-		MyApplication.getInstance().RouteChanged
-				.addHandler(mRoutesChangedHandler);
+		
 
 		showStopRecordingButton(MyApplication.getInstance().isRecording());
 		showTrackingButton(isManualLiveTracking());
