@@ -163,13 +163,13 @@ class Mobile extends MY_Controller {
             try {
                 $this->Route_model->name = $route->name;
                 $this->Route_model->userid = $user->id;
+                $this->db->trans_begin();
                 if ($this->Route_model->get_route()) {
                      $this->Tracking_model->routeid = $this->Route_model->id;
                 }
                
                 $this->Tracking_model->userid = $user->id;
                 $this->Tracking_model->time = date('Y-m-d H:i:s', $route->time);
-                $this->db->trans_begin();
                 $this->Tracking_model->create_tracking();
 
                 foreach ($route->points as $point) {
