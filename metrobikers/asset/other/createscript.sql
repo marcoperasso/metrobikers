@@ -63,4 +63,30 @@ CREATE TABLE `validationkeys` (
   CONSTRAINT `FK_USER` FOREIGN KEY (`userid`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8$$
 
+delimiter $$
+
+CREATE TABLE `trackings` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `userid` int(11) NOT NULL,
+  `routeid` int(11) NOT NULL,
+  `time` datetime DEFAULT '0000-00-00 00:00:00',
+  PRIMARY KEY (`id`,`userid`,`routeid`),
+  KEY `tracking_route` (`routeid`),
+  CONSTRAINT `tracking_route` FOREIGN KEY (`routeid`) REFERENCES `routes` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8$$
+
+
+delimiter $$
+
+CREATE TABLE `trackingpoints` (
+  `id` int(11) NOT NULL DEFAULT '0',
+  `trackingid` int(11) NOT NULL,
+  `time` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `lat` bigint(20) DEFAULT NULL,
+  `lon` bigint(20) DEFAULT NULL,
+  PRIMARY KEY (`id`,`trackingid`),
+  KEY `tracking_point_tracking` (`trackingid`),
+  CONSTRAINT `tracking_point_tracking` FOREIGN KEY (`trackingid`) REFERENCES `trackings` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8$$
+
 

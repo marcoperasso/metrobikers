@@ -151,6 +151,60 @@ class Mobile extends MY_Controller {
                 ->set_output(json_encode($response));
     }
 
+    public function save_tracking() {
+        $user = get_user();
+        $response = NULL;
+        if ($user != NULL) {
+            $json = $this->input->post("data");
+            $route = json_decode($json);
+            $this->load->model("Tracking_model");
+            $this->load->model("Tracking_points_model");
+            $this->load->model("Route_model");
+            try {
+                $this->Route_model->name = $route->name;
+                $this->Route_model->userid = $user->id;
+                if ($this->Route_model->get_route()) {
+                     $this->Tracking_model->routeid = $this->Route_model->id;
+                }
+               
+                $this->Tracking_model->userid = $user->id;
+                $this->Tracking_model->time = date('Y-m-d H:i:s', $route->time);
+                $this->db->trans_begin();
+                $this->Tracking_model->create_tracking();
+
+                foreach ($route->points as $point) {
+                    $this->Tracking_points_model->id = $point->id;
+                    $this->Tracking_points_model->trackingid = $this->Tracking_model->id;
+                    $this->Tracking_points_model->lat = $point->lat;
+                    $this->Tracking_points_model->lon = $point->lon;
+                    $this->Tracking_points_model->time = date('Y-m-d H:i:s', $point->time);
+                    $this->Tracking_points_model->create_point();
+                }
+                $this->db->trans_commit();
+                if ($this->db->_error_message()) {
+                    $response = array(
+                        'saved' => FALSE,
+                        'message' => $this->db->_error_message());
+                } else {
+                    $response = array(
+                        'saved' => TRUE
+                    );
+                }
+            } catch (Exception $exc) {
+                $response = array(
+                    'saved' => FALSE,
+                    'message' => $exc->getTraceAsString());
+            }
+        } else {
+            $response = array(
+                'saved' => FALSE
+            );
+        }
+        $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode($response));
+    }
+
 }
 
 /* End of file welcome.php */

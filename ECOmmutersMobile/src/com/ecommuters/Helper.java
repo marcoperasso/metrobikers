@@ -4,6 +4,10 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutput;
+import java.io.ObjectOutputStream;
 import java.nio.channels.FileChannel;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -15,6 +19,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.net.ConnectivityManager;
+import android.util.Log;
 
 public class Helper {
 
@@ -174,5 +179,47 @@ public class Helper {
 		int minutes = (int) ((totalTimeSeconds / (60)) % 60);
 		int hours   = (int) ((totalTimeSeconds / (60*60)) % 24);
 		return String.format("%dh,  %dm, %ds", hours, minutes, seconds);
+	}
+
+	public static void saveObject(Context context, String fileName, Object obj) throws IOException {
+		FileOutputStream fos = context.openFileOutput(fileName,
+				Context.MODE_PRIVATE);
+		ObjectOutput out = null;
+		try {
+			out = new ObjectOutputStream(fos);
+			out.writeObject(obj);
+			out.flush();
+		} finally {
+			out.close();
+			fos.close();
+		}
+		
+	}
+
+	public static Object readObject(Context context, String fileName) {
+		File file = context.getFileStreamPath(fileName);
+		if (file.exists()) {
+			try {
+				FileInputStream fis = context.openFileInput(fileName);
+				ObjectInput in = null;
+				try {
+					in = new ObjectInputStream(fis);
+					try {
+						return in.readObject();
+					} catch (Exception ex) {
+						Log.e(Const.ECOMMUTERS_TAG, ex.toString(), ex);
+					}
+				} catch (Exception e) {
+					Log.e(Const.ECOMMUTERS_TAG, e.toString(), e);
+				} finally {
+					in.close();
+					fis.close();
+				}
+			} catch (Exception e) {
+				Log.e(Const.ECOMMUTERS_TAG, e.toString(), e);
+			}
+
+		}
+		return null;
 	}
 }

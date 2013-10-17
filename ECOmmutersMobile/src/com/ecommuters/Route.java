@@ -1,13 +1,7 @@
 package com.ecommuters;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.ObjectInput;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutput;
-import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,7 +11,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.content.Context;
-import android.util.Log;
 
 public class Route implements IJsonSerializable, Serializable {
 	/**
@@ -49,7 +42,7 @@ public class Route implements IJsonSerializable, Serializable {
 	public TrackingInfo getTrackingInfo()
 	{
 		if (trackingInfo == null)
-			trackingInfo = new TrackingInfo();
+			trackingInfo = new TrackingInfo(this);
 		return trackingInfo;
 	}
 	public String getName() {
@@ -89,46 +82,11 @@ public class Route implements IJsonSerializable, Serializable {
 	}
 
 	public static Route readRoute(Context context, String routeFile) {
-		File file = context.getFileStreamPath(routeFile);
-		if (file.exists()) {
-			try {
-				FileInputStream fis = context.openFileInput(routeFile);
-				ObjectInput in = null;
-				try {
-					in = new ObjectInputStream(fis);
-					try {
-						return (Route) in.readObject();
-					} catch (Exception ex) {
-						Log.e("ec", ex.toString(), ex);
-					}
-				} catch (Exception e) {
-					e.printStackTrace();
-				} finally {
-					in.close();
-					fis.close();
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-
-		}
-		return null;
+		return (Route)Helper.readObject(context, routeFile);
 	}
 
 	public void save(Context context, String routeFile) throws IOException {
-		FileOutputStream fos = context.openFileOutput(routeFile,
-				Context.MODE_PRIVATE);
-		ObjectOutput out = null;
-		try {
-			out = new ObjectOutputStream(fos);
-			out.writeObject(this);
-			out.flush();
-		} finally {
-			out.close();
-			fos.close();
-		}
-		
-
+		Helper.saveObject(context, routeFile, this);
 	}
 
 	public static ArrayList<Route> readAllRoutes(Context context) {

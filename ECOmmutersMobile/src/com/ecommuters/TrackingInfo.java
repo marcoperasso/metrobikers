@@ -1,30 +1,81 @@
 package com.ecommuters;
 
-import java.util.Date;
+import java.io.IOException;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
-public class TrackingInfo {
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import android.content.Context;
+import android.util.Log;
+
+public class TrackingInfo implements Serializable, IJsonSerializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -2748465926568698621L;
 	private int latestIndex = 0;
-	private Date startOfTracking;
-	private Date endOfTracking;
+	private List<RoutePoint> positions = new ArrayList<RoutePoint>();
+	private String mRouteName;
+	private long time;
+	
+	public TrackingInfo(Route route) {
+		this.mRouteName = route.getName();
+		this.time = System.currentTimeMillis() / 1000;
+	}
 
 	public int getLatestIndex() {
 
 		return latestIndex;
 	}
 
-	public void setLatestIndex(int i) {
-		latestIndex = i;
-		endOfTracking = new Date();
-		if (startOfTracking == null)
-			startOfTracking = endOfTracking;
+	public void reset() {
+		latestIndex = 0;
+		positions.clear();
 
 	}
 
-	public void reset() {
-		latestIndex = 0;
-		startOfTracking = null;
-		endOfTracking = null;
+	public void addPosition(int index, ECommuterPosition position) {
+		latestIndex = index;
+		positions.add(new RoutePoint(positions.size(), position.lat,
+				position.lon, position.time));
 
+	}
+
+	public boolean save() {
+		if (positions.size() == 0)
+			return false;
+		String routeFile = Long.toString(System.currentTimeMillis())
+				+ Const.TRACKINGEXT;
+		try {
+			Helper.saveObject(MyApplication.getInstance(), routeFile, this);
+			return true;
+		} catch (IOException e) {
+			Log.e(Const.ECOMMUTERS_TAG, e.toString(), e);
+		}
+		return false;
+	}
+
+	public static TrackingInfo readTrackingInfo(Context context, String fileName) {
+		return (TrackingInfo) Helper.readObject(context, fileName);
+	}
+
+	public String getRouteName() {
+		return mRouteName;
+	}
+
+	public JSONObject toJson() throws JSONException {
+		JSONObject obj = new JSONObject();
+		obj.put("name", mRouteName);
+		obj.put("time", time);
+		JSONArray arPoints = new JSONArray();
+		obj.put("points", arPoints);
+		for (RoutePoint pt : positions)
+			arPoints.put(pt.toJson());
+		return obj;
 	}
 
 }

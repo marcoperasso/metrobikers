@@ -17,6 +17,7 @@ public class Const {
 	public static final String ACTIVE_TRACK_NAME = "n";
 	public static final String ROUTEEXT = ".route";
 	public static final String RECORDINGROUTEEXT = ".recording";
+	public static final String TRACKINGEXT = ".tracking";
 	public static final int RECORDING_NOTIFICATION_ID = 1;
 	public static final int TRACKING_NOTIFICATION_ID = 2;
 	static final String ServiceMessage = "sm";

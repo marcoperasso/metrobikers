@@ -37,8 +37,7 @@ public class ConnectorService extends Service implements LocationListener {
 	private Thread mWorkerThread;
 	private Handler mHandler;
 	private boolean automaticTracking;
-	List<Route> mFollowedRoutes = new ArrayList<Route>();
-
+	
 	private Route[] mRoutes;
 
 	// procedura di invio della posizione corrente
@@ -107,14 +106,23 @@ public class ConnectorService extends Service implements LocationListener {
 					if (task != null)
 						OnExecuteTask(task);
 					Looper.loop();
+					boolean saved = false;
 					for (Route r : mRoutes)
 					{
+						if (r.getTrackingInfo().save())
+							saved = true;
 						r.getTrackingInfo().reset();
+					}
+					if (saved)
+					{
+						//faccio partire il servizio che lo manda al server
+						Intent service = new Intent(ConnectorService.this, SyncService.class);
+						startService(service);
 					}
 					mlocManager.removeUpdates(ConnectorService.this);
 					mNotificationManager.cancel(Const.TRACKING_NOTIFICATION_ID);
 
-					Log.d(Const.ECOMMUTERS_TAG, "Stopping connector service");
+					Log.i(Const.ECOMMUTERS_TAG, "Stopping connector service");
 
 				}
 			});
@@ -202,6 +210,8 @@ public class ConnectorService extends Service implements LocationListener {
 	// distanza minima dalla traccia
 	private double calculateRoutesByPosition(ECommuterPosition position) {
 		double minDistance = Double.MAX_VALUE;
+		List<Route> followedRoutes = new ArrayList<Route>();
+
 		for (Route r : mRoutes) {
 			boolean followed = false;
 			for (int i = r.getTrackingInfo().getLatestIndex(); i < r.getPoints().size(); i++) {
@@ -209,28 +219,29 @@ public class ConnectorService extends Service implements LocationListener {
 				double distance = position.distance(pt);
 				minDistance = Math.min(minDistance, distance);
 				if (distance < DISTANCE_METERS) {
-					r.getTrackingInfo().setLatestIndex(i);
+					r.getTrackingInfo().addPosition(i, position);
 					followed = true;
 					break;
 				}
 			}
+			
 			if (followed) {
-				if (!mFollowedRoutes.contains(r)) {
-					mFollowedRoutes.add(r);
+				if (!followedRoutes.contains(r)) {
+					followedRoutes.add(r);
 					onFollowingRouteChanged(true, r.getName());
 				}
 			} else {
-				if (mFollowedRoutes.contains(r)) {
-					mFollowedRoutes.remove(r);
+				if (followedRoutes.contains(r)) {
+					followedRoutes.remove(r);
 					onFollowingRouteChanged(false, r.getName());
 				}
 			}
 
 		}
-		if (mFollowedRoutes.size() == 0)
+		if (followedRoutes.size() == 0)
 			return minDistance;
 		boolean end = true;
-		for (Route r : mFollowedRoutes)
+		for (Route r : followedRoutes)
 			if (r.getTrackingInfo().getLatestIndex() != r.getPoints().size() - 1) {
 				end = false;
 				break;

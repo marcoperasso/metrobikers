@@ -42,6 +42,8 @@ public class RequestBuilder {
 	private static final String getPositionsRequest = host
 			+ "mobile/get_positions";
 	public static final String HTTP_WWW_ECOMMUTERS_COM_LOGIN = host + "login";
+	private static final String sendTrackingInfoDataRequest = host
+			+ "mobile/save_tracking";
 
 	static JSONObject sendRequestForObject(String reqString)
 			throws JSONException, ClientProtocolException, IOException {
@@ -55,7 +57,8 @@ public class RequestBuilder {
 		return new JSONArray(result.toString());
 	}
 
-	private static StringBuilder sendRequest(String reqString) throws IOException, ClientProtocolException {
+	private static StringBuilder sendRequest(String reqString)
+			throws IOException, ClientProtocolException {
 		StringBuilder result = new StringBuilder();
 		HttpClient httpClient = new DefaultHttpClient();
 		HttpContext localContext = new BasicHttpContext();
@@ -76,8 +79,8 @@ public class RequestBuilder {
 		return result;
 	}
 
-	static JSONObject postRequest(String reqString, IJsonSerializable data) throws ClientProtocolException, IOException,
-			JSONException {
+	static JSONObject postRequest(String reqString, IJsonSerializable data)
+			throws ClientProtocolException, IOException, JSONException {
 		StringBuilder result = new StringBuilder();
 		HttpClient httpClient = new DefaultHttpClient();
 		HttpContext localContext = new BasicHttpContext();
@@ -155,6 +158,14 @@ public class RequestBuilder {
 			ClientProtocolException, IOException {
 
 		JSONObject response = postRequest(sendRouteDataRequest, route);
+		return response.has("saved") && response.getBoolean("saved");
+
+	}
+
+	public static boolean sendTrackingData(TrackingInfo trackInfo)
+			throws JSONException, ClientProtocolException, IOException {
+
+		JSONObject response = postRequest(sendTrackingInfoDataRequest, trackInfo);
 		return response.has("saved") && response.getBoolean("saved");
 
 	}
