@@ -207,16 +207,16 @@ public class Helper {
 					try {
 						return in.readObject();
 					} catch (Exception ex) {
-						Log.e(Const.ECOMMUTERS_TAG, ex.toString(), ex);
+						Log.e(Const.ECOMMUTERS_TAG, Log.getStackTraceString(ex)); 
 					}
 				} catch (Exception e) {
-					Log.e(Const.ECOMMUTERS_TAG, e.toString(), e);
+					Log.e(Const.ECOMMUTERS_TAG, Log.getStackTraceString(e)); 
 				} finally {
 					in.close();
 					fis.close();
 				}
 			} catch (Exception e) {
-				Log.e(Const.ECOMMUTERS_TAG, e.toString(), e);
+				Log.e(Const.ECOMMUTERS_TAG, Log.getStackTraceString(e)); 
 			}
 
 		}

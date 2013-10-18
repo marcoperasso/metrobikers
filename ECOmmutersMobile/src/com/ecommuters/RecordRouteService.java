@@ -49,7 +49,7 @@ public class RecordRouteService extends IntentService {
 					archiveData();
 
 			} catch (Exception e) {
-				Log.e(Const.ECOMMUTERS_TAG, e.toString(), e);
+				Log.e(Const.ECOMMUTERS_TAG, Log.getStackTraceString(e)); 
 			} 
 		}
 

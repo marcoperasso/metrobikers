@@ -25,11 +25,17 @@ public class SyncService extends IntentService {
 
 	private void sendRoutes(final List<Route> newRoutes) throws JSONException,
 			ClientProtocolException, IOException, Exception {
+		
 		for (Route r : newRoutes) {
 			if (!RequestBuilder.sendRouteData(r))
 				throw new Exception("Cannot send route to server: "
 						+ r.getName());
 		}
+		
+		Log.i(Const.ECOMMUTERS_TAG,
+				String.format(
+						"Successfully sent %d new routes to www.ecommuters.com.",
+						newRoutes.size()));
 	}
 
 	private void scheduleRetrial() {
@@ -83,7 +89,7 @@ public class SyncService extends IntentService {
 					MySettings.setLatestSyncDate(SyncService.this,
 							(long) (System.currentTimeMillis() / 1e3));
 				} catch (Exception e) {
-					Log.e(Const.ECOMMUTERS_TAG, e.toString());
+					Log.e(Const.ECOMMUTERS_TAG, Log.getStackTraceString(e)); 
 				} finally {
 					if (!allSent)
 						scheduleRetrial();
@@ -96,7 +102,7 @@ public class SyncService extends IntentService {
 
 	private void sendTrackings(List<File> files)
 			throws ClientProtocolException, JSONException, IOException {
-
+		int sent = 0;
 		for (File f : files) {
 			TrackingInfo info = TrackingInfo
 					.readTrackingInfo(this, f.getName());
@@ -107,10 +113,14 @@ public class SyncService extends IntentService {
 
 			if (!RequestBuilder.sendTrackingData(info))
 				throw new RuntimeException(
-						"Cannot send tracking date to server");
-
+						"Cannot send tracking dats to server");
+			sent++;
 			f.delete();
 		}
-	}
 
+		Log.i(Const.ECOMMUTERS_TAG,
+				String.format(
+						"Successfully sent %d tracking data packets to www.ecommuters.com.",
+						sent));
+	}
 }

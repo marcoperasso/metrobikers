@@ -32,7 +32,6 @@ public class ConnectorService extends Service implements LocationListener {
 	private static final int DISTANCE_METERS = 40;
 
 	private static final int MAX_DISTANCE_FROM_TRACK_METERS = 500;
-	private static final String CONNECTOR_SERVICE = "ConnectorService";
 	private LocationManager mlocManager;
 	private Thread mWorkerThread;
 	private Handler mHandler;
@@ -399,7 +398,7 @@ public class ConnectorService extends Service implements LocationListener {
 			if (RequestBuilder.sendPositionData(mLocation))
 				mLocation = null;
 		} catch (Exception e) {
-			Log.e(CONNECTOR_SERVICE, e.toString());
+			Log.e(Const.ECOMMUTERS_TAG, Log.getStackTraceString(e)); 
 		}
 	}
 

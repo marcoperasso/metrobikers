@@ -54,7 +54,7 @@ public class TrackingInfo implements Serializable, IJsonSerializable {
 			Helper.saveObject(MyApplication.getInstance(), routeFile, this);
 			return true;
 		} catch (IOException e) {
-			Log.e(Const.ECOMMUTERS_TAG, e.toString(), e);
+			Log.e(Const.ECOMMUTERS_TAG, Log.getStackTraceString(e)); 
 		}
 		return false;
 	}

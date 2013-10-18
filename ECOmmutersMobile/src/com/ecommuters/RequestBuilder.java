@@ -27,7 +27,6 @@ import android.util.Log;
 import android.webkit.CookieManager;
 
 public class RequestBuilder {
-	private static final String JSON = "json";
 	// private static final String host = "http://10.0.2.2:8888/ecommuters/";
 	private static final String host = "http://www.ecommuters.com/";
 	private static final String getVersionRequest = host + "mobile/version";
@@ -121,7 +120,7 @@ public class RequestBuilder {
 			if (obj != null)
 				return obj.getInt("version");
 		} catch (Exception e) {
-			Log.e(JSON, e.toString());
+			Log.e(Const.ECOMMUTERS_TAG, Log.getStackTraceString(e)); 
 		}
 		throw new Exception();
 	}
@@ -134,12 +133,8 @@ public class RequestBuilder {
 			c.setName(obj.getString("name"));
 			c.setSurname(obj.getString("surname"));
 			c.setUserId(obj.getInt("userid"));
-		} catch (ClientProtocolException e) {
-			Log.e(JSON, e.toString());
-		} catch (JSONException e) {
-			Log.e(JSON, e.toString());
-		} catch (IOException e) {
-			Log.e(JSON, e.toString());
+		} catch (Exception e) {
+			Log.e(Const.ECOMMUTERS_TAG, Log.getStackTraceString(e)); 
 		}
 	}
 

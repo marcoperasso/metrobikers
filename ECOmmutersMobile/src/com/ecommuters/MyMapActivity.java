@@ -39,8 +39,6 @@ import com.google.android.maps.Overlay;
 
 public class MyMapActivity extends MapActivity {
 
-	private static final String MY_MAP_ACTIVITY = "MyMapActivity";
-
 	private MyMapView mMap;
 
 	private MapController mController;
@@ -150,7 +148,7 @@ public class MyMapActivity extends MapActivity {
 				try {
 					mController.animateTo(myLocationOverlay.getMyLocation());
 				} catch (Exception ex) {
-					Log.e(MY_MAP_ACTIVITY, ex.toString());
+					Log.e(Const.ECOMMUTERS_TAG, Log.getStackTraceString(ex)); 
 				}
 			}
 
@@ -530,8 +528,7 @@ MyApplication.getInstance().RouteChanged
 			outState.putSerializable(Const.POSITIONS,
 					mTracksOverlay.getPositions());
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			Log.e(Const.ECOMMUTERS_TAG, Log.getStackTraceString(e)); 
 		}
 		super.onSaveInstanceState(outState);
 	}
@@ -563,7 +560,6 @@ MyApplication.getInstance().RouteChanged
 
 	@Override
 	protected boolean isRouteDisplayed() {
-		// TODO Auto-generated method stub
 		return false;
 	}
 

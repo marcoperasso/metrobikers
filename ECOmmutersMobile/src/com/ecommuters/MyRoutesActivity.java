@@ -104,7 +104,7 @@ public class MyRoutesActivity extends Activity {
 													.refreshRoutes(true);
 										}
 									} catch (Exception e) {
-										Log.e(MY_ROUTES_ACTIVITY, e.toString());
+										Log.e(Const.ECOMMUTERS_TAG, Log.getStackTraceString(e)); 
 									} finally {
 										progressBar.dismiss();
 									}
@@ -118,7 +118,7 @@ public class MyRoutesActivity extends Activity {
 					});
 
 		} catch (Exception e) {
-			Log.e(MY_ROUTES_ACTIVITY, e.toString());
+			Log.e(Const.ECOMMUTERS_TAG, Log.getStackTraceString(e)); 
 		}
 
 	}

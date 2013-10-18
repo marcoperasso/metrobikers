@@ -55,7 +55,7 @@
     <string name="manual_live_tracking_off">Live tracking manuale disattivato</string>
     <string name="live_tracking_off">Live tracking disattivato.</string>
     <string name="verifying_credentials">Sto verificando le credenziali&#8230;</string>
-    <string name="tracking_position">Sto inviando la tua posizione via Internet</string>
+    <string name="tracking_position">Sto inviando la tua posizione a www.ecommuters.com</string>
     <string name="title_activity_route_detail">Dettagli itinerario</string>
     <string name="delete_route">Elimina</string>
     <string name="route_properties">Proprietà&#8230;</string>
