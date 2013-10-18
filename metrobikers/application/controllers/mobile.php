@@ -68,27 +68,37 @@ class Mobile extends MY_Controller {
         $json = $this->input->post("data");
         $point = json_decode($json);
         $this->load->model("User_position_model");
+        $this->load->model("User_on_route_model");
+        $this->db->trans_begin();
 
         $this->User_position_model->userid = $point->userid;
         $this->User_position_model->lat = $point->lat;
         $this->User_position_model->lon = $point->lon;
         $this->User_position_model->time = date('Y-m-d H:i:s', $point->time);
         $this->User_position_model->save_position();
-
+ 
+        $this->User_on_route_model->purge($point->userid);
+        foreach ($point->routes as $routeid) {
+            $this->User_on_route_model->userid = $point->userid;
+            $this->User_on_route_model->routeid = $routeid;
+            $this->User_on_route_model->save();
+        }
+        $this->db->trans_commit();
         $response = array('saved' => TRUE);
-
-        $this->output
+        $this->output  
                 ->set_content_type('application/json')
                 ->set_output(json_encode($response));
     }
 
     public function get_positions($left, $top, $right, $bottom) {
         $this->load->model("User_position_model");
+        $this->load->model("User_on_route_model");
         $this->User_position_model->purge_positions();
         $response = $this->User_position_model->get_positions($left, $top, $right, $bottom);
 
-        foreach ($response as &$point) {
+        foreach ($response as &$point) { 
             $point["time"] = strtotime($point["time"]);
+            $point["routes"] = $this->User_on_route_model->get_routes($point["userid"]);
         }
         $this->output
                 ->set_content_type('application/json')
@@ -133,7 +143,7 @@ class Mobile extends MY_Controller {
                         'message' => $this->db->_error_message());
                 } else {
                     $response = array(
-                        'saved' => TRUE, 
+                        'saved' => TRUE,
                         'id' => $this->Route_model->id
                     );
                 }

@@ -156,6 +156,7 @@ public class Helper {
 		return "";
 	}
 
+	@SuppressWarnings("deprecation")
 	public static int compare(Date a, Date b) {
 		Integer ha = a.getHours();
 		Integer hb = b.getHours();

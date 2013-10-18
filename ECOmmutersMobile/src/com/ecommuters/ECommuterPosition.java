@@ -1,7 +1,9 @@
 package com.ecommuters;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -14,6 +16,8 @@ public class ECommuterPosition extends GpsPoint
 	String surname;
 	String mail;
 	float accuracy;
+	private ArrayList<Integer> routeIds = new ArrayList<Integer>();
+	
 	private static final long serialVersionUID = -5703092633640293472L;
 
 	public ECommuterPosition(int userId, int lat, int lon, String name,
@@ -45,15 +49,32 @@ public class ECommuterPosition extends GpsPoint
 			obj.put("surname", surname);
 		if (mail != null)
 			obj.put("mail", mail);
+		
+		JSONArray arRoutes = new JSONArray();
+		obj.put("routes", arRoutes);
+		for (Integer id : routeIds)
+			arRoutes.put(id);
 		return obj;
 	}
 
 	public static ECommuterPosition parseJSON(JSONObject jsonObject)
 			throws JSONException {
-		return new ECommuterPosition(jsonObject.getInt("userid"),
+		ECommuterPosition position = new ECommuterPosition(jsonObject.getInt("userid"),
 				jsonObject.getInt("lat"), jsonObject.getInt("lon"),
 				jsonObject.getString("name"), jsonObject.getString("surname"),
 				jsonObject.getString("mail"), jsonObject.getLong("time"));
+		JSONArray arRoutes = jsonObject.getJSONArray("routes");
+		int length = arRoutes.length();
+		for (int i = 0; i < length; i++)
+		{
+			position.routeIds.add(arRoutes.getInt(i));
+		}
+		return position;
+	}
+
+	public void addRoute(int id) {
+		routeIds.add(id);
+		
 	}
 
 

@@ -42,6 +42,7 @@ public class TrackingInfo implements Serializable, IJsonSerializable {
 		latestIndex = index;
 		positions.add(new RoutePoint(positions.size(), position.lat,
 				position.lon, position.time));
+		this.time = position.time;
 
 	}
 

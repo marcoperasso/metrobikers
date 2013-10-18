@@ -104,6 +104,7 @@ public class MyMapActivity extends MapActivity {
 	};
 
 	/** Called when the activity is first created. */
+	@SuppressWarnings("unchecked")
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);

@@ -40,6 +40,7 @@ public class Task implements Runnable, Serializable {
 	}
 
 	
+	@SuppressWarnings("deprecation")
 	public void schedule(int id) {
 		Calendar calendar = Calendar.getInstance();
 		Date now = new Date();

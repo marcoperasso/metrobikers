@@ -32,12 +32,26 @@ CREATE TABLE `userpositions` (
   `lat` bigint(20) DEFAULT NULL,
   `lon` bigint(20) DEFAULT NULL,
   `time` datetime DEFAULT NULL,
-  PRIMARY KEY (`userid`)
+  PRIMARY KEY (`userid`),
+  KEY `userpositions_user` (`userid`),
+  CONSTRAINT `userpositions_user` FOREIGN KEY (`userid`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8$$
 
 
 delimiter $$
 
+CREATE TABLE `usersonroutes` (
+  `userid` int(11) NOT NULL,
+  `routeid` int(11) NOT NULL,
+  PRIMARY KEY (`userid`),
+  KEY `useronroutes_user` (`userid`),
+  KEY `useronroutes_route` (`routeid`),
+  CONSTRAINT `useronroutes_user` FOREIGN KEY (`userid`) REFERENCES `userpositions` (`userid`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `useronroutes_route` FOREIGN KEY (`routeid`) REFERENCES `routes` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8$$
+
+
+delimiter $$
 CREATE TABLE `users` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `mail` varchar(255) NOT NULL DEFAULT '',

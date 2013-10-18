@@ -239,14 +239,18 @@ public class ConnectorService extends Service implements LocationListener {
 			}
 
 		}
+		
 		if (followedRoutes.size() == 0)
 			return minDistance;
 		boolean end = true;
 		for (Route r : followedRoutes)
+		{
+			position.addRoute(r.getId());
 			if (r.getTrackingInfo().getLatestIndex() != r.getPoints().size() - 1) {
 				end = false;
 				break;
 			}
+		}
 		return end ? -1 : 0;
 	}
 
@@ -347,14 +351,15 @@ public class ConnectorService extends Service implements LocationListener {
 
 	public void onLocationChanged(Location location) {
 		Credentials currentCredentials = MySettings.CurrentCredentials;
-		mLocation = new ECommuterPosition(currentCredentials == null ? 0
+		ECommuterPosition loc = new ECommuterPosition(currentCredentials == null ? 0
 				: currentCredentials.getUserId(),
 				(int) (location.getLatitude() * 1E6),
 				(int) (location.getLongitude() * 1E6), location.getAccuracy(),
 				(long) (System.currentTimeMillis() / 1E3));
 		if (!mGPSManager.requestingLocation())
 			return;
-		locationChanged(mLocation);
+		locationChanged(loc);
+		mLocation = loc;
 	}
 
 	public void onProviderDisabled(String provider) {
