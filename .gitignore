@@ -1,5 +1,6 @@
 /metrobikers/nbproject/private/
 /metrobikers/asset/captcha/
+/metrobikers/application/logs/log*.php
 /ECOmmutersMobile/gen/
 /ECOmmutersMobile/bin/
 /.metadata
