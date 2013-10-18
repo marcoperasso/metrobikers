@@ -33,9 +33,7 @@ class Route_model extends MY_Model {
 
     public function create_route() {
         $this->db->insert('routes', $this);
-        $this->db->select('id')->where('name', $this->name);
-        $query = $this->db->get('routes');
-        $this->id = $query->row()->id;
+        $this->id = $this->db->insert_id();
     }
 
     public function update_route() {

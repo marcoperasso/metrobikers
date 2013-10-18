@@ -1,5 +1,6 @@
 package com.ecommuters;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
@@ -86,11 +87,12 @@ public class ConnectorService extends Service implements LocationListener {
 
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
-		final Task task = (Task) intent.getExtras().getSerializable(Task.TASK);
-		if (task == null) {
+		Serializable obj = intent.getExtras().getSerializable(Task.TASK);
+		if (obj == null) {
 			stopSelf();
 			return super.onStartCommand(intent, flags, startId);
 		}
+		final Task task = (Task)obj;
 		if (mWorkerThread == null) {
 			mWorkerThread = new Thread(new Runnable() {
 				public void run() {
@@ -376,11 +378,13 @@ public class ConnectorService extends Service implements LocationListener {
 				getApplicationContext(), 0, new Intent(), // add this
 				PendingIntent.FLAG_UPDATE_CURRENT);
 		NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(
-				this).setSmallIcon(R.drawable.livetracking);
+				this)
+		.setSmallIcon(R.drawable.livetracking)
+				.setContentTitle(getString(R.string.app_name))
+				.setContentText(message)
+				.setContentIntent(contentIntent);
 
 		Notification notification = mBuilder.build();
-		notification.setLatestEventInfo(this, getString(R.string.app_name),
-				message, contentIntent);
 		if (noisy)
 			notification.defaults |= Notification.DEFAULT_ALL;
 		mNotificationManager.notify(Const.TRACKING_NOTIFICATION_ID,
@@ -395,7 +399,7 @@ public class ConnectorService extends Service implements LocationListener {
 		setNotification(text, false);
 
 		try {
-			if (RequestBuilder.sendPositionData(mLocation))
+			if (HttpManager.sendPositionData(mLocation))
 				mLocation = null;
 		} catch (Exception e) {
 			Log.e(Const.ECOMMUTERS_TAG, Log.getStackTraceString(e)); 

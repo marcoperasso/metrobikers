@@ -18,6 +18,7 @@ public class Route implements IJsonSerializable, Serializable {
 	 */
 	private static final long serialVersionUID = 8299537479740651539L;
 	private String name;
+	private int id;
 	private long latestUpdate;
 	private List<RoutePoint> points = new ArrayList<RoutePoint>();
 
@@ -63,6 +64,7 @@ public class Route implements IJsonSerializable, Serializable {
 
 	public JSONObject toJson() throws JSONException {
 		JSONObject obj = new JSONObject();
+		obj.put("id", id);
 		obj.put("name", name);
 		obj.put("latestupdate", latestUpdate);
 		JSONArray arPoints = new JSONArray();
@@ -74,6 +76,7 @@ public class Route implements IJsonSerializable, Serializable {
 
 	public static Route parseJSON(JSONObject jsonObject) throws JSONException {
 		Route r = new Route(jsonObject.getString("name"));
+		r.id = jsonObject.getInt("id");
 		r.setLatestUpdate(jsonObject.getLong("latestupdate"));
 		JSONArray points = jsonObject.getJSONArray("points");
 		for (int i = 0; i < points.length(); i++)
@@ -150,6 +153,14 @@ public class Route implements IJsonSerializable, Serializable {
 
 	public float getAverageSpeed() {
 		return getDistanceMetres() * 3.6f / getTotalTimeSeconds();
+	}
+
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
 	}
 
 	

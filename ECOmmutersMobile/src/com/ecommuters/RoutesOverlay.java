@@ -1,6 +1,5 @@
 package com.ecommuters;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -33,7 +32,7 @@ public class RoutesOverlay extends ItemizedOverlay<OverlayItem> {
 	private TextView mTitleTextView;
 	int currentZoomLevel = -1;
 	private ArrayList<OverlayItem> mOverlays = new ArrayList<OverlayItem>();
-	private PositionList mPositions;
+	private ArrayList<ECommuterPosition> mPositions;
 
 	public RoutesOverlay(Drawable defaultMarker, MyMapActivity context,
 			MyMapView map) {
@@ -178,7 +177,7 @@ public class RoutesOverlay extends ItemizedOverlay<OverlayItem> {
 		this.routes = mRoutes;
 	}
 
-	public void setPositions(PositionList positions) {
+	public void setPositions(ArrayList<ECommuterPosition> positions) {
 		mPositions = positions;
 		mOverlays.clear();
 
@@ -197,15 +196,8 @@ public class RoutesOverlay extends ItemizedOverlay<OverlayItem> {
 
 	}
 
-	public PositionList getPositions() {
+	public ArrayList<ECommuterPosition> getPositions() {
 		return mPositions;
 	}
 
-}
-class PositionList extends ArrayList<ECommuterPosition> implements Serializable {
-
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 2803974611634610031L;
 }

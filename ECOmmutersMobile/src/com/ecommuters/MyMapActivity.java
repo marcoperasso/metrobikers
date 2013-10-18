@@ -2,6 +2,8 @@ package com.ecommuters;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -163,10 +165,10 @@ public class MyMapActivity extends MapActivity {
 
 			zoomLevel = savedInstanceState.getInt(Const.ZoomLevel, 15);
 
-			PositionList positions = (PositionList) savedInstanceState
+			Serializable positions = savedInstanceState
 					.getSerializable(Const.POSITIONS);
 			if (positions != null)
-				mTracksOverlay.setPositions(positions);
+				mTracksOverlay.setPositions((ArrayList<ECommuterPosition>)positions);
 		}
 		else
 		{

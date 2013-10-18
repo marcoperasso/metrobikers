@@ -19,11 +19,11 @@ public class TrackingInfo implements Serializable, IJsonSerializable {
 	private static final long serialVersionUID = -2748465926568698621L;
 	private int latestIndex = 0;
 	private List<RoutePoint> positions = new ArrayList<RoutePoint>();
-	private String mRouteName;
+	private int routeId;
 	private long time;
 	
 	public TrackingInfo(Route route) {
-		this.mRouteName = route.getName();
+		this.routeId = route.getId();
 		this.time = System.currentTimeMillis() / 1000;
 	}
 
@@ -63,13 +63,10 @@ public class TrackingInfo implements Serializable, IJsonSerializable {
 		return (TrackingInfo) Helper.readObject(context, fileName);
 	}
 
-	public String getRouteName() {
-		return mRouteName;
-	}
-
+	
 	public JSONObject toJson() throws JSONException {
 		JSONObject obj = new JSONObject();
-		obj.put("name", mRouteName);
+		obj.put("routeid", routeId);
 		obj.put("time", time);
 		JSONArray arPoints = new JSONArray();
 		obj.put("points", arPoints);

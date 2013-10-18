@@ -133,7 +133,8 @@ class Mobile extends MY_Controller {
                         'message' => $this->db->_error_message());
                 } else {
                     $response = array(
-                        'saved' => TRUE
+                        'saved' => TRUE, 
+                        'id' => $this->Route_model->id
                     );
                 }
             } catch (Exception $exc) {
@@ -159,15 +160,9 @@ class Mobile extends MY_Controller {
             $route = json_decode($json);
             $this->load->model("Tracking_model");
             $this->load->model("Tracking_points_model");
-            $this->load->model("Route_model");
             try {
-                $this->Route_model->name = $route->name;
-                $this->Route_model->userid = $user->id;
                 $this->db->trans_begin();
-                if ($this->Route_model->get_route()) {
-                     $this->Tracking_model->routeid = $this->Route_model->id;
-                }
-               
+                $this->Tracking_model->routeid = $route->routeid;
                 $this->Tracking_model->userid = $user->id;
                 $this->Tracking_model->time = date('Y-m-d H:i:s', $route->time);
                 $this->Tracking_model->create_tracking();

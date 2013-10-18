@@ -13,6 +13,7 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.location.LocationProvider;
 import android.os.Bundle;
+import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -63,14 +64,19 @@ public class RecordRouteService extends IntentService {
 	private void setNotification(String message) {
 		if (!working)
 			return;
-		Notification notification = new Notification(R.drawable.record,
-				getString(R.string.recording), System.currentTimeMillis());
-		notification.flags = Notification.FLAG_ONGOING_EVENT;
+		
 		Intent intent = new Intent(this, MyMapActivity.class);
-		PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
-				intent, PendingIntent.FLAG_UPDATE_CURRENT);
-		notification.setLatestEventInfo(this, getString(R.string.app_name),
-				message, contentIntent);
+		PendingIntent contentIntent = PendingIntent.getActivity(
+				getApplicationContext(), 0, intent,
+				PendingIntent.FLAG_UPDATE_CURRENT);
+		NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(
+				this)
+		.setSmallIcon(R.drawable.livetracking)
+				.setContentTitle(getString(R.string.app_name))
+				.setContentText(message)
+				.setContentIntent(contentIntent);
+
+		Notification notification = mBuilder.build();
 		mNotificationManager.notify(Const.RECORDING_NOTIFICATION_ID,
 				notification);
 	}

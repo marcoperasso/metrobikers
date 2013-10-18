@@ -87,7 +87,7 @@ public class MyRoutesActivity extends Activity {
 								@Override
 								protected Void doInBackground(Void... params) {
 									try {
-										List<Route> rr = RequestBuilder
+										List<Route> rr = HttpManager
 												.getRoutes(0);
 										boolean saved = false;
 										for (Route r : rr) {

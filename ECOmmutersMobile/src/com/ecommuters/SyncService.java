@@ -25,17 +25,21 @@ public class SyncService extends IntentService {
 
 	private void sendRoutes(final List<Route> newRoutes) throws JSONException,
 			ClientProtocolException, IOException, Exception {
-		
+		if (newRoutes.size() == 0)
+			return;
+
 		for (Route r : newRoutes) {
-			if (!RequestBuilder.sendRouteData(r))
+			int id = r.getId();
+			if (!HttpManager.sendRouteData(r))
 				throw new Exception("Cannot send route to server: "
 						+ r.getName());
+			if (r.getId() != id)
+				r.save(this, Helper.getRouteFile(r.getName()));
 		}
-		
-		Log.i(Const.ECOMMUTERS_TAG,
-				String.format(
-						"Successfully sent %d new routes to www.ecommuters.com.",
-						newRoutes.size()));
+
+		Log.i(Const.ECOMMUTERS_TAG, String.format(
+				"Successfully sent %d new routes to www.ecommuters.com.",
+				newRoutes.size()));
 	}
 
 	private void scheduleRetrial() {
@@ -89,7 +93,7 @@ public class SyncService extends IntentService {
 					MySettings.setLatestSyncDate(SyncService.this,
 							(long) (System.currentTimeMillis() / 1e3));
 				} catch (Exception e) {
-					Log.e(Const.ECOMMUTERS_TAG, Log.getStackTraceString(e)); 
+					Log.e(Const.ECOMMUTERS_TAG, Log.getStackTraceString(e));
 				} finally {
 					if (!allSent)
 						scheduleRetrial();
@@ -111,16 +115,16 @@ public class SyncService extends IntentService {
 				continue;
 			}
 
-			if (!RequestBuilder.sendTrackingData(info))
+			if (!HttpManager.sendTrackingData(info))
 				throw new RuntimeException(
 						"Cannot send tracking dats to server");
 			sent++;
 			f.delete();
 		}
-
-		Log.i(Const.ECOMMUTERS_TAG,
-				String.format(
-						"Successfully sent %d tracking data packets to www.ecommuters.com.",
-						sent));
+		if (sent > 0)
+			Log.i(Const.ECOMMUTERS_TAG,
+					String.format(
+							"Successfully sent %d tracking data packets to www.ecommuters.com.",
+							sent));
 	}
 }

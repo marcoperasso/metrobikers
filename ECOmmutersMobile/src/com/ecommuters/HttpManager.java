@@ -21,12 +21,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.ecommuters.PositionList;
-
 import android.util.Log;
 import android.webkit.CookieManager;
 
-public class RequestBuilder {
+public class HttpManager {
 	// private static final String host = "http://10.0.2.2:8888/ecommuters/";
 	private static final String host = "http://www.ecommuters.com/";
 	private static final String getVersionRequest = host + "mobile/version";
@@ -120,7 +118,7 @@ public class RequestBuilder {
 			if (obj != null)
 				return obj.getInt("version");
 		} catch (Exception e) {
-			Log.e(Const.ECOMMUTERS_TAG, Log.getStackTraceString(e)); 
+			Log.e(Const.ECOMMUTERS_TAG, Log.getStackTraceString(e));
 		}
 		throw new Exception();
 	}
@@ -134,7 +132,7 @@ public class RequestBuilder {
 			c.setSurname(obj.getString("surname"));
 			c.setUserId(obj.getInt("userid"));
 		} catch (Exception e) {
-			Log.e(Const.ECOMMUTERS_TAG, Log.getStackTraceString(e)); 
+			Log.e(Const.ECOMMUTERS_TAG, Log.getStackTraceString(e));
 		}
 	}
 
@@ -153,14 +151,21 @@ public class RequestBuilder {
 			ClientProtocolException, IOException {
 
 		JSONObject response = postRequest(sendRouteDataRequest, route);
-		return response.has("saved") && response.getBoolean("saved");
+		if (response.has("saved") && response.getBoolean("saved")) {
+
+			route.setId(response.getInt("id"));
+			return true;
+		}
+		
+		return false;
 
 	}
 
 	public static boolean sendTrackingData(TrackingInfo trackInfo)
 			throws JSONException, ClientProtocolException, IOException {
 
-		JSONObject response = postRequest(sendTrackingInfoDataRequest, trackInfo);
+		JSONObject response = postRequest(sendTrackingInfoDataRequest,
+				trackInfo);
 		return response.has("saved") && response.getBoolean("saved");
 
 	}
@@ -184,9 +189,9 @@ public class RequestBuilder {
 
 	}
 
-	public static PositionList getPositions(int lat1, int lon1, int lat2,
+	public static ArrayList<ECommuterPosition> getPositions(int lat1, int lon1, int lat2,
 			int lon2) {
-		PositionList list = new PositionList();
+		ArrayList<ECommuterPosition> list = new ArrayList<ECommuterPosition>();
 		try {
 			JSONArray points = sendRequestForArray(getPositionsRequest + "/"
 					+ lat2 + "/" + lon1 + "/" + lat1 + "/" + lon2);

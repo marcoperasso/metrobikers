@@ -1,5 +1,7 @@
 package com.ecommuters;
 
+import java.util.ArrayList;
+
 import android.os.AsyncTask;
 import android.os.Handler;
 
@@ -8,7 +10,7 @@ import com.google.android.maps.GeoPoint;
 public class PositionsDownlader {
 	private Handler mHandler;
 
-	private AsyncTask<GeoPoint, Void, PositionList> downloadPositionsTask;
+	private AsyncTask<GeoPoint, Void, ArrayList<ECommuterPosition>> downloadPositionsTask;
 
 	private Runnable downloadPositionsRunnable;
 
@@ -47,21 +49,21 @@ public class PositionsDownlader {
 			final GeoPoint ul = mMap.getProjection().fromPixels(0, 0);
 			final GeoPoint br = mMap.getProjection().fromPixels(
 					mMap.getWidth(), mMap.getHeight());
-			downloadPositionsTask = new AsyncTask<GeoPoint, Void, PositionList>() {
+			downloadPositionsTask = new AsyncTask<GeoPoint, Void, ArrayList<ECommuterPosition>>() {
 
 				@Override
-				protected PositionList doInBackground(
+				protected ArrayList<ECommuterPosition> doInBackground(
 						GeoPoint... params) {
 					final GeoPoint ul = params[0];
 					final GeoPoint br = params[1];
 
-					return RequestBuilder.getPositions(ul.getLatitudeE6(),
+					return HttpManager.getPositions(ul.getLatitudeE6(),
 							ul.getLongitudeE6(), br.getLatitudeE6(),
 							br.getLongitudeE6());
 				}
 
 				protected void onPostExecute(
-						PositionList positions) {
+						ArrayList<ECommuterPosition> positions) {
 					mRoutesOverlay.setPositions(positions);
 
 				};

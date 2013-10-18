@@ -87,7 +87,7 @@ public class Credentials {
 				timer.cancel();
 				if (success) {
 					int id = c.getUserId();
-					RequestBuilder.fillCredentialsData(c);
+					HttpManager.fillCredentialsData(c);
 					if (id != c.getUserId())
 						MySettings.setCredentials(context, c);
 				}
@@ -110,7 +110,7 @@ public class Credentials {
 		webView.getSettings().setJavaScriptEnabled(true);
 		AutologinObject autologinObject = new AutologinObject();
 		webView.addJavascriptInterface(autologinObject, "autologin");
-		webView.loadUrl(RequestBuilder.HTTP_WWW_ECOMMUTERS_COM_LOGIN);
+		webView.loadUrl(HttpManager.HTTP_WWW_ECOMMUTERS_COM_LOGIN);
 		autologinObject.startTimeoutTimer();
 	}
 
@@ -132,7 +132,7 @@ public class Credentials {
 
 	public static void testCredentials(Context context,
 			OnAsyncResponse testResponse) {
-		if (RequestBuilder.isLogged()) {
+		if (HttpManager.isLogged()) {
 			testResponse.response(true, "");
 			return;
 		}
