@@ -22,7 +22,7 @@ public class RouteDetailActivity extends Activity {
 			routename = savedInstanceState.getString(Const.ROUTE_EXTRA);
 		} else {
 			Intent i = getIntent();
-			if (i != null)
+			if (i != null && i.getExtras()!=null)
 				routename = i.getExtras().getString(Const.ROUTE_EXTRA);
 		}
 

@@ -87,9 +87,10 @@ public class ConnectorService extends Service implements LocationListener {
 
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
+		if (intent == null || intent.getExtras() == null)
+			return super.onStartCommand(intent, flags, startId);
 		Serializable obj = intent.getExtras().getSerializable(Task.TASK);
 		if (obj == null) {
-			stopSelf();
 			return super.onStartCommand(intent, flags, startId);
 		}
 		final Task task = (Task)obj;
