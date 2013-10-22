@@ -13,9 +13,9 @@ class Verb_model extends MY_Model {
         $this->db->insert('verbs', $this);
     }
     public function get($name) {
-        $this->db->select('content');
+        $this->db->select('verb, content');
         $query = $this->db->get_where('verbs', array('verb' => $name));
-        return $query->num_rows() == 0 ? "" : $query->row()->content;
+        return $query->num_rows() == 0 ? NULL : $query->row();
     }
      public function getall() {
         $this->db->select('verb');

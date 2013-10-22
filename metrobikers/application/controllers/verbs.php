@@ -16,10 +16,16 @@ class Verbs extends MY_Controller {
             echo $row["verb"];
     }
 
-    public function getverb($name) {
+    public function get($name) {
         header('Content-Type: text/plain;charset=UTF-8');
         $this->load->model('Verb_model');
-        echo $this->Verb_model->get($name);
+        $verb = $this->Verb_model->get($name);
+		if ($verb)
+		{
+			echo $verb->verb;
+			echo "\r\n";
+			echo $verb->content;
+		}
     }
 
     public function load() {
