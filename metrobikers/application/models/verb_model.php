@@ -17,6 +17,14 @@ class Verb_model extends MY_Model {
         $query = $this->db->get_where('verbs', array('verb' => $name));
         return $query->num_rows() == 0 ? NULL : $query->row();
     }
+	public function get_hints($constraint)
+	{
+		$this->db->select('verb');
+		$this->db->from('verbs');
+		$this->db->like('verb', $constraint, 'after');
+        $query = $this->db->get();
+        return $query->result_array();
+	}
      public function getall() {
         $this->db->select('verb');
         $query = $this->db->get('verbs');
