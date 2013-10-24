@@ -10,11 +10,11 @@ class Verbs extends MY_Controller {
     }
 
     public function index() {
-        header('Content-Type: text/plain;charset=UTF-8');
+        header('Content-Type: text/html;charset=UTF-8');
         $this->load->model('Verb_model');
 		foreach ($this->Verb_model->getall() as $row)
 		{
-            echo $row["verb"];
+            echo '<a href="verbs/get/' . base64_encode($row["verb"]) . '">' . $row["verb"] . '</a><br/>';
 			echo "\r\n";
 		}
     }
