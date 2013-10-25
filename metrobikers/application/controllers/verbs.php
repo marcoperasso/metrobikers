@@ -53,6 +53,7 @@ class Verbs extends MY_Controller {
                 if ($this->Verb_model->verb) {
                     $this->Verb_model->insert();
                     echo $this->Verb_model->verb;
+                    echo "\r\n";
                 }
                 $this->Verb_model->verb = trim($currentLine);
                 $this->Verb_model->content = "";
@@ -61,7 +62,9 @@ class Verbs extends MY_Controller {
             }
             $i++;
         }
-
+        $this->Verb_model->insert();
+        echo $this->Verb_model->verb;
+        echo "\r\n";
         fclose($file);
     }
 
