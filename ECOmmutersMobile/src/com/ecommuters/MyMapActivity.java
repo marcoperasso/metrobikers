@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 import android.app.AlertDialog;
@@ -60,7 +59,7 @@ public class MyMapActivity extends MapActivity {
 
 		@Override
 		public void onEvent(Object sender, EventArgs args) {
-			showTrackingButton(isManualLiveTracking());
+			showTrackingButton(isLiveTracking());
 		}
 	};
 
@@ -252,8 +251,8 @@ public class MyMapActivity extends MapActivity {
 	}
 
 	private void toggleLiveTracking() {
-		boolean b = !isManualLiveTracking();
-		setManualLiveTracking(b);
+		boolean b = !isLiveTracking();
+		setLiveTracking(b);
 		showTrackingButton(b);
 		Toast.makeText(
 				MyMapActivity.this,
@@ -263,11 +262,12 @@ public class MyMapActivity extends MapActivity {
 
 	}
 
-	public Boolean isManualLiveTracking() {
-		return ConnectorService.isManualLiveTracking();
+	public boolean isLiveTracking() {
+		return MyApplication.getInstance()
+				.getConnectorService() != null;
 	}
 
-	public void setManualLiveTracking(boolean b) {
+	public void setLiveTracking(boolean b) {
 		ConnectorService.executeTask(new Task(Calendar.getInstance(),
 				b ? EventType.START_TRACKING : EventType.STOP_TRACKING,
 				GPSManager.MANUAL_TRACKING));
@@ -570,7 +570,7 @@ public class MyMapActivity extends MapActivity {
 		// myLocationOverlay.enableCompass();
 
 		showStopRecordingButton(MyApplication.getInstance().isRecording());
-		showTrackingButton(isManualLiveTracking());
+		showTrackingButton(isLiveTracking());
 		mPositionsDownloader.start();
 	}
 

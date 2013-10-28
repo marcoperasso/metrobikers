@@ -2,7 +2,6 @@ package com.ecommuters;
 
 import java.io.Serializable;
 import java.util.Calendar;
-import java.util.Date;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;

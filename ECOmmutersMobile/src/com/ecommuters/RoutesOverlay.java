@@ -11,10 +11,8 @@ import android.graphics.drawable.Drawable;
 import android.text.format.DateFormat;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.maps.GeoPoint;
-import com.google.android.maps.ItemizedOverlay;
 import com.google.android.maps.MapView;
 import com.google.android.maps.MapView.LayoutParams;
 import com.google.android.maps.OverlayItem;

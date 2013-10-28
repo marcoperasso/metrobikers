@@ -55,12 +55,7 @@ public class ConnectorService extends Service implements LocationListener {
 	public ConnectorService() {
 	}
 
-	public static boolean isManualLiveTracking() {
-		ConnectorService connectorService = MyApplication.getInstance()
-				.getConnectorService();
-		return connectorService == null ? false : connectorService
-				.isManualTracking();
-	}
+	
 
 	public static void resetGPSStatus() {
 		ConnectorService connectorService = MyApplication.getInstance()
