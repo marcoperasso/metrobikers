@@ -1,5 +1,6 @@
 package com.ecommuters;
 
+import java.util.Calendar;
 import java.util.Date;
 
 import com.ecommuters.Task.EventType;
@@ -41,7 +42,7 @@ public class TaskScheduler {
 		MySettings.setMaxTaskId(MyApplication.getInstance(), id);
 	}
 
-	private Task schedule(Date time, int weight, EventType type) {
+	private Task schedule(Calendar time, int weight, EventType type) {
 		id++;
 		Task task = new Task(time, type, weight);
 		task.schedule(id);

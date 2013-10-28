@@ -37,7 +37,7 @@ public class ConnectorService extends Service implements LocationListener {
 	private Thread mWorkerThread;
 	private Handler mHandler;
 	private boolean automaticTracking;
-	
+
 	private Route[] mRoutes;
 
 	// procedura di invio della posizione corrente
@@ -49,6 +49,8 @@ public class ConnectorService extends Service implements LocationListener {
 	private NotificationManager mNotificationManager;
 	private Timer mTimer = new Timer(true);
 	private TimerTask timerTask = null;
+
+	private List<Route> followedRoutes = new ArrayList<Route>();
 
 	public ConnectorService() {
 	}
@@ -75,25 +77,18 @@ public class ConnectorService extends Service implements LocationListener {
 		MyApplication.getInstance().startService(intent);
 	}
 
-	public void onFollowingRouteChanged(boolean following, String routeName) {
-		if (following)
-			setNotification(getString(R.string.following_route, routeName),
-					false);
-		else
-			setNotification(getString(R.string.not_following_route, routeName),
-					false);
-
-	}
-
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		if (intent == null || intent.getExtras() == null)
+		{
+			stopSelf();
 			return super.onStartCommand(intent, flags, startId);
+		}
 		Serializable obj = intent.getExtras().getSerializable(Task.TASK);
 		if (obj == null) {
 			return super.onStartCommand(intent, flags, startId);
 		}
-		final Task task = (Task)obj;
+		final Task task = (Task) obj;
 		if (mWorkerThread == null) {
 			mWorkerThread = new Thread(new Runnable() {
 				public void run() {
@@ -109,16 +104,15 @@ public class ConnectorService extends Service implements LocationListener {
 						OnExecuteTask(task);
 					Looper.loop();
 					boolean saved = false;
-					for (Route r : mRoutes)
-					{
+					for (Route r : mRoutes) {
 						if (r.getTrackingInfo().save())
 							saved = true;
 						r.getTrackingInfo().reset();
 					}
-					if (saved)
-					{
-						//faccio partire il servizio che lo manda al server
-						Intent service = new Intent(ConnectorService.this, SyncService.class);
+					if (saved) {
+						// faccio partire il servizio che lo manda al server
+						Intent service = new Intent(ConnectorService.this,
+								SyncService.class);
 						startService(service);
 					}
 					mlocManager.removeUpdates(ConnectorService.this);
@@ -177,6 +171,7 @@ public class ConnectorService extends Service implements LocationListener {
 							"Stop automatic tracking: time out waiting for GPS.");
 
 					setAutomaticLiveTracking(false);
+					timerTask = null;
 				}
 			};
 			mTimer.schedule(timerTask, TIMEOUT);
@@ -212,11 +207,12 @@ public class ConnectorService extends Service implements LocationListener {
 	// distanza minima dalla traccia
 	private double calculateRoutesByPosition(ECommuterPosition position) {
 		double minDistance = Double.MAX_VALUE;
-		List<Route> followedRoutes = new ArrayList<Route>();
+		
 
 		for (Route r : mRoutes) {
 			boolean followed = false;
-			for (int i = r.getTrackingInfo().getLatestIndex(); i < r.getPoints().size(); i++) {
+			for (int i = r.getTrackingInfo().getLatestIndex(); i < r
+					.getPoints().size(); i++) {
 				RoutePoint pt = r.getPoints().get(i);
 				double distance = position.distance(pt);
 				minDistance = Math.min(minDistance, distance);
@@ -226,26 +222,27 @@ public class ConnectorService extends Service implements LocationListener {
 					break;
 				}
 			}
-			
+
 			if (followed) {
 				if (!followedRoutes.contains(r)) {
 					followedRoutes.add(r);
-					onFollowingRouteChanged(true, r.getName());
+					Log.i(Const.ECOMMUTERS_TAG,
+							getString(R.string.following_route, r.getName()));
 				}
 			} else {
 				if (followedRoutes.contains(r)) {
 					followedRoutes.remove(r);
-					onFollowingRouteChanged(false, r.getName());
+					Log.i(Const.ECOMMUTERS_TAG,
+							getString(R.string.not_following_route, r.getName()));
 				}
-			}
 
+			}
 		}
-		
+
 		if (followedRoutes.size() == 0)
 			return minDistance;
 		boolean end = true;
-		for (Route r : followedRoutes)
-		{
+		for (Route r : followedRoutes) {
 			position.addRoute(r.getId());
 			if (r.getTrackingInfo().getLatestIndex() != r.getPoints().size() - 1) {
 				end = false;
@@ -265,15 +262,7 @@ public class ConnectorService extends Service implements LocationListener {
 				if (mGPSManager.startGPS(level)) {
 					// se entro qui dentro è perché il livello è cambiato
 					if (!wasListening) {
-						// solo quando inizio a tracciare mando il messaggio di
-						// tracking
-						// attivato
-						String text = getString(R.string.live_tracking_on)
-								+ " "
-								+ getString(R.string.live_tracking_frequency,
-										mGPSManager.getMinTimeSeconds(),
-										mGPSManager.getMinDinstanceMeters());
-						setNotification(text, true);
+						setNotification();
 					} else {
 						// per prima cosa elimino il listener corrente
 						mlocManager.removeUpdates(ConnectorService.this);
@@ -281,7 +270,7 @@ public class ConnectorService extends Service implements LocationListener {
 								R.string.live_tracking_frequency,
 								mGPSManager.getMinTimeSeconds(),
 								mGPSManager.getMinDinstanceMeters());
-						setNotification(text, false);
+						Log.i(Const.ECOMMUTERS_TAG, text);
 					}
 					mlocManager.requestLocationUpdates(
 							LocationManager.GPS_PROVIDER,
@@ -313,7 +302,7 @@ public class ConnectorService extends Service implements LocationListener {
 								R.string.live_tracking_frequency,
 								mGPSManager.getMinTimeSeconds(),
 								mGPSManager.getMinDinstanceMeters());
-						setNotification(text, false);
+						Log.i(Const.ECOMMUTERS_TAG, text);
 
 						// poi, se devo continuare a registrare su un livello
 						// diverso,
@@ -352,10 +341,10 @@ public class ConnectorService extends Service implements LocationListener {
 
 	public void onLocationChanged(Location location) {
 		Credentials currentCredentials = MySettings.CurrentCredentials;
-		ECommuterPosition loc = new ECommuterPosition(currentCredentials == null ? 0
-				: currentCredentials.getUserId(),
-				(int) (location.getLatitude() * 1E6),
-				(int) (location.getLongitude() * 1E6), location.getAccuracy(),
+		ECommuterPosition loc = new ECommuterPosition(
+				currentCredentials == null ? 0 : currentCredentials.getUserId(),
+				(int) (location.getLatitude() * 1E6), (int) (location
+						.getLongitude() * 1E6), location.getAccuracy(),
 				(long) (System.currentTimeMillis() / 1E3));
 		if (!mGPSManager.requestingLocation())
 			return;
@@ -379,20 +368,19 @@ public class ConnectorService extends Service implements LocationListener {
 
 	}
 
-	private void setNotification(String message, boolean noisy) {
-		PendingIntent contentIntent = PendingIntent.getActivity(
-				getApplicationContext(), 0, new Intent(), // add this
+	private void setNotification() {
+		String message = getString(R.string.live_tracking_on);
+		Intent intent = new Intent(this, ConnectorService.class);
+		PendingIntent contentIntent = PendingIntent.getService(
+				this, 0, intent, // add this
 				PendingIntent.FLAG_UPDATE_CURRENT);
 		NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(
-				this)
-		.setSmallIcon(R.drawable.livetracking)
+				this).setSmallIcon(R.drawable.livetracking)
 				.setContentTitle(getString(R.string.app_name))
-				.setContentText(message)
-				.setContentIntent(contentIntent);
+				.setContentText(message).setContentIntent(contentIntent);
 
 		Notification notification = mBuilder.build();
-		if (noisy)
-			notification.defaults |= Notification.DEFAULT_ALL;
+		notification.defaults |= Notification.DEFAULT_ALL;
 		mNotificationManager.notify(Const.TRACKING_NOTIFICATION_ID,
 				notification);
 	}
@@ -402,13 +390,13 @@ public class ConnectorService extends Service implements LocationListener {
 				|| !Helper.isOnline(ConnectorService.this))
 			return;
 		String text = getString(R.string.tracking_position);
-		setNotification(text, false);
+		Log.i(Const.ECOMMUTERS_TAG, text);
 
 		try {
 			if (HttpManager.sendPositionData(mLocation))
 				mLocation = null;
 		} catch (Exception e) {
-			Log.e(Const.ECOMMUTERS_TAG, Log.getStackTraceString(e)); 
+			Log.e(Const.ECOMMUTERS_TAG, Log.getStackTraceString(e));
 		}
 	}
 

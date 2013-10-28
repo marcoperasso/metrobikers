@@ -60,7 +60,7 @@ public class RouteDetailActivity extends Activity {
 		for (int i = 0; i < mRoute.getIntervals().length; i++)
 		{
 			TimeInterval timeInterval = mRoute.getIntervals()[i];
-			d[x] = timeInterval.getStart();
+			d[x] = timeInterval.getStart().getTime();
 			ws[x] = timeInterval.getWeight();
 			x++;
 		}
@@ -68,7 +68,7 @@ public class RouteDetailActivity extends Activity {
 		for (int i = mRoute.getIntervals().length-1; i>=0; i--)
 		{
 			TimeInterval timeInterval = mRoute.getIntervals()[i];
-			d[x] = timeInterval.getEnd();
+			d[x] = timeInterval.getEnd().getTime();
 			ws[x-1] = timeInterval.getWeight();
 			x++;
 		}

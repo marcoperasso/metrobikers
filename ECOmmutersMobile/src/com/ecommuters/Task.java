@@ -21,11 +21,11 @@ public class Task implements Runnable, Serializable {
 		START_TRACKING, STOP_TRACKING
 	}
 
-	private Date time;
+	private Calendar time;
 	private EventType type;
 	private int weight;
 
-	public Task(Date time, EventType type, int weight) {
+	public Task(Calendar time, EventType type, int weight) {
 		this.type = type;
 		this.weight = weight;
 		this.time = time;
@@ -40,18 +40,16 @@ public class Task implements Runnable, Serializable {
 	}
 
 	
-	@SuppressWarnings("deprecation")
 	public void schedule(int id) {
 		Calendar calendar = Calendar.getInstance();
-		Date now = new Date();
-		calendar.setTime(now);
-		calendar.set(Calendar.HOUR_OF_DAY, time.getHours());
-		calendar.set(Calendar.MINUTE, time.getMinutes());
-		calendar.set(Calendar.SECOND, time.getSeconds());
-		Date next = calendar.getTime();
-		if (next.getTime() < now.getTime()) {
+		calendar.set(Calendar.HOUR_OF_DAY, time.get(Calendar.HOUR_OF_DAY));
+		calendar.set(Calendar.MINUTE, time.get(Calendar.MINUTE));
+		calendar.set(Calendar.SECOND, time.get(Calendar.SECOND));
+		
+		Calendar now = Calendar.getInstance();
+		
+		if (calendar.getTimeInMillis() < now.getTimeInMillis()) {
 			calendar.add(Calendar.DAY_OF_MONTH, 1);
-			next = calendar.getTime();
 		}
 
 		Intent intent = new Intent(MyApplication.getInstance(),
@@ -61,12 +59,12 @@ public class Task implements Runnable, Serializable {
 				PendingIntent.FLAG_UPDATE_CURRENT);
 		AlarmManager alarms = (AlarmManager) MyApplication.getInstance()
 				.getSystemService(Context.ALARM_SERVICE);
-		alarms.setRepeating(AlarmManager.RTC_WAKEUP, next.getTime(),
+		alarms.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),
 				AlarmManager.INTERVAL_DAY, pIntent);
 
 		Log.i(Const.ECOMMUTERS_TAG, String.format(
 				"Scheduling task %s with weight: %d at %s.", getType()
-						.toString(), getWeight(), next.toString()));
+						.toString(), getWeight(), calendar.getTime().toString()));
 
 	}
 

@@ -8,8 +8,8 @@ class TimeInterval {
 	/**
 	 * 
 	 */
-	private Date start;
-	private Date end;
+	private Calendar start;
+	private Calendar end;
 	private Route route;
 	private int weigth;
 	
@@ -19,33 +19,30 @@ class TimeInterval {
 		this.weigth = weight;
 		int before = GPSManager.minutesBeforeStart[weight];
 		int after = GPSManager.minutesAfterStart[weight];
-		Calendar cal = Calendar.getInstance();
-		cal.setTime(new Date(time));
-		cal.add(Calendar.MINUTE, -before);
-		start = cal.getTime();
-		cal.add(Calendar.MINUTE, before + after);
-		end = cal.getTime();
+		start = Calendar.getInstance();
+		start.setTimeInMillis(time);
+		start.add(Calendar.MINUTE, -before);
+		
+		end = Calendar.getInstance();
+		end.setTimeInMillis(time);
+		end.add(Calendar.MINUTE, after);
 	}
 
-	public Date getStart() {
+	public Calendar getStart() {
 		return start;
 	}
 
-	public void setStart(Date start) {
-		this.start = start;
-	}
+	
 
-	public Date getEnd() {
+	public Calendar getEnd() {
 		return end;
 	}
 
-	public void setEnd(Date end) {
-		this.end = end;
-	}
+
 
 	public boolean isActiveNow() {
 		Date now = new Date(System.currentTimeMillis());
-		return Helper.compare(now, start) > 0 && Helper.compare(now, end) < 0;
+		return Helper.compare(now, start.getTime()) > 0 && Helper.compare(now, end.getTime()) < 0;
 	}
 
 	public Route getRoute() {

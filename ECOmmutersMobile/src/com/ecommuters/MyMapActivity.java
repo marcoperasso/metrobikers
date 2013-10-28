@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -55,9 +56,16 @@ public class MyMapActivity extends MapActivity {
 
 	private Animation mAnimation;
 	private GenericEventHandler mRoutesChangedHandler;
+	private GenericEventHandler mConnectorServiceChangedHandler = new GenericEventHandler() {
+
+		@Override
+		public void onEvent(Object sender, EventArgs args) {
+			showTrackingButton(isManualLiveTracking());
+		}
+	};
 
 	private PositionsDownlader mPositionsDownloader;
-	
+
 	private GenericEventHandler mUpdateRoutehandler = new GenericEventHandler() {
 
 		@Override
@@ -86,11 +94,12 @@ public class MyMapActivity extends MapActivity {
 						final File recordingFile = getFileStreamPath(Const.RECORDING_ROUTE_FILE);
 						recordingFile.delete();
 						MyApplication.getInstance().refreshRoutes(true);
-						
-						//faccio partire il servizio che lo manda al server
-						Intent service = new Intent(MyMapActivity.this, SyncService.class);
+
+						// faccio partire il servizio che lo manda al server
+						Intent service = new Intent(MyMapActivity.this,
+								SyncService.class);
 						startService(service);
-						
+
 					} catch (IOException e) {
 						Toast.makeText(MyMapActivity.this,
 								e.getLocalizedMessage(), Toast.LENGTH_LONG)
@@ -151,7 +160,7 @@ public class MyMapActivity extends MapActivity {
 				try {
 					mController.animateTo(myLocationOverlay.getMyLocation());
 				} catch (Exception ex) {
-					Log.e(Const.ECOMMUTERS_TAG, Log.getStackTraceString(ex)); 
+					Log.e(Const.ECOMMUTERS_TAG, Log.getStackTraceString(ex));
 				}
 			}
 
@@ -169,10 +178,9 @@ public class MyMapActivity extends MapActivity {
 			Serializable positions = savedInstanceState
 					.getSerializable(Const.POSITIONS);
 			if (positions != null)
-				mTracksOverlay.setPositions((ArrayList<ECommuterPosition>)positions);
-		}
-		else
-		{
+				mTracksOverlay
+						.setPositions((ArrayList<ECommuterPosition>) positions);
+		} else {
 			testVersion();
 		}
 
@@ -184,10 +192,11 @@ public class MyMapActivity extends MapActivity {
 			}
 		};
 		MyApplication.getInstance().RouteChanged
-		.addHandler(mRoutesChangedHandler);
+				.addHandler(mRoutesChangedHandler);
 		MyApplication.getInstance().OnRecordingRouteUpdated
-		.addHandler(mUpdateRoutehandler);
-
+				.addHandler(mUpdateRoutehandler);
+		MyApplication.getInstance().ConnectorServiceChanged
+				.addHandler(mConnectorServiceChangedHandler);
 		mController.setZoom(zoomLevel);
 
 		Button btn = (Button) findViewById(R.id.buttonRecord);
@@ -224,24 +233,44 @@ public class MyMapActivity extends MapActivity {
 				this);
 
 		mTracksOverlay.setRoutes(MyApplication.getInstance().getRoutes());
+
+		IntentFilter intentFilter = new IntentFilter(Const.SERVICE_STOPPED);
+		registerReceiver(recordingServiceStoppedReceiver, intentFilter);
+
+	}
+
+	@Override
+	protected void onDestroy() {
+		unregisterReceiver(recordingServiceStoppedReceiver);
+		MyApplication.getInstance().OnRecordingRouteUpdated
+				.removeHandler(mUpdateRoutehandler);
+		MyApplication.getInstance().RouteChanged
+				.removeHandler(mRoutesChangedHandler);
+		MyApplication.getInstance().ConnectorServiceChanged
+				.removeHandler(mConnectorServiceChangedHandler);
+		super.onDestroy();
 	}
 
 	private void toggleLiveTracking() {
 		boolean b = !isManualLiveTracking();
 		setManualLiveTracking(b);
 		showTrackingButton(b);
-		Toast.makeText(MyMapActivity.this,
-				b ? R.string.manual_live_tracking_on : R.string.manual_live_tracking_off,
-				Toast.LENGTH_LONG).show();
+		Toast.makeText(
+				MyMapActivity.this,
+				b ? R.string.manual_live_tracking_on
+						: R.string.manual_live_tracking_off, Toast.LENGTH_LONG)
+				.show();
 
 	}
-	
+
 	public Boolean isManualLiveTracking() {
 		return ConnectorService.isManualLiveTracking();
 	}
 
 	public void setManualLiveTracking(boolean b) {
-		ConnectorService.executeTask(new Task(new Date(), b ? EventType.START_TRACKING : EventType.STOP_TRACKING, GPSManager.MANUAL_TRACKING));
+		ConnectorService.executeTask(new Task(Calendar.getInstance(),
+				b ? EventType.START_TRACKING : EventType.STOP_TRACKING,
+				GPSManager.MANUAL_TRACKING));
 	}
 
 	private void showStopRecordingButton(Boolean show) {
@@ -351,17 +380,6 @@ public class MyMapActivity extends MapActivity {
 	}
 
 	@Override
-	protected void onStop() {
-		MyApplication.getInstance().OnRecordingRouteUpdated
-		.removeHandler(mUpdateRoutehandler);
-
-MyApplication.getInstance().RouteChanged
-		.removeHandler(mRoutesChangedHandler);
-
-		super.onStop();
-	}
-
-	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.mymap_menu, menu);
@@ -409,8 +427,6 @@ MyApplication.getInstance().RouteChanged
 		}
 		return super.onOptionsItemSelected(item);
 	}
-
-	
 
 	void showCredentialsDialog(boolean compulsory) {
 		Intent intent = new Intent(this, CredentialsActivity.class);
@@ -531,7 +547,7 @@ MyApplication.getInstance().RouteChanged
 			outState.putSerializable(Const.POSITIONS,
 					mTracksOverlay.getPositions());
 		} catch (Exception e) {
-			Log.e(Const.ECOMMUTERS_TAG, Log.getStackTraceString(e)); 
+			Log.e(Const.ECOMMUTERS_TAG, Log.getStackTraceString(e));
 		}
 		super.onSaveInstanceState(outState);
 	}
@@ -541,7 +557,7 @@ MyApplication.getInstance().RouteChanged
 		super.onPause();
 		myLocationOverlay.disableMyLocation();
 		// myLocationOverlay.disableCompass();
-		unregisterReceiver(recordingServiceStoppedReceiver);
+
 		mPositionsDownloader.stop();
 
 	}
@@ -552,9 +568,6 @@ MyApplication.getInstance().RouteChanged
 		if (mTrackGPSPosition)
 			myLocationOverlay.enableMyLocation();
 		// myLocationOverlay.enableCompass();
-		IntentFilter intentFilter = new IntentFilter(Const.SERVICE_STOPPED);
-		registerReceiver(recordingServiceStoppedReceiver, intentFilter);
-		
 
 		showStopRecordingButton(MyApplication.getInstance().isRecording());
 		showTrackingButton(isManualLiveTracking());

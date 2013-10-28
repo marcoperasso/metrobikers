@@ -5,9 +5,9 @@ public class GPSManager {
 												// automatico, uno per il
 												// tracking manuale
 	int currentLevel = -1;
-	public final static int[] minDistanceMetres = { 30, 20, 10, 5, 5 };
-	public final static long[] minTimeSecs = { 60, 20, 10, 5, 5 };
-	public final static int[] minutesBeforeStart = { 10, 5, 2 };// minuti
+	public final static int[] minDistanceMetres = { 20, 5, 5 };
+	public final static long[] minTimeSecs = { 20, 5, 5 };
+	public final static int[] minutesBeforeStart = { 10 };// minuti
 																// prima
 																// della
 																// partenza
@@ -20,7 +20,7 @@ public class GPSManager {
 																// attivo
 																// il
 																// GPS
-	public final static int[] minutesAfterStart = { 20, 10, 3 };// minuti
+	public final static int[] minutesAfterStart = { 20 };// minuti
 																// dopo
 																// la
 																// partenza
