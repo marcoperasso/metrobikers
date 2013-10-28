@@ -20,7 +20,7 @@ import com.google.android.maps.MapView.LayoutParams;
 import com.google.android.maps.OverlayItem;
 import com.google.android.maps.Projection;
 
-public class RoutesOverlay extends ItemizedOverlay<OverlayItem> {
+public class RoutesOverlay extends BalloonItemizedOverlay<OverlayItem> {
 
 	private MyMapActivity mContext;
 	private Route[] routes;
@@ -36,7 +36,7 @@ public class RoutesOverlay extends ItemizedOverlay<OverlayItem> {
 
 	public RoutesOverlay(Drawable defaultMarker, MyMapActivity context,
 			MyMapView map) {
-		super(boundCenterBottom(defaultMarker));
+		super(boundCenterBottom(defaultMarker), map);
 		mContext = context;
 		// mImageView = new ImageView(mContext);
 		pnt.setStyle(Paint.Style.FILL);
@@ -65,15 +65,15 @@ public class RoutesOverlay extends ItemizedOverlay<OverlayItem> {
 		populate();
 	}
 
-	@Override
-	protected boolean onTap(int index) {
+	
+	/*protected boolean onTap(int index) {
 		if (index >= 0 && index < mOverlays.size()) {
 			OverlayItem item = mOverlays.get(index);
 			Toast.makeText(mContext, item.getSnippet(), Toast.LENGTH_LONG)
 					.show();
 		}
 		return true;
-	}
+	}*/
 
 	@Override
 	protected OverlayItem createItem(int i) {
