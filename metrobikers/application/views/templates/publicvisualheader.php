@@ -1,4 +1,4 @@
-<div class="row header">
+<div class="header">
     <div class="col-md-3">
 
     </div>

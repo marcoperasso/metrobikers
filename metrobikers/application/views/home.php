@@ -12,7 +12,7 @@ if ($user != NULL) {
 
     <body>
         <div class ="content">
-            <div class="row header">
+            <div class="header">
                 <div class="col-md-11">
                     <!-- Button trigger modal -->
                     <?php $this->load->view('login'); ?>
@@ -21,7 +21,7 @@ if ($user != NULL) {
                 <div class="col-md-1">
                 </div>
             </div>
-            <div class="row body">
+            <div class="body">
                 <div class="col-md-1"></div>
                 <div class="col-md-4">
                     <a href="<?php echo base_url() ?>" title="Vai alla pagina principale">

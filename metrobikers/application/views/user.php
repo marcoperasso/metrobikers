@@ -14,7 +14,7 @@
 	    $this->load->view('templates/visualheader', $data);
 	    ?>
 
-            <div class="row body">
+            <div class="body">
                 <div class="col-md-12">
                     <h3>I miei dati</h3>
                     email: <?php echo $user->mail; ?><br/>

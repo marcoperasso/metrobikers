@@ -7,7 +7,7 @@
 
     <body>
         <div class ="content">
-            <div class="row header">
+            <div class="header">
                 <div class="col-md-1"></div>
                 <div class="col-md-4">
                     <a href="<?php echo base_url() ?>" title="Vai alla pagina principale">
@@ -27,7 +27,7 @@
                 </div>
                 <div class="col-md-1"></div>
             </div>
-            <div class="row body">
+            <div class="body">
                 <div class="col-md-1"></div>
                 <div class="col-md-5">
                     <p>Spostarsi in auto in città spesso significa sopportare ore di coda, perdere 

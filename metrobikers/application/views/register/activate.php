@@ -80,7 +80,7 @@
     <body>
         <div class="content">
             <?php $this->load->view('templates/publicvisualheader'); ?>
-            <div class="row body">
+            <div class="body">
                 <div class="col-md-3">
 
                 </div>

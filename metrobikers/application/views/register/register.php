@@ -8,7 +8,7 @@
 
     <body>
         <div class ="content">
-        <div class="row header">
+        <div class="header">
             <div class="col-md-5">
             </div>
             <div class="col-md-6">
@@ -17,7 +17,7 @@
             <div class="col-md-1">
             </div>
         </div>
-        <div class="row body">
+        <div class="body">
             <div class="col-md-5">
                 <a href="<?php echo base_url() ?>" title="Vai alla pagina principale">
                     <img class="logo" src="<?php echo base_url() ?>asset/img/logo.png" id="ecommuter_logo">

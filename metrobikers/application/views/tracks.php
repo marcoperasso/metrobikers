@@ -14,7 +14,7 @@
 	    $this->load->view('templates/visualheader', $data);
 	    ?>
 
-            <div class="row body">
+            <div class="body">
 		<?php
 		$data = isset($routes) ? array('routes'=> $routes) : array();
 		$this->load->view('map', $data);

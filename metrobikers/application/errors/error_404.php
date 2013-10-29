@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        <?php  include '/application/views/templates/header.php'; ?>
+        <?php  include 'application/views/templates/header.php'; ?>
         <title>404 - Pagina non trovata</title>
     </head>
 
     <body>
-        <div class="contenta">
+        <div class="content">
             
-            <div class="row body center-text">
+            <div class="body center-text">
                 <div class="col-md-2"></div>
                 <div class="col-md-8">
                 <h1><?php echo $heading; ?></h1>
@@ -17,7 +17,7 @@
                 </div>
                 <div class="col-md-2"></div>
             </div>
-            <?php include '/application/views/templates/footer.php'; ?>
+            <?php include 'application/views/templates/footer.php'; ?>
         </div>
     </body>
 </html>
