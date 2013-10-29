@@ -25,11 +25,19 @@ html{
 footer
 {
     position:absolute;
-    bottom:0;
+    bottom:0px;
     width:100%;
-    line-height: 60px;
     height:60px;   /* Height of the footer */
-    background:inherit;
+    background-image: url('/asset/img/greengrass.png');
+    background-repeat: repeat-x;
+
+}
+footer>div{
+    height: 25px;
+    bottom: 0px;
+    position: absolute;
+    width: 100%;
+    text-align: center;
 }
 
 div.content {
@@ -37,7 +45,7 @@ div.content {
     position:relative;
 }
 div.header {
-     padding:10px;
+    padding:10px;
 }
 div.body {
     padding:10px;
@@ -122,7 +130,7 @@ h6,
     box-shadow: none;
 }
 .navbar-default {
-  border-color: #FFFFFF;
+    border-color: #FFFFFF;
 }
 
 .navbar-default .navbar-brand {
@@ -193,6 +201,10 @@ table.heading
     margin-right: auto;
 }
 .centered{
+    position:relative;
     margin-left: auto;
     margin-right: auto;
+}
+.center-text{
+    text-align: center;
 }
