@@ -19,7 +19,15 @@ class Route_model extends MY_Model {
         }
         return FALSE;
     }
-
+	 public function get_route_by_id() {
+        $query = $this->db->get_where('routes ', array('userid' => $this->userid, 'id' => $this->id));
+        if ($query->num_rows() >= 1) {
+            $this->assign($query->row());
+            return TRUE;
+        }
+        return FALSE;
+    }
+	
     public function get_routes($latestupdate) {
         $query = $this->db->get_where('routes ', array('userid' => $this->userid, 'latestupdate >' => $latestupdate));
         $result = array();

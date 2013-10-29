@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.apache.http.HttpResponse;
@@ -36,6 +37,7 @@ public class HttpManager {
 	private static final String sendPositionDataRequest = host
 			+ "mobile/update_position";
 	private static final String getRoutesRequest = host + "mobile/get_routes/";
+	private static final String getRouteForUserRequest = host + "mobile/get_route_for_user/";
 	private static final String getPositionsRequest = host
 			+ "mobile/get_positions";
 	public static final String HTTP_WWW_ECOMMUTERS_COM_LOGIN = host + "login";
@@ -76,7 +78,15 @@ public class HttpManager {
 		return result;
 	}
 
-	static JSONObject postRequest(String reqString, IJsonSerializable data)
+	static JSONArray postRequestForArray(String reqString, IJsonSerializable data) throws ClientProtocolException, JSONException, IOException
+	{
+		return new JSONArray(postRequest(reqString, data));
+	}
+	static JSONObject postRequestForObject(String reqString, IJsonSerializable data) throws ClientProtocolException, JSONException, IOException
+	{
+		return new JSONObject(postRequest(reqString, data));
+	}
+	private static String postRequest(String reqString, IJsonSerializable data)
 			throws ClientProtocolException, IOException, JSONException {
 		StringBuilder result = new StringBuilder();
 		HttpClient httpClient = new DefaultHttpClient();
@@ -100,7 +110,7 @@ public class HttpManager {
 
 		}
 		reader.close();
-		return new JSONObject(result.toString());
+		return result.toString();
 	}
 
 	private static String getCookie() {
@@ -150,7 +160,7 @@ public class HttpManager {
 	public static boolean sendRouteData(Route route) throws JSONException,
 			ClientProtocolException, IOException {
 
-		JSONObject response = postRequest(sendRouteDataRequest, route);
+		JSONObject response = postRequestForObject(sendRouteDataRequest, route);
 		if (response.has("saved") && response.getBoolean("saved")) {
 
 			route.setId(response.getInt("id"));
@@ -164,7 +174,7 @@ public class HttpManager {
 	public static boolean sendTrackingData(TrackingInfo trackInfo)
 			throws JSONException, ClientProtocolException, IOException {
 
-		JSONObject response = postRequest(sendTrackingInfoDataRequest,
+		JSONObject response = postRequestForObject(sendTrackingInfoDataRequest,
 				trackInfo);
 		return response.has("saved") && response.getBoolean("saved");
 
@@ -181,10 +191,15 @@ public class HttpManager {
 		}
 		return routes;
 	}
+	
+	public static Route getRoute(int userId, int routeId) throws ClientProtocolException, JSONException, IOException {
+		JSONObject response = sendRequestForObject(getRouteForUserRequest + userId + "/" + routeId);
+		return Route.parseJSON(response);
+	}
 
 	public static boolean sendPositionData(ECommuterPosition position)
 			throws JSONException, ClientProtocolException, IOException {
-		JSONObject response = postRequest(sendPositionDataRequest, position);
+		JSONObject response = postRequestForObject(sendPositionDataRequest, position);
 		return response.has("saved") && response.getBoolean("saved");
 
 	}

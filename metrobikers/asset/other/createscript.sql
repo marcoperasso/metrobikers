@@ -39,15 +39,12 @@ CREATE TABLE `userpositions` (
 
 
 delimiter $$
-
 CREATE TABLE `usersonroutes` (
   `userid` int(11) NOT NULL,
   `routeid` int(11) NOT NULL,
-  PRIMARY KEY (`userid`),
-  KEY `useronroutes_user` (`userid`),
-  KEY `useronroutes_route` (`routeid`),
-  CONSTRAINT `useronroutes_user` FOREIGN KEY (`userid`) REFERENCES `userpositions` (`userid`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `useronroutes_route` FOREIGN KEY (`routeid`) REFERENCES `routes` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+  PRIMARY KEY (`userid`,`routeid`),
+  CONSTRAINT `useronroutes_route` FOREIGN KEY (`routeid`) REFERENCES `routes` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `useronroutes_user` FOREIGN KEY (`userid`) REFERENCES `userpositions` (`userid`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8$$
 
 

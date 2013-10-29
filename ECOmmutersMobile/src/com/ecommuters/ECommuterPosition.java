@@ -7,17 +7,15 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class ECommuterPosition extends GpsPoint
-		implements
-			IJsonSerializable,
-			Serializable {
+public class ECommuterPosition extends GpsPoint implements IJsonSerializable,
+		Serializable {
 	int userId;
 	String name;
 	String surname;
 	String mail;
 	float accuracy;
 	private ArrayList<Integer> routeIds = new ArrayList<Integer>();
-	
+
 	private static final long serialVersionUID = -5703092633640293472L;
 
 	public ECommuterPosition(int userId, int lat, int lon, String name,
@@ -29,7 +27,8 @@ public class ECommuterPosition extends GpsPoint
 		this.mail = mail;
 	}
 
-	public ECommuterPosition(int userId, int lat, int lon, float accuracy, long time) {
+	public ECommuterPosition(int userId, int lat, int lon, float accuracy,
+			long time) {
 		super(lat, lon, time);
 		this.accuracy = accuracy;
 		this.userId = userId;
@@ -37,6 +36,7 @@ public class ECommuterPosition extends GpsPoint
 		this.surname = null;
 		this.mail = null;
 	}
+
 	public JSONObject toJson() throws JSONException {
 		JSONObject obj = new JSONObject();
 		obj.put("userid", userId);
@@ -49,7 +49,7 @@ public class ECommuterPosition extends GpsPoint
 			obj.put("surname", surname);
 		if (mail != null)
 			obj.put("mail", mail);
-		
+
 		JSONArray arRoutes = new JSONArray();
 		obj.put("routes", arRoutes);
 		for (Integer id : routeIds)
@@ -59,14 +59,14 @@ public class ECommuterPosition extends GpsPoint
 
 	public static ECommuterPosition parseJSON(JSONObject jsonObject)
 			throws JSONException {
-		ECommuterPosition position = new ECommuterPosition(jsonObject.getInt("userid"),
-				jsonObject.getInt("lat"), jsonObject.getInt("lon"),
-				jsonObject.getString("name"), jsonObject.getString("surname"),
-				jsonObject.getString("mail"), jsonObject.getLong("time"));
+		ECommuterPosition position = new ECommuterPosition(
+				jsonObject.getInt("userid"), jsonObject.getInt("lat"),
+				jsonObject.getInt("lon"), jsonObject.getString("name"),
+				jsonObject.getString("surname"), jsonObject.getString("mail"),
+				jsonObject.getLong("time"));
 		JSONArray arRoutes = jsonObject.getJSONArray("routes");
 		int length = arRoutes.length();
-		for (int i = 0; i < length; i++)
-		{
+		for (int i = 0; i < length; i++) {
 			position.routeIds.add(arRoutes.getInt(i));
 		}
 		return position;
@@ -74,8 +74,11 @@ public class ECommuterPosition extends GpsPoint
 
 	public void addRoute(int id) {
 		routeIds.add(id);
-		
+
 	}
 
+	public ArrayList<Integer> getRoutes() {
+		return routeIds;
+	}
 
 }

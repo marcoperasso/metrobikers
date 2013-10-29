@@ -1,7 +1,12 @@
 package com.ecommuters;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Hashtable;
+
+import org.apache.http.client.ClientProtocolException;
+import org.json.JSONException;
 
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -9,6 +14,7 @@ import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.drawable.Drawable;
 import android.text.format.DateFormat;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
@@ -20,6 +26,10 @@ import com.google.android.maps.Projection;
 
 public class RoutesOverlay extends BalloonItemizedOverlay<OverlayItem> {
 
+	enum RouteType {
+		RECORDING, NORMAL, FOLLOWED
+	}
+
 	private MyMapActivity mContext;
 	private Route[] routes;
 	// private ImageView mImageView;
@@ -27,10 +37,11 @@ public class RoutesOverlay extends BalloonItemizedOverlay<OverlayItem> {
 	private MyMapView mMap;
 	// Bitmap trackBitmap;
 	GeoPoint trackRectOrigin;
-	private TextView mTitleTextView;
 	int currentZoomLevel = -1;
 	private ArrayList<OverlayItem> mOverlays = new ArrayList<OverlayItem>();
 	private ArrayList<ECommuterPosition> mPositions;
+	private ArrayList<Route> followedRoutes = new ArrayList<Route>();
+	private Hashtable<String, Route> cachedRoutes = new Hashtable<String, Route>();
 
 	public RoutesOverlay(Drawable defaultMarker, MyMapActivity context,
 			MyMapView map) {
@@ -53,25 +64,66 @@ public class RoutesOverlay extends BalloonItemizedOverlay<OverlayItem> {
 				MapView.LayoutParams.MATCH_PARENT,
 				MapView.LayoutParams.WRAP_CONTENT, 0, 0,
 				MapView.LayoutParams.TOP_LEFT);
-		mTitleTextView = new TextView(mContext);
-		mTitleTextView.setVisibility(View.GONE);
-		mTitleTextView.setTextColor(Color.YELLOW);
-		map.addView(mTitleTextView, mlp);
 
 		setLastFocusedIndex(-1);
 
 		populate();
 	}
 
-	
-	/*protected boolean onTap(int index) {
-		if (index >= 0 && index < mOverlays.size()) {
-			OverlayItem item = mOverlays.get(index);
-			Toast.makeText(mContext, item.getSnippet(), Toast.LENGTH_LONG)
-					.show();
+	@Override
+	protected void onBalloonOpen(int index) {
+		if (index < mPositions.size()) {
+			final ECommuterPosition pos = mPositions.get(index);
+			new Thread(new Runnable() {
+				public void run() {
+					try {
+						boolean needRefresh = false;
+						for (int id : pos.getRoutes())
+							try {
+								Route route = null;
+								String ids = pos.userId + "-" + id;
+								if (cachedRoutes.containsKey(ids))
+									route = cachedRoutes.get(ids);
+								else
+								{
+									route = HttpManager.getRoute(pos.userId,id);
+									cachedRoutes.put(ids, route);
+								}
+								synchronized (followedRoutes) {
+									followedRoutes.add(route);
+								}
+								needRefresh = true;
+							} catch (Exception e) {
+							}
+						if (needRefresh) {
+							mContext.runOnUiThread(new Runnable() {
+								public void run() {
+									mMap.invalidate();
+
+								}
+							});
+						}
+					} catch (Exception ex) {
+						Log.e(Const.ECOMMUTERS_TAG, Log.getStackTraceString(ex));
+					}
+				}
+			}).start();
+
 		}
-		return true;
-	}*/
+		super.onBalloonOpen(index);
+	}
+
+	@Override
+	protected void onBalloonHide() {
+		synchronized (followedRoutes) {
+			boolean needRefresh = !followedRoutes.isEmpty();
+			followedRoutes.clear();
+			if (needRefresh)
+				mMap.invalidate();
+		}
+
+		super.onBalloonHide();
+	}
 
 	@Override
 	protected OverlayItem createItem(int i) {
@@ -103,22 +155,29 @@ public class RoutesOverlay extends BalloonItemizedOverlay<OverlayItem> {
 		for (Route r : routes) {
 			if (MySettings.isHiddenRoute(mContext, r.getName()))
 				continue;
-			drawRoute(false, r, invertX, invertY, topLeft, bottomRight, prj,
-					canvas);
+			drawRoute(RouteType.NORMAL, r, invertX, invertY, topLeft,
+					bottomRight, prj, canvas);
+		}
+
+		synchronized (followedRoutes) {
+			for (Route r : followedRoutes) {
+				drawRoute(RouteType.FOLLOWED, r, invertX, invertY, topLeft,
+						bottomRight, prj, canvas);
+			}
 		}
 		RecordRouteService recordingService = MyApplication.getInstance()
 				.getRecordingService();
 		if (recordingService != null) {
 			Route route = recordingService.getRoute();
 			synchronized (route) {
-				drawRoute(true, route, invertX, invertY, topLeft, bottomRight,
-						prj, canvas);
+				drawRoute(RouteType.RECORDING, route, invertX, invertY,
+						topLeft, bottomRight, prj, canvas);
 			}
 		}
 
 	}
 
-	private void drawRoute(boolean recording, Route r, boolean invertX,
+	private void drawRoute(RouteType type, Route r, boolean invertX,
 			boolean invertY, GeoPoint topLeft, GeoPoint bottomRight,
 			Projection prj, Canvas canvas) {
 		Point p1 = new Point(), p2 = new Point();
@@ -127,13 +186,21 @@ public class RoutesOverlay extends BalloonItemizedOverlay<OverlayItem> {
 		int size = r.getPoints().size();
 		for (int i = 0; i < size; i++) {
 			RoutePoint pt = r.getPoints().get(i);
-			if (recording || i < r.getTrackingInfo().getLatestIndex())
+			if (type == RouteType.RECORDING
+					|| i < r.getTrackingInfo().getLatestIndex())
 				pnt.setColor(Color.RED);
-			else {
-				if (pt.color == null) {
-					pt.color = ColorProvider.getColor((double) i / (double) size);
+			else if (type == RouteType.FOLLOWED) {
+				if (pt.followedRouteColor == null) {
+					pt.followedRouteColor = ColorProvider.getColor((double) i
+							/ (double) size, type);
 				}
-				pnt.setColor(pt.color);
+				pnt.setColor(pt.followedRouteColor);
+			} else {
+				if (pt.normalColor == null) {
+					pt.normalColor = ColorProvider.getColor((double) i
+							/ (double) size, type);
+				}
+				pnt.setColor(pt.normalColor);
 			}
 			try {
 				if (invertX) {

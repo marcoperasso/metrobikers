@@ -3,26 +3,29 @@ package com.ecommuters;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.ecommuters.RoutesOverlay.RouteType;
+
 import android.graphics.Color;
 
 public class ColorProvider {
-	static List<Integer> colors = getColorMap();
+	private static final int SIZE = 255;
 
-	public static Integer getColor(double percentage) {
-		int index = (int) (percentage * (colors.size() - 1));
-		return colors.get(index);
+	static List<Integer> normalColors = getNormalColorMap();
+	static List<Integer> followedColors = getFollowedColorMap();
+
+	public static Integer getColor(double percentage, RouteType type) {
+		int index = (int) (percentage * (SIZE - 1));
+		return type == RouteType.NORMAL ? normalColors.get(index) : followedColors.get(index);
 	}
 
-	private static List<Integer> getColorMap() {
+	private static List<Integer> getNormalColorMap() {
 		List<Integer> colors = new ArrayList<Integer>();
-		//colors.addAll(getGradients(Color.YELLOW, Color.GREEN, 255));
-		colors.addAll(getGradients(Color.GREEN, Color.BLUE, 255));
-		//colors.addAll(getGradients(Color.BLUE, Color.argb(255, 255, 165, 0), 255));
-		//colors.addAll(getGradients(Color.RED, Color.argb(255, 75, 0, 130), 255));
-		//colors.addAll(getGradients(Color.argb(255, 255, 165, 0), Color.YELLOW,
-		//		255));
-		//colors.addAll(getGradients(Color.argb(255, 75, 0, 130), Color.MAGENTA,
-		//		255));
+		colors.addAll(getGradients(Color.GREEN, Color.BLUE, SIZE));
+		return colors;
+	}
+	private static List<Integer> getFollowedColorMap() {
+		List<Integer> colors = new ArrayList<Integer>();
+		colors.addAll(getGradients(Color.MAGENTA, Color.BLACK, 255));
 		return colors;
 	}
 

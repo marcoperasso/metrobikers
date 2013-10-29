@@ -40,6 +40,26 @@ class Mobile extends MY_Controller {
                 ->set_output(json_encode($response));
     }
 
+	 public function get_route_for_user($userid, $routeid) {
+		$this->load->model("Route_model");
+		$this->load->model("Route_points_model");
+		$this->Route_model->id = $routeid;
+		$this->Route_model->userid = $userid;
+		$response = NULL;
+		if ($this->Route_model->get_route_by_id())
+		{
+			$this->Route_model->latestupdate = strtotime($this->Route_model->latestupdate);
+			$this->Route_points_model->routeid = $this->Route_model->id;
+			$this->Route_model->points = $this->Route_points_model->get_points();
+			foreach ($this->Route_model->points as $point) {
+				$point->time = strtotime($point->time);
+			}				
+			$response = $this->Route_model;
+		}
+		$this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode($response));
+    }
     public function get_routes($latestupdate) {
         $user = get_user();
         if ($user != NULL) {

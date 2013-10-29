@@ -391,7 +391,7 @@ public class ConnectorService extends Service implements LocationListener {
 			if (HttpManager.sendPositionData(mLocation))
 				mLocation = null;
 		} catch (Exception e) {
-			Log.e(Const.ECOMMUTERS_TAG, Log.getStackTraceString(e));
+			
 		}
 	}
 

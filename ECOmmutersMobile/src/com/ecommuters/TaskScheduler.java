@@ -1,7 +1,8 @@
 package com.ecommuters;
 
 import java.util.Calendar;
-import java.util.Date;
+
+import android.util.Log;
 
 import com.ecommuters.Task.EventType;
 
@@ -21,6 +22,8 @@ public class TaskScheduler {
 		id = 0;
 
 		for (Route r : MyApplication.getInstance().getRoutes()) {
+			Log.i(Const.ECOMMUTERS_TAG,
+					String.format("Scheduling route %s", r.getName()));
 			for (TimeInterval interval : r.getIntervals()) {
 				Task startingTask = schedule(interval.getStart(),
 						interval.getWeight(), EventType.START_TRACKING);
@@ -34,11 +37,11 @@ public class TaskScheduler {
 			}
 		}
 
-		//debug
-		//long now = System.currentTimeMillis();
-		//schedule(new Date(now+30000), 0, EventType.START_TRACKING);
-		//schedule(new Date(now+60000), 0, EventType.STOP_TRACKING);
-		
+		// debug
+		// long now = System.currentTimeMillis();
+		// schedule(new Date(now+30000), 0, EventType.START_TRACKING);
+		// schedule(new Date(now+60000), 0, EventType.STOP_TRACKING);
+
 		MySettings.setMaxTaskId(MyApplication.getInstance(), id);
 	}
 
