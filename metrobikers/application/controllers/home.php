@@ -28,6 +28,9 @@ class Home extends MY_Controller {
         $this->load->view('mission');
     }
 
+    public function test() {
+        $this->load_view('user', array('page_title'=>'aaa'));
+    }
 }
 
 /* End of file welcome.php */

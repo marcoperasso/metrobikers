@@ -41,5 +41,9 @@ class MY_Controller extends CI_Controller {
 
         $this->email->send();
     }
-
+    protected function load_view($view, $data)
+    {
+        $data["view_content"] = $this->load->view($view, $data);
+        $this->load->view("templates/template", $data);
+    }
 }
