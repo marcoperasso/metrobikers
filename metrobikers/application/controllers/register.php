@@ -53,7 +53,7 @@ class Register extends MY_Controller {
         $this->form_validation->set_rules('surname', 'Last Name', 'required');
         $this->form_validation->set_rules('mail', 'E Mail', 'required');
         if ($this->form_validation->run() === FALSE) {
-            $this->load->view('register/register');
+            $this->load_view('register/register');
         } else {
             $this->db->trans_begin();
             $this->User_model->create_user();
@@ -64,14 +64,6 @@ class Register extends MY_Controller {
             $data["user"] = $this->User_model;
             $this->load->view('register/userregistered', $data);
         }
-    }
-    
-    public function collectEmail() {
-        $email = $this->input->post('email');
-
-        $this->db->trans_begin();
-        $this->User_model->save_email($email);
-        $this->db->trans_commit();
     }
 
 }

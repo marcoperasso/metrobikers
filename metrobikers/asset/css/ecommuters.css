@@ -11,6 +11,11 @@
 @import url("//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-theme.min.css");
 @import url("fonts.css");
 
+.row
+{
+    margin-left: 0px;
+    margin-right: 0px;
+}
 /*Bootstrap overrides*/
 body{
     font-family: Cantarell, Georgia, Helvetica, Arial, sans-serif;

@@ -10,7 +10,7 @@
         <div class="content">
 
             <?php
-	    $data['url'] = base_url()."user/tracks";
+	    $data['url'] = "/user/routes";
 	    $this->load->view('templates/visualheader', $data);
 	    ?>
 

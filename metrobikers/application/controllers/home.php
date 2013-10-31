@@ -21,16 +21,15 @@ class Home extends MY_Controller {
      * @see http://codeigniter.com/user_guide/general/urls.html
      */
     public function index() {
-        $this->load->view('home');
+        
+        $this->load_view('home', "Benvenuto in ECOmmuters");
     }
     
     public function mission() {
-        $this->load->view('mission');
+        $this->load_view('mission');
     }
 
-    public function test() {
-        $this->load_view('user', array('page_title'=>'aaa'));
-    }
+  
 }
 
 /* End of file welcome.php */

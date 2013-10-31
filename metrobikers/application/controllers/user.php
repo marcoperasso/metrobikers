@@ -28,10 +28,10 @@ class User extends MY_Controller {
             $data['user'] = $user;
         }
 
-        $this->load->view('user', $data);
+        $this->load_view('user', $data);
     }
     
-    public function tracks() {
+    public function routes() {
 
         $data = array();
         $user = get_user();
@@ -49,7 +49,7 @@ class User extends MY_Controller {
             $data['routes'] = $routes;
         }
 
-        $this->load->view('tracks', $data);
+        $this->load_view('routes', $data);
     }
 
 }
