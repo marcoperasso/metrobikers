@@ -2,9 +2,12 @@ package com.ecommuters;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
+
+import com.ecommuters.Task.EventType;
 
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -55,8 +58,6 @@ public class ConnectorService extends Service implements LocationListener {
 	public ConnectorService() {
 	}
 
-	
-
 	public static void resetGPSStatus() {
 		ConnectorService connectorService = MyApplication.getInstance()
 				.getConnectorService();
@@ -74,13 +75,13 @@ public class ConnectorService extends Service implements LocationListener {
 
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
-		if (intent == null || intent.getExtras() == null)
-		{
+		if (intent == null || intent.getExtras() == null) {
 			stopSelf();
 			return super.onStartCommand(intent, flags, startId);
 		}
 		Serializable obj = intent.getExtras().getSerializable(Task.TASK);
 		if (obj == null) {
+			stopSelf();
 			return super.onStartCommand(intent, flags, startId);
 		}
 		final Task task = (Task) obj;
@@ -96,7 +97,7 @@ public class ConnectorService extends Service implements LocationListener {
 					sendLatestPositionProcedure();
 
 					if (task != null)
-						OnExecuteTask(task);
+						onExecuteTask(task);
 					Looper.loop();
 					boolean saved = false;
 					for (Route r : mRoutes) {
@@ -120,7 +121,7 @@ public class ConnectorService extends Service implements LocationListener {
 			mWorkerThread.setDaemon(true);
 			mWorkerThread.start();
 		} else {
-			OnExecuteTask(task);
+			onExecuteTask(task);
 		}
 		return super.onStartCommand(intent, flags, startId);
 	}
@@ -188,21 +189,12 @@ public class ConnectorService extends Service implements LocationListener {
 		setAutomaticLiveTracking(b);
 	}
 
-	private void setAutomaticLiveTracking(boolean b) {
-		automaticTracking = b;
-
-		if (automaticTracking) {
-			activateGPS(GPSManager.AUTOMATIC_TRACKING);
-		} else {
-			stopGPS(GPSManager.AUTOMATIC_TRACKING);
-		}
-	}
+	
 
 	// -1: traccia terminata; 0: sulla traccia; numero positivo: fuori traccia,
 	// distanza minima dalla traccia
 	private double calculateRoutesByPosition(ECommuterPosition position) {
 		double minDistance = Double.MAX_VALUE;
-		
 
 		for (Route r : mRoutes) {
 			boolean followed = false;
@@ -366,8 +358,10 @@ public class ConnectorService extends Service implements LocationListener {
 	private void setNotification() {
 		String message = getString(R.string.live_tracking_on);
 		Intent intent = new Intent(this, ConnectorService.class);
-		PendingIntent contentIntent = PendingIntent.getService(
-				this, 0, intent, // add this
+		intent.putExtra(Task.TASK, new Task(Calendar.getInstance(),
+				EventType.STOP_TRACKING, GPSManager.MANUAL_TRACKING));
+		PendingIntent contentIntent = PendingIntent.getService(this, 0, intent, // add
+																				// this
 				PendingIntent.FLAG_UPDATE_CURRENT);
 		NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(
 				this).setSmallIcon(R.drawable.livetracking)
@@ -391,7 +385,7 @@ public class ConnectorService extends Service implements LocationListener {
 			if (HttpManager.sendPositionData(mLocation))
 				mLocation = null;
 		} catch (Exception e) {
-			
+
 		}
 	}
 
@@ -419,27 +413,36 @@ public class ConnectorService extends Service implements LocationListener {
 		return null;
 	}
 
-	public void OnExecuteTask(final Task task) {
+	public void onExecuteTask(final Task task) {
 		Log.i(Const.ECOMMUTERS_TAG, String.format(
 				"Executing task %s with weight: %d.",
 				task.getType().toString(), task.getWeight()));
 
-		mHandler.post(new Runnable() {
-			public void run() {
-				switch (task.getType()) {
-				case START_TRACKING:
-					activateGPS(task.getWeight());
-					break;
-				case STOP_TRACKING:
-					stopGPS(task.getWeight());
-					break;
-				default:
-					break;
-				}
-
-			}
-		});
+		switch (task.getType()) {
+		case START_TRACKING:
+			activateGPS(task.getWeight());
+			break;
+		case STOP_TRACKING:
+			stopGPS(task.getWeight());
+			break;
+		default:
+			break;
+		}
 
 	}
 
+	public static void setManualLiveTracking(boolean b) {
+		executeTask(new Task(Calendar.getInstance(),
+				b ? EventType.START_TRACKING : EventType.STOP_TRACKING,
+				GPSManager.MANUAL_TRACKING));
+
+	}
+	private void setAutomaticLiveTracking(boolean b) {
+		automaticTracking = b;
+		if (automaticTracking) {
+			activateGPS(GPSManager.AUTOMATIC_TRACKING);
+		} else {
+			stopGPS(GPSManager.AUTOMATIC_TRACKING);
+		}
+	}
 }

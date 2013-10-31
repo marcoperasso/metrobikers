@@ -71,7 +71,7 @@ public class RecordRouteService extends IntentService {
 				PendingIntent.FLAG_UPDATE_CURRENT);
 		NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(
 				this)
-		.setSmallIcon(R.drawable.livetracking)
+		.setSmallIcon(R.drawable.record)
 				.setContentTitle(getString(R.string.app_name))
 				.setContentText(message)
 				.setContentIntent(contentIntent);

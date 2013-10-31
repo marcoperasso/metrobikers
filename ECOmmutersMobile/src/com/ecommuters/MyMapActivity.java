@@ -268,9 +268,7 @@ public class MyMapActivity extends MapActivity {
 	}
 
 	public void setLiveTracking(boolean b) {
-		ConnectorService.executeTask(new Task(Calendar.getInstance(),
-				b ? EventType.START_TRACKING : EventType.STOP_TRACKING,
-				GPSManager.MANUAL_TRACKING));
+		ConnectorService.setManualLiveTracking(b);
 	}
 
 	private void showStopRecordingButton(Boolean show) {
