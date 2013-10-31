@@ -1,12 +1,14 @@
 
 
-<div class="col-md-1"></div>
-<div class="col-md-4">
-    <a href="/" title="Vai alla pagina principale">
-        <img class="logo" src="/asset/img/logo.png" id="ecommuter_logo">
-    </a>
+
+<div class="col-md-5">
+    <div style="padding-top: 48px;">
+        <a href="/" title="Vai alla pagina principale">
+            <img class="logo" src="/asset/img/logo.png" id="ecommuter_logo">
+        </a>
+    </div>
 </div>
-<div class="col-md-6">
+<div class="col-md-7">
     <div class="jumbotron">
         <div class="container">
             <h1><b>Benvenuto in ECOmmuters!</b></h1>
@@ -18,6 +20,5 @@
         </div>
     </div>
 </div>
-<div class="col-md-1">
-</div>
+
 

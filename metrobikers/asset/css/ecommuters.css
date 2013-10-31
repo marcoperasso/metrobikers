@@ -61,7 +61,6 @@ img.logo
 {
     width: 100%;
     height: 100%;
-    vertical-align: middle;
 }
 h1,
 h2,
@@ -212,4 +211,15 @@ table.heading
 }
 .center-text{
     text-align: center;
+}
+
+div.pwdmeter{
+    background-color: green;
+    width:0%;
+    height: 100%;
+}
+div.pwdmetercontainer{
+    width:100%;
+    height: 10px;
+    background-color: red;
 }

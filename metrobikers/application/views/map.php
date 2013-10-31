@@ -1,7 +1,7 @@
 <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false"></script>
 
-<div id="MapContainer" style="margin-left: 0px; margin-right: 0px; margin-top: 0px; margin-bottom: 0px; margin-left: auto;margin-right: auto">
-    <div id="gmap_div" style="width: 800px; height: 600px; margin: 0px; margin-right: auto; margin-left: auto;
+<div id="mapcontainer" style="margin-left: 0px; margin-right: 0px; margin-top: 0px; margin-bottom: 0px; margin-left: auto;margin-right: auto">
+    <div id="gmap_div" style="width: 80%; height: 700px; margin: 0px; margin-right: auto; margin-left: auto;
          background-color: #F0F0F0; overflow: hidden;">
         <p align="center" style="font: 10px Arial;">
             Per favore attendi, sto caricando la mappa...</p>

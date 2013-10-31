@@ -9,7 +9,7 @@
         <div class="content">
             <?php $this->load->view('templates/visualheader'); ?>
             <div class="body row">
-                <div><?php $this->load->view($view_name); ?></div>
+                <?php $this->load->view($view_name); ?>
             </div>
             <?php $this->load->view('templates/footer'); ?>
         </div>

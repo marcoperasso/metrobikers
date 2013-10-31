@@ -45,6 +45,7 @@ class MY_Controller extends CI_Controller {
     {
         $data["page_title"] = $title;
         $data["view_name"] = $view;
-        $this->load->view("templates/template", $data);
+        $data["user"] = get_user();
+        $this->load->view("templates/masterpage", $data);
     }
 }

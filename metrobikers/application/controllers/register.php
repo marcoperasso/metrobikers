@@ -25,9 +25,9 @@ class Register extends MY_Controller {
                 $this->Validation_key_model->delete_key($this->User_model->id);
                 $this->db->trans_commit();
                 set_user($this->User_model);
-                $this->load->view("register/useractivated", $data);
+                $this->load_view("register/useractivated", $data);
             } else {
-                $this->load->view("register/invalidkey", $data);
+                $this->load_view("register/invalidkey", $data);
             }
         }
     }
@@ -38,9 +38,9 @@ class Register extends MY_Controller {
         if ($this->User_model->get_user_by_key($key)) {
             $this->load->helper('form');
             $this->load->library('form_validation');
-            $this->load->view("register/activate", $data);
+            $this->load_view("register/activate", $data);
         } else {
-            $this->load->view("register/invalidkey", $data);
+            $this->load_view("register/invalidkey", $data);
         }
     }
 
@@ -62,7 +62,7 @@ class Register extends MY_Controller {
             $url = base_url() . "register/preactivate?userkey=" . urlencode($this->Validation_key_model->validationkey);
             $this->send_mail($this->User_model->mail, lang("registration_submitted"), sprintf(lang("mail_content"), $url, $url));
             $data["user"] = $this->User_model;
-            $this->load->view('register/userregistered', $data);
+            $this->load_view('register/userregistered', $data);
         }
     }
 

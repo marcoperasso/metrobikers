@@ -1,4 +1,10 @@
-<div class="header">
+<div class="header row">
+    <?php
+    $caller = $this->router->fetch_class() . '/' . $this->router->fetch_method();
+    if (!isset($user))
+        $this->load->view('login');
+    ?>
+
     <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
         <!-- Brand and toggle get grouped for better mobile display -->
         <div class="navbar-header">
@@ -7,18 +13,20 @@
 
         <!-- Collect the nav links, forms, and other content for toggling -->
         <div class="collapse navbar-collapse navbar-ex1-collapse">
-            <?php if (isset($user)) { ?>
+            <?php
+            if (isset($user)) {
+                ?>
                 <ul class="nav navbar-nav">
-                    <li
-                    <?php
-                    if (isset($url) && $url == base_url() . "user") {
+                    <li <?php
+                    if ($caller == "user/index") {
                         echo " class=\"active\"";
                     }
-                    ?>
-                        ><a href="/user">I miei dati</a></li>
+                    ?>>
+                        <a href="/user">I miei dati</a>
+                    </li>
                     <li
                     <?php
-                    if (isset($url) && $url == base_url() . "user/routes") {
+                    if ($caller == "user/routes") {
                         echo " class=\"active\"";
                     }
                     ?>
@@ -34,20 +42,20 @@
                         </ul>
                     </li>
                 <?php } else { ?>
-                    <!-- Button trigger modal -->
-                    <?php $this->load->view('login'); ?>
-                    <a data-toggle="modal" href="#loginModal" data-backdrop="static"><p class="text-right" style="padding-right: 30px">Accedi</p></a>
+                    <li>
+                        <a data-toggle="modal" href="#loginModal" data-backdrop="static"><p class="text-right" style="padding-right: 30px">Accedi</p></a>
+                    </li>
                 <?php } ?>
             </ul>
         </div><!-- /.navbar-collapse -->
     </nav>
     <script type="text/javascript">
-        function doLogoff()
-        {
-            $.getJSON("<?php echo base_url() ?>login/dologoff",
-                    function(data) {
-                        window.location.href = "<?php echo base_url() ?>";
-                    });
-        }
+                                function doLogoff()
+                                {
+                                    $.getJSON("<?php echo base_url() ?>login/dologoff",
+                                            function(data) {
+                                                window.location.href = "<?php echo base_url() ?>";
+                                            });
+                                }
     </script>
 </div>
