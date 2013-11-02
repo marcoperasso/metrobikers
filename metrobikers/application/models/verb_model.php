@@ -21,14 +21,15 @@ class Verb_model extends MY_Model {
 	{
 		$this->db->select('verb');
 		$this->db->from('verbs');
+                $this->db->limit('10');
 		$this->db->like('verb', $constraint, 'after');
         $query = $this->db->get();
-        return $query->result_array();
+        return $query ? $query->result_array() : array();
 	}
      public function getall() {
         $this->db->select('verb');
         $query = $this->db->get('verbs');
-        return $query->result_array();
+        return $query ? $query->result_array() : array();
     }
     
 }

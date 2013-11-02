@@ -6,7 +6,7 @@ if (!defined('BASEPATH'))
 class Test extends MY_Controller {
 
     public function index() {
-        echo base_url();
+       phpinfo();
         //$this->load->model('User_model');
 
        // $this->User_model->get_user("marco.perasso@microarea.it");
