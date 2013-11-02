@@ -61,7 +61,7 @@ class Register extends MY_Controller {
             $this->db->trans_commit();
             $url = base_url() . "register/preactivate?userkey=" . urlencode($this->Validation_key_model->validationkey);
             $this->send_mail($this->User_model->mail, lang("registration_submitted"), sprintf(lang("mail_content"), $url, $url));
-            $data["user"] = $this->User_model;
+            $data["user_draft"] = $this->User_model;
             $this->load_view('register/userregistered', $data);
         }
     }

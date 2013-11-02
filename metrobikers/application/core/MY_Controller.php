@@ -10,11 +10,11 @@ class MY_Controller extends CI_Controller {
         if (!isset($_SESSION)) {
             session_start();
         }
-       /* $lang = isset($_SESSION["CURRENT_LANGUAGE"]) ? $_SESSION["CURRENT_LANGUAGE"] : NULL;
-        if ($lang == NULL)
-            $lang = $this->config['language'];
-        if (!$this->lang->load("messages", $lang))*/
-            $this->lang->load("messages", "it-IT");
+        /* $lang = isset($_SESSION["CURRENT_LANGUAGE"]) ? $_SESSION["CURRENT_LANGUAGE"] : NULL;
+          if ($lang == NULL)
+          $lang = $this->config['language'];
+          if (!$this->lang->load("messages", $lang)) */
+        $this->lang->load("messages", "it-IT");
     }
 
     protected function send_mail($to, $subject, $message) {
@@ -41,11 +41,11 @@ class MY_Controller extends CI_Controller {
 
         $this->email->send();
     }
-    protected function load_view($view, $title="", $data=array())
-    {
-        $data["page_title"] = $title;
+
+    protected function load_view($view, $data = array()) {
         $data["view_name"] = $view;
         $data["user"] = get_user();
         $this->load->view("templates/masterpage", $data);
     }
+
 }

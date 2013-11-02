@@ -8,7 +8,7 @@ class Home extends MY_Controller {
 
     public function index() {
         
-        $this->load_view('home', "Benvenuto in ECOmmuters");
+        $this->load_view('home');
     }
     
     public function mission() {

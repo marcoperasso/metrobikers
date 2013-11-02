@@ -9,8 +9,8 @@
 
         <div class="col-md-8">
             <p class="text-center">
-                Grazie <?php echo $user->name ?> per esserti registrato. <br />
-                Segui le istruzioni che ti abbiamo mandato via email all'indirizzo <?php echo $user->mail ?> per completare la tua registrazione.
+                Grazie <?php echo $user_draft->name ?> per esserti registrato. <br />
+                Segui le istruzioni che ti abbiamo mandato via email all'indirizzo <?php echo $user_draft->mail ?> per completare la tua registrazione.
             </p>
         </div>
         <div class="col-md-2">

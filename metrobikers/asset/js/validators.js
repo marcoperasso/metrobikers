@@ -23,13 +23,13 @@ function getInvalidFields()
 }
 
 $(function() {
-    $(".dateinput").datepicker({"autoSize": true, dateFormat: "dd/mm/yy"});
+    //$(".dateinput").datepicker({"autoSize": true, dateFormat: "dd/mm/yy"});
     $('input[type="submit"]').click(function(e) {
         var invalids = getInvalidFields();
         if (invalids.length > 0) {
             $(invalids[0]).focus();
             invalids.addClass('invalid');
-            alert("The form contains some missing or invalid data.")
+            alert("Mancano alcuni dati.")
             e.preventDefault();
         }
 
