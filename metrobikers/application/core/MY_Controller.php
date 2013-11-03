@@ -42,10 +42,14 @@ class MY_Controller extends CI_Controller {
         $this->email->send();
     }
 
-    protected function load_view($view, $data = array()) {
+    protected function load_view($view, $title="", $data = array(), $return = FALSE) {
         $data["view_name"] = $view;
+        if (empty($title)) {
+            $title = lang("welcome");
+        }
+        $data["page_title"] = $title;
         $data["user"] = get_user();
-        $this->load->view("templates/masterpage", $data);
+        return $this->load->view("templates/masterpage", $data, $return);
     }
 
 }

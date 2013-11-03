@@ -81,7 +81,7 @@ EOT;
                     break;
                 }
             case 2: {
-                    $mid = ceil($strlen / 2.0);
+                    $mid = (int)ceil($strlen / 2.0);
 
                     for ($j = 0; $j < $mid; $j++) {
                         $ret .= $str[$j];
@@ -93,11 +93,13 @@ EOT;
                     break;
                 }
             case 3: {
-                    $mid = floor($strlen / 2.0);
+                    $mid = (int)floor($strlen / 2.0);
                     for ($j = $mid; $j < $strlen; $j++) {
                         $ret .= $str[$j];
                         $j2 = $j - $mid;
                         if ($j2 < $mid) {
+                            if ($j2 >= strlen($str))
+                                echo 'a';
                             $ret .= $str[$j2];
                         }
                     }

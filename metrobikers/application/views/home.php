@@ -1,6 +1,3 @@
-
-
-
 <div class="col-md-5">
     <div style="padding-top: 48px;">
         <a href="/" title="Vai alla pagina principale">
@@ -10,12 +7,12 @@
 </div>
 <div class="col-md-7">
     <div class="jumbotron">
-        <div class="container">
+        <div class="container text-center">
             <h1><b>Benvenuto in ECOmmuters!</b></h1>
             <p>Cerca nuovi compagni di viaggio con cui condividere i tuoi spostamenti <i><b>E</b></I>-cologici.</p>
             <p>
                 <a href="/register" class="btn btn-primary btn-lg">Diventa anche tu un ECOmmuter!</a>
-                <a href="/home/mission" class="btn btn-default btn-lg">Cos'è sta roba?</a>
+                <a href="/home/mission" class="btn btn-default btn-lg">Che roba è?</a>
             </p>
         </div>
     </div>

@@ -1,6 +1,5 @@
 <?php
 
-// any_in_array() is not in the Array Helper, so it defines a new function
 function base_url_considering_mobile() {
     return BASE_URL_CONSIDERING_MOBILE;
 }
@@ -16,4 +15,16 @@ function get_user() {
     return (isset($_SESSION) && isset($_SESSION['user'])) ? unserialize($_SESSION["user"]) : NULL;
 }
 
+function decode_gender($genderId) {
+    switch ($genderId) {
+        case 1:
+            return "Femmina";
+        case 2:
+            return "Maschio";
+
+        default:
+
+            return "Non specificato";
+    }
+}
 ?>

@@ -58,16 +58,9 @@ class User_model extends MY_Model {
         $this->mail = $this->input->post('mail');
         $this->name = $this->input->post('name');
         $this->surname = $this->input->post('surname');
-        $this->birthdate = date('Y-m-d', strtotime($this->input->post('birthdate')));
-        $this->surname = $this->input->post('surname');
         $this->active = FALSE;
-        $this->gender = $this->input->post('gender');
-
         $this->db->insert('users', $this);
-
-        $this->db->select('id')->where('mail', $this->mail);
-        $query = $this->db->get('users');
-        $this->id = $query->row()->id;
+        $this->id = $this->db->insert_id();
     }
 
     public function save_email($mail) {

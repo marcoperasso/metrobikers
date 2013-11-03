@@ -88,6 +88,7 @@ h6,
 .container {
     border: 1px solid rgba(0, 0, 0, 0.1);
     border-radius: 6px 6px 6px 6px;
+    padding: 30px;
 }
 .form-control:focus {
     border-color: #52FF3F;
@@ -222,4 +223,7 @@ div.pwdmetercontainer{
     width:100%;
     height: 10px;
     background-color: red;
+}
+p{
+    text-align: justify;
 }

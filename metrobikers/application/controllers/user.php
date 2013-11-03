@@ -28,7 +28,7 @@ class User extends MY_Controller {
             $data['user'] = $user;
         }
 
-        $this->load_view('user', $data);
+        $this->load_view('user', "I miei dati",  $data);
     }
     
     public function routes() {
@@ -49,7 +49,7 @@ class User extends MY_Controller {
             $data['routes'] = $routes;
         }
 
-        $this->load_view('routes', $data);
+        $this->load_view('routes', 'I miei itinerari', $data);
     }
 
 }
