@@ -33,7 +33,7 @@
     var _autologin = this.autologin;
     function doLogin()
     {
-        if (testFields())
+        if (testFields($("#loginform")))
          doLoginInternal();
     }
     function doLoginInternal(onEnd)
