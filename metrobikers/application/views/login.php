@@ -26,7 +26,6 @@
 <script type="text/javascript" src="<?php echo base_url_considering_mobile() ?>asset/js/modal.js"></script>
 <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
 <script type="text/javascript" src="<?php echo base_url_considering_mobile() ?>asset/js/md5-min.js"></script>
-<script type="text/javascript" src="/asset/js/validators.js"></script>
 <script type="text/javascript">
     $("#loginforget").click(resetPassword);
     $("#dologin").click(doLogin);

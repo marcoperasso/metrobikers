@@ -1,4 +1,3 @@
-<script type="text/javascript" src="/asset/js/validators.js"></script>
          
 <div class="col-md-5">
     <a href="/" title="Vai alla pagina principale">
@@ -15,7 +14,7 @@
         <div class="col-md-1"></div>
 
         <div class="col-md-10"></div>
-        <div class="form-group">
+        <div class="form-group" id="fieldscontainer">
             <div class="form-group">
                 <input type="input" name="name" class="required form-control" placeholder="Nome"/>
             </div>
