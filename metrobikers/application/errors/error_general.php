@@ -3,12 +3,13 @@
     <head>
         <?php include 'application/views/templates/header.php'; ?>
         <title>Errore</title>
+        <style>p{text-align: center;}</style>
     </head>
 
     <body>
         <div class="content">
 
-            <div class="body center-text">
+            <div class="body center-text row">
                 <div class="col-md-2"></div>
                 <div class="col-md-8">
                     <h1><?php echo $heading; ?></h1>
