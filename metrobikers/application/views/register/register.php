@@ -1,4 +1,3 @@
-<script type="text/javascript" src="/asset/js/validators.js"></script>
          
 <div class="col-md-5">
     <a href="/" title="Vai alla pagina principale">
