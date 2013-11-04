@@ -2,6 +2,7 @@ package com.ecommuters;
 
 import java.io.Serializable;
 import java.util.Calendar;
+import java.util.TimeZone;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
@@ -41,7 +42,8 @@ public class Task implements Runnable, Serializable {
 	
 	public void schedule(int id) {
 		Calendar calendar = Calendar.getInstance();
-		calendar.set(Calendar.HOUR_OF_DAY, time.get(Calendar.HOUR_OF_DAY));
+		calendar.setTimeZone(TimeZone.getTimeZone("GMT"));
+	    calendar.set(Calendar.HOUR_OF_DAY, time.get(Calendar.HOUR_OF_DAY));
 		calendar.set(Calendar.MINUTE, time.get(Calendar.MINUTE));
 		calendar.set(Calendar.SECOND, time.get(Calendar.SECOND));
 		
@@ -58,7 +60,7 @@ public class Task implements Runnable, Serializable {
 				PendingIntent.FLAG_UPDATE_CURRENT);
 		AlarmManager alarms = (AlarmManager) MyApplication.getInstance()
 				.getSystemService(Context.ALARM_SERVICE);
-		alarms.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),
+		alarms.setInexactRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),
 				AlarmManager.INTERVAL_DAY, pIntent);
 
 		Log.i(Const.ECOMMUTERS_TAG, String.format(
