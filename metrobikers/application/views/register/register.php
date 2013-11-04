@@ -14,7 +14,7 @@
         <div class="col-md-1"></div>
 
         <div class="col-md-10"></div>
-        <div class="form-group">
+        <div class="form-group" id="fieldscontainer">
             <div class="form-group">
                 <input type="input" name="name" class="required form-control" placeholder="Nome"/>
             </div>

@@ -25,7 +25,7 @@ function getInvalidFields(scope)
 $(function() {
     //$(".dateinput").datepicker({"autoSize": true, dateFormat: "dd/mm/yy"});
     $('input[type="submit"]').click(function(e) {
-        if (!testFields())
+        if (!testFields($(this).closest("form")))
             e.preventDefault();
     });
 
