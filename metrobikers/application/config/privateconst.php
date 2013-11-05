@@ -8,8 +8,8 @@ define('BASE_URL',                      'http://localhost:8888/');
 define('BASE_URL_CONSIDERING_MOBILE',   'http://localhost:8888/');
 
 //define('BASE_URL_CONSIDERING_MOBILE',   'http://10.0.2.2:8888/'); // l'emulatore android usa questo indirizzo per connettersi a localhost 
-define('DATABASE_USER',         'root');
-define('DATABASE_PASSWORD',     '');
+define('DATABASE_USER',         'webuser');
+define('DATABASE_PASSWORD',     'webuser');
 define('DATABASE_HOST',         'localhost');
 define('DATABASE_NAME',         'metrobikers');
 

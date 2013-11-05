@@ -2,7 +2,7 @@
 <html lang="en">
     <head>
         <?php $this->load->view('templates/header'); ?>
-        <title><?=$page_title?></title>
+        <title><?PHP echo $page_title; ?></title>
     </head>
 
     <body>

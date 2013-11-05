@@ -40,26 +40,21 @@ class Mobile extends MY_Controller {
                 ->set_output(json_encode($response));
     }
 
-	 public function get_route_for_user($userid, $routeid) {
-		$this->load->model("Route_model");
-		$this->load->model("Route_points_model");
-		$this->Route_model->id = $routeid;
-		$this->Route_model->userid = $userid;
-		$response = NULL;
-		if ($this->Route_model->get_route_by_id())
-		{
-			$this->Route_model->latestupdate = strtotime($this->Route_model->latestupdate);
-			$this->Route_points_model->routeid = $this->Route_model->id;
-			$this->Route_model->points = $this->Route_points_model->get_points();
-			foreach ($this->Route_model->points as $point) {
-				$point->time = strtotime($point->time);
-			}				
-			$response = $this->Route_model;
-		}
-		$this->output
+    public function get_route_for_user($userid, $routeid) {
+        $this->load->model("Route_model");
+        $this->Route_model->id = $routeid;
+        $this->Route_model->userid = $userid;
+        $response = NULL;
+        if ($this->Route_model->get_route_by_id()) {
+            $this->Route_model->latestupdate = strtotime($this->Route_model->latestupdate);
+            $this->Route_model->points = $this->Route_model->get_points();
+            $response = $this->Route_model;
+        }
+        $this->output
                 ->set_content_type('application/json')
                 ->set_output(json_encode($response));
     }
+
     public function get_routes($latestupdate) {
         $user = get_user();
         if ($user != NULL) {
@@ -69,11 +64,7 @@ class Mobile extends MY_Controller {
             $response = $this->Route_model->get_routes(date('Y-m-d H:i:s', $latestupdate));
             foreach ($response as $route) {
                 $route->latestupdate = strtotime($route->latestupdate);
-                $this->Route_points_model->routeid = $route->id;
-                $route->points = $this->Route_points_model->get_points();
-                foreach ($route->points as $point) {
-                    $point->time = strtotime($point->time);
-                }
+                $route->points = $route->get_points();
             }
         } else {
             $response = array();
@@ -96,7 +87,7 @@ class Mobile extends MY_Controller {
         $this->User_position_model->lon = $point->lon;
         $this->User_position_model->time = date('Y-m-d H:i:s', $point->time);
         $this->User_position_model->save_position();
- 
+
         $this->User_on_route_model->purge($point->userid);
         foreach ($point->routes as $routeid) {
             $this->User_on_route_model->userid = $point->userid;
@@ -105,7 +96,7 @@ class Mobile extends MY_Controller {
         }
         $this->db->trans_commit();
         $response = array('saved' => TRUE);
-        $this->output  
+        $this->output
                 ->set_content_type('application/json')
                 ->set_output(json_encode($response));
     }
@@ -116,7 +107,7 @@ class Mobile extends MY_Controller {
         $this->User_position_model->purge_positions();
         $response = $this->User_position_model->get_positions($left, $top, $right, $bottom);
 
-        foreach ($response as &$point) { 
+        foreach ($response as &$point) {
             $point["time"] = strtotime($point["time"]);
             $point["routes"] = $this->User_on_route_model->get_routes($point["userid"]);
         }

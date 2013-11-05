@@ -104,9 +104,10 @@ if (isset($routes)) {
         ?>
                 points = [];
         <?php
-        $count = count($route->points);
+        $points = $route->get_points();
+        $count = count($points);
         for ($i = 0; $i < $count; $i++) {
-            $p1 = $route->points[$i];
+            $p1 = $points[$i];
             ?>
                     points.push({"lat":<?php echo $p1->lat / 1000000; ?>, "lon": <?php echo $p1->lon / 1000000; ?>, "c": '<?php echo get_color($i / $count, $colors); ?>'});
         <?php } ?>

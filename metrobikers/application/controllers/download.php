@@ -14,13 +14,11 @@ class Download extends MY_Controller {
         if ($user == NULL)
             return;
         $this->load->model("Route_model");
-        $this->load->model("Route_points_model");
         $this->Route_model->name = $route_name;
         $this->Route_model->userid = $user->id;
         if (!$this->Route_model->get_route())
             return;
-        $this->Route_points_model->routeid = $this->Route_model->id;
-        $points = $this->Route_points_model->get_points();
+        $points = $this->Route_model->get_points();
         $this->load->helper('xml');
         
         $xml =
@@ -39,15 +37,16 @@ class Download extends MY_Controller {
 
         foreach ($points as $point) {
             $xml .='<trkpt lat="' . $point->lat/1000000 . '" lon="' . $point->lon/1000000 . '">
-        <time>' . gmdate("Y-m-d\TH:i:s\Z", strtotime($point->time)) . '</time>
-      </trkpt>';
+        <time>' . gmdate("Y-m-d\TH:i:s\Z", $point->time) . '</time>
+      </trkpt>
+      ';
         };
         $xml .=
                 '</trkseg>
   </trk>
 </gpx>';
         header('Content-Type: text/xml;charset=UTF-8');
-        header("Content-Disposition:attachment; filename='" . $route_name. ".gpx'");
+       // header("Content-Disposition:attachment; filename='" . $route_name. ".gpx'");
         echo $xml;
     }
 
