@@ -17,6 +17,7 @@ public class MyApplication extends Application {
 	public Event OnRecordingRouteUpdated = new Event();
 	public Event RouteChanged = new Event();
 	public Event ConnectorServiceChanged = new Event();
+	public Event RecordingServiceChanged = new Event();
 	private Object routeSemaphore = new Object();
 
 	@Override
@@ -93,6 +94,7 @@ public class MyApplication extends Application {
 
 	public void setRecordingService(RecordRouteService recordingService) {
 		this.recordingService = recordingService;
+		RecordingServiceChanged.fire(this, EventArgs.Empty);
 	}
 
 	public void setConnectorService(ConnectorService connectorService) {

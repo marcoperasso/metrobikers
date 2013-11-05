@@ -1,12 +1,8 @@
 package com.ecommuters;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Hashtable;
-
-import org.apache.http.client.ClientProtocolException;
-import org.json.JSONException;
 
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -15,12 +11,9 @@ import android.graphics.Point;
 import android.graphics.drawable.Drawable;
 import android.text.format.DateFormat;
 import android.util.Log;
-import android.view.View;
-import android.widget.TextView;
 
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapView;
-import com.google.android.maps.MapView.LayoutParams;
 import com.google.android.maps.OverlayItem;
 import com.google.android.maps.Projection;
 
@@ -52,18 +45,7 @@ public class RoutesOverlay extends BalloonItemizedOverlay<OverlayItem> {
 		pnt.setStrokeWidth(4);
 		pnt.setAntiAlias(true);
 		this.mMap = map;
-		// map.addView(mImageView);
-		// mImageView.setAdjustViewBounds(true);
-		// mImageView.setScaleType(ImageView.ScaleType.FIT_XY);
-		LayoutParams lp = new MapView.LayoutParams(0, 0, new GeoPoint(0, 0),
-				MapView.LayoutParams.TOP_LEFT);
-		lp.mode = MapView.LayoutParams.MODE_MAP;
-		// mImageView.setLayoutParams(lp);
-
-		MapView.LayoutParams mlp = new MapView.LayoutParams(
-				MapView.LayoutParams.MATCH_PARENT,
-				MapView.LayoutParams.WRAP_CONTENT, 0, 0,
-				MapView.LayoutParams.TOP_LEFT);
+		
 
 		setLastFocusedIndex(-1);
 

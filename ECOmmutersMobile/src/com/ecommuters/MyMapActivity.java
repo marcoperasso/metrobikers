@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 
 import android.app.AlertDialog;
@@ -32,7 +31,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.ecommuters.Task.EventType;
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapActivity;
 import com.google.android.maps.MapController;
@@ -52,6 +50,7 @@ public class MyMapActivity extends MapActivity {
 	MenuItem mMenuItemTrackGpsPosition;
 
 	private LocationManager mlocManager;
+	private boolean askingRouteName;
 
 	private Animation mAnimation;
 	private GenericEventHandler mRoutesChangedHandler;
@@ -73,44 +72,51 @@ public class MyMapActivity extends MapActivity {
 
 		}
 	};
-	private BroadcastReceiver recordingServiceStoppedReceiver = new BroadcastReceiver() {
+	private GenericEventHandler mRecordingServiceChangedHandler = new GenericEventHandler() {
+
 
 		@Override
-		public void onReceive(Context context, Intent intent) {
-
-			final Route r = (Route) intent
-					.getSerializableExtra(Const.ROUTE_EXTRA);
-			if (r.getPoints().size() == 0)
+		public void onEvent(Object sender, EventArgs args) {
+			//solo se il servizio è stato stoppato chiedo il salvataggio.
+			if (MyApplication.getInstance().getRecordingService() != null)
 				return;
-
-			askRouteName(new OnRouteSelected() {
-				public void select(String routeName) {
-					try {
-						r.setName(routeName);
-						r.save(MyMapActivity.this,
-								Helper.getRouteFile(routeName));
-
-						final File recordingFile = getFileStreamPath(Const.RECORDING_ROUTE_FILE);
-						recordingFile.delete();
-						MyApplication.getInstance().refreshRoutes(true);
-
-						// faccio partire il servizio che lo manda al server
-						Intent service = new Intent(MyMapActivity.this,
-								SyncService.class);
-						startService(service);
-
-					} catch (IOException e) {
-						Toast.makeText(MyMapActivity.this,
-								e.getLocalizedMessage(), Toast.LENGTH_LONG)
-								.show();
-					}
-					stopRecordingService();
-				}
-
-			});
+			saveRecordedRouteIfNeeded();
+			
 		}
 	};
 
+	private void saveRecordedRouteIfNeeded() {
+		final Route r = Route.readRoute(this,
+				Const.RECORDING_ROUTE_FILE);
+		if (r == null || r.getPoints().size() == 0)
+			return;
+		askingRouteName = true;
+		askRouteName(new OnRouteSelected() {
+			public void select(String routeName) {
+				try {
+					r.setName(routeName);
+					r.save(MyMapActivity.this,
+							Helper.getRouteFile(routeName));
+
+					final File recordingFile = getFileStreamPath(Const.RECORDING_ROUTE_FILE);
+					recordingFile.delete();
+					MyApplication.getInstance().refreshRoutes(true);
+
+					// faccio partire il servizio che lo manda al server
+					Intent service = new Intent(MyMapActivity.this,
+							SyncService.class);
+					startService(service);
+
+				} catch (IOException e) {
+					Toast.makeText(MyMapActivity.this,
+							e.getLocalizedMessage(), Toast.LENGTH_LONG)
+							.show();
+				}
+				stopRecordingService();
+			}
+
+		});
+	}
 	/** Called when the activity is first created. */
 	@SuppressWarnings("unchecked")
 	@Override
@@ -179,6 +185,9 @@ public class MyMapActivity extends MapActivity {
 			if (positions != null)
 				mTracksOverlay
 						.setPositions((ArrayList<ECommuterPosition>) positions);
+			askingRouteName = savedInstanceState.getBoolean(Const.ASKING_ROUTE, false);
+			if (askingRouteName)
+				saveRecordedRouteIfNeeded();
 		} else {
 			testVersion();
 		}
@@ -232,15 +241,15 @@ public class MyMapActivity extends MapActivity {
 				this);
 
 		mTracksOverlay.setRoutes(MyApplication.getInstance().getRoutes());
-
-		IntentFilter intentFilter = new IntentFilter(Const.SERVICE_STOPPED);
-		registerReceiver(recordingServiceStoppedReceiver, intentFilter);
+		MyApplication.getInstance().RecordingServiceChanged
+				.addHandler(mRecordingServiceChangedHandler);
 
 	}
 
 	@Override
 	protected void onDestroy() {
-		unregisterReceiver(recordingServiceStoppedReceiver);
+		MyApplication.getInstance().RecordingServiceChanged
+				.removeHandler(mRecordingServiceChangedHandler);
 		MyApplication.getInstance().OnRecordingRouteUpdated
 				.removeHandler(mUpdateRoutehandler);
 		MyApplication.getInstance().RouteChanged
@@ -263,8 +272,7 @@ public class MyMapActivity extends MapActivity {
 	}
 
 	public boolean isLiveTracking() {
-		return MyApplication.getInstance()
-				.getConnectorService() != null;
+		return MyApplication.getInstance().getConnectorService() != null;
 	}
 
 	public void setLiveTracking(boolean b) {
@@ -467,6 +475,7 @@ public class MyMapActivity extends MapActivity {
 
 			public void onClick(View v) {
 				dialogRoute.dismiss();
+				askingRouteName = false;
 				final File f = getFileStreamPath(Const.RECORDING_ROUTE_FILE);
 				if (!f.exists())
 					return;
@@ -502,12 +511,14 @@ public class MyMapActivity extends MapActivity {
 											int which) {
 										fileStreamPath.delete();
 										dialogRoute.dismiss();
+										askingRouteName = false;
 										onSelected.select(routeName);
 
 									}
 								}, null);
 					} else {
 						dialogRoute.dismiss();
+						askingRouteName = false;
 						onSelected.select(routeName);
 					}
 				} else {
@@ -544,6 +555,7 @@ public class MyMapActivity extends MapActivity {
 			outState.putInt(Const.ZoomLevel, mMap.getZoomLevel());
 			outState.putSerializable(Const.POSITIONS,
 					mTracksOverlay.getPositions());
+			outState.putBoolean(Const.ASKING_ROUTE, askingRouteName);
 		} catch (Exception e) {
 			Log.e(Const.ECOMMUTERS_TAG, Log.getStackTraceString(e));
 		}

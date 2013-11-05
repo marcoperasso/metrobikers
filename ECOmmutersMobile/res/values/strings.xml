@@ -63,5 +63,7 @@
     <string name="sample">sample</string>
     <string name="following_route">Stai seguendo l\'itinerario \'%s\'</string>
     <string name="not_following_route">Hai abbandonato l\'itinerario \'%s\'</string>
+    <string name="yes">Si</string>
+    <string name="no">No</string>
 
 </resources>

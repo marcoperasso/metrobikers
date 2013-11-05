@@ -72,6 +72,10 @@ public class SyncService extends IntentService {
 
 	@Override
 	protected void onHandleIntent(Intent arg0) {
+		try
+		{
+		Log.i(Const.ECOMMUTERS_TAG,
+				"Starting synchronization");
 		final long latestUpdate = MySettings
 				.getLatestSyncDate(SyncService.this);
 
@@ -101,6 +105,13 @@ public class SyncService extends IntentService {
 			}
 
 		});
+		}
+		finally
+		{
+			Log.i(Const.ECOMMUTERS_TAG,
+					"Synchronization finished");
+			
+		}
 
 	}
 

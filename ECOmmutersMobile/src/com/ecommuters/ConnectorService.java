@@ -327,14 +327,14 @@ public class ConnectorService extends Service implements LocationListener {
 	}
 
 	public void onLocationChanged(Location location) {
+		if (!mGPSManager.requestingLocation())
+			return;
 		Credentials currentCredentials = MySettings.CurrentCredentials;
 		ECommuterPosition loc = new ECommuterPosition(
 				currentCredentials == null ? 0 : currentCredentials.getUserId(),
 				(int) (location.getLatitude() * 1E6), (int) (location
 						.getLongitude() * 1E6), location.getAccuracy(),
 				(long) (System.currentTimeMillis() / 1E3));
-		if (!mGPSManager.requestingLocation())
-			return;
 		locationChanged(loc);
 		mLocation = loc;
 	}
@@ -375,9 +375,14 @@ public class ConnectorService extends Service implements LocationListener {
 	}
 
 	private void sendLatestPosition() {
-		if (mLocation == null || !liveTracking()
+		if (mLocation == null
 				|| !Helper.isOnline(ConnectorService.this))
 			return;
+		
+		//mando la posizione solo se sono su un itinerario, oppure sono in stato di live tracking manuale
+		if (mLocation.getRoutes().isEmpty() && !isManualTracking())
+			return;
+		
 		String text = getString(R.string.tracking_position);
 		Log.i(Const.ECOMMUTERS_TAG, text);
 
@@ -402,10 +407,6 @@ public class ConnectorService extends Service implements LocationListener {
 			});
 		}
 		super.onDestroy();
-	}
-
-	private Boolean liveTracking() {
-		return automaticTracking || isManualTracking();
 	}
 
 	@Override

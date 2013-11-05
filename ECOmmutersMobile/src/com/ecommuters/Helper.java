@@ -56,8 +56,8 @@ public class Helper {
 		new AlertDialog.Builder(context)
 				.setIcon(android.R.drawable.ic_dialog_alert).setTitle(title)
 				.setMessage(message)
-				.setPositiveButton(android.R.string.yes, okListener)
-				.setNegativeButton(android.R.string.no, cancelListener).show();
+				.setPositiveButton(R.string.yes, okListener)
+				.setNegativeButton(R.string.no, cancelListener).show();
 
 	}
 	public static void dialogMessage(final Context context, String message,

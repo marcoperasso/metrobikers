@@ -23,9 +23,9 @@ public class Const {
 	static final String ServiceMessage = "sm";
 	public static final String DEFAULT_ROUTE_NAME = "route";
 	public static final String RECORDING_ROUTE_FILE = DEFAULT_ROUTE_NAME + RECORDINGROUTEEXT;
-	public static final String SERVICE_STOPPED = "STOPPED";
 	public static final String ROUTE_EXTRA = "re";
 	public static final String POSITIONS = "pos";
+	public static final String ASKING_ROUTE = "ar";
 	
 
 }

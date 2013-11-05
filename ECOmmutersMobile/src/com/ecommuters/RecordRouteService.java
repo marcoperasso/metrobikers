@@ -54,11 +54,6 @@ public class RecordRouteService extends IntentService {
 			} 
 		}
 
-		Intent new_intent = new Intent();
-		new_intent.putExtra(Const.ROUTE_EXTRA, mRoute);
-		new_intent.setAction(Const.SERVICE_STOPPED);
-		sendBroadcast(new_intent);
-
 	}
 
 	private void setNotification(String message) {
