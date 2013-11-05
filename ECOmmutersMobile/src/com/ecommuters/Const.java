@@ -20,6 +20,7 @@ public class Const {
 	public static final String TRACKINGEXT = ".tracking";
 	public static final int RECORDING_NOTIFICATION_ID = 1;
 	public static final int TRACKING_NOTIFICATION_ID = 2;
+	public static final int SENDING_POSITION_NOTIFICATION_ID = 3;
 	static final String ServiceMessage = "sm";
 	public static final String DEFAULT_ROUTE_NAME = "route";
 	public static final String RECORDING_ROUTE_FILE = DEFAULT_ROUTE_NAME + RECORDINGROUTEEXT;

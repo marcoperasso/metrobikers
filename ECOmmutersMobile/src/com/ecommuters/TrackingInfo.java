@@ -17,8 +17,8 @@ public class TrackingInfo implements Serializable, IJsonSerializable {
 	 * 
 	 */
 	private static final long serialVersionUID = -2748465926568698621L;
-	private int latestIndex = 0;
 	private List<RoutePoint> positions = new ArrayList<RoutePoint>();
+	private List<Integer> indexes = new ArrayList<Integer>();
 	private int routeId;
 	private long time;
 	
@@ -28,18 +28,17 @@ public class TrackingInfo implements Serializable, IJsonSerializable {
 	}
 
 	public int getLatestIndex() {
-
-		return latestIndex;
+		return indexes.isEmpty() ? 0 : indexes.get(indexes.size()-1);
 	}
 
 	public void reset() {
-		latestIndex = 0;
+		indexes.clear();
 		positions.clear();
 
 	}
 
 	public void addPosition(int index, ECommuterPosition position) {
-		latestIndex = index;
+		indexes.add(index);
 		positions.add(new RoutePoint(positions.size(), position.lat,
 				position.lon, position.time));
 		this.time = position.time;
@@ -60,6 +59,41 @@ public class TrackingInfo implements Serializable, IJsonSerializable {
 		return false;
 	}
 
+	boolean isEqualDistribution(int maxIdx) {
+		List<Integer> distances = new ArrayList<Integer>();
+		int sum = 0;
+		int a = -1;
+		for (int i : indexes)
+		{
+			int distance = i - a;
+			sum += distance;
+			distances.add(distance);
+			a = i;
+		}
+		int distance = maxIdx - a;
+		sum += distance;
+		distances.add(distance);
+		
+		double med = sum / distances.size();
+		
+		double varSum = 0.0;
+		
+		for (int d : distances)
+		{
+			varSum += Math.pow((d - med), 2.0);
+		}
+		
+		double variance = varSum / distances.size();
+		double stdDev = Math.sqrt(variance);
+		
+		boolean b = stdDev < 2 * med;
+		if (!b)
+		{
+			Log.d(Const.ECOMMUTERS_TAG, String.format("Recording not evenly distribuded; mean: %f; standard deviation: %f", med, stdDev));
+		}
+		return b;
+	}
+
 	public static TrackingInfo readTrackingInfo(Context context, String fileName) {
 		return (TrackingInfo) Helper.readObject(context, fileName);
 	}
@@ -74,6 +108,10 @@ public class TrackingInfo implements Serializable, IJsonSerializable {
 		for (RoutePoint pt : positions)
 			arPoints.put(pt.toJson());
 		return obj;
+	}
+
+	public int size() {
+		return positions.size();
 	}
 
 }

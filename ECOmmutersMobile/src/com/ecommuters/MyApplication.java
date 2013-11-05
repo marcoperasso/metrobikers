@@ -51,7 +51,6 @@ public class MyApplication extends Application {
 			}
 			list = new Route[mRoutes.size()];
 			mRoutes.toArray(list);
-
 		}
 		if (routeChanged)
 			OnRouteChanged();

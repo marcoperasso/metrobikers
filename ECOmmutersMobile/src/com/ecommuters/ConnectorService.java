@@ -101,9 +101,9 @@ public class ConnectorService extends Service implements LocationListener {
 					Looper.loop();
 					boolean saved = false;
 					for (Route r : mRoutes) {
-						if (r.getTrackingInfo().save())
+						if (r.saveTrackingInfo())
 							saved = true;
-						r.getTrackingInfo().reset();
+
 					}
 					if (saved) {
 						// faccio partire il servizio che lo manda al server
@@ -113,7 +113,8 @@ public class ConnectorService extends Service implements LocationListener {
 					}
 					mlocManager.removeUpdates(ConnectorService.this);
 					mNotificationManager.cancel(Const.TRACKING_NOTIFICATION_ID);
-
+					mNotificationManager.cancel(Const.SENDING_POSITION_NOTIFICATION_ID);
+					
 					Log.i(Const.ECOMMUTERS_TAG, "Stopping connector service");
 
 				}
@@ -144,73 +145,93 @@ public class ConnectorService extends Service implements LocationListener {
 	}
 
 	public void locationChanged(ECommuterPosition location) {
+		//calcolo lo stato della mia posizione relativamente alle rotte presenti
 		double status = calculateRoutesByPosition(location);
+		//-1: traccia teminata
+		//0: sono su una traccia
+		//>0: distanza minima dalla traccia più vicina
+		
+		//cancello il timer perché la posizione è arrivata
 		if (timerTask != null) {
 			timerTask.cancel();
 			timerTask = null;
 		}
+		
 		if (status == -1)// traccia terminata
 		{
-			setAutomaticLiveTracking(false);
-			Log.i(Const.ECOMMUTERS_TAG,
-					"Stop automatic tracking: reached end of route.");
+			if (automaticTracking)
+			{
+				setAutomaticLiveTracking(false);
+				Log.i(Const.ECOMMUTERS_TAG,
+						"Stop automatic tracking: reached end of route.");
+			}
 			return;
 		}
-
+		
 		boolean b = status == 0;// sulla traccia
-		if (b) {
-			timerTask = new TimerTask() {
-
-				@Override
-				public void run() {
-					Log.i(Const.ECOMMUTERS_TAG,
-							"Stop automatic tracking: time out waiting for GPS.");
-
-					setAutomaticLiveTracking(false);
-					timerTask = null;
-				}
-			};
-			mTimer.schedule(timerTask, TIMEOUT);
-		}
+		
+		//se sono sulla traccia, faccio partire il timer per prevenire l amancanza di segnale
+		if (b)
+			startTimeoutTimer();
+		
+		//se sono già nello stato di listening o non listening, non faccio altro
 		if (b == automaticTracking)
 			return;
+		
 		// se non sono più sulla traccia, non mi metto subito fuori dal live
 		// tracking, aspetto un po',
 		// magari ci rientro... solo se mi allontano più
 		// di 500 metri esco
 		if (!b) {
 			if (status < MAX_DISTANCE_FROM_TRACK_METERS)
+			{
+				startTimeoutTimer();
 				return;
+			}
 			Log.i(Const.ECOMMUTERS_TAG,
 					"Stop automatic tracking: out of route.");
-
 		}
 
 		setAutomaticLiveTracking(b);
 	}
 
-	
+	private void startTimeoutTimer() {
+		timerTask = new TimerTask() {
+
+			@Override
+			public void run() {
+				Log.i(Const.ECOMMUTERS_TAG,
+						"Stop automatic tracking: time out waiting for GPS.");
+
+				setAutomaticLiveTracking(false);
+				timerTask = null;
+			}
+		};
+		mTimer.schedule(timerTask, TIMEOUT);
+	}
 
 	// -1: traccia terminata; 0: sulla traccia; numero positivo: fuori traccia,
 	// distanza minima dalla traccia
 	private double calculateRoutesByPosition(ECommuterPosition position) {
-		double minDistance = Double.MAX_VALUE;
+		double minRoutesDistance = Double.MAX_VALUE;
 
 		for (Route r : mRoutes) {
-			boolean followed = false;
-			for (int i = r.getTrackingInfo().getLatestIndex(); i < r
-					.getPoints().size(); i++) {
+			double minRouteDistance = Double.MAX_VALUE;
+			int index = -1;
+			for (int i = r.getLatestTrackedIndex(); i < r.getPoints().size(); i++) {
 				RoutePoint pt = r.getPoints().get(i);
 				double distance = position.distance(pt);
-				minDistance = Math.min(minDistance, distance);
-				if (distance < DISTANCE_METERS) {
-					r.getTrackingInfo().addPosition(i, position);
-					followed = true;
-					break;
+				if (distance < minRouteDistance)
+				{
+					index = i;
+					minRouteDistance = distance;
 				}
 			}
 
-			if (followed) {
+			minRoutesDistance = Math.min(minRoutesDistance, minRouteDistance);
+
+			if (minRouteDistance < DISTANCE_METERS) {
+				r.addTrackingPosition(index, position);
 				if (!followedRoutes.contains(r)) {
 					followedRoutes.add(r);
 					Log.i(Const.ECOMMUTERS_TAG,
@@ -227,11 +248,11 @@ public class ConnectorService extends Service implements LocationListener {
 		}
 
 		if (followedRoutes.size() == 0)
-			return minDistance;
+			return minRoutesDistance;
 		boolean end = true;
 		for (Route r : followedRoutes) {
 			position.addRoute(r.getId());
-			if (r.getTrackingInfo().getLatestIndex() != r.getPoints().size() - 1) {
+			if (r.getLatestTrackedIndex() != r.getPoints().size() - 1) {
 				end = false;
 				break;
 			}
@@ -249,7 +270,7 @@ public class ConnectorService extends Service implements LocationListener {
 				if (mGPSManager.startGPS(level)) {
 					// se entro qui dentro è perché il livello è cambiato
 					if (!wasListening) {
-						setNotification();
+						setGPSOnNotification();
 					} else {
 						// per prima cosa elimino il listener corrente
 						mlocManager.removeUpdates(ConnectorService.this);
@@ -355,7 +376,7 @@ public class ConnectorService extends Service implements LocationListener {
 
 	}
 
-	private void setNotification() {
+	private void setGPSOnNotification() {
 		String message = getString(R.string.live_tracking_on);
 		Intent intent = new Intent(this, ConnectorService.class);
 		intent.putExtra(Task.TASK, new Task(Calendar.getInstance(),
@@ -374,18 +395,33 @@ public class ConnectorService extends Service implements LocationListener {
 				notification);
 	}
 
+	private void setSendingPositionNotification() {
+		String message = getString(R.string.tracking_position);
+		Intent intent = new Intent();
+		PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
+				intent, 0);
+		NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(
+				this).setSmallIcon(R.drawable.ic_routemarker)
+				.setContentTitle(getString(R.string.app_name))
+				.setContentText(message).setContentIntent(contentIntent);
+
+		Notification notification = mBuilder.build();
+		notification.flags = Notification.FLAG_AUTO_CANCEL;
+		mNotificationManager.notify(Const.SENDING_POSITION_NOTIFICATION_ID, notification);
+	}
+
 	private void sendLatestPosition() {
-		if (mLocation == null
-				|| !Helper.isOnline(ConnectorService.this))
+		if (mLocation == null || !Helper.isOnline(ConnectorService.this))
 			return;
-		
-		//mando la posizione solo se sono su un itinerario, oppure sono in stato di live tracking manuale
+
+		// mando la posizione solo se sono su un itinerario, oppure sono in
+		// stato di live tracking manuale
 		if (mLocation.getRoutes().isEmpty() && !isManualTracking())
 			return;
-		
+
 		String text = getString(R.string.tracking_position);
 		Log.i(Const.ECOMMUTERS_TAG, text);
-
+		setSendingPositionNotification();
 		try {
 			if (HttpManager.sendPositionData(mLocation))
 				mLocation = null;
@@ -438,6 +474,7 @@ public class ConnectorService extends Service implements LocationListener {
 				GPSManager.MANUAL_TRACKING));
 
 	}
+
 	private void setAutomaticLiveTracking(boolean b) {
 		automaticTracking = b;
 		if (automaticTracking) {

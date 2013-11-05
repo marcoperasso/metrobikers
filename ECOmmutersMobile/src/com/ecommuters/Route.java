@@ -40,7 +40,7 @@ public class Route implements IJsonSerializable, Serializable {
 	public Route() {
 	}
 
-	public TrackingInfo getTrackingInfo()
+	private TrackingInfo getTrackingInfo()
 	{
 		if (trackingInfo == null)
 			trackingInfo = new TrackingInfo(this);
@@ -161,6 +161,21 @@ public class Route implements IJsonSerializable, Serializable {
 
 	public void setId(int id) {
 		this.id = id;
+	}
+
+	public int getLatestTrackedIndex() {
+		return getTrackingInfo().getLatestIndex();
+	}
+
+	public boolean saveTrackingInfo() {
+		boolean b = getTrackingInfo().isEqualDistribution(points.size()) && getTrackingInfo().save();
+		getTrackingInfo().reset();
+		return b;
+	}
+
+	public void addTrackingPosition(int index, ECommuterPosition position) {
+		getTrackingInfo().addPosition(index, position);
+		
 	}
 
 	
