@@ -13,6 +13,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
+import android.widget.Toast;
 
 public class CredentialsActivity extends Activity implements
 		OnEditorActionListener, OnClickListener {
@@ -88,6 +89,10 @@ public class CredentialsActivity extends Activity implements
 					Intent returnIntent = new Intent();
 					setResult(RESULT_OK, returnIntent);
 					finish();
+				}
+				else
+				{
+					Toast.makeText(CredentialsActivity.this, message, Toast.LENGTH_LONG).show();
 				}
 				progressBar.dismiss();
 			}

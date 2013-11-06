@@ -17,8 +17,8 @@ class Login extends MY_Controller {
     }
 
     public function domobilelogin() {
-        $pwd = $this->input->get('pwd');
-        $mail = $this->input->get('email');
+        $pwd = $this->input->post('pwd');
+        $mail = $this->input->post('email');
         $this->dointernallogin($mail, $pwd);
     }
 

@@ -6,6 +6,9 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.http.client.ClientProtocolException;
+import org.json.JSONException;
+
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -243,7 +246,6 @@ public class MyMapActivity extends MapActivity {
 		mTracksOverlay.setRoutes(MyApplication.getInstance().getRoutes());
 		MyApplication.getInstance().RecordingServiceChanged
 				.addHandler(mRecordingServiceChangedHandler);
-
 	}
 
 	@Override

@@ -9,7 +9,7 @@
                 <form id="loginform" autocomplete="on" method="post"> 
                     <fieldset>
                         <div id="mailValidatorScope">
-                        <input type="text" name="email" id="loginemail" placeholder="Email" class="required form-control"/><br>
+                            <input type="text" name="email" id="loginemail" placeholder="Email" class="required form-control"/><br>
                         </div>
                         <input type="password" name="password" id="loginpassword" placeholder="Password" class="required form-control"/>
                         <br>
@@ -23,25 +23,24 @@
         </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
-<script type="text/javascript" src="<?php echo base_url_considering_mobile() ?>asset/js/modal.js"></script>
+<script type="text/javascript" src="/asset/js/modal.js"></script>
 <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
-<script type="text/javascript" src="<?php echo base_url_considering_mobile() ?>asset/js/md5-min.js"></script>
+<script type="text/javascript" src="/asset/js/md5-min.js"></script>
 <script type="text/javascript">
     $("#loginforget").click(resetPassword);
     $("#dologin").click(doLogin);
-    var _autologin = this.autologin;
     function doLogin()
     {
         if (testFields($("#loginform")))
-         doLoginInternal();
+            doLoginInternal();
     }
     function doLoginInternal(onEnd)
     {
-        jQuery.get("<?php echo base_url_considering_mobile() ?>crypt", null, function(data) {
+        jQuery.get("/crypt", null, function(data) {
             eval(data);
             var pwd = hex_md5($('#loginpassword').val());
             pwd = this.crypt(pwd);
-            var jqr = $.getJSON("<?php echo base_url_considering_mobile() ?>login/dologin", {
+            var jqr = $.getJSON("/login/dologin", {
                 "email": $("#loginemail").val(),
                 "pwd": pwd
             }, function(data) {
@@ -54,7 +53,7 @@
                     if (!data.success)
                         alert(data.message);
                     else
-                        window.location.href = "<?php echo base_url_considering_mobile() ?>user";
+                        window.location.href = "/user";
                 }
             });
             jqr.fail(onFailRequest);
@@ -72,21 +71,7 @@
             form.submit();
         }
     }
-    if (_autologin)
-    {
-        $("#loginemail").val(_autologin.getUser());
-        $("#loginpassword").val(_autologin.getPassword());
-        try
-        {
-            doLoginInternal(function(data) {
-                _autologin.completed(data.success, data.message);
-            });
-        }
-        catch (e)
-        {
-            _autologin.completed(false, e);
-        }
-    }
+
 
 </script>
 

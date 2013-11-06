@@ -25,7 +25,7 @@ import android.util.Log;
 import android.webkit.CookieManager;
 
 public class HttpManager {
-	// private static final String host = "http://10.0.2.2:8888/ecommuters/";
+	// private static final String host = "http://10.0.2.2:8888/";
 	private static final String host = "http://www.ecommuters.com/";
 	private static final String getVersionRequest = host + "mobile/version";
 	private static final String getUserRequest = host + "mobile/user";
@@ -39,7 +39,7 @@ public class HttpManager {
 	private static final String getRouteForUserRequest = host + "mobile/get_route_for_user/";
 	private static final String getPositionsRequest = host
 			+ "mobile/get_positions";
-	public static final String HTTP_WWW_ECOMMUTERS_COM_LOGIN = host + "login";
+	public static final String HTTP_WWW_ECOMMUTERS_COM_LOGIN = host + "login/domobilelogin/";
 	private static final String sendTrackingInfoDataRequest = host
 			+ "mobile/save_tracking";
 
@@ -79,13 +79,21 @@ public class HttpManager {
 
 	static JSONArray postRequestForArray(String reqString, IJsonSerializable data) throws ClientProtocolException, JSONException, IOException
 	{
-		return new JSONArray(postRequest(reqString, data));
+		return new JSONArray(postRequest(reqString, getJSONParameters(data)));
 	}
 	static JSONObject postRequestForObject(String reqString, IJsonSerializable data) throws ClientProtocolException, JSONException, IOException
 	{
-		return new JSONObject(postRequest(reqString, data));
+		return new JSONObject(postRequest(reqString, getJSONParameters(data)));
 	}
-	private static String postRequest(String reqString, IJsonSerializable data)
+
+	private static List<NameValuePair> getJSONParameters(IJsonSerializable data)
+			throws JSONException {
+		List<NameValuePair> postParameters = new ArrayList<NameValuePair>();
+		String json = data.toJson().toString();
+		postParameters.add(new BasicNameValuePair("data", json));
+		return postParameters;
+	}
+	private static String postRequest(String reqString, List<NameValuePair> postParameters)
 			throws ClientProtocolException, IOException, JSONException {
 		StringBuilder result = new StringBuilder();
 		HttpClient httpClient = new DefaultHttpClient();
@@ -93,9 +101,6 @@ public class HttpManager {
 
 		HttpPost httpPost = new HttpPost(reqString);
 		httpPost.setHeader("Cookie", getCookie());
-		List<NameValuePair> postParameters = new ArrayList<NameValuePair>();
-		String json = data.toJson().toString();
-		postParameters.add(new BasicNameValuePair("data", json));
 		UrlEncodedFormEntity entity = new UrlEncodedFormEntity(postParameters);
 		httpPost.setEntity(entity);
 		HttpResponse response = null;
@@ -217,5 +222,22 @@ public class HttpManager {
 			return list;
 		}
 
+	}
+
+	public static boolean login(String email, String pwd, StringBuilder message) {
+		List<NameValuePair> postParameters = new ArrayList<NameValuePair>();
+		postParameters.add(new BasicNameValuePair("email", email));
+		postParameters.add(new BasicNameValuePair("pwd", Helper.md5(pwd)));
+		try {
+			String postRequest = postRequest(HTTP_WWW_ECOMMUTERS_COM_LOGIN, postParameters);
+			JSONObject obj = new JSONObject(postRequest); 
+			if (obj.has("message"))
+				message.append(obj.getString("message"));
+			return obj.has("success") && obj.getBoolean("success");
+		} catch (Exception e) {
+			message.append(e.getMessage());
+			return false;
+		}
+		
 	}
 }

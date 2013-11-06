@@ -1,9 +1,5 @@
 <?php
 
-function base_url_considering_mobile() {
-    return BASE_URL_CONSIDERING_MOBILE;
-}
-
 function set_user($user) {
     if (isset($_SESSION))
         $_SESSION["user"] = serialize($user);
