@@ -10,8 +10,9 @@
 
         <div class="col-md-8">
             <p class="text-center">
-                <?php echo $user->name ?>, la tua registrazione é stata attivata, benvenuto nella community di ECOmmuters!.
+                <?php echo $user->name ?>, la tua registrazione é stata attivata, benvenuto nella community di ECOmmuters!
             </p>
+            <a class ="center-text" href="/">Torna alla pagina principale</a>
         </div>
         <div class="col-md-2">
 

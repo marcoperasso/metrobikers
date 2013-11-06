@@ -13,10 +13,10 @@
 
 <div class="col-md-6">
     <div class="container">
-        <?php $url = base_url("register/preactivate?userkey=" . urlencode($validationkey));?>
+        <?php $url = base_url("register/preactivate?resetpwd=true&userkey=" . urlencode($validationkey));?>
         <h2 class="text-center">Ripristino password</h2><br />
         <p>Ciao <?= $user_draft->name ?>, abbiamo ricevuto la tua richiesta di ripristino password.</p>
-        <p>Utilizza questo link: <a href="<?=$url?>"><?=$url?></a> per completare la procedura</p>
+        <p>Utilizza questo link: <a href="<?=$url?>"><?=$url?></a> per completare la procedura.</p>
 
         <div class="col-md-2">
 

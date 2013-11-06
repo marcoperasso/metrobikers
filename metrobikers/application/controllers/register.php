@@ -16,6 +16,7 @@ class Register extends MY_Controller {
         $this->load->library('form_validation');
         $this->form_validation->set_rules('password', 'Password', 'required');
         $key = $this->input->post('userkey');
+        $resetpwd = $this->input->post('resetpwd');
         $data['key'] = $key;
         if ($this->form_validation->run() === TRUE) {
             if ($this->User_model->get_user_by_key($key)) {
@@ -25,23 +26,41 @@ class Register extends MY_Controller {
                 $this->Validation_key_model->delete_key($this->User_model->id);
                 $this->db->trans_commit();
                 set_user($this->User_model);
-                $this->load_view("register/useractivated", "Registrazione attivata", $data);
+                if ($resetpwd) {
+                    $this->load_view("register/passwordresetted", "Password impostata", $data);
+                } else {
+                    $this->load_view("register/useractivated", "Registrazione attivata", $data);
+                }
             } else {
-                $this->load_view("register/invalidkey", "Chiave di attivazione non valida", $data);
+                if ($resetpwd) {
+                    $this->load_view("register/invalidkeyforresetpwd", "Chiave di attivazione non valida", $data);
+                } else {
+                    $this->load_view("register/invalidkey", "Chiave di attivazione non valida", $data);
+                }
             }
         }
     }
 
     public function preactivate() {
         $key = $this->input->get("userkey");
+        $resetpwd = $this->input->get('resetpwd');
+        $data['resetpwd'] = isset($resetpwd) ? $resetpwd : FALSE;
         $data['key'] = $key;
         if ($this->User_model->get_user_by_key($key)) {
             $this->load->helper('form');
             $this->load->library('form_validation');
             $data["user_draft"] = $this->User_model;
-            $this->load_view("register/activate", "Attiva la registrazione", $data);
+            if ($resetpwd) {
+                $this->load_view("register/activate", "Ripristino password", $data);
+            } else {
+                $this->load_view("register/activate", "Attiva la registrazione", $data);
+            }
         } else {
-            $this->load_view("register/invalidkey", "Chiave di attivazione non valida", $data);
+            if ($resetpwd) {
+                $this->load_view("register/invalidkeyforresetpwd", "Chiave di attivazione non valida", $data);
+            } else {
+                $this->load_view("register/invalidkey", "Chiave di attivazione non valida", $data);
+            }
         }
     }
 
@@ -49,6 +68,7 @@ class Register extends MY_Controller {
         $mail = $this->input->post('email');
         if ($mail && $this->User_model->get_user($mail)) {
             $this->db->trans_begin();
+            $this->Validation_key_model->delete_key($this->User_model->id);
             $this->Validation_key_model->create_key($this->User_model->id);
             $this->db->trans_commit();
             $data["user_draft"] = $this->User_model;

@@ -3,22 +3,20 @@
 <div class="col-md-6">
     <div class="container text-center">
         <br />
-        <h2>Chiave di attivazione non valida</h2><br />
+        <h2>Chiave di ripristino password non valida</h2><br />
         <div class="col-md-2">
 
         </div>
 
         <div class="col-md-8">
             <p >
-                Mi spiace, questa chiave di attivazione non è presente nel nostro database: <?php echo $key ?>
+                Mi spiace, questa chiave per reimpostare la passowrd non è presente nel nostro database: <?php echo $key ?>
             </p>
             <p >
-                Potrebbe essere passato troppo tempo da quando hai inoltrato la richiesta di registrazione, prova a 
-                <a href="/register" title="Registrazione">
-                    ripetere la procedura</a>.
+                Potrebbe essere passato troppo tempo da quando hai inoltrato la richiesta di ripristino password, prova a ripetere la procedura.
             </p>
             <p>Scusaci per il disagio.</p>
-            
+
             <a class ="center-text" href="/">Torna alla pagina principale</a>
         </div>
         <div class="col-md-2">

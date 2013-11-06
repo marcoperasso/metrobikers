@@ -16,7 +16,7 @@
             <?php $url = base_url("register/preactivate?userkey=" . urlencode($validationkey)); ?>
             <h2 class="text-center">Attiva la registrazione</h2><br />
             <p>Ciao <?= $user_draft->name ?>, abbiamo ricevuto la tua richiesta di registrazione.</p>
-            <p>Utilizza questo link: <a href="<?= $url ?>"><?= $url ?></a> per completare la procedura</p>
+            <p>Utilizza questo link: <a href="<?= $url ?>"><?= $url ?></a> per completare la procedura.</p>
 
             <div class="col-md-2">
 

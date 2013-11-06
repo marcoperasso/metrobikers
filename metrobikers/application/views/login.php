@@ -13,7 +13,7 @@
                         </div>
                         <input type="password" name="password" id="loginpassword" placeholder="Password" class="required form-control"/>
                         <br>
-                        <p class="text-center"><small><a href="#" id="loginforget">Hai dimenticato la password?</a></small></p>
+                        <p class="text-center"><small><a href="#" id="loginforget">Ho dimenticato la password! Per pietà, posso reimpostarla?</a></small></p>
                     </fieldset>
                 </form>
             </div>
