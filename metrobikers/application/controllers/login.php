@@ -13,6 +13,16 @@ class Login extends MY_Controller {
         $this->load->library('Crypter');
         $pwd = $this->crypter->decrypt($this->input->get('pwd'));
         $mail = $this->input->get('email');
+        $this->dointernallogin($mail, $pwd);
+    }
+
+    public function domobilelogin() {
+        $pwd = $this->input->get('pwd');
+        $mail = $this->input->get('email');
+        $this->dointernallogin($mail, $pwd);
+    }
+
+    private function dointernallogin($mail, $pwd) {
         $this->load->model('User_model');
 
         $this->output->set_content_type('application/json');
