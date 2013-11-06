@@ -16,6 +16,7 @@ class Route_model extends MY_Model {
         $query = $this->db->get_where('routes ', array('userid' => $this->userid, 'name' => $this->name));
         if ($query->num_rows() >= 1) {
             $this->assign($query->row());
+            $this->latestupdate = strtotime($this->latestupdate);
             $this->_points = NULL;
             return TRUE;
         }
@@ -26,6 +27,8 @@ class Route_model extends MY_Model {
         $query = $this->db->get_where('routes ', array('userid' => $this->userid, 'id' => $this->id));
         if ($query->num_rows() >= 1) {
             $this->assign($query->row());
+            $this->latestupdate = strtotime($this->latestupdate);
+
             $this->_points = NULL;
             return TRUE;
         }
@@ -38,6 +41,8 @@ class Route_model extends MY_Model {
         foreach ($query->result_array() as $row) {
             $item = new Route_model();
             $item->assign($row);
+            $item->latestupdate = strtotime($item->latestupdate);
+
             array_push($result, $item);
         }
         return $result;
@@ -47,11 +52,30 @@ class Route_model extends MY_Model {
         $this->db->insert('routes', $this);
         $this->_points = NULL;
         $this->id = $this->db->insert_id();
+
+        $this->insert_points(FALSE);
     }
 
     public function update_route() {
         $this->db->where(array('id' => $this->id, 'userid' => $this->userid));
         $this->db->update('routes', $this);
+        $this->insert_points(TRUE);
+    }
+
+    private function insert_points($clear) {
+        $this->load->model("Route_points_model");
+        $this->Route_points_model->routeid = $this->id;
+        if ($clear)
+            $this->Route_points_model->delete_points();
+
+        foreach ($this->get_points() as $point) {
+            $this->Route_points_model->id = $point->id;
+            $this->Route_points_model->routeid = $this->id;
+            $this->Route_points_model->lat = $point->lat;
+            $this->Route_points_model->lon = $point->lon;
+            $this->Route_points_model->time = date('Y-m-d H:i:s', $point->time);
+            $this->Route_points_model->create_point();
+        }
     }
 
     private function load_points() {
@@ -68,6 +92,10 @@ class Route_model extends MY_Model {
             $this->load_points();
         }
         return $this->_points;
+    }
+
+    public function set_points($points) {
+        $this->_points = $points;
     }
 
 }

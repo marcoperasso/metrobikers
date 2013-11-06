@@ -46,7 +46,6 @@ class Mobile extends MY_Controller {
         $this->Route_model->userid = $userid;
         $response = NULL;
         if ($this->Route_model->get_route_by_id()) {
-            $this->Route_model->latestupdate = strtotime($this->Route_model->latestupdate);
             $this->Route_model->points = $this->Route_model->get_points();
             $response = $this->Route_model;
         }
@@ -59,11 +58,9 @@ class Mobile extends MY_Controller {
         $user = get_user();
         if ($user != NULL) {
             $this->load->model("Route_model");
-            $this->load->model("Route_points_model");
             $this->Route_model->userid = $user->id;
             $response = $this->Route_model->get_routes(date('Y-m-d H:i:s', $latestupdate));
             foreach ($response as $route) {
-                $route->latestupdate = strtotime($route->latestupdate);
                 $route->points = $route->get_points();
             }
         } else {
@@ -123,30 +120,21 @@ class Mobile extends MY_Controller {
             $json = $this->input->post("data");
             $route = json_decode($json);
             $this->load->model("Route_model");
-            $this->load->model("Route_points_model");
             try {
                 $this->Route_model->name = $route->name;
-
                 $this->Route_model->userid = $user->id;
                 $this->db->trans_begin();
                 if (!$this->Route_model->get_route()) {
                     $this->Route_model->latestupdate = date('Y-m-d H:i:s', $route->latestupdate);
+                    $this->Route_model->set_points($route->points);
                     $this->Route_model->create_route();
                 } else {
                     $this->Route_model->latestupdate = max(array(date('Y-m-d H:i:s', $route->latestupdate), $this->Route_model->latestupdate));
+                    $this->Route_model->set_points($route->points);
                     $this->Route_model->update_route();
                 }
 
-                $this->Route_points_model->delete_points();
 
-                foreach ($route->points as $point) {
-                    $this->Route_points_model->id = $point->id;
-                    $this->Route_points_model->routeid = $this->Route_model->id;
-                    $this->Route_points_model->lat = $point->lat;
-                    $this->Route_points_model->lon = $point->lon;
-                    $this->Route_points_model->time = date('Y-m-d H:i:s', $point->time);
-                    $this->Route_points_model->create_point();
-                }
                 $this->db->trans_commit();
                 if ($this->db->_error_message()) {
                     $response = array(
