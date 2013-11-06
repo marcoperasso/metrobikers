@@ -76,14 +76,19 @@ public class ConnectorService extends Service implements LocationListener {
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		if (intent == null || intent.getExtras() == null) {
+			Log.d(Const.ECOMMUTERS_TAG, "Receiving connector service start command with no data, the service will be stopped");
 			stopSelf();
 			return super.onStartCommand(intent, flags, startId);
 		}
 		Serializable obj = intent.getExtras().getSerializable(Task.TASK);
 		if (obj == null) {
+			Log.d(Const.ECOMMUTERS_TAG, "Receiving connector service start command with no data, the service will be stopped");
 			stopSelf();
 			return super.onStartCommand(intent, flags, startId);
 		}
+		Log.d(Const.ECOMMUTERS_TAG, "Receiving connector service start command");
+		
+		
 		final Task task = (Task) obj;
 		if (mWorkerThread == null) {
 			mWorkerThread = new Thread(new Runnable() {
@@ -235,13 +240,13 @@ public class ConnectorService extends Service implements LocationListener {
 				if (!followedRoutes.contains(r)) {
 					followedRoutes.add(r);
 					Log.i(Const.ECOMMUTERS_TAG,
-							getString(R.string.following_route, r.getName()));
+							String.format("You are following route %s", r.getName()));
 				}
 			} else {
 				if (followedRoutes.contains(r)) {
 					followedRoutes.remove(r);
 					Log.i(Const.ECOMMUTERS_TAG,
-							getString(R.string.not_following_route, r.getName()));
+							String.format("You ended following route %s", r.getName()));
 				}
 
 			}
@@ -274,8 +279,7 @@ public class ConnectorService extends Service implements LocationListener {
 					} else {
 						// per prima cosa elimino il listener corrente
 						mlocManager.removeUpdates(ConnectorService.this);
-						String text = getString(
-								R.string.live_tracking_frequency,
+						String text = String.format("Position updated every %1$d seconds and %2$d meters",
 								mGPSManager.getMinTimeSeconds(),
 								mGPSManager.getMinDinstanceMeters());
 						Log.i(Const.ECOMMUTERS_TAG, text);
@@ -306,8 +310,7 @@ public class ConnectorService extends Service implements LocationListener {
 					mlocManager.removeUpdates(ConnectorService.this);
 					if (mGPSManager.requestingLocation()) {
 
-						String text = getString(
-								R.string.live_tracking_frequency,
+						String text = String.format("Position updated every %1$d seconds and %2$d meters",
 								mGPSManager.getMinTimeSeconds(),
 								mGPSManager.getMinDinstanceMeters());
 						Log.i(Const.ECOMMUTERS_TAG, text);

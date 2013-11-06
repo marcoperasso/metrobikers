@@ -89,7 +89,7 @@ public class TrackingInfo implements Serializable, IJsonSerializable {
 		boolean b = stdDev < 2 * med;
 		if (!b)
 		{
-			Log.d(Const.ECOMMUTERS_TAG, String.format("Recording not evenly distribuded; mean: %f; standard deviation: %f", med, stdDev));
+			Log.d(Const.ECOMMUTERS_TAG, String.format("Tracking not evenly distributed; mean: %f; standard deviation: %f", med, stdDev));
 		}
 		return b;
 	}

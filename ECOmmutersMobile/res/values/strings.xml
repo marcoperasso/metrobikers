@@ -51,7 +51,6 @@
     <string name="livetracking">Traccia posizione in tempo reale</string>
     <string name="manual_live_tracking_on">Live tracking manuale attivato</string>
     <string name="live_tracking_on">Live tracking attivo, tocca qui per interromperlo.</string>
-    <string name="live_tracking_frequency">La tua posizione viene aggiornata ogni %1$d secondi e %2$d metri</string>
     <string name="manual_live_tracking_off">Live tracking manuale disattivato</string>
     <string name="live_tracking_off">Live tracking disattivato.</string>
     <string name="verifying_credentials">Sto verificando le credenziali&#8230;</string>
@@ -61,8 +60,6 @@
     <string name="route_properties">Proprietà&#8230;</string>
     <string name="confirm_delete_route">Confermi la cancellazione dell\'itinerario %s? Potrai comunque scaricarlo nuovamente dal server.</string>
     <string name="sample">sample</string>
-    <string name="following_route">Stai seguendo l\'itinerario \'%s\'</string>
-    <string name="not_following_route">Hai abbandonato l\'itinerario \'%s\'</string>
     <string name="yes">Si</string>
     <string name="no">No</string>
 
