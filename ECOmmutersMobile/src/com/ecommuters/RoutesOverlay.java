@@ -239,6 +239,10 @@ public class RoutesOverlay extends BalloonItemizedOverlay<OverlayItem> {
 					mContext.getString(R.string.app_name), text);
 			mOverlays.add(overlayitem);
 		}
+		// Workaround for bug that Google refuses to fix:
+        // <a href="http://osdir.com/ml/AndroidDevelopers/2009-08/msg01605.html">http://osdir.com/ml/AndroidDevelopers/2009-08/msg01605.html</a>
+        // <a href="http://code.google.com/p/android/issues/detail?id=2035">http://code.google.com/p/android/issues/detail?id=2035</a>
+        setLastFocusedIndex(-1);
 		populate();
 
 	}
