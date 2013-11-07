@@ -1,5 +1,9 @@
 package com.ecommuters;
 
+import java.util.Arrays;
+
+import android.util.Log;
+
 public class GPSManager {
 	int[] levels = new int[MAX_TIMER_INTERVALS + 2];// uno aggiuntivo per il
 													// tracking
@@ -37,7 +41,7 @@ public class GPSManager {
 
 	public boolean startGPS(int level) {
 		levels[level]++;
-
+		Log.d(Const.ECOMMUTERS_TAG, String.format("Raising GPS listening level %d; current level status: %s", level, Arrays.toString(levels)));
 		return updateCurrentLevel();
 	}
 
@@ -45,9 +49,11 @@ public class GPSManager {
 		if (level == MANUAL_TRACKING) {
 			for (int i = 0; i < levels.length; i++)
 				levels[i] = 0;
+			Log.d(Const.ECOMMUTERS_TAG, String.format("Lowering GPS listening level %d; current level status: %s", level, Arrays.toString(levels)));
 			return updateCurrentLevel();
 		}
 		levels[level]--;
+		Log.d(Const.ECOMMUTERS_TAG, String.format("Lowering GPS listening level %d; current level status: %s", level, Arrays.toString(levels)));
 		return updateCurrentLevel();
 	}
 

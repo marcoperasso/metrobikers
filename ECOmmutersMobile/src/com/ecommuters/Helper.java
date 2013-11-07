@@ -88,8 +88,8 @@ public class Helper {
 	}
 
 	public static void hideableMessage(Context context, final int messageId) {
-		//if (MySettings.isHiddenMessage(messageId))
-			//return;
+		if (MySettings.isHiddenMessage(messageId))
+			return;
 		Spanned msg = Html.fromHtml(context.getString(messageId));
 		AlertDialog dialog = new AlertDialog.Builder(context)
 				.setIcon(android.R.drawable.ic_dialog_alert).setTitle(R.string.app_name)
