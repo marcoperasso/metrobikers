@@ -31,7 +31,7 @@ public abstract class BalloonItemizedOverlay<Item extends OverlayItem> extends I
 	private int viewOffset;
 	final MapController mc;
 	private Item currentFocusedItem;
-	private int currentFocusedIndex;
+	protected int currentFocusedIndex;
 	
 	private boolean showClose = true;
 	private boolean showDisclosure = false;
@@ -74,13 +74,13 @@ public abstract class BalloonItemizedOverlay<Item extends OverlayItem> extends I
 		createAndDisplayBalloonOverlay();
 		
 		if (snapToCenter) {
-			animateTo(index, currentFocusedItem.getPoint());
+			animateTo(currentFocusedItem.getPoint());
 		}
 		
 		return true;
 	}
 
-	protected void animateTo(int index, GeoPoint center) {
+	protected void animateTo(GeoPoint center) {
 		mc.animateTo(center);
 	}
 
@@ -182,6 +182,10 @@ public abstract class BalloonItemizedOverlay<Item extends OverlayItem> extends I
 		} else {
 			createAndDisplayBalloonOverlay();
 		}	
+		
+		if (snapToCenter && currentFocusedItem != null) {
+			animateTo(currentFocusedItem.getPoint());
+		}
 	}
 	private boolean createAndDisplayBalloonOverlay(){
 		boolean isRecycled;

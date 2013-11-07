@@ -11,6 +11,7 @@ public class MySettings {
 	public static final String EMAIL = "o";
 	public static final String PASSWORD = "p";
 	public static final String USERID = "uid";
+	private static final String HIDDEN_MESSAGE_ = "hm_";
 	
 	public static Credentials CurrentCredentials;
 	
@@ -76,6 +77,19 @@ public class MySettings {
 		SharedPreferences.Editor editor = settings.edit();
 		editor.putLong(LATEST_SYNC, date);
 		editor.commit();
+	}
+
+	public static boolean isHiddenMessage(int messageId) {
+		SharedPreferences settings = MyApplication.getInstance().getSharedPreferences(PREFS_NAME, 0);
+		return settings.getBoolean(HIDDEN_MESSAGE_ + messageId, false);
+	}
+
+	public static void setHiddenMessage(int messageId, boolean set) {
+		SharedPreferences settings = MyApplication.getInstance().getSharedPreferences(PREFS_NAME, 0);
+		SharedPreferences.Editor editor = settings.edit();
+		editor.putBoolean(HIDDEN_MESSAGE_ + messageId, set);
+		editor.commit();
+		
 	}
 
 }

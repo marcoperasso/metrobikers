@@ -15,11 +15,16 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.net.ConnectivityManager;
+import android.text.Html;
+import android.text.Spanned;
+import android.text.method.LinkMovementMethod;
 import android.util.Log;
+import android.widget.TextView;
 
 public class Helper {
 
@@ -60,6 +65,8 @@ public class Helper {
 				.setNegativeButton(R.string.no, cancelListener).show();
 
 	}
+	
+	
 	public static void dialogMessage(final Context context, String message,
 			DialogInterface.OnClickListener okListener,
 			DialogInterface.OnClickListener cancelListener) {
@@ -80,6 +87,25 @@ public class Helper {
 
 	}
 
+	public static void hideableMessage(Context context, final int messageId) {
+		//if (MySettings.isHiddenMessage(messageId))
+			//return;
+		Spanned msg = Html.fromHtml(context.getString(messageId));
+		AlertDialog dialog = new AlertDialog.Builder(context)
+				.setIcon(android.R.drawable.ic_dialog_alert).setTitle(R.string.app_name)
+				.setMessage(msg)
+				.setPositiveButton(android.R.string.ok, null)
+				.setNegativeButton(R.string.no_show_again, new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int which) {
+						MySettings.setHiddenMessage(messageId, true);
+						dialog.dismiss();
+					}
+				}).show();
+		TextView messageView = (TextView) dialog
+				.findViewById(android.R.id.message);
+		messageView.setLinksClickable(true);
+		messageView.setMovementMethod(LinkMovementMethod.getInstance());
+	}
 	public static List<File> getFiles(Context context, String ext) {
 		File dir = context.getFilesDir();
 		final List<File> files = new ArrayList<File>();

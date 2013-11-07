@@ -46,10 +46,10 @@ public class MyMapActivity extends MapActivity {
 
 	private MapController mController;
 
-	private RoutesOverlay mTracksOverlay;
+	private RoutesOverlay mRoutesOverlay;
+	private ECOmmutersLocationOverlay myLocationOverlay;
 	private boolean mTrackGPSPosition;
 
-	private MyLocationOverlay myLocationOverlay;
 	MenuItem mMenuItemTrackGpsPosition;
 
 	private LocationManager mlocManager;
@@ -158,11 +158,11 @@ public class MyMapActivity extends MapActivity {
 		List<Overlay> mapOverlays = mMap.getOverlays();
 		Drawable drawable = this.getResources().getDrawable(
 				R.drawable.ic_routemarker);
-		mTracksOverlay = new RoutesOverlay(drawable, this, mMap);
-		mapOverlays.add(mTracksOverlay);
+		mRoutesOverlay = new RoutesOverlay(drawable, this, mMap);
+		mapOverlays.add(mRoutesOverlay);
 
 		myLocationOverlay = new ECOmmutersLocationOverlay(this, mMap,
-				mController);
+				mController, mRoutesOverlay);
 		myLocationOverlay.runOnFirstFix(new Runnable() {
 			public void run() {
 				try {
@@ -186,7 +186,7 @@ public class MyMapActivity extends MapActivity {
 			Serializable positions = savedInstanceState
 					.getSerializable(Const.POSITIONS);
 			if (positions != null)
-				mTracksOverlay
+				mRoutesOverlay
 						.setPositions((ArrayList<ECommuterPosition>) positions);
 			askingRouteName = savedInstanceState.getBoolean(Const.ASKING_ROUTE, false);
 			if (askingRouteName)
@@ -197,7 +197,7 @@ public class MyMapActivity extends MapActivity {
 
 		mRoutesChangedHandler = new GenericEventHandler() {
 			public void onEvent(Object sender, EventArgs args) {
-				mTracksOverlay.setRoutes(MyApplication.getInstance()
+				mRoutesOverlay.setRoutes(MyApplication.getInstance()
 						.getRoutes());
 				mMap.invalidate();
 			}
@@ -240,12 +240,14 @@ public class MyMapActivity extends MapActivity {
 			}
 
 		});
-		mPositionsDownloader = new PositionsDownlader(mMap, mTracksOverlay,
+		mPositionsDownloader = new PositionsDownlader(mMap, mRoutesOverlay,
 				this);
 
-		mTracksOverlay.setRoutes(MyApplication.getInstance().getRoutes());
+		mRoutesOverlay.setRoutes(MyApplication.getInstance().getRoutes());
 		MyApplication.getInstance().RecordingServiceChanged
 				.addHandler(mRecordingServiceChangedHandler);
+		
+		Helper.hideableMessage(this, R.string.warning_to_user);
 	}
 
 	@Override
@@ -556,7 +558,7 @@ public class MyMapActivity extends MapActivity {
 					.getLongitudeE6());
 			outState.putInt(Const.ZoomLevel, mMap.getZoomLevel());
 			outState.putSerializable(Const.POSITIONS,
-					mTracksOverlay.getPositions());
+					mRoutesOverlay.getPositions());
 			outState.putBoolean(Const.ASKING_ROUTE, askingRouteName);
 		} catch (Exception e) {
 			Log.e(Const.ECOMMUTERS_TAG, Log.getStackTraceString(e));

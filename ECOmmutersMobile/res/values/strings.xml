@@ -62,5 +62,7 @@
     <string name="sample">sample</string>
     <string name="yes">Si</string>
     <string name="no">No</string>
+    <string name="warning_to_user">Questa applicazione è in grado di tracciare la tua posizione e mandarla al sito &lt;a href=&quot;http://www.ecommuters.com&quot;&gt;www.ecommuters.com&lt;/a&gt;.&lt;br&gt;Ogni volta che questo accadrà, verrai avvisato con un messaggio di notifica; potrai comunque in ogni momento disabilitare questo comportamento.</string>
+    <string name="no_show_again">Non mostrare più</string>
 
 </resources>

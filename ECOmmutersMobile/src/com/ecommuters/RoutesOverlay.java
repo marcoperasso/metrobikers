@@ -11,6 +11,7 @@ import android.graphics.Point;
 import android.graphics.drawable.Drawable;
 import android.text.format.DateFormat;
 import android.util.Log;
+import android.view.WindowId.FocusObserver;
 
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapView;
@@ -39,6 +40,7 @@ public class RoutesOverlay extends BalloonItemizedOverlay<OverlayItem> {
 	public RoutesOverlay(Drawable defaultMarker, MyMapActivity context,
 			MyMapView map) {
 		super(boundCenterBottom(defaultMarker), map);
+		super.setSnapToCenter(true);
 		mContext = context;
 		// mImageView = new ImageView(mContext);
 		pnt.setStyle(Paint.Style.FILL);
@@ -55,20 +57,20 @@ public class RoutesOverlay extends BalloonItemizedOverlay<OverlayItem> {
 	@Override
 	protected void onBalloonOpen(int index) {
 		if (index < mPositions.size()) {
-			final ECommuterPosition pos = mPositions.get(index);
+			final ECommuterPosition pinnedPosition = mPositions.get(index);
 			new Thread(new Runnable() {
 				public void run() {
 					try {
 						boolean needRefresh = false;
-						for (int id : pos.getRoutes())
+						for (int id : pinnedPosition.getRoutes())
 							try {
 								Route route = null;
-								String ids = pos.userId + "-" + id;
+								String ids = pinnedPosition.userId + "-" + id;
 								if (cachedRoutes.containsKey(ids))
 									route = cachedRoutes.get(ids);
 								else
 								{
-									route = HttpManager.getRoute(pos.userId,id);
+									route = HttpManager.getRoute(pinnedPosition.userId,id);
 									cachedRoutes.put(ids, route);
 								}
 								synchronized (followedRoutes) {
@@ -103,7 +105,6 @@ public class RoutesOverlay extends BalloonItemizedOverlay<OverlayItem> {
 			if (needRefresh)
 				mMap.invalidate();
 		}
-
 		super.onBalloonHide();
 	}
 
@@ -225,9 +226,11 @@ public class RoutesOverlay extends BalloonItemizedOverlay<OverlayItem> {
 	}
 
 	public void setPositions(ArrayList<ECommuterPosition> positions) {
+		ECommuterPosition pinnedPosition = (getFocus() == null) ? null : mPositions.get(currentFocusedIndex);
 		mPositions = positions;
 		mOverlays.clear();
 
+		OverlayItem itemToFocus = null;
 		for (ECommuterPosition pt : positions) {
 			GeoPoint point = new GeoPoint(pt.lat, pt.lon);
 			java.text.DateFormat timeFormat = DateFormat
@@ -238,17 +241,25 @@ public class RoutesOverlay extends BalloonItemizedOverlay<OverlayItem> {
 			OverlayItem overlayitem = new OverlayItem(point,
 					mContext.getString(R.string.app_name), text);
 			mOverlays.add(overlayitem);
+			
+			if (pinnedPosition != null && pinnedPosition.userId == pt.userId)
+			{
+				itemToFocus = overlayitem;
+			}
 		}
 		// Workaround for bug that Google refuses to fix:
         // <a href="http://osdir.com/ml/AndroidDevelopers/2009-08/msg01605.html">http://osdir.com/ml/AndroidDevelopers/2009-08/msg01605.html</a>
         // <a href="http://code.google.com/p/android/issues/detail?id=2035">http://code.google.com/p/android/issues/detail?id=2035</a>
         setLastFocusedIndex(-1);
 		populate();
-
+		if (itemToFocus != null)
+			setFocus(itemToFocus);
+		
 	}
 
 	public ArrayList<ECommuterPosition> getPositions() {
 		return mPositions;
 	}
+
 
 }
