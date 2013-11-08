@@ -3,7 +3,6 @@
 class Route_points_model extends MY_Model {
 
     var $id;
-    var $routeid;
     var $lat;
     var $lon;
     var $time;
@@ -12,18 +11,9 @@ class Route_points_model extends MY_Model {
         parent::__construct();
     }
 
-    public function get_point() {
-        $query = $this->db->get_where('routepoints ', array('routeid' => $this->routeid, 'id' => $this->id));
-        if ($query->num_rows() === 1) {
-            $this->assign($query->row());
-            return TRUE;
-        }
-        return FALSE;
-    }
-
-    public function get_points() {
+    public function get_points($routeid) {
         $this->db->order_by('time', 'asc');
-        $query = $this->db->get_where('routepoints ', array('routeid' => $this->routeid));
+        $query = $this->db->get_where('routepoints ', array('routeid' => $routeid));
         $result = array();
         foreach ($query->result_array() as $row) {
             $item = new Route_points_model();
@@ -33,17 +23,21 @@ class Route_points_model extends MY_Model {
         return $result;
     }
 
-    public function delete_points() {
-        $this->db->where(array('routeid' => $this->routeid));
+    public function delete_points($routeid) {
+        $this->db->where(array('routeid' => $routeid));
         $this->db->delete('routepoints');
     }
-    public function update_point() {
-        $this->db->where(array('routeid' => $this->routeid, 'id' => $this->id));
-        $this->db->update('routepoints', $this);
-    }
 
-    public function create_point() {
-        $this->db->insert('routepoints', $this);
+    public function create_points($routeid, $points) {
+        foreach ($points as $point) {
+            $this->db->insert('routepoints', array(
+            'id' => $point->id,
+            'routeid' => $routeid,
+            'lat' => $point->lat,
+            'lon' => $point->lon,
+            'time' => date('Y-m-d H:i:s', $point->time)
+            ));
+        }
     }
 
 }

@@ -46,7 +46,7 @@ class Download extends MY_Controller {
   </trk>
 </gpx>';
         header('Content-Type: text/xml;charset=UTF-8');
-       // header("Content-Disposition:attachment; filename='" . $route_name. ".gpx'");
+        header("Content-Disposition:attachment; filename='" . $route_name. ".gpx'");
         echo $xml;
     }
 

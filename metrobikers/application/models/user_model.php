@@ -10,6 +10,7 @@ class User_model extends MY_Model {
     var $active;
     var $gender;
     var $activationdate;
+    var $password;
 
     public function __construct() {
         parent::__construct();

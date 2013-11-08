@@ -64,24 +64,16 @@ class Route_model extends MY_Model {
 
     private function insert_points($clear) {
         $this->load->model("Route_points_model");
-        $this->Route_points_model->routeid = $this->id;
         if ($clear)
-            $this->Route_points_model->delete_points();
+            $this->Route_points_model->delete_points($this->id);
 
-        foreach ($this->get_points() as $point) {
-            $this->Route_points_model->id = $point->id;
-            $this->Route_points_model->routeid = $this->id;
-            $this->Route_points_model->lat = $point->lat;
-            $this->Route_points_model->lon = $point->lon;
-            $this->Route_points_model->time = date('Y-m-d H:i:s', $point->time);
-            $this->Route_points_model->create_point();
-        }
+        $this->Route_points_model->create_points($this->id, $this->get_points());
+        
     }
 
     private function load_points() {
         $this->load->model("Route_points_model");
-        $this->Route_points_model->routeid = $this->id;
-        $this->_points = $this->Route_points_model->get_points();
+        $this->_points = $this->Route_points_model->get_points($this->id);
         foreach ($this->_points as &$point) {
             $point->time = strtotime($point->time);
         }

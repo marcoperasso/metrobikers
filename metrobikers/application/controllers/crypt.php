@@ -14,7 +14,8 @@ class Crypt extends MY_Controller {
     public function index() {
         header('Content-Type: text/plain;charset=UTF-8');
         $this->load->library('Crypter');
-        echo $this->crypter->get_script();
+        $s = $this->crypter->get_script();
+        echo $s;
     }
 
 }
