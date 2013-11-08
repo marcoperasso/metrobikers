@@ -36,6 +36,7 @@ public class RoutesOverlay extends BalloonItemizedOverlay<OverlayItem> {
 	private ArrayList<ECommuterPosition> mPositions;
 	private ArrayList<Route> followedRoutes = new ArrayList<Route>();
 	private Hashtable<String, Route> cachedRoutes = new Hashtable<String, Route>();
+	private ECommuterPosition pinnedPosition;
 
 	public RoutesOverlay(Drawable defaultMarker, MyMapActivity context,
 			MyMapView map) {
@@ -57,7 +58,7 @@ public class RoutesOverlay extends BalloonItemizedOverlay<OverlayItem> {
 	@Override
 	protected void onBalloonOpen(int index) {
 		if (index < mPositions.size()) {
-			final ECommuterPosition pinnedPosition = mPositions.get(index);
+			pinnedPosition = mPositions.get(index);
 			new Thread(new Runnable() {
 				public void run() {
 					try {
@@ -105,6 +106,7 @@ public class RoutesOverlay extends BalloonItemizedOverlay<OverlayItem> {
 			if (needRefresh)
 				mMap.invalidate();
 		}
+		pinnedPosition = null;
 		super.onBalloonHide();
 	}
 
@@ -226,7 +228,6 @@ public class RoutesOverlay extends BalloonItemizedOverlay<OverlayItem> {
 	}
 
 	public void setPositions(ArrayList<ECommuterPosition> positions) {
-		ECommuterPosition pinnedPosition = (getFocus() == null) ? null : mPositions.get(currentFocusedIndex);
 		mPositions = positions;
 		mOverlays.clear();
 

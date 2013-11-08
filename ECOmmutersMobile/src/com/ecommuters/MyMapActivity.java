@@ -193,6 +193,7 @@ public class MyMapActivity extends MapActivity {
 				saveRecordedRouteIfNeeded();
 		} else {
 			testVersion();
+			Helper.hideableMessage(this, R.string.warning_to_user);
 		}
 
 		mRoutesChangedHandler = new GenericEventHandler() {
@@ -247,7 +248,6 @@ public class MyMapActivity extends MapActivity {
 		MyApplication.getInstance().RecordingServiceChanged
 				.addHandler(mRecordingServiceChangedHandler);
 		
-		Helper.hideableMessage(this, R.string.warning_to_user);
 	}
 
 	@Override
