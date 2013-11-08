@@ -1,13 +1,11 @@
-<div class="col-md-5">
-    <div style="padding-top: 48px;">
-        <a href="/" title="Vai alla pagina principale">
-            <img class="logo" src="/asset/img/logo.png" id="ecommuter_logo">
-        </a>
-    </div>
+<div class="col-md-4 center-text">
+    <a href="/" title="Vai alla pagina principale">
+        <img class="logo" src="/asset/img/logo.png" id="ecommuter_logo">
+    </a>
 </div>
-<div class="col-md-7">
+<div class="col-md-8">
     <div class="jumbotron">
-        <div class="container text-center">
+        <div class="container">
             <h1><b>Benvenuto in ECOmmuters!</b></h1>
             <p>Cerca nuovi compagni di viaggio con cui condividere i tuoi spostamenti <i><b>E</b></I>-cologici.</p>
             <p>

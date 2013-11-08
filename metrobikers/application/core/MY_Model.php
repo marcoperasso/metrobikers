@@ -9,7 +9,7 @@ class MY_Model extends CI_Model {
     protected function assign($object) {
         $ar = is_array($object) ? $object : get_object_vars($object);
         foreach ($this as $key => $value) {
-            if (property_exists($ar, $key))
+			if (array_key_exists($key, $ar))
                 $this->$key = $ar[$key];
         }
     }

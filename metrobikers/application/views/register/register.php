@@ -1,5 +1,5 @@
          
-<div class="col-md-5">
+<div class="col-md-5 center-text">
     <a href="/" title="Vai alla pagina principale">
         <img class="logo" src="/asset/img/logo.png" id="ecommuter_logo">
     </a>
@@ -9,7 +9,7 @@
     <?php echo validation_errors(); ?>
     <div class="container">
         <br />
-        <h2 class="text-center">Stai per diventare un ECOmmuter!</h2><br />
+        <h2 class="text-center">Ti stimo, stai per diventare un ECOmmuter!</h2><br />
         <?php echo form_open(base_url('register/register')) ?>
         <div class="col-md-1"></div>
 

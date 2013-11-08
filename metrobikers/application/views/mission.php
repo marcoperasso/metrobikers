@@ -2,8 +2,8 @@
 
 <div class="row">
     <div class="col-md-1"></div>
-    <div class="col-md-4">
-        <a href="<?php echo base_url() ?>" title="Vai alla pagina principale">
+    <div class="col-md-4 center-text">
+        <a href="/" title="Vai alla pagina principale">
             <img class ="logo" src="<?php echo base_url() ?>asset/img/logo.png" id="ecommuter_logo">
         </a>
     </div>
@@ -34,8 +34,7 @@
             percorrono in bicicletta il tuo stesso tragitto casa-lavoro ed unisciti a loro.
             Facendo massa critica saremo più rispettati dagli automobilisti, godremo di maggiore visibilità
             aumentando la sicurezza dello spostamento, potremo chiedere a gran voce alle amministrazioni 
-            locali la creazione di percorsi ciclabili perchè proporremo i tragitti che percorriamo 
-            assieme tutti i giorni.</p>
+            locali la creazione di percorsi ciclabili, forti dei dati che avremo raccolto sui nostri spostamenti giornalieri.</p>
         <p><b>Questa è la missione di ECOmmuters</b>: facilitare la ricerca di compagni di viaggio 
             al fine di coinvolgere più persone possibile per dare loro visibilità come singoli e come categoria, 
             verso un futuro in cui in città 
