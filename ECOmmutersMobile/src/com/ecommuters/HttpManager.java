@@ -25,8 +25,8 @@ import android.util.Log;
 import android.webkit.CookieManager;
 
 public class HttpManager {
-	// private static final String host = "http://10.0.2.2:8888/";
-	private static final String host = "http://www.ecommuters.com/";
+	private static final boolean debuggingServer = false;
+	private static final String host = debuggingServer ? "http://10.0.2.2:8888/" : "http://www.ecommuters.com/";
 	private static final String getVersionRequest = host + "mobile/version";
 	private static final String getUserRequest = host + "mobile/user";
 	private static final String getUserLoggedRequest = host
@@ -121,7 +121,8 @@ public class HttpManager {
 		StringBuilder cookie = new StringBuilder();
 		cookie.append(CookieManager.getInstance().getCookie(
 				HTTP_WWW_ECOMMUTERS_COM_LOGIN));
-		// cookie.append(";XDEBUG_SESSION=netbeans-xdebug");
+		if (debuggingServer)
+			cookie.append(";XDEBUG_SESSION=netbeans-xdebug");
 		return cookie.toString();
 	}
 

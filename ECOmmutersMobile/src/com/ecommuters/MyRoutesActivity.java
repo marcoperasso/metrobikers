@@ -20,6 +20,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class MyRoutesActivity extends Activity {
 
@@ -80,7 +81,11 @@ public class MyRoutesActivity extends Activity {
 						public void response(boolean success, String message) {
 
 							if (!success)
+							{
+								progressBar.dismiss();
+								Toast.makeText(MyRoutesActivity.this, message, Toast.LENGTH_LONG).show();
 								return;
+							}
 
 							AsyncTask<Void, Void, Void> task = new AsyncTask<Void, Void, Void>() {
 
