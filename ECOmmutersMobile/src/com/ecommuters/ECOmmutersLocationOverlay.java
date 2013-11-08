@@ -2,6 +2,7 @@ package com.ecommuters;
 
 import android.content.Context;
 import android.location.Location;
+import android.location.LocationManager;
 
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapController;
@@ -22,11 +23,11 @@ public class ECOmmutersLocationOverlay extends MyLocationOverlay {
 
 	@Override
 	public synchronized void onLocationChanged(Location loc) {
-		//se ho il balloon aperto, seguo il balloon e non la mia posizione
-		if (mRoutesOverlay.getFocus() != null)
-			return;
-		mController.animateTo(new GeoPoint((int) (loc.getLatitude() * 1e6),
-				(int) (loc.getLongitude() * 1e6)));
+		// se ho il balloon aperto, seguo il balloon e non la mia posizione
+		if (mRoutesOverlay.getFocus() == null && loc.getProvider().equals(LocationManager.GPS_PROVIDER)) {
+			mController.animateTo(new GeoPoint((int) (loc.getLatitude() * 1e6),
+					(int) (loc.getLongitude() * 1e6)));
+		}
 		super.onLocationChanged(loc);
 	}
 }
