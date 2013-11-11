@@ -124,12 +124,14 @@ class Mobile extends MY_Controller {
                 $this->Route_model->name = $route->name;
                 $this->Route_model->userid = $user->id;
                 $this->db->trans_begin();
+                
                 if (!$this->Route_model->get_route()) {
                     $this->Route_model->latestupdate = date('Y-m-d H:i:s', $route->latestupdate);
                     $this->Route_model->set_points($route->points);
                     $this->Route_model->create_route();
                 } else {
-                    $this->Route_model->latestupdate = max(array(date('Y-m-d H:i:s', $route->latestupdate), $this->Route_model->latestupdate));
+                    $latestupd = max(array($route->latestupdate, $this->Route_model->latestupdate));
+                    $this->Route_model->latestupdate = date('Y-m-d H:i:s', $latestupd);
                     $this->Route_model->set_points($route->points);
                     $this->Route_model->update_route();
                 }
@@ -168,22 +170,12 @@ class Mobile extends MY_Controller {
             $json = $this->input->post("data");
             $route = json_decode($json);
             $this->load->model("Tracking_model");
-            $this->load->model("Tracking_points_model");
             try {
                 $this->db->trans_begin();
                 $this->Tracking_model->routeid = $route->routeid;
                 $this->Tracking_model->userid = $user->id;
                 $this->Tracking_model->time = date('Y-m-d H:i:s', $route->time);
                 $this->Tracking_model->create_tracking();
-
-                foreach ($route->points as $point) {
-                    $this->Tracking_points_model->id = $point->id;
-                    $this->Tracking_points_model->trackingid = $this->Tracking_model->id;
-                    $this->Tracking_points_model->lat = $point->lat;
-                    $this->Tracking_points_model->lon = $point->lon;
-                    $this->Tracking_points_model->time = date('Y-m-d H:i:s', $point->time);
-                    $this->Tracking_points_model->create_point();
-                }
                 $this->db->trans_commit();
                 if ($this->db->_error_message()) {
                     $response = array(

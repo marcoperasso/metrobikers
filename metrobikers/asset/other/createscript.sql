@@ -1,12 +1,11 @@
 delimiter $$
 
 CREATE TABLE `routepoints` (
-  `id` int(11) NOT NULL,
   `routeid` int(11) NOT NULL,
+  `time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `lat` bigint(20) DEFAULT NULL,
   `lon` bigint(20) DEFAULT NULL,
-  `time` datetime DEFAULT NULL,
-  PRIMARY KEY (`id`,`routeid`),
+  PRIMARY KEY (`routeid`,`time`),
   KEY `route` (`routeid`),
   CONSTRAINT `route` FOREIGN KEY (`routeid`) REFERENCES `routes` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8$$
@@ -81,19 +80,4 @@ CREATE TABLE `trackings` (
   KEY `tracking_route` (`routeid`),
   CONSTRAINT `tracking_route` FOREIGN KEY (`routeid`) REFERENCES `routes` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8$$
-
-
-delimiter $$
-
-CREATE TABLE `trackingpoints` (
-  `id` int(11) NOT NULL DEFAULT '0',
-  `trackingid` int(11) NOT NULL,
-  `time` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
-  `lat` bigint(20) DEFAULT NULL,
-  `lon` bigint(20) DEFAULT NULL,
-  PRIMARY KEY (`id`,`trackingid`),
-  KEY `tracking_point_tracking` (`trackingid`),
-  CONSTRAINT `tracking_point_tracking` FOREIGN KEY (`trackingid`) REFERENCES `trackings` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8$$
-
 

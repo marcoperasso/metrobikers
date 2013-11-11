@@ -2,7 +2,6 @@
 
 class Route_points_model extends MY_Model {
 
-    var $id;
     var $lat;
     var $lon;
     var $time;
@@ -30,13 +29,13 @@ class Route_points_model extends MY_Model {
 
     public function create_points($routeid, $points) {
         foreach ($points as $point) {
-            $this->db->insert('routepoints', array(
-            'id' => $point->id,
+            $pt = array(
             'routeid' => $routeid,
             'lat' => $point->lat,
             'lon' => $point->lon,
             'time' => date('Y-m-d H:i:s', $point->time)
-            ));
+            ); 
+            $this->db->insert('routepoints', $pt);
         }
     }
 
