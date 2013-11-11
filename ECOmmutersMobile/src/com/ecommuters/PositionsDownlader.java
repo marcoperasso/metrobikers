@@ -6,6 +6,7 @@ import android.os.AsyncTask;
 import android.os.Handler;
 
 import com.google.android.maps.GeoPoint;
+import com.google.android.maps.MapView;
 
 public class PositionsDownlader {
 	private Handler mHandler;
@@ -16,11 +17,11 @@ public class PositionsDownlader {
 
 	private RoutesOverlay mRoutesOverlay;
 
-	private MyMapView mMap;
+	private MapView mMap;
 
 	private MyMapActivity activity;
 
-	public PositionsDownlader(MyMapView map, RoutesOverlay overlay,
+	public PositionsDownlader(MapView map, RoutesOverlay overlay,
 			MyMapActivity activity) {
 		this.mMap = map;
 		this.mRoutesOverlay = overlay;

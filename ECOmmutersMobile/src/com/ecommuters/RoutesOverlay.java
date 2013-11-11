@@ -28,7 +28,7 @@ public class RoutesOverlay extends BalloonItemizedOverlay<OverlayItem> {
 	private Route[] routes;
 	// private ImageView mImageView;
 	private Paint pnt = new Paint();
-	private MyMapView mMap;
+	private MapView mMap;
 	// Bitmap trackBitmap;
 	GeoPoint trackRectOrigin;
 	int currentZoomLevel = -1;
@@ -39,7 +39,7 @@ public class RoutesOverlay extends BalloonItemizedOverlay<OverlayItem> {
 	private ECommuterPosition pinnedPosition;
 
 	public RoutesOverlay(Drawable defaultMarker, MyMapActivity context,
-			MyMapView map) {
+			MapView map) {
 		super(boundCenterBottom(defaultMarker), map);
 		super.setSnapToCenter(true);
 		mContext = context;

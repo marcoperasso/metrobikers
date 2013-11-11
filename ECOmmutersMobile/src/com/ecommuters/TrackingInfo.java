@@ -60,38 +60,24 @@ public class TrackingInfo implements Serializable, IJsonSerializable {
 	}
 
 	boolean isEqualDistribution(int maxIdx) {
-		List<Integer> distances = new ArrayList<Integer>();
-		int sum = 0;
-		int a = -1;
+		int segmentLength = maxIdx / 4; 
+		int lower = 0;
+		int upper = segmentLength;
 		for (int i : indexes)
 		{
-			int distance = i - a;
-			sum += distance;
-			distances.add(distance);
-			a = i;
-		}
-		int distance = maxIdx - a;
-		sum += distance;
-		distances.add(distance);
-		
-		double med = sum / distances.size();
-		
-		double varSum = 0.0;
-		
-		for (int d : distances)
-		{
-			varSum += Math.pow((d - med), 2.0);
+			if (i > lower && i < upper)
+			{
+				lower = upper;
+				upper = upper + segmentLength;
+			}
+			if (i > upper)
+				return false;
+			
+			if (upper > maxIdx)
+				return true;
 		}
 		
-		double variance = varSum / distances.size();
-		double stdDev = Math.sqrt(variance);
-		
-		boolean b = stdDev < 2 * med;
-		if (!b)
-		{
-			Log.d(Const.ECOMMUTERS_TAG, String.format("Tracking not evenly distributed; mean: %f; standard deviation: %f", med, stdDev));
-		}
-		return b;
+		return false;
 	}
 
 	public static TrackingInfo readTrackingInfo(Context context, String fileName) {

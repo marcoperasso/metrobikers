@@ -31,9 +31,16 @@ public class MyApplication extends Application {
 		super.onCreate();
 		sInstance = this;
 		CookieSyncManager.createInstance(this);
-		//controllo se devo mandare degli itinerari al server
+		// controllo se devo mandare degli itinerari al server
 		Intent service = new Intent(this, SyncService.class);
 		this.startService(service);
+		new Thread(new Runnable() {
+
+			public void run() {
+				initRoutes();
+
+			}
+		}).start();
 	}
 
 	@Override
@@ -47,20 +54,24 @@ public class MyApplication extends Application {
 	}
 
 	Route[] getRoutes() {
-		Route[] list;
+		initRoutes();
+		synchronized (routeSemaphore) {
+			Route[] list = new Route[mRoutes.size()];
+			mRoutes.toArray(list);
+			return list;
+		}
+	}
+
+	private void initRoutes() {
 		boolean routeChanged = false;
 		synchronized (routeSemaphore) {
 			if (mRoutes == null) {
-				mRoutes = Route.readAllRoutes(getApplicationContext());
+				mRoutes = Route.readAllRoutes(this);
 				routeChanged = true;
 			}
-			list = new Route[mRoutes.size()];
-			mRoutes.toArray(list);
 		}
 		if (routeChanged)
 			OnRouteChanged();
-		return list;
-
 	}
 
 	private void OnRouteChanged() {

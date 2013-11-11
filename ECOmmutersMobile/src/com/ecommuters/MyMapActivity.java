@@ -37,12 +37,13 @@ import android.widget.Toast;
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapActivity;
 import com.google.android.maps.MapController;
+import com.google.android.maps.MapView;
 import com.google.android.maps.MyLocationOverlay;
 import com.google.android.maps.Overlay;
 
 public class MyMapActivity extends MapActivity {
 
-	private MyMapView mMap;
+	private MapView mMap;
 
 	private MapController mController;
 
@@ -149,7 +150,7 @@ public class MyMapActivity extends MapActivity {
 
 		mTrackGPSPosition = MySettings.getTrackGPSPosition(this);
 
-		mMap = (MyMapView) this.findViewById(R.id.mapview1);
+		mMap = (MapView) this.findViewById(R.id.mapview1);
 		mController = mMap.getController();
 		mMap.setSatellite(false);
 		mMap.displayZoomControls(true);
@@ -192,7 +193,7 @@ public class MyMapActivity extends MapActivity {
 			if (askingRouteName)
 				saveRecordedRouteIfNeeded();
 		} else {
-			testVersion();
+			//testVersion();
 			Helper.hideableMessage(this, R.string.warning_to_user);
 		}
 
