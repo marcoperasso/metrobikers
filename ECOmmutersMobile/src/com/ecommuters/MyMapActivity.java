@@ -245,7 +245,14 @@ public class MyMapActivity extends MapActivity {
 		mPositionsDownloader = new PositionsDownlader(mMap, mRoutesOverlay,
 				this);
 
-		mRoutesOverlay.setRoutes(MyApplication.getInstance().getRoutes());
+		MyApplication.getInstance().requestRoutes(this, 
+				new OnRoutesAvailable(){
+					public void gotRoutes(Route[] routes) {
+						mRoutesOverlay.setRoutes(routes);
+						mMap.invalidate();
+					}
+			});
+	
 		MyApplication.getInstance().RecordingServiceChanged
 				.addHandler(mRecordingServiceChangedHandler);
 		

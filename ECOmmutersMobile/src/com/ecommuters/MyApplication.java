@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.TimeZone;
 
+import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.Application;
 import android.app.PendingIntent;
@@ -34,13 +35,6 @@ public class MyApplication extends Application {
 		// controllo se devo mandare degli itinerari al server
 		Intent service = new Intent(this, SyncService.class);
 		this.startService(service);
-		new Thread(new Runnable() {
-
-			public void run() {
-				initRoutes();
-
-			}
-		}).start();
 	}
 
 	@Override
@@ -140,6 +134,22 @@ public class MyApplication extends Application {
 	public ConnectorService getConnectorService() {
 		return this.connectorService;
 
+	}
+
+	public void requestRoutes(final Activity activity, final OnRoutesAvailable onRoutesAvailable) {
+		new Thread(new Runnable(){
+
+			public void run() {
+				final Route[] routes = getRoutes();
+				activity.runOnUiThread(new Runnable(){
+
+					public void run() {
+						onRoutesAvailable.gotRoutes(routes);
+						
+					}});
+				
+			}}).start();
+		
 	}
 
 }
