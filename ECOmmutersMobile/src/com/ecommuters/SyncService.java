@@ -90,7 +90,10 @@ public class SyncService extends IntentService {
 				boolean allSent = false;
 				try {
 					if (!success)
+					{
+						Log.e(Const.ECOMMUTERS_TAG, message);
 						return;
+					}
 					sendTrackings(files);
 					sendRoutes(newRoutes);
 					allSent = true;

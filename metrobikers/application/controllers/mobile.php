@@ -174,7 +174,8 @@ class Mobile extends MY_Controller {
                 $this->db->trans_begin();
                 $this->Tracking_model->routeid = $route->routeid;
                 $this->Tracking_model->userid = $user->id;
-                $this->Tracking_model->time = date('Y-m-d H:i:s', $route->time);
+                $this->Tracking_model->start = date('Y-m-d H:i:s', $route->start);
+                $this->Tracking_model->end = date('Y-m-d H:i:s', $route->end);
                 $this->Tracking_model->create_tracking();
                 $this->db->trans_commit();
                 if ($this->db->_error_message()) {

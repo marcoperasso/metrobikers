@@ -20,11 +20,13 @@ public class TrackingInfo implements Serializable, IJsonSerializable {
 	private List<RoutePoint> positions = new ArrayList<RoutePoint>();
 	private List<Integer> indexes = new ArrayList<Integer>();
 	private int routeId;
-	private long time;
+	private long startTime;
+	private long endTime;
 	
 	public TrackingInfo(Route route) {
 		this.routeId = route.getId();
-		this.time = System.currentTimeMillis() / 1000;
+		this.startTime = System.currentTimeMillis() / 1000;
+		this.endTime = System.currentTimeMillis() / 1000;
 	}
 
 	public int getLatestIndex() {
@@ -41,7 +43,7 @@ public class TrackingInfo implements Serializable, IJsonSerializable {
 		indexes.add(index);
 		positions.add(new RoutePoint(position.lat,
 				position.lon, position.time));
-		this.time = position.time;
+		this.endTime = position.time;
 
 	}
 
@@ -88,11 +90,8 @@ public class TrackingInfo implements Serializable, IJsonSerializable {
 	public JSONObject toJson() throws JSONException {
 		JSONObject obj = new JSONObject();
 		obj.put("routeid", routeId);
-		obj.put("time", time);
-		JSONArray arPoints = new JSONArray();
-		obj.put("points", arPoints);
-		for (RoutePoint pt : positions)
-			arPoints.put(pt.toJson());
+		obj.put("start", startTime);
+		obj.put("end", endTime);
 		return obj;
 	}
 

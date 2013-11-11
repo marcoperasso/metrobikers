@@ -72,12 +72,13 @@ CREATE TABLE `validationkeys` (
 delimiter $$
 
 CREATE TABLE `trackings` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
   `userid` int(11) NOT NULL,
   `routeid` int(11) NOT NULL,
-  `time` datetime DEFAULT '0000-00-00 00:00:00',
-  PRIMARY KEY (`id`,`userid`,`routeid`),
+  `start` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `end` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  PRIMARY KEY (`userid`,`routeid`,`start`,`end`),
   KEY `tracking_route` (`routeid`),
   CONSTRAINT `tracking_route` FOREIGN KEY (`routeid`) REFERENCES `routes` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8$$
+
 

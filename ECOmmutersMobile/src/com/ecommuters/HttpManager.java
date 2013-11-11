@@ -236,7 +236,7 @@ public class HttpManager {
 				message.append(obj.getString("message"));
 			return obj.has("success") && obj.getBoolean("success");
 		} catch (Exception e) {
-			message.append(e.getMessage());
+			message.append(e.toString());
 			return false;
 		}
 		
