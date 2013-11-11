@@ -39,7 +39,7 @@ public class TrackingInfo implements Serializable, IJsonSerializable {
 
 	public void addPosition(int index, ECommuterPosition position) {
 		indexes.add(index);
-		positions.add(new RoutePoint(positions.size(), position.lat,
+		positions.add(new RoutePoint(position.lat,
 				position.lon, position.time));
 		this.time = position.time;
 
