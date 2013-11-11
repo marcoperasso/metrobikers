@@ -10,8 +10,8 @@ public class GPSManager {
 	// automatico, uno per il
 	// tracking manuale
 	int currentLevel = -1;
-	public final static int[] minDistanceMetres = { 20, 5, 5 };
-	public final static long[] minTimeSecs = { 20, 5, 5 };
+	public final static int[] minDistanceMetres = { 10, 5, 5 };
+	public final static long[] minTimeSecs = { 10, 5, 5 };
 	public final static int[] minutesBeforeStart = { 10 };// minuti
 															// prima
 															// della
@@ -46,8 +46,8 @@ public class GPSManager {
 	}
 
 	public boolean stopGPS(int level) {
-		if (level == MANUAL_TRACKING) {
-			for (int i = 0; i < levels.length; i++)
+		if (level == MANUAL_TRACKING || level == AUTOMATIC_TRACKING) {
+			for (int i = 0; i <= level; i++)
 				levels[i] = 0;
 			Log.d(Const.ECOMMUTERS_TAG, String.format("Lowering GPS listening level %d; current level status: %s", level, Arrays.toString(levels)));
 			return updateCurrentLevel();
