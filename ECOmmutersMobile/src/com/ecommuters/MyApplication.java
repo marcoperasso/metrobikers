@@ -84,7 +84,7 @@ public class MyApplication extends Application {
 		}
 		OnRouteChanged();
 		if (schedule)
-			new TaskScheduler().scheduleLiveTracking();
+			new TaskScheduler().scheduleLiveTracking(null);
 	}
 
 	public void deleteRoute(Route route) {
@@ -94,7 +94,26 @@ public class MyApplication extends Application {
 			file.delete();
 			mRoutes.remove(route);
 		}
-		new TaskScheduler().scheduleLiveTracking();
+		new TaskScheduler().scheduleLiveTracking(null);
+		OnRouteChanged();
+
+	}
+
+	public void addRoute(Route route) {
+		initRoutes();
+		synchronized (routeSemaphore) {
+			boolean updated = false;
+			for (int i = 0; i < mRoutes.size(); i++) {
+				if (mRoutes.get(i).getName().equalsIgnoreCase(route.getName())) {
+					mRoutes.set(i, route);
+					updated = true;
+					break;
+				}
+			}
+			if (!updated)
+				mRoutes.add(route);
+		}
+		new TaskScheduler().scheduleLiveTracking(route);
 		OnRouteChanged();
 
 	}

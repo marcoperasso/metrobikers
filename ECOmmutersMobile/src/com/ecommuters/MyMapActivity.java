@@ -104,7 +104,7 @@ public class MyMapActivity extends MapActivity {
 
 					final File recordingFile = getFileStreamPath(Const.RECORDING_ROUTE_FILE);
 					recordingFile.delete();
-					MyApplication.getInstance().refreshRoutes(true);
+					MyApplication.getInstance().addRoute(r);
 
 					// faccio partire il servizio che lo manda al server
 					Intent service = new Intent(MyMapActivity.this,

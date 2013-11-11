@@ -13,7 +13,7 @@ public class TaskScheduler {
 		id = MySettings.getMaxTaskId(MyApplication.getInstance());
 	}
 
-	public void scheduleLiveTracking() {
+	public void scheduleLiveTracking(Route addedRoute) {
 		ConnectorService.resetGPSStatus();
 
 		for (int i = 1; i <= id; i++)
@@ -31,7 +31,7 @@ public class TaskScheduler {
 				schedule(interval.getEnd(), interval.getWeight(),
 						EventType.STOP_TRACKING);
 
-				if (interval.isActiveNow()) {
+				if (interval.isActiveNow() && r != addedRoute) {
 					startingTask.execute();
 				}
 			}
