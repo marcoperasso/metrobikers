@@ -67,7 +67,10 @@ public class ConnectorService extends Service implements LocationListener {
 	}
 
 	public static void executeTask(Task t) {
-
+		//se ricevo un comando di stop e il servizio è già stoppato, non faccio nulla
+		if (t.getType() == EventType.STOP_TRACKING && MyApplication.getInstance().getConnectorService()==null)
+			return;
+		
 		Intent intent = new Intent(MyApplication.getInstance(),
 				ConnectorService.class);
 		intent.putExtra(Task.TASK, t);
