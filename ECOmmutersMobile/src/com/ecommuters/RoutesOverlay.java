@@ -253,15 +253,21 @@ public class RoutesOverlay extends BalloonItemizedOverlay<OverlayItem> {
         // <a href="http://code.google.com/p/android/issues/detail?id=2035">http://code.google.com/p/android/issues/detail?id=2035</a>
         setLastFocusedIndex(-1);
 		populate();
-		if (itemToFocus != null) //è cambiata la posizione dove visualizzare il balloon
+		if (itemToFocus != null) //ï¿½ cambiata la posizione dove visualizzare il balloon
 			setFocus(itemToFocus);
-		else if (pinnedPosition != null)//non esiste più la posizione su cui era aperto il balloon
-			hideBalloon();
 		
 	}
 
 	public ArrayList<ECommuterPosition> getPositions() {
 		return mPositions;
+	}
+
+	public void pinTo(ECommuterPosition pos) {
+		ArrayList<ECommuterPosition> list = new ArrayList<ECommuterPosition>();
+		list.add(pos);
+		pinnedPosition = pos;
+		setPositions(list);
+		
 	}
 
 

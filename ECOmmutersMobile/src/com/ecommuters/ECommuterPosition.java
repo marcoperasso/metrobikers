@@ -9,6 +9,11 @@ import org.json.JSONObject;
 
 public class ECommuterPosition extends GpsPoint implements IJsonSerializable,
 		Serializable {
+	@Override
+	public String toString() {
+		return name + " " + surname;
+	}
+
 	int userId;
 	String name;
 	String surname;

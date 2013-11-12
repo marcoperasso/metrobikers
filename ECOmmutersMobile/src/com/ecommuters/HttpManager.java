@@ -39,6 +39,8 @@ public class HttpManager {
 	private static final String getRouteForUserRequest = host + "mobile/get_route_for_user/";
 	private static final String getPositionsRequest = host
 			+ "mobile/get_positions";
+	private static final String getPositionsForNameRequest = host
+			+ "mobile/get_positions_by_name";
 	public static final String HTTP_WWW_ECOMMUTERS_COM_LOGIN = host + "login/domobilelogin/";
 	private static final String sendTrackingInfoDataRequest = host
 			+ "mobile/save_tracking";
@@ -224,6 +226,19 @@ public class HttpManager {
 		}
 
 	}
+	public static ArrayList<ECommuterPosition> getPositions(String query) {
+		ArrayList<ECommuterPosition> list = new ArrayList<ECommuterPosition>();
+		try {
+			JSONArray points = sendRequestForArray(getPositionsForNameRequest + "/"
+					+ query);
+			int length = points.length();
+			for (int i = 0; i < length; i++)
+				list.add(ECommuterPosition.parseJSON(points.getJSONObject(i)));
+			return list;
+		} catch (Exception e) {
+			return list;
+		}
+	}
 
 	public static boolean login(String email, String pwd, StringBuilder message) {
 		List<NameValuePair> postParameters = new ArrayList<NameValuePair>();
@@ -242,8 +257,5 @@ public class HttpManager {
 		
 	}
 
-	public static List<ECOmmuter> getECOmmuters(String query) {
-		List<ECOmmuter> results = new ArrayList<ECOmmuter>();
-		return results;
-	}
+	
 }

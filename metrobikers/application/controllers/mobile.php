@@ -112,6 +112,21 @@ class Mobile extends MY_Controller {
                 ->set_content_type('application/json')
                 ->set_output(json_encode($response));
     }
+    
+    public function get_positions_by_name($name) {
+        $this->load->model("User_position_model");
+        $this->load->model("User_on_route_model");
+        $this->User_position_model->purge_positions();
+        $response = $this->User_position_model->get_positions_by_name($name);
+
+        foreach ($response as &$point) {
+            $point["time"] = strtotime($point["time"]);
+            $point["routes"] = $this->User_on_route_model->get_routes($point["userid"]);
+        }
+        $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode($response));
+    }
 
     public function save_route() {
         $user = get_user();

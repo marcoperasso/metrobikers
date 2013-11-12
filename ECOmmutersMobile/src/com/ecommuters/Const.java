@@ -28,6 +28,7 @@ public class Const {
 	public static final String ROUTE_EXTRA = "re";
 	public static final String POSITIONS = "pos";
 	public static final String ASKING_ROUTE = "ar";
+	public static final String ECOMMUTERPOS = "ECP";
 	
 
 }

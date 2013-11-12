@@ -83,7 +83,7 @@ public class MyMapActivity extends MapActivity {
 
 		@Override
 		public void onEvent(Object sender, EventArgs args) {
-			// solo se il servizio è stato stoppato chiedo il salvataggio.
+			// solo se il servizio ï¿½ stato stoppato chiedo il salvataggio.
 			if (MyApplication.getInstance().getRecordingService() != null)
 				return;
 			saveRecordedRouteIfNeeded();
@@ -127,19 +127,9 @@ public class MyMapActivity extends MapActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_mymap);
-	
-		Intent intent = getIntent();
-		// Get the intent, verify the action and get the query
-		if (intent != null && Intent.ACTION_SEARCH.equals(intent.getAction())) {
-			String query = intent.getStringExtra(SearchManager.QUERY);
-			// manually launch the real search activity
-			final Intent searchIntent = new Intent(getApplicationContext(),
-					SearchActivity.class);
-			// add query to the Intent Extras
-			searchIntent.putExtra(SearchManager.QUERY, query);
-			startActivityForResult(searchIntent, Const.SEARCH_ACTIVITY_RESULT);
-		}
-		
+
+		handleIntent(getIntent());
+
 		// prima di tutto testo la versione (solo se sono online)
 		// if (!testVersion()) {
 		// finish();
@@ -273,7 +263,24 @@ public class MyMapActivity extends MapActivity {
 
 	}
 
-	
+	@Override
+	public void onNewIntent(Intent intent) {
+		setIntent(intent);
+		handleIntent(intent);
+	}
+
+	private void handleIntent(Intent intent) {
+		// Get the intent, verify the action and get the query
+		if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
+			String query = intent.getStringExtra(SearchManager.QUERY);
+			// manually launch the real search activity
+			final Intent searchIntent = new Intent(getApplicationContext(),
+					SearchActivity.class);
+			// add query to the Intent Extras
+			searchIntent.putExtra(SearchManager.QUERY, query);
+			startActivityForResult(searchIntent, Const.SEARCH_ACTIVITY_RESULT);
+		}
+	}
 
 	@Override
 	protected void onDestroy() {
@@ -410,9 +417,12 @@ public class MyMapActivity extends MapActivity {
 			else
 				finish();
 
-		}
-		else if (requestCode == Const.SEARCH_ACTIVITY_RESULT)
-		{
+		} else if (requestCode == Const.SEARCH_ACTIVITY_RESULT) {
+			if (resultCode == RESULT_OK)
+			{
+				ECommuterPosition pos = (ECommuterPosition) data.getSerializableExtra(Const.ECOMMUTERPOS);
+				mRoutesOverlay.pinTo(pos);
+			}
 			
 		}
 		super.onActivityResult(requestCode, resultCode, data);
