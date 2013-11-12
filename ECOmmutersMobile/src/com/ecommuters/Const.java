@@ -5,6 +5,7 @@ public class Const {
 	public static final Integer PROTOCOL_VERSION = 1;
 	public static final int ACTIVATE_GPS_RESULT = 0;
 	public static final int CREDENTIALS_RESULT = 1;
+	public static final int SEARCH_ACTIVITY_RESULT = 2;
 	public static final String LATITUDE = "a";
 	public static final String LONGITUDE = "b";
 	public static final String ALTITUDE = "c";

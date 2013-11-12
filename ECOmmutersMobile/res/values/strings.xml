@@ -66,5 +66,6 @@
     <string name="no_show_again">Non mostrare più</string>
     <string name="title_activity_search">SearchActivity</string>
     <string name="hello_world">Hello world!</string>
+    <string name="search_hint">Nome o parte di esso</string>
 
 </resources>

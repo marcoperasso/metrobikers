@@ -241,4 +241,9 @@ public class HttpManager {
 		}
 		
 	}
+
+	public static List<ECOmmuter> getECOmmuters(String query) {
+		List<ECOmmuter> results = new ArrayList<ECOmmuter>();
+		return results;
+	}
 }

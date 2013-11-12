@@ -11,6 +11,7 @@ import org.apache.http.client.ClientProtocolException;
 import org.json.JSONException;
 
 import android.app.AlertDialog;
+import android.app.SearchManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -80,20 +81,18 @@ public class MyMapActivity extends MapActivity {
 	};
 	private GenericEventHandler mRecordingServiceChangedHandler = new GenericEventHandler() {
 
-
 		@Override
 		public void onEvent(Object sender, EventArgs args) {
-			//solo se il servizio è stato stoppato chiedo il salvataggio.
+			// solo se il servizio è stato stoppato chiedo il salvataggio.
 			if (MyApplication.getInstance().getRecordingService() != null)
 				return;
 			saveRecordedRouteIfNeeded();
-			
+
 		}
 	};
 
 	private void saveRecordedRouteIfNeeded() {
-		final Route r = Route.readRoute(this,
-				Const.RECORDING_ROUTE_FILE);
+		final Route r = Route.readRoute(this, Const.RECORDING_ROUTE_FILE);
 		if (r == null || r.getPoints().size() == 0)
 			return;
 		askingRouteName = true;
@@ -101,8 +100,7 @@ public class MyMapActivity extends MapActivity {
 			public void select(String routeName) {
 				try {
 					r.setName(routeName);
-					r.save(MyMapActivity.this,
-							Helper.getRouteFile(routeName));
+					r.save(MyMapActivity.this, Helper.getRouteFile(routeName));
 
 					final File recordingFile = getFileStreamPath(Const.RECORDING_ROUTE_FILE);
 					recordingFile.delete();
@@ -114,22 +112,34 @@ public class MyMapActivity extends MapActivity {
 					startService(service);
 
 				} catch (IOException e) {
-					Toast.makeText(MyMapActivity.this,
-							e.getLocalizedMessage(), Toast.LENGTH_LONG)
-							.show();
+					Toast.makeText(MyMapActivity.this, e.getLocalizedMessage(),
+							Toast.LENGTH_LONG).show();
 				}
 				stopRecordingService();
 			}
 
 		});
 	}
+
 	/** Called when the activity is first created. */
 	@SuppressWarnings("unchecked")
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_mymap);
-
+	
+		Intent intent = getIntent();
+		// Get the intent, verify the action and get the query
+		if (intent != null && Intent.ACTION_SEARCH.equals(intent.getAction())) {
+			String query = intent.getStringExtra(SearchManager.QUERY);
+			// manually launch the real search activity
+			final Intent searchIntent = new Intent(getApplicationContext(),
+					SearchActivity.class);
+			// add query to the Intent Extras
+			searchIntent.putExtra(SearchManager.QUERY, query);
+			startActivityForResult(searchIntent, Const.SEARCH_ACTIVITY_RESULT);
+		}
+		
 		// prima di tutto testo la versione (solo se sono online)
 		// if (!testVersion()) {
 		// finish();
@@ -191,11 +201,12 @@ public class MyMapActivity extends MapActivity {
 			if (positions != null)
 				mRoutesOverlay
 						.setPositions((ArrayList<ECommuterPosition>) positions);
-			askingRouteName = savedInstanceState.getBoolean(Const.ASKING_ROUTE, false);
+			askingRouteName = savedInstanceState.getBoolean(Const.ASKING_ROUTE,
+					false);
 			if (askingRouteName)
 				saveRecordedRouteIfNeeded();
 		} else {
-			//testVersion();
+			// testVersion();
 			Helper.hideableMessage(this, R.string.warning_to_user);
 		}
 
@@ -206,7 +217,8 @@ public class MyMapActivity extends MapActivity {
 				mMap.invalidate();
 			}
 		};
-		//new Task(Calendar.getInstance(), EventType.START_TRACKING, 0).execute();
+		// new Task(Calendar.getInstance(), EventType.START_TRACKING,
+		// 0).execute();
 		MyApplication.getInstance().RouteChanged
 				.addHandler(mRoutesChangedHandler);
 		MyApplication.getInstance().OnRecordingRouteUpdated
@@ -248,18 +260,20 @@ public class MyMapActivity extends MapActivity {
 		mPositionsDownloader = new PositionsDownlader(mMap, mRoutesOverlay,
 				this);
 
-		MyApplication.getInstance().requestRoutes(this, 
-				new OnRoutesAvailable(){
+		MyApplication.getInstance().requestRoutes(this,
+				new OnRoutesAvailable() {
 					public void gotRoutes(Route[] routes) {
 						mRoutesOverlay.setRoutes(routes);
 						mMap.invalidate();
 					}
-			});
-	
+				});
+
 		MyApplication.getInstance().RecordingServiceChanged
 				.addHandler(mRecordingServiceChangedHandler);
-		
+
 	}
+
+	
 
 	@Override
 	protected void onDestroy() {
@@ -396,6 +410,10 @@ public class MyMapActivity extends MapActivity {
 			else
 				finish();
 
+		}
+		else if (requestCode == Const.SEARCH_ACTIVITY_RESULT)
+		{
+			
 		}
 		super.onActivityResult(requestCode, resultCode, data);
 	}
