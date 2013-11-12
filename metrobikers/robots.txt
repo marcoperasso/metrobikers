@@ -1,1 +1,5 @@
 User-agent: *
+Disallow: /crypt/
+Disallow: /mobile/
+Disallow: /test/
+Disallow: /verbs/
