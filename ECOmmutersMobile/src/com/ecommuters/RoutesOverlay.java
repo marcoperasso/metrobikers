@@ -237,10 +237,10 @@ public class RoutesOverlay extends BalloonItemizedOverlay<OverlayItem> {
 			java.text.DateFormat timeFormat = DateFormat
 					.getTimeFormat(mContext);
 			Date df = new java.util.Date(pt.time * 1000);
-			String text = pt.name + " " + pt.surname + " ("
-					+ timeFormat.format(df) + ")";
+			String title = pt.name + " " + pt.surname;
+			String text = String.format(mContext.getString(R.string.balloon_text), timeFormat.format(df));
 			OverlayItem overlayitem = new OverlayItem(point,
-					mContext.getString(R.string.app_name), text);
+					title, text);
 			mOverlays.add(overlayitem);
 			
 			if (pinnedPosition != null && pinnedPosition.userId == pt.userId)

@@ -34,9 +34,18 @@ class User_position_model extends MY_Model {
     public function get_positions_by_name($name) 
     {
         $this->commonQuery();
-        $this->db->like('name', $name);
+        $this->db->like('concat(name, " ", surname)', $name);
+		$this->db->limit(2);
         $query = $this->db->get('userpositions');
         return $query->result_array();
+    }
+	
+	public function get_positions_count_by_name($name) 
+    {
+		$this->db->from('userpositions');
+        $this->db->join('users', 'users.id = userpositions.userid');
+        $this->db->like('concat(name, " ", surname)', $name);
+		return $this->db->count_all_results();
     }
     private function commonQuery()
     {

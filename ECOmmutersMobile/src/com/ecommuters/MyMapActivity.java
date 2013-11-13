@@ -472,7 +472,9 @@ public class MyMapActivity extends MapActivity {
 			Intent myIntent = new Intent(this, MyRoutesActivity.class);
 			startActivity(myIntent);
 			return true;
-
+		case R.id.itemFind:
+			onSearchRequested();
+			return true;
 		}
 		return super.onOptionsItemSelected(item);
 	}

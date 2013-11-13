@@ -8,13 +8,13 @@ import java.io.ObjectInput;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
+import java.io.UnsupportedEncodingException;
 import java.nio.channels.FileChannel;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -29,6 +29,7 @@ import android.widget.TextView;
 public class Helper {
 
 	private static final String regExp = "[^a-zA-Z0-9.-]";
+
 	static boolean isOnline(Context context) {
 		try {
 			ConnectivityManager cm = (ConnectivityManager) context
@@ -47,7 +48,8 @@ public class Helper {
 			return Const.PROTOCOL_VERSION.equals(HttpManager
 					.getProtocolVersion());
 		} catch (Exception e) {
-			return true;//se ho problemi di comunicazione, nel dubbio considero buona la versione
+			return true;// se ho problemi di comunicazione, nel dubbio considero
+						// buona la versione
 		}
 	}
 
@@ -65,20 +67,23 @@ public class Helper {
 				.setNegativeButton(R.string.no, cancelListener).show();
 
 	}
-	
-	
+
 	public static void dialogMessage(final Context context, String message,
 			DialogInterface.OnClickListener okListener,
 			DialogInterface.OnClickListener cancelListener) {
-		dialogMessage(context, message, context.getString(R.string.app_name), okListener, cancelListener);
+		dialogMessage(context, message, context.getString(R.string.app_name),
+				okListener, cancelListener);
 
 	}
+
 	public static void dialogMessage(final Context context, int message,
 			DialogInterface.OnClickListener okListener,
 			DialogInterface.OnClickListener cancelListener) {
-		dialogMessage(context, context.getString(message), okListener, cancelListener);
+		dialogMessage(context, context.getString(message), okListener,
+				cancelListener);
 
 	}
+
 	public static void dialogMessage(final Context context, int message,
 			int title, DialogInterface.OnClickListener okListener,
 			DialogInterface.OnClickListener cancelListener) {
@@ -92,20 +97,24 @@ public class Helper {
 			return;
 		Spanned msg = Html.fromHtml(context.getString(messageId));
 		AlertDialog dialog = new AlertDialog.Builder(context)
-				.setIcon(android.R.drawable.ic_dialog_alert).setTitle(R.string.app_name)
+				.setIcon(android.R.drawable.ic_dialog_alert)
+				.setTitle(R.string.app_name)
 				.setMessage(msg)
 				.setPositiveButton(android.R.string.ok, null)
-				.setNegativeButton(R.string.no_show_again, new DialogInterface.OnClickListener() {
-					public void onClick(DialogInterface dialog, int which) {
-						MySettings.setHiddenMessage(messageId, true);
-						dialog.dismiss();
-					}
-				}).show();
+				.setNegativeButton(R.string.no_show_again,
+						new DialogInterface.OnClickListener() {
+							public void onClick(DialogInterface dialog,
+									int which) {
+								MySettings.setHiddenMessage(messageId, true);
+								dialog.dismiss();
+							}
+						}).show();
 		TextView messageView = (TextView) dialog
 				.findViewById(android.R.id.message);
 		messageView.setLinksClickable(true);
 		messageView.setMovementMethod(LinkMovementMethod.getInstance());
 	}
+
 	public static List<File> getFiles(Context context, String ext) {
 		File dir = context.getFilesDir();
 		final List<File> files = new ArrayList<File>();
@@ -124,12 +133,13 @@ public class Helper {
 		return !isNullOrEmpty(routeName)
 				&& routeName.replaceAll(regExp, "_").equals(routeName);
 	}
+
 	public static String getRouteFile(String routeName) {
 		return routeName + Const.ROUTEEXT;
 	}
 
-	
-	public static void copyFile(File aSourceFile, File aTargetFile, boolean aAppend) throws IOException {
+	public static void copyFile(File aSourceFile, File aTargetFile,
+			boolean aAppend) throws IOException {
 		FileChannel inChannel = null;
 		FileChannel outChannel = null;
 		FileInputStream inStream = null;
@@ -194,21 +204,22 @@ public class Helper {
 		cmp = ma.compareTo(mb);
 		if (cmp != 0)
 			return cmp;
-		
+
 		Integer sa = a.getSeconds();
 		Integer sb = b.getSeconds();
 		cmp = sa.compareTo(sb);
 		return cmp;
 	}
 
-	public static String formatElapsedTime(long totalTimeSeconds) { 
-		int seconds = (int) (totalTimeSeconds) % 60 ;
+	public static String formatElapsedTime(long totalTimeSeconds) {
+		int seconds = (int) (totalTimeSeconds) % 60;
 		int minutes = (int) ((totalTimeSeconds / (60)) % 60);
-		int hours   = (int) ((totalTimeSeconds / (60*60)) % 24);
+		int hours = (int) ((totalTimeSeconds / (60 * 60)) % 24);
 		return String.format("%dh,  %dm, %ds", hours, minutes, seconds);
 	}
 
-	public static void saveObject(Context context, String fileName, Object obj) throws IOException {
+	public static void saveObject(Context context, String fileName, Object obj)
+			throws IOException {
 		FileOutputStream fos = context.openFileOutput(fileName,
 				Context.MODE_PRIVATE);
 		ObjectOutput out = null;
@@ -220,7 +231,7 @@ public class Helper {
 			out.close();
 			fos.close();
 		}
-		
+
 	}
 
 	public static Object readObject(Context context, String fileName) {
@@ -234,19 +245,20 @@ public class Helper {
 					try {
 						return in.readObject();
 					} catch (Exception ex) {
-						Log.e(Const.ECOMMUTERS_TAG, Log.getStackTraceString(ex)); 
+						Log.e(Const.ECOMMUTERS_TAG, Log.getStackTraceString(ex));
 					}
 				} catch (Exception e) {
-					Log.e(Const.ECOMMUTERS_TAG, Log.getStackTraceString(e)); 
+					Log.e(Const.ECOMMUTERS_TAG, Log.getStackTraceString(e));
 				} finally {
 					in.close();
 					fis.close();
 				}
 			} catch (Exception e) {
-				Log.e(Const.ECOMMUTERS_TAG, Log.getStackTraceString(e)); 
+				Log.e(Const.ECOMMUTERS_TAG, Log.getStackTraceString(e));
 			}
 
 		}
 		return null;
 	}
+
 }

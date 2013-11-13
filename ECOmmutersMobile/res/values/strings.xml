@@ -8,8 +8,8 @@
     <string name="coordinates">Latitudine : %1$d\r\nlongitudine: %2$d\r\naltitudine: %3$f</string>
     <string name="your_position">La tua posizione</string>
     <string name="wrong_version">La versione dell\'applicazione non è allineata con quella del server, per proseguire occorre scaricare l\'aggiornamento.</string>
-    <string name="show_position_menu">Visualizza la mia posizione</string>
-    <string name="hide_position_menu">Nascondi la mia posizione</string>
+    <string name="show_position_menu">Visualizza posizione</string>
+    <string name="hide_position_menu">Nascondi posizione</string>
     <string name="ecommuters_logo">Logo di ECOmmuters</string>
     <string name="btn_new_route">Registra itinerario&#8230;</string>
     <string name="credential_email">EMail</string>
@@ -64,8 +64,13 @@
     <string name="no">No</string>
     <string name="warning_to_user">Questa applicazione è in grado di tracciare la tua posizione e mandarla al sito &lt;a href=&quot;http://www.ecommuters.com&quot;&gt;www.ecommuters.com&lt;/a&gt;.&lt;br&gt;Ogni volta che questo accadrà, verrai avvisato con un messaggio di notifica; potrai comunque in ogni momento disabilitare questo comportamento.</string>
     <string name="no_show_again">Non mostrare più</string>
-    <string name="title_activity_search">SearchActivity</string>
+    <string name="title_activity_search">Ricerca ECOmmuter</string>
     <string name="hello_world">Hello world!</string>
     <string name="search_hint">Nome o parte di esso</string>
+    <string name="find_ecommuter">Trova ECOmmuter</string>
+    <string name="select_ecommuter">Seleziona l\'ECOmmuter desiderato</string>
+    <string name="no_ecommuter">Nessun ECOmmuter trovato</string>
+    <string name="balloon_text">Posizione rilevata alle %s</string>
+    <string name="refine_query">Visualizzati %1$d ECOmmuters, su un totale di %2$d corrispondenti ai criteri impostati; se non trovi la persona cercata prova a raffinare la ricerca.</string>
 
 </resources>

@@ -23,5 +23,8 @@
         android:id="@+id/itemRecordRoute"
         android:titleCondensed="@string/record_route">
     </item>
-
+<item
+        android:id="@+id/itemFind"
+        android:titleCondensed="@string/find_ecommuter">
+    </item>
 </menu>

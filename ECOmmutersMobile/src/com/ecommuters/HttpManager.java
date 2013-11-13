@@ -3,6 +3,7 @@ package com.ecommuters;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,8 +26,10 @@ import android.util.Log;
 import android.webkit.CookieManager;
 
 public class HttpManager {
+	private static String ALLOWED_CHARS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_.!~*()";
 	private static final boolean debuggingServer = false;
-	private static final String host = debuggingServer ? "http://10.0.2.2:8888/" : "http://www.ecommuters.com/";
+	private static final String host = debuggingServer ? "http://10.0.2.2:8888/"
+			: "http://www.ecommuters.com/";
 	private static final String getVersionRequest = host + "mobile/version";
 	private static final String getUserRequest = host + "mobile/user";
 	private static final String getUserLoggedRequest = host
@@ -36,14 +39,53 @@ public class HttpManager {
 	private static final String sendPositionDataRequest = host
 			+ "mobile/update_position";
 	private static final String getRoutesRequest = host + "mobile/get_routes/";
-	private static final String getRouteForUserRequest = host + "mobile/get_route_for_user/";
+	private static final String getRouteForUserRequest = host
+			+ "mobile/get_route_for_user/";
 	private static final String getPositionsRequest = host
-			+ "mobile/get_positions";
-	private static final String getPositionsForNameRequest = host
-			+ "mobile/get_positions_by_name";
-	public static final String HTTP_WWW_ECOMMUTERS_COM_LOGIN = host + "login/domobilelogin/";
+			+ "mobile/get_positions/";
+	private static final String getPositionsByNameRequest = host
+			+ "mobile/get_positions_by_name?name=";
+	public static final String HTTP_WWW_ECOMMUTERS_COM_LOGIN = host
+			+ "login/domobilelogin/";
 	private static final String sendTrackingInfoDataRequest = host
 			+ "mobile/save_tracking";
+
+	private static String encodeURIComponent(String input) {
+		if (Helper.isNullOrEmpty(input)) {
+			return input;
+		}
+
+		int l = input.length();
+		StringBuilder o = new StringBuilder(l * 3);
+		try {
+			for (int i = 0; i < l; i++) {
+				String e = input.substring(i, i + 1);
+				if (ALLOWED_CHARS.indexOf(e) == -1) {
+					byte[] b = e.getBytes("utf-8");
+					o.append(getHex(b));
+					continue;
+				}
+				o.append(e);
+			}
+			return o.toString();
+		} catch (UnsupportedEncodingException e) {
+			Log.e(Const.ECOMMUTERS_TAG, Log.getStackTraceString(e));
+		}
+		return input;
+	}
+
+	private static String getHex(byte buf[]) {
+		StringBuilder o = new StringBuilder(buf.length * 3);
+		for (int i = 0; i < buf.length; i++) {
+			int n = (int) buf[i] & 0xff;
+			o.append("%");
+			if (n < 0x10) {
+				o.append("0");
+			}
+			o.append(Long.toString(n, 16).toUpperCase());
+		}
+		return o.toString();
+	}
 
 	static JSONObject sendRequestForObject(String reqString)
 			throws JSONException, ClientProtocolException, IOException {
@@ -79,12 +121,15 @@ public class HttpManager {
 		return result;
 	}
 
-	static JSONArray postRequestForArray(String reqString, IJsonSerializable data) throws ClientProtocolException, JSONException, IOException
-	{
+	static JSONArray postRequestForArray(String reqString,
+			IJsonSerializable data) throws ClientProtocolException,
+			JSONException, IOException {
 		return new JSONArray(postRequest(reqString, getJSONParameters(data)));
 	}
-	static JSONObject postRequestForObject(String reqString, IJsonSerializable data) throws ClientProtocolException, JSONException, IOException
-	{
+
+	static JSONObject postRequestForObject(String reqString,
+			IJsonSerializable data) throws ClientProtocolException,
+			JSONException, IOException {
 		return new JSONObject(postRequest(reqString, getJSONParameters(data)));
 	}
 
@@ -95,8 +140,10 @@ public class HttpManager {
 		postParameters.add(new BasicNameValuePair("data", json));
 		return postParameters;
 	}
-	private static String postRequest(String reqString, List<NameValuePair> postParameters)
-			throws ClientProtocolException, IOException, JSONException {
+
+	private static String postRequest(String reqString,
+			List<NameValuePair> postParameters) throws ClientProtocolException,
+			IOException, JSONException {
 		StringBuilder result = new StringBuilder();
 		HttpClient httpClient = new DefaultHttpClient();
 		HttpContext localContext = new BasicHttpContext();
@@ -173,7 +220,7 @@ public class HttpManager {
 			route.setId(response.getInt("id"));
 			return true;
 		}
-		
+
 		return false;
 
 	}
@@ -198,25 +245,28 @@ public class HttpManager {
 		}
 		return routes;
 	}
-	
-	public static Route getRoute(int userId, int routeId) throws ClientProtocolException, JSONException, IOException {
-		JSONObject response = sendRequestForObject(getRouteForUserRequest + userId + "/" + routeId);
+
+	public static Route getRoute(int userId, int routeId)
+			throws ClientProtocolException, JSONException, IOException {
+		JSONObject response = sendRequestForObject(getRouteForUserRequest
+				+ userId + "/" + routeId);
 		return Route.parseJSON(response);
 	}
 
 	public static boolean sendPositionData(ECommuterPosition position)
 			throws JSONException, ClientProtocolException, IOException {
-		JSONObject response = postRequestForObject(sendPositionDataRequest, position);
+		JSONObject response = postRequestForObject(sendPositionDataRequest,
+				position);
 		return response.has("saved") && response.getBoolean("saved");
 
 	}
 
-	public static ArrayList<ECommuterPosition> getPositions(int lat1, int lon1, int lat2,
-			int lon2) {
+	public static ArrayList<ECommuterPosition> getPositions(int lat1, int lon1,
+			int lat2, int lon2) {
 		ArrayList<ECommuterPosition> list = new ArrayList<ECommuterPosition>();
 		try {
-			JSONArray points = sendRequestForArray(getPositionsRequest + "/"
-					+ lat2 + "/" + lon1 + "/" + lat1 + "/" + lon2);
+			JSONArray points = sendRequestForArray(getPositionsRequest + lat2
+					+ "/" + lon1 + "/" + lat1 + "/" + lon2);
 			int length = points.length();
 			for (int i = 0; i < length; i++)
 				list.add(ECommuterPosition.parseJSON(points.getJSONObject(i)));
@@ -226,17 +276,19 @@ public class HttpManager {
 		}
 
 	}
-	public static ArrayList<ECommuterPosition> getPositions(String query) {
-		ArrayList<ECommuterPosition> list = new ArrayList<ECommuterPosition>();
+
+	public static int getPositions(String query, ArrayList<ECommuterPosition> out) {
 		try {
-			JSONArray points = sendRequestForArray(getPositionsForNameRequest + "/"
-					+ query);
+			JSONObject obj = sendRequestForObject(getPositionsByNameRequest 
+					+ encodeURIComponent(query));
+			 JSONArray points = obj.getJSONArray("positions");
 			int length = points.length();
 			for (int i = 0; i < length; i++)
-				list.add(ECommuterPosition.parseJSON(points.getJSONObject(i)));
-			return list;
+				out.add(ECommuterPosition.parseJSON(points.getJSONObject(i)));
+			
+			return obj.getInt("total");
 		} catch (Exception e) {
-			return list;
+			return 0;
 		}
 	}
 
@@ -245,8 +297,9 @@ public class HttpManager {
 		postParameters.add(new BasicNameValuePair("email", email));
 		postParameters.add(new BasicNameValuePair("pwd", Helper.md5(pwd)));
 		try {
-			String postRequest = postRequest(HTTP_WWW_ECOMMUTERS_COM_LOGIN, postParameters);
-			JSONObject obj = new JSONObject(postRequest); 
+			String postRequest = postRequest(HTTP_WWW_ECOMMUTERS_COM_LOGIN,
+					postParameters);
+			JSONObject obj = new JSONObject(postRequest);
 			if (obj.has("message"))
 				message.append(obj.getString("message"));
 			return obj.has("success") && obj.getBoolean("success");
@@ -254,8 +307,7 @@ public class HttpManager {
 			message.append(e.toString());
 			return false;
 		}
-		
+
 	}
 
-	
 }
