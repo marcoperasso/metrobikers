@@ -26,7 +26,7 @@ public class Route implements IJsonSerializable, Serializable {
 	transient private TrackingInfo trackingInfo;
 	transient TimeInterval[] intervals = null;
 	transient private Float distance;
-
+	
 	@Override
 	public String toString() {
 		return name;
@@ -173,11 +173,9 @@ public class Route implements IJsonSerializable, Serializable {
 		return b;
 	}
 
-	public void addTrackingPosition(int index, ECommuterPosition position) {
+	public boolean addTrackingPosition(int index, ECommuterPosition position) {
 		getTrackingInfo().addPosition(index, position);
-		
+		return getTrackingInfo().isValid(this);
 	}
-
-	
-
+	public boolean isFollowing(){return getTrackingInfo().isValid(this);}
 }

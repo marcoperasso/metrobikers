@@ -22,7 +22,7 @@ public class TrackingInfo implements Serializable, IJsonSerializable {
 	private int routeId;
 	private long startTime;
 	private long endTime;
-	
+	private boolean valid = false;
 	public TrackingInfo(Route route) {
 		this.routeId = route.getId();
 		this.startTime = System.currentTimeMillis() / 1000;
@@ -36,7 +36,7 @@ public class TrackingInfo implements Serializable, IJsonSerializable {
 	public void reset() {
 		indexes.clear();
 		positions.clear();
-
+		valid = false;
 	}
 
 	public void addPosition(int index, ECommuterPosition position) {
@@ -97,6 +97,30 @@ public class TrackingInfo implements Serializable, IJsonSerializable {
 
 	public int size() {
 		return positions.size();
+	}
+
+
+	public boolean isValid(Route route) {
+		if (valid)
+			return true;
+		if (indexes.size()<2)
+			return false;
+		int distance = 0;
+		RoutePoint p1 = route.getPoints().get(indexes.get(0));
+		int j = ConnectorService.DISTANCE_METERS*2;
+		for (int i = 1; i < indexes.size(); i++)
+		{
+			RoutePoint p2 = route.getPoints().get(indexes.get(i));
+			distance += p2.distance(p1);
+			p1 = p2;
+			
+			if (distance > j)
+			{
+				valid = true;
+				return true;
+			}
+		}
+		return false;
 	}
 
 }

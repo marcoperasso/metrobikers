@@ -34,7 +34,7 @@ public class ConnectorService extends Service implements LocationListener {
 
 	private static final int TIMEOUT = 300000;
 
-	private static final int DISTANCE_METERS = 40;
+	public static final int DISTANCE_METERS = 40;
 
 	private static final int MAX_DISTANCE_FROM_TRACK_METERS = 500;
 	private LocationManager mlocManager;
@@ -242,8 +242,7 @@ public class ConnectorService extends Service implements LocationListener {
 			minRoutesDistance = Math.min(minRoutesDistance, minRouteDistance);
 
 			if (minRouteDistance < DISTANCE_METERS) {
-				r.addTrackingPosition(index, position);
-				if (!followedRoutes.contains(r)) {
+				if (r.addTrackingPosition(index, position) && !followedRoutes.contains(r)) {
 					followedRoutes.add(r);
 					Log.i(Const.ECOMMUTERS_TAG,
 							String.format("You are following route %s",

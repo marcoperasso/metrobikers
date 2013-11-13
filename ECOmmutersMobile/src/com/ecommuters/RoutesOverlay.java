@@ -171,8 +171,7 @@ public class RoutesOverlay extends BalloonItemizedOverlay<OverlayItem> {
 		int size = r.getPoints().size();
 		for (int i = 0; i < size; i++) {
 			RoutePoint pt = r.getPoints().get(i);
-			if (type == RouteType.RECORDING
-					|| i < r.getLatestTrackedIndex())
+			if (type == RouteType.RECORDING || i < r.getLatestTrackedIndex())
 				pnt.setColor(Color.RED);
 			else if (type == RouteType.FOLLOWED) {
 				if (pt.followedRouteColor == null) {

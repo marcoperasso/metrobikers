@@ -128,8 +128,6 @@ public class MyMapActivity extends MapActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_mymap);
 
-		handleIntent(getIntent());
-
 		// prima di tutto testo la versione (solo se sono online)
 		// if (!testVersion()) {
 		// finish();
@@ -198,6 +196,7 @@ public class MyMapActivity extends MapActivity {
 		} else {
 			// testVersion();
 			Helper.hideableMessage(this, R.string.warning_to_user);
+			handleIntent(getIntent());
 		}
 
 		mRoutesChangedHandler = new GenericEventHandler() {
