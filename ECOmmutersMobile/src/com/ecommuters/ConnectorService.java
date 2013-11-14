@@ -383,14 +383,10 @@ public class ConnectorService extends Service implements LocationListener {
 	public void onStatusChanged(String provider, int status, Bundle extras) {
 		switch (status) {
 		case LocationProvider.AVAILABLE:
-			Log.i(Const.ECOMMUTERS_TAG, getString(R.string.gps_available));
 			break;
 		case LocationProvider.OUT_OF_SERVICE:
-			Log.i(Const.ECOMMUTERS_TAG, getString(R.string.gps_out_of_service));
 			break;
 		case LocationProvider.TEMPORARILY_UNAVAILABLE:
-			Log.i(Const.ECOMMUTERS_TAG,
-					getString(R.string.gps_temporarily_unavailable));
 			break;
 		}
 	}
