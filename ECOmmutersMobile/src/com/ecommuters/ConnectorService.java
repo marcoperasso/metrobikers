@@ -67,10 +67,12 @@ public class ConnectorService extends Service implements LocationListener {
 	}
 
 	public static void executeTask(Task t) {
-		//se ricevo un comando di stop e il servizio è già stoppato, non faccio nulla
-		if (t.getType() == EventType.STOP_TRACKING && MyApplication.getInstance().getConnectorService()==null)
+		// se ricevo un comando di stop e il servizio è già stoppato, non faccio
+		// nulla
+		if (t.getType() == EventType.STOP_TRACKING
+				&& MyApplication.getInstance().getConnectorService() == null)
 			return;
-		
+
 		Intent intent = new Intent(MyApplication.getInstance(),
 				ConnectorService.class);
 		intent.putExtra(Task.TASK, t);
@@ -242,7 +244,8 @@ public class ConnectorService extends Service implements LocationListener {
 			minRoutesDistance = Math.min(minRoutesDistance, minRouteDistance);
 
 			if (minRouteDistance < DISTANCE_METERS) {
-				if (r.addTrackingPosition(index, position) && !followedRoutes.contains(r)) {
+				if (r.addTrackingPosition(index, position)
+						&& !followedRoutes.contains(r)) {
 					followedRoutes.add(r);
 					Log.i(Const.ECOMMUTERS_TAG,
 							String.format("You are following route %s",
@@ -312,29 +315,27 @@ public class ConnectorService extends Service implements LocationListener {
 				// se sono arrivato a livello zero, fermo il gps, altrimenti
 				// aggiusto la
 				// frequenza di aggiornamento
-				if (mGPSManager.stopGPS(level)) {
-					// se entro qui dentro è perché il livello è cambiato
-					// per prima cosa elimino il listener corrente
-					mlocManager.removeUpdates(ConnectorService.this);
-					if (mGPSManager.requestingLocation()) {
+				mGPSManager.stopGPS(level);
+				// per prima cosa elimino il listener corrente
+				mlocManager.removeUpdates(ConnectorService.this);
+				if (mGPSManager.requestingLocation()) {
 
-						String text = String
-								.format("Position updated every %1$d seconds and %2$d meters",
-										mGPSManager.getMinTimeSeconds(),
-										mGPSManager.getMinDinstanceMeters());
-						Log.i(Const.ECOMMUTERS_TAG, text);
+					String text = String
+							.format("Position updated every %1$d seconds and %2$d meters",
+									mGPSManager.getMinTimeSeconds(),
+									mGPSManager.getMinDinstanceMeters());
+					Log.i(Const.ECOMMUTERS_TAG, text);
 
-						// poi, se devo continuare a registrare su un livello
-						// diverso,
-						// mi ri registro
-						mlocManager.requestLocationUpdates(
-								LocationManager.GPS_PROVIDER,
-								mGPSManager.getMinTimeSeconds() * 1000,
-								mGPSManager.getMinDinstanceMeters(),
-								ConnectorService.this);
-					} else {
-						stopSelf();
-					}
+					// poi, se devo continuare a registrare su un livello
+					// diverso,
+					// mi ri registro
+					mlocManager.requestLocationUpdates(
+							LocationManager.GPS_PROVIDER,
+							mGPSManager.getMinTimeSeconds() * 1000,
+							mGPSManager.getMinDinstanceMeters(),
+							ConnectorService.this);
+				} else {
+					stopSelf();
 				}
 
 			}
