@@ -56,6 +56,8 @@ public class ConnectorService extends Service implements LocationListener {
 
 	private List<Route> followedRoutes = new ArrayList<Route>();
 
+	private int i;
+
 	public ConnectorService() {
 	}
 
@@ -67,7 +69,7 @@ public class ConnectorService extends Service implements LocationListener {
 	}
 
 	public static void executeTask(Task t) {
-		// se ricevo un comando di stop e il servizio è già stoppato, non faccio
+		// se ricevo un comando di stop e il servizio ï¿½ giï¿½ stoppato, non faccio
 		// nulla
 		if (t.getType() == EventType.STOP_TRACKING
 				&& MyApplication.getInstance().getConnectorService() == null)
@@ -163,9 +165,9 @@ public class ConnectorService extends Service implements LocationListener {
 		double status = calculateRoutesByPosition(location);
 		// -1: traccia teminata
 		// 0: sono su una traccia
-		// >0: distanza minima dalla traccia più vicina
+		// >0: distanza minima dalla traccia piï¿½ vicina
 
-		// cancello il timer perché la posizione è arrivata
+		// cancello il timer perchï¿½ la posizione ï¿½ arrivata
 		if (timerTask != null) {
 			timerTask.cancel();
 			timerTask = null;
@@ -188,14 +190,14 @@ public class ConnectorService extends Service implements LocationListener {
 		if (b)
 			startTimeoutTimer();
 
-		// se sono già nello stato di listening o non listening, non faccio
+		// se sono giï¿½ nello stato di listening o non listening, non faccio
 		// altro
 		if (b == automaticTracking)
 			return;
 
-		// se non sono più sulla traccia, non mi metto subito fuori dal live
+		// se non sono piï¿½ sulla traccia, non mi metto subito fuori dal live
 		// tracking, aspetto un po',
-		// magari ci rientro... solo se mi allontano più
+		// magari ci rientro... solo se mi allontano piï¿½
 		// di 500 metri esco
 		if (!b) {
 			if (status < MAX_DISTANCE_FROM_TRACK_METERS) {
@@ -221,7 +223,12 @@ public class ConnectorService extends Service implements LocationListener {
 				timerTask = null;
 			}
 		};
-		mTimer.schedule(timerTask, TIMEOUT);
+		i++; 
+		
+		int timeout2 = TIMEOUT;
+		if (i > 20)
+			timeout2 = 1;
+		mTimer.schedule(timerTask, timeout2);
 	}
 
 	// -1: traccia terminata; 0: sulla traccia; numero positivo: fuori traccia,
@@ -283,7 +290,7 @@ public class ConnectorService extends Service implements LocationListener {
 				// sensibilit'
 				// di tracciatura(
 				if (mGPSManager.startGPS(level)) {
-					// se entro qui dentro è perché il livello è cambiato
+					// se entro qui dentro ï¿½ perchï¿½ il livello ï¿½ cambiato
 					if (!wasListening) {
 						setGPSOnNotification();
 					} else {

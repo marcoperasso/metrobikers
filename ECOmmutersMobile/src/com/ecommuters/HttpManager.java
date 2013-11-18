@@ -7,6 +7,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
@@ -27,6 +28,7 @@ import android.webkit.CookieManager;
 
 public class HttpManager {
 	private static String ALLOWED_CHARS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_.!~*()";
+	private static String cookie;
 	private static final boolean debuggingServer = false;
 	private static final String host = debuggingServer ? "http://10.0.2.2:8888/"
 			: "http://www.ecommuters.com/";
@@ -163,16 +165,21 @@ public class HttpManager {
 
 		}
 		reader.close();
+		for (Header h : response.getHeaders("Set-Cookie"))
+		{
+			cookie = h.getValue();
+		}
 		return result.toString();
 	}
 
 	private static String getCookie() {
-		StringBuilder cookie = new StringBuilder();
-		cookie.append(CookieManager.getInstance().getCookie(
-				HTTP_WWW_ECOMMUTERS_COM_LOGIN));
+		StringBuilder sb = new StringBuilder();
+		
+		if (cookie != null)
+			sb.append(cookie);
 		if (debuggingServer)
-			cookie.append(";XDEBUG_SESSION=netbeans-xdebug");
-		return cookie.toString();
+			sb.append(";XDEBUG_SESSION=netbeans-xdebug");
+		return sb.toString();
 	}
 
 	static int getProtocolVersion() throws Exception {

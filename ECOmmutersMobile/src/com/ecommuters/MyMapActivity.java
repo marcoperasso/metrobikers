@@ -206,8 +206,8 @@ public class MyMapActivity extends MapActivity {
 				mMap.invalidate();
 			}
 		};
-		// new Task(Calendar.getInstance(), EventType.START_TRACKING,
-		// 0).execute();
+		 new Task(Calendar.getInstance(), EventType.START_TRACKING,
+		 0).execute();
 		MyApplication.getInstance().RouteChanged
 				.addHandler(mRoutesChangedHandler);
 		MyApplication.getInstance().OnRecordingRouteUpdated
