@@ -129,6 +129,21 @@ if (isset($routes)) {
 
 
                 }
+                var pStart = points[0];
+                var pEnd = points[points.length - 1];
+                var marker = new google.maps.Marker({
+                    position: new google.maps.LatLng(pStart.lat, pStart.lon),
+                    title: "Inizio",
+                    icon: "/asset/img/start.png"
+                });
+                marker.setMap(map);
+                
+                marker = new google.maps.Marker({
+                    position: new google.maps.LatLng(pEnd.lat, pEnd.lon),
+                    title: "Fine",
+                    icon: "/asset/img/stop.png"
+                });
+                marker.setMap(map);
         <?php
     }
 }
