@@ -46,6 +46,13 @@ function unformatData(obj, input)
     }
     return input.val();
 }
+function restore()
+{
+    var obj = $(this.original);
+    var input = $(this);
+    obj.click(editField);
+    input.replaceWith(obj);
+}
 function getInput(obj)
 {
     if (obj.hasClass('datecontent'))
@@ -56,17 +63,20 @@ function getInput(obj)
     }
     if (obj.hasClass('gendercontent'))
     {
-        var html = "<select>";
+        var html = "<div style='display:inline;'>";
         var items = ['Non specificato', 'Femmina', 'Maschio'];
         for (var i = 0; i < items.length; i++)
         {
             var item = items[i];
             var selected = item === obj.text();
-            html += '<option value="' + i + '"' + (selected ? ' selected' : '') + '>' + item + "</option>";
+            html += '<input type="radio" value="' + i + '"' + (selected ? ' checked' : '') + ' name="' + obj.attr('name') + '">' + item + "</input>";
         }
-        html += "</select>";
+        html += "</div>"
         var input = $(html);
-        input.change(onPersistField);
+        $('input', input).change(function(){
+            input()
+        });
+        input.blur(restore);
         return input;
     }
     var input = $("<input type='text'></input>");
@@ -79,7 +89,12 @@ function editField()
 
     var input = getInput(obj);
     input.val(obj.text());
-    input[0].original = obj;
+    $('input', input).each(function(){
+         this.original = obj;
+    });
+    input.each(function(){
+         this.original = obj;
+    });
     obj.replaceWith(input);
     input.focus();
 
