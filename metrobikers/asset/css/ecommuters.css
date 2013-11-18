@@ -227,3 +227,8 @@ div.pwdmetercontainer{
 p{
     text-align: justify;
 }
+.changeable:hover
+{
+    background-color: yellow;
+    cursor: pointer;
+}

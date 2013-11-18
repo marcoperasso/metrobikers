@@ -5,21 +5,6 @@ if (!defined('BASEPATH'))
 
 class User extends MY_Controller {
 
-    /**
-     * Index Page for this controller.
-     *
-     * Maps to the following URL
-     * 		http://example.com/index.php/welcome
-     * 	- or -  
-     * 		http://example.com/index.php/welcome/index
-     * 	- or -
-     * Since this controller is set as the default controller in 
-     * config/routes.php, it's displayed at http://example.com/
-     *
-     * So any other public methods not prefixed with an underscore will
-     * map to /index.php/welcome/<method_name>
-     * @see http://codeigniter.com/user_guide/general/urls.html
-     */
     public function index() {
 
         $data = array();
@@ -28,9 +13,9 @@ class User extends MY_Controller {
             $data['user'] = $user;
         }
 
-        $this->load_view('user', "I miei dati",  $data);
+        $this->load_view('user', "I miei dati", $data);
     }
-    
+
     public function routes() {
 
         $data = array();
@@ -45,6 +30,24 @@ class User extends MY_Controller {
         }
 
         $this->load_view('routes', 'I miei itinerari', $data);
+    }
+
+    public function update() {
+        $response = (object)array('result' => FALSE);
+        $user = get_user();
+        if ($user != NULL) {
+            $this->load->model("User_model");
+            if ($user->update_user($this->input->post())) {
+                
+                $user->assign($this->input->post());
+                set_user($user);
+                $response->result = TRUE;
+            }
+        }
+
+        $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode($response));
     }
 
 }

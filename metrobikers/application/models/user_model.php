@@ -63,6 +63,10 @@ class User_model extends MY_Model {
         $this->db->insert('users', $this);
         $this->id = $this->db->insert_id();
     }
+    public function update_user($data) {
+        $this->db->where('id', $this->id);
+        return $this->db->update('users', $data); 
+    }
 
     public function save_email($mail) {
         $this->mail = $mail;

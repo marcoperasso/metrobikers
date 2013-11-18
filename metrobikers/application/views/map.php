@@ -124,26 +124,29 @@ if (isset($routes)) {
                         map: map
                     });
                     var obj = new RouteInfo("<?php echo $route->name; ?>", myInfoWindow);
-                    
+
                     google.maps.event.addListener(poly, 'click', obj.onDetailRequested);
 
 
                 }
-                var pStart = points[0];
-                var pEnd = points[points.length - 1];
-                var marker = new google.maps.Marker({
-                    position: new google.maps.LatLng(pStart.lat, pStart.lon),
-                    title: "Inizio",
-                    icon: "/asset/img/start.png"
-                });
-                marker.setMap(map);
-                
-                marker = new google.maps.Marker({
-                    position: new google.maps.LatLng(pEnd.lat, pEnd.lon),
-                    title: "Fine",
-                    icon: "/asset/img/stop.png"
-                });
-                marker.setMap(map);
+                if (points.length > 2)
+                {
+                    var pStart = points[0];
+                    var pEnd = points[points.length - 1];
+                    var marker = new google.maps.Marker({
+                        position: new google.maps.LatLng(pStart.lat, pStart.lon),
+                        title: "Inizio",
+                        icon: "/asset/img/start.png"
+                    });
+                    marker.setMap(map);
+
+                    marker = new google.maps.Marker({
+                        position: new google.maps.LatLng(pEnd.lat, pEnd.lon),
+                        title: "Fine",
+                        icon: "/asset/img/stop.png"
+                    });
+                    marker.setMap(map);
+                }
         <?php
     }
 }
