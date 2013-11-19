@@ -56,8 +56,6 @@ public class ConnectorService extends Service implements LocationListener {
 
 	private List<Route> followedRoutes = new ArrayList<Route>();
 
-	private int i;
-
 	public ConnectorService() {
 	}
 
@@ -130,11 +128,12 @@ public class ConnectorService extends Service implements LocationListener {
 					mNotificationManager
 							.cancel(Const.SENDING_POSITION_NOTIFICATION_ID);
 
-					Log.i(Const.ECOMMUTERS_TAG, "Stopping connector service");
+					Log.i(Const.ECOMMUTERS_TAG, "Finished connector service worker thread");
 
 				}
 			});
 			mWorkerThread.setDaemon(true);
+			mWorkerThread.setName("Connector Service Worker");
 			mWorkerThread.start();
 		} else {
 			onExecuteTask(task);
@@ -223,12 +222,7 @@ public class ConnectorService extends Service implements LocationListener {
 				timerTask = null;
 			}
 		};
-		i++; 
-		
-		int timeout2 = TIMEOUT;
-		if (i > 20)
-			timeout2 = 1;
-		mTimer.schedule(timerTask, timeout2);
+		mTimer.schedule(timerTask, TIMEOUT);
 	}
 
 	// -1: traccia terminata; 0: sulla traccia; numero positivo: fuori traccia,
@@ -472,6 +466,11 @@ public class ConnectorService extends Service implements LocationListener {
 
 				}
 			});
+		}
+		try {
+			if (mWorkerThread != null)
+				mWorkerThread.join();
+		} catch (InterruptedException e) {
 		}
 		super.onDestroy();
 	}

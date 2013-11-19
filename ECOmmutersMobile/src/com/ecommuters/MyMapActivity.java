@@ -206,8 +206,7 @@ public class MyMapActivity extends MapActivity {
 				mMap.invalidate();
 			}
 		};
-		 new Task(Calendar.getInstance(), EventType.START_TRACKING,
-		 0).execute();
+		//launchDebugTasks();
 		MyApplication.getInstance().RouteChanged
 				.addHandler(mRoutesChangedHandler);
 		MyApplication.getInstance().OnRecordingRouteUpdated
@@ -260,6 +259,14 @@ public class MyMapActivity extends MapActivity {
 		MyApplication.getInstance().RecordingServiceChanged
 				.addHandler(mRecordingServiceChangedHandler);
 
+	}
+
+	@SuppressWarnings("unused")
+	private void launchDebugTasks() {
+		new Task(Calendar.getInstance(), EventType.START_TRACKING, 0).execute();
+		Calendar instance = Calendar.getInstance();
+		instance.add(Calendar.MINUTE, 1);
+		new Task(instance, EventType.STOP_TRACKING, 0).schedule(1);
 	}
 
 	@Override

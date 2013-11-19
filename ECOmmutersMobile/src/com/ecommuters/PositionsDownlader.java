@@ -8,12 +8,12 @@ import android.os.Handler;
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapView;
 
-public class PositionsDownlader {
+public class PositionsDownlader implements Runnable{
+	private static final int downloadPositionsInterval = 5000;
+
 	private Handler mHandler;
 
 	private AsyncTask<GeoPoint, Void, ArrayList<ECommuterPosition>> downloadPositionsTask;
-
-	private Runnable downloadPositionsRunnable;
 
 	private RoutesOverlay mRoutesOverlay;
 
@@ -26,12 +26,6 @@ public class PositionsDownlader {
 		this.mMap = map;
 		this.mRoutesOverlay = overlay;
 		this.activity = activity;
-		downloadPositionsRunnable = new Runnable() {
-			public void run() {
-				downloadPositions();
-			}
-		};
-
 	}
 
 	public void start() {
@@ -42,7 +36,7 @@ public class PositionsDownlader {
 	public void stop() {
 		if (downloadPositionsTask != null)
 			downloadPositionsTask.cancel(false);
-		mHandler.removeCallbacks(downloadPositionsRunnable);
+		mHandler.removeCallbacks(this);
 		mHandler = null;
 	}
 	private void downloadPositions() {
@@ -66,15 +60,23 @@ public class PositionsDownlader {
 				protected void onPostExecute(
 						ArrayList<ECommuterPosition> positions) {
 					mRoutesOverlay.setPositions(positions);
-
+					if (mHandler != null) {
+						mHandler.postDelayed(PositionsDownlader.this, downloadPositionsInterval);
+					}
 				};
 
 			}.execute(ul, br);
 		}
-		if (mHandler != null) {
-
-			mHandler.postDelayed(downloadPositionsRunnable, 5000);
+		else
+		{
+			if (mHandler != null) {
+				mHandler.postDelayed(PositionsDownlader.this, downloadPositionsInterval);
+			}
 		}
 
+	}
+
+	public void run() {
+		downloadPositions();
 	}
 }
