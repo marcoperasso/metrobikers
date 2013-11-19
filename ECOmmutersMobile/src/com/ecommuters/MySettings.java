@@ -27,18 +27,6 @@ public class MySettings {
 		editor.commit();
 	}
 	
-	public static int getMaxTaskId(Context context) {
-		SharedPreferences settings = context.getSharedPreferences(PREFS_NAME, 0);
-		return settings.getInt(MAX_TASK_ID, 0);
-	}
-	
-	public static void setMaxTaskId(Context context, int id) {
-		SharedPreferences settings = context. getSharedPreferences(PREFS_NAME, 0);
-		SharedPreferences.Editor editor = settings.edit();
-		editor.putInt(MAX_TASK_ID, id);
-		editor.commit();
-	}
-	
 	public static Credentials readCredentials(Context context) {
 		SharedPreferences settings = context.getSharedPreferences(PREFS_NAME, 0);
 		CurrentCredentials = new Credentials(settings.getInt(USERID, 0), settings.getString(EMAIL, ""), settings.getString(PASSWORD, ""));

@@ -64,13 +64,22 @@ public class MyApplication extends Application {
 		RouteChanged.fire(this, EventArgs.Empty);
 	}
 
-	public void refreshRoutes(boolean schedule) {
+	public void refreshRoutes() {
+		ConnectorService.resetGPSStatus();
 		synchronized (routeSemaphore) {
+			if (mRoutes != null)
+			{
+				for (Route r : mRoutes)
+					r.cancelScheduling();
+			}
 			mRoutes = Route.readAllRoutes(getApplicationContext());
+			if (mRoutes != null)
+			{
+				for (Route r : mRoutes)
+					r.schedule(true);
+			}
 		}
 		OnRouteChanged();
-		if (schedule)
-			new TaskScheduler().scheduleLiveTracking(null);
 	}
 
 	public void deleteRoute(Route route) {
@@ -80,12 +89,12 @@ public class MyApplication extends Application {
 			file.delete();
 			mRoutes.remove(route);
 		}
-		new TaskScheduler().scheduleLiveTracking(null);
+		route.cancelScheduling();
 		OnRouteChanged();
 
 	}
 
-	public void addRoute(Route route) {
+	public void addRoute(Route route, boolean executeIfActiveNow) {
 		initRoutes();
 		synchronized (routeSemaphore) {
 			boolean updated = false;
@@ -99,7 +108,7 @@ public class MyApplication extends Application {
 			if (!updated)
 				mRoutes.add(route);
 		}
-		new TaskScheduler().scheduleLiveTracking(route);
+		route.schedule(executeIfActiveNow);
 		OnRouteChanged();
 
 	}

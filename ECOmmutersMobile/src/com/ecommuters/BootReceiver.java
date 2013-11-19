@@ -13,7 +13,8 @@ public class BootReceiver extends BroadcastReceiver {
 	public void onReceive(Context context, Intent intent) {
 		Log.i(Const.ECOMMUTERS_TAG,
 				"Performing boot operations.");
-		new TaskScheduler().scheduleLiveTracking(null);
+		for (Route r : MyApplication.getInstance().getRoutes())
+			r.schedule(true);
 		
 		Intent service = new Intent(context, SyncService.class);
 		context.startService(service);

@@ -3,11 +3,6 @@ package com.ecommuters;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
-
-import com.ecommuters.Task.EventType;
 
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -26,11 +21,58 @@ import android.os.Looper;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
+import com.ecommuters.Task.EventType;
+
 /**
  * @author perasso
  * 
  */
 public class ConnectorService extends Service implements LocationListener {
+
+	class MyFollowedRoute implements Runnable {
+		private Route route;
+
+		public MyFollowedRoute(Route route) {
+			this.route = route;
+		}
+
+		public void run() {
+			setAutomaticLiveTracking(false, route.getId());
+
+		}
+
+	}
+
+	class MyFollowedRouteList extends ArrayList<MyFollowedRoute> {
+
+		/**
+	 * 
+	 */
+		private static final long serialVersionUID = -1708891018273860036L;
+
+		@Override
+		public boolean contains(Object object) {
+			Route r = castToRoute(object);
+			return get(r) != null;
+		}
+
+		MyFollowedRoute get(Route r) {
+			for (MyFollowedRoute fr : this)
+				if (fr.route == r)
+					return fr;
+			return null;
+		}
+
+		private Route castToRoute(Object object) {
+			Route r = null;
+			if (object instanceof Route)
+				r = (Route) object;
+			else if (object instanceof MyFollowedRoute)
+				r = ((MyFollowedRoute) object).route;
+			return r;
+		}
+
+	}
 
 	private static final int TIMEOUT = 300000;
 
@@ -40,7 +82,6 @@ public class ConnectorService extends Service implements LocationListener {
 	private LocationManager mlocManager;
 	private Thread mWorkerThread;
 	private Handler mHandler;
-	private boolean automaticTracking;
 
 	private Route[] mRoutes;
 
@@ -48,13 +89,11 @@ public class ConnectorService extends Service implements LocationListener {
 	private long sendLatestPositionInterval = 30000;// 30 secondi
 	private Runnable sendLatestPositionProcedureRunnable;
 
-	private GPSManager mGPSManager = new GPSManager();
 	private ECommuterPosition mLocation;
 	private NotificationManager mNotificationManager;
-	private Timer mTimer = new Timer(true);
-	private TimerTask timerTask = null;
+	private GPSManager gpsManager = new GPSManager();
 
-	private List<Route> followedRoutes = new ArrayList<Route>();
+	private MyFollowedRouteList followedRoutes = new MyFollowedRouteList();
 
 	public ConnectorService() {
 	}
@@ -67,7 +106,8 @@ public class ConnectorService extends Service implements LocationListener {
 	}
 
 	public static void executeTask(Task t) {
-		// se ricevo un comando di stop e il servizio � gi� stoppato, non faccio
+		// se ricevo un comando di stop e il servizio � gi� stoppato, non
+		// faccio
 		// nulla
 		if (t.getType() == EventType.STOP_TRACKING
 				&& MyApplication.getInstance().getConnectorService() == null)
@@ -128,7 +168,8 @@ public class ConnectorService extends Service implements LocationListener {
 					mNotificationManager
 							.cancel(Const.SENDING_POSITION_NOTIFICATION_ID);
 
-					Log.i(Const.ECOMMUTERS_TAG, "Finished connector service worker thread");
+					Log.i(Const.ECOMMUTERS_TAG,
+							"Finished connector service worker thread");
 
 				}
 			});
@@ -139,10 +180,6 @@ public class ConnectorService extends Service implements LocationListener {
 			onExecuteTask(task);
 		}
 		return super.onStartCommand(intent, flags, startId);
-	}
-
-	private boolean isManualTracking() {
-		return mGPSManager.currentLevel == GPSManager.MANUAL_TRACKING;
 	}
 
 	public void onCreate() {
@@ -158,76 +195,9 @@ public class ConnectorService extends Service implements LocationListener {
 		super.onCreate();
 	}
 
-	public void locationChanged(ECommuterPosition location) {
-		// calcolo lo stato della mia posizione relativamente alle rotte
-		// presenti
-		double status = calculateRoutesByPosition(location);
-		// -1: traccia teminata
-		// 0: sono su una traccia
-		// >0: distanza minima dalla traccia pi� vicina
-
-		// cancello il timer perch� la posizione � arrivata
-		if (timerTask != null) {
-			timerTask.cancel();
-			timerTask = null;
-		}
-
-		if (status == -1)// traccia terminata
-		{
-			if (automaticTracking) {
-				setAutomaticLiveTracking(false);
-				Log.i(Const.ECOMMUTERS_TAG,
-						"Stop automatic tracking: reached end of route.");
-			}
-			return;
-		}
-
-		boolean b = status == 0;// sulla traccia
-
-		// se sono sulla traccia, faccio partire il timer per prevenire l
-		// amancanza di segnale
-		if (b)
-			startTimeoutTimer();
-
-		// se sono gi� nello stato di listening o non listening, non faccio
-		// altro
-		if (b == automaticTracking)
-			return;
-
-		// se non sono pi� sulla traccia, non mi metto subito fuori dal live
-		// tracking, aspetto un po',
-		// magari ci rientro... solo se mi allontano pi�
-		// di 500 metri esco
-		if (!b) {
-			if (status < MAX_DISTANCE_FROM_TRACK_METERS) {
-				startTimeoutTimer();
-				return;
-			}
-			Log.i(Const.ECOMMUTERS_TAG,
-					"Stop automatic tracking: out of route.");
-		}
-
-		setAutomaticLiveTracking(b);
-	}
-
-	private void startTimeoutTimer() {
-		timerTask = new TimerTask() {
-
-			@Override
-			public void run() {
-				Log.i(Const.ECOMMUTERS_TAG,
-						"Stop automatic tracking: time out waiting for GPS.");
-
-				setAutomaticLiveTracking(false);
-				timerTask = null;
-			}
-		};
-		mTimer.schedule(timerTask, TIMEOUT);
-	}
-
 	// -1: traccia terminata; 0: sulla traccia; numero positivo: fuori traccia,
 	// distanza minima dalla traccia
-	private double calculateRoutesByPosition(ECommuterPosition position) {
+	private void calculateRoutesByPosition(ECommuterPosition position) {
 		double minRoutesDistance = Double.MAX_VALUE;
 
 		for (Route r : mRoutes) {
@@ -244,46 +214,64 @@ public class ConnectorService extends Service implements LocationListener {
 
 			minRoutesDistance = Math.min(minRoutesDistance, minRouteDistance);
 
-			if (minRouteDistance < DISTANCE_METERS) {
+			// posticipo i timeout
+			for (MyFollowedRoute run : followedRoutes) {
+				mHandler.removeCallbacks(run);
+				mHandler.postDelayed(run, TIMEOUT);
+			}
+
+			if (minRouteDistance < DISTANCE_METERS) {// sono sulla traccia
 				if (r.addTrackingPosition(index, position)
 						&& !followedRoutes.contains(r)) {
-					followedRoutes.add(r);
+					MyFollowedRoute myFollowedRoute = new MyFollowedRoute(r);
+					followedRoutes.add(myFollowedRoute);
+					mHandler.postDelayed(myFollowedRoute, TIMEOUT);
+					setAutomaticLiveTracking(true, r.getId());
 					Log.i(Const.ECOMMUTERS_TAG,
-							String.format("You are following route %s",
-									r.getName()));
+							String.format("You entered route %s", r.getName()));
 				}
-			} else {
+			} else if (minRouteDistance > MAX_DISTANCE_FROM_TRACK_METERS) { // mi
+																			// sono
+																			// allontanato
+																			// molto
+																			// dalla
+																			// traccia
+																			// (sono
+																			// uscito)
 				if (followedRoutes.contains(r)) {
-					followedRoutes.remove(r);
+					MyFollowedRoute mfr = followedRoutes.get(r);
+					followedRoutes.remove(mfr);
+					mHandler.removeCallbacks(mfr);
+					setAutomaticLiveTracking(false, r.getId());
 					Log.i(Const.ECOMMUTERS_TAG,
-							String.format("You ended following route %s",
-									r.getName()));
+							String.format("You exited route %s", r.getName()));
 				}
 
 			}
 		}
 
 		if (followedRoutes.size() == 0)
-			return minRoutesDistance;
-		boolean end = true;
-		for (Route r : followedRoutes) {
+			return;
+		for (MyFollowedRoute fr : followedRoutes) {
+			Route r = fr.route;
 			position.addRoute(r.getId());
-			if (r.getLatestTrackedIndex() != r.getPoints().size() - 1) {
-				end = false;
-				break;
+			if (r.getLatestTrackedIndex() == r.getPoints().size() - 1) {
+				setAutomaticLiveTracking(false, r.getId());
+				Log.i(Const.ECOMMUTERS_TAG,
+						String.format("You reached the end of the route %s",
+								r.getName()));
 			}
 		}
-		return end ? -1 : 0;
 	}
 
-	private void activateGPS(final int level) {
+	private void activateGPS(final int level, final int routeId) {
 		mHandler.post(new Runnable() {
 			public void run() {
-				boolean wasListening = mGPSManager.requestingLocation();
+				boolean wasListening = gpsManager.requestingLocation();
 				// se cambio di livello, cambio anche il listener 8cambia la
 				// sensibilit'
 				// di tracciatura(
-				if (mGPSManager.startGPS(level)) {
+				if (gpsManager.startGPS(level, routeId)) {
 					// se entro qui dentro � perch� il livello � cambiato
 					if (!wasListening) {
 						setGPSOnNotification();
@@ -292,14 +280,14 @@ public class ConnectorService extends Service implements LocationListener {
 						mlocManager.removeUpdates(ConnectorService.this);
 						String text = String
 								.format("Position updated every %1$d seconds and %2$d meters",
-										mGPSManager.getMinTimeSeconds(),
-										mGPSManager.getMinDinstanceMeters());
+										gpsManager.getMinTimeSeconds(),
+										gpsManager.getMinDinstanceMeters());
 						Log.i(Const.ECOMMUTERS_TAG, text);
 					}
 					mlocManager.requestLocationUpdates(
 							LocationManager.GPS_PROVIDER,
-							mGPSManager.getMinTimeSeconds() * 1000,
-							mGPSManager.getMinDinstanceMeters(),
+							gpsManager.getMinTimeSeconds() * 1000,
+							gpsManager.getMinDinstanceMeters(),
 							ConnectorService.this);
 
 				}
@@ -309,22 +297,26 @@ public class ConnectorService extends Service implements LocationListener {
 
 	}
 
-	private void stopGPS(final int level) {
+	private void stopGPS(final int level, final int routeId) {
+		if (level == GPSStatus.MANUAL_TRACKING) {
+			stopSelf();
+			return;
+		}
 		mHandler.post(new Runnable() {
 
 			public void run() {
 				// se sono arrivato a livello zero, fermo il gps, altrimenti
 				// aggiusto la
 				// frequenza di aggiornamento
-				mGPSManager.stopGPS(level);
+				gpsManager.stopGPS(level, routeId);
 				// per prima cosa elimino il listener corrente
 				mlocManager.removeUpdates(ConnectorService.this);
-				if (mGPSManager.requestingLocation()) {
+				if (gpsManager.requestingLocation()) {
 
 					String text = String
 							.format("Position updated every %1$d seconds and %2$d meters",
-									mGPSManager.getMinTimeSeconds(),
-									mGPSManager.getMinDinstanceMeters());
+									gpsManager.getMinTimeSeconds(),
+									gpsManager.getMinDinstanceMeters());
 					Log.i(Const.ECOMMUTERS_TAG, text);
 
 					// poi, se devo continuare a registrare su un livello
@@ -332,8 +324,8 @@ public class ConnectorService extends Service implements LocationListener {
 					// mi ri registro
 					mlocManager.requestLocationUpdates(
 							LocationManager.GPS_PROVIDER,
-							mGPSManager.getMinTimeSeconds() * 1000,
-							mGPSManager.getMinDinstanceMeters(),
+							gpsManager.getMinTimeSeconds() * 1000,
+							gpsManager.getMinDinstanceMeters(),
 							ConnectorService.this);
 				} else {
 					stopSelf();
@@ -351,8 +343,8 @@ public class ConnectorService extends Service implements LocationListener {
 		mHandler.post(new Runnable() {
 
 			public void run() {
-				if (mGPSManager.resetLevels()
-						&& !mGPSManager.requestingLocation()) {
+				gpsManager.resetLevels();
+				if (!gpsManager.requestingLocation()) {
 					stopSelf();
 				}
 
@@ -362,7 +354,7 @@ public class ConnectorService extends Service implements LocationListener {
 	}
 
 	public void onLocationChanged(Location location) {
-		if (!mGPSManager.requestingLocation())
+		if (!gpsManager.requestingLocation())
 			return;
 		Credentials currentCredentials = MySettings.CurrentCredentials;
 		ECommuterPosition loc = new ECommuterPosition(
@@ -370,7 +362,7 @@ public class ConnectorService extends Service implements LocationListener {
 				(int) (location.getLatitude() * 1E6), (int) (location
 						.getLongitude() * 1E6), location.getAccuracy(),
 				(long) (System.currentTimeMillis() / 1E3));
-		locationChanged(loc);
+		calculateRoutesByPosition(loc);
 		mLocation = loc;
 	}
 
@@ -404,7 +396,7 @@ public class ConnectorService extends Service implements LocationListener {
 		String message = getString(R.string.live_tracking_on);
 		Intent intent = new Intent(this, ConnectorService.class);
 		intent.putExtra(Task.TASK, new Task(Calendar.getInstance(),
-				EventType.STOP_TRACKING, GPSManager.MANUAL_TRACKING));
+				EventType.STOP_TRACKING, GPSStatus.MANUAL_TRACKING, 0));
 		PendingIntent contentIntent = PendingIntent.getService(this, 0, intent, // add
 																				// this
 				PendingIntent.FLAG_UPDATE_CURRENT);
@@ -441,7 +433,7 @@ public class ConnectorService extends Service implements LocationListener {
 
 		// mando la posizione solo se sono su un itinerario, oppure sono in
 		// stato di live tracking manuale
-		if (mLocation.getRoutes().isEmpty() && !isManualTracking())
+		if (mLocation.getRoutes().isEmpty() && !gpsManager.isManualTracking())
 			return;
 
 		String text = getString(R.string.tracking_position);
@@ -487,10 +479,10 @@ public class ConnectorService extends Service implements LocationListener {
 
 		switch (task.getType()) {
 		case START_TRACKING:
-			activateGPS(task.getWeight());
+			activateGPS(task.getWeight(), task.getRouteId());
 			break;
 		case STOP_TRACKING:
-			stopGPS(task.getWeight());
+			stopGPS(task.getWeight(), task.getRouteId());
 			break;
 		default:
 			break;
@@ -501,16 +493,15 @@ public class ConnectorService extends Service implements LocationListener {
 	public static void setManualLiveTracking(boolean b) {
 		executeTask(new Task(Calendar.getInstance(),
 				b ? EventType.START_TRACKING : EventType.STOP_TRACKING,
-				GPSManager.MANUAL_TRACKING));
+				GPSStatus.MANUAL_TRACKING, 0));
 
 	}
 
-	private void setAutomaticLiveTracking(boolean b) {
-		automaticTracking = b;
-		if (automaticTracking) {
-			activateGPS(GPSManager.AUTOMATIC_TRACKING);
+	private void setAutomaticLiveTracking(boolean b, int routeId) {
+		if (b) {
+			activateGPS(GPSStatus.AUTOMATIC_TRACKING, routeId);
 		} else {
-			stopGPS(GPSManager.AUTOMATIC_TRACKING);
+			stopGPS(GPSStatus.AUTOMATIC_TRACKING, routeId);
 		}
 	}
 }

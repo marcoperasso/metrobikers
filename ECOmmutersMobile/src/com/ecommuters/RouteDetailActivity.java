@@ -84,8 +84,8 @@ public class RouteDetailActivity extends Activity {
 			sb.append("\r\n");
 			sb.append(String.format(
 					"ogni %d secondi o %d metri", 
-			GPSManager.minTimeSecs[ws[i]],
-			GPSManager.minDistanceMetres[ws[i]]
+			GPSStatus.minTimeSecs[ws[i]],
+			GPSStatus.minDistanceMetres[ws[i]]
 			));
 			
 					

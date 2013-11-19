@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import org.json.JSONArray;
@@ -11,6 +12,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.content.Context;
+import android.util.Log;
+
+import com.ecommuters.Task.EventType;
 
 public class Route implements IJsonSerializable, Serializable {
 	/**
@@ -114,14 +118,10 @@ public class Route implements IJsonSerializable, Serializable {
 
 	public TimeInterval[] getIntervals() {
 		if (intervals == null) {
-			intervals = new TimeInterval[GPSManager.MAX_TIMER_INTERVALS];
-			for (int i = 0; i < GPSManager.MAX_TIMER_INTERVALS; i++)
+			intervals = new TimeInterval[GPSStatus.MAX_TIMER_INTERVALS];
+			for (int i = 0; i < GPSStatus.MAX_TIMER_INTERVALS; i++)
 				intervals[i] = new TimeInterval(this,
 						getStartingTimeSeconds()*1000, i);
-			// per debug
-			// long currentTimeMillis = System.currentTimeMillis();
-			// for (int i = 0; i < GPSManager.MAX_GPS_LEVELS; i++)
-			// intervals.add(new TimeInterval(r, currentTimeMillis, i));
 		}
 		return intervals;
 	}
@@ -178,4 +178,49 @@ public class Route implements IJsonSerializable, Serializable {
 		return getTrackingInfo().isValid(this);
 	}
 	public boolean isFollowing(){return getTrackingInfo().isValid(this);}
+
+	public void schedule(boolean executeIfActiveNow) {
+		Log.i(Const.ECOMMUTERS_TAG,
+				String.format("Scheduling route %s", name));
+		for (TimeInterval interval : getIntervals()) {
+			
+			Task startingTask = schedule(interval.getStart(),
+					interval.getWeight(), EventType.START_TRACKING);
+
+			schedule(interval.getEnd(), interval.getWeight(),
+					EventType.STOP_TRACKING);
+
+			if (executeIfActiveNow && interval.isActiveNow()) {
+				startingTask.execute();
+			}
+		}
+		
+	}
+	public void scheduleDebug() {
+		Log.i(Const.ECOMMUTERS_TAG,
+				String.format("Scheduling route %s", name));
+		for (TimeInterval interval : getIntervals()) {
+			Calendar c = Calendar.getInstance();
+			Task startingTask = schedule(c,
+					interval.getWeight(), EventType.START_TRACKING);
+			c.add(Calendar.MINUTE, 1);
+			schedule(c, interval.getWeight(),
+					EventType.STOP_TRACKING);
+
+				startingTask.execute();
+		}
+		
+	}
+	
+	private Task schedule(Calendar time, int weight, EventType type) {
+		Task task = new Task(time, type, weight, id);
+		task.schedule();
+		return task;
+	}
+
+	public void cancelScheduling() {
+		Task.cancel(id, EventType.START_TRACKING);
+		Task.cancel(id, EventType.STOP_TRACKING);
+		
+	}
 }

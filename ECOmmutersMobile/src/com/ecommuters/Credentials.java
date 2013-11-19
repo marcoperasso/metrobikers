@@ -1,12 +1,6 @@
 package com.ecommuters;
 
-import java.util.Timer;
-import java.util.TimerTask;
-
-import android.annotation.SuppressLint;
 import android.content.Context;
-import android.view.View;
-import android.webkit.WebView;
 
 public class Credentials {
 	private int userId;

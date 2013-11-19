@@ -11,7 +11,6 @@ import android.graphics.Point;
 import android.graphics.drawable.Drawable;
 import android.text.format.DateFormat;
 import android.util.Log;
-import android.view.WindowId.FocusObserver;
 
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapView;

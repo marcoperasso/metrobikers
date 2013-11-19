@@ -2,7 +2,6 @@ package com.ecommuters;
 
 import java.io.Serializable;
 import java.util.Calendar;
-import java.util.TimeZone;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
@@ -18,17 +17,26 @@ public class Task implements Runnable, Serializable {
 	public static final String TASK = "t";
 
 	public enum EventType {
-		START_TRACKING, STOP_TRACKING
+
+		START_TRACKING(0), STOP_TRACKING(1);
+		@SuppressWarnings("unused")
+		private final int value;
+
+		private EventType(int value) {
+			this.value = value;
+		}
 	}
 
 	private Calendar time;
 	private EventType type;
 	private int weight;
+	private int routeId;
 
-	public Task(Calendar time, EventType type, int weight) {
+	public Task(Calendar time, EventType type, int weight, int routeId) {
 		this.type = type;
 		this.weight = weight;
 		this.time = time;
+		this.routeId = routeId;
 	}
 
 	public void run() {
@@ -39,15 +47,14 @@ public class Task implements Runnable, Serializable {
 		ConnectorService.executeTask(this);
 	}
 
-	
-	public void schedule(int id) {
+	public void schedule() {
 		Calendar calendar = Calendar.getInstance();
-	    calendar.set(Calendar.HOUR_OF_DAY, time.get(Calendar.HOUR_OF_DAY));
+		calendar.set(Calendar.HOUR_OF_DAY, time.get(Calendar.HOUR_OF_DAY));
 		calendar.set(Calendar.MINUTE, time.get(Calendar.MINUTE));
 		calendar.set(Calendar.SECOND, time.get(Calendar.SECOND));
-		
+
 		Calendar now = Calendar.getInstance();
-		
+
 		if (calendar.getTimeInMillis() < now.getTimeInMillis()) {
 			calendar.add(Calendar.DAY_OF_MONTH, 1);
 		}
@@ -55,20 +62,30 @@ public class Task implements Runnable, Serializable {
 		Intent intent = new Intent(MyApplication.getInstance(),
 				ConnectorService.class);
 		intent.putExtra(TASK, this);
-		PendingIntent pIntent = PendingIntent.getService(MyApplication.getInstance(), id, intent,
+		PendingIntent pIntent = PendingIntent.getService(
+				MyApplication.getInstance(), getId(), intent,
 				PendingIntent.FLAG_UPDATE_CURRENT);
 		AlarmManager alarms = (AlarmManager) MyApplication.getInstance()
 				.getSystemService(Context.ALARM_SERVICE);
-		alarms.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),
-				AlarmManager.INTERVAL_DAY, pIntent);
+		alarms.setRepeating(AlarmManager.RTC_WAKEUP,
+				calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pIntent);
 
-		Log.i(Const.ECOMMUTERS_TAG, String.format(
-				"Scheduling task %s with weight: %d at %s.", getType()
-						.toString(), getWeight(), calendar.getTime().toString()));
+		Log.i(Const.ECOMMUTERS_TAG,
+				String.format("Scheduling task %s with weight: %d at %s.",
+						getType().toString(), getWeight(), calendar.getTime()
+								.toString()));
 
 	}
 
-	public static void cancel(Integer id) {
+	private int getId() {
+		return getId(routeId, type);
+	}
+
+	private static int getId(int routeId, EventType type) {
+		return routeId * 2 + type.ordinal();
+	}
+
+	private static void cancel(Integer id) {
 		Intent intent = new Intent(MyApplication.getInstance(),
 				ConnectorService.class);
 		PendingIntent pIntent = PendingIntent.getService(
@@ -92,6 +109,13 @@ public class Task implements Runnable, Serializable {
 		return weight;
 	}
 
-	
+	public static void cancel(int routeId, EventType startTracking) {
+		cancel(getId(routeId, startTracking));
+		
+	}
+
+	public int getRouteId() {
+		return routeId;
+	}
 
 }

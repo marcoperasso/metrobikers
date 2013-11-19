@@ -7,16 +7,11 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-import org.apache.http.client.ClientProtocolException;
-import org.json.JSONException;
-
 import android.app.AlertDialog;
 import android.app.SearchManager;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.graphics.drawable.Drawable;
 import android.location.LocationManager;
 import android.os.Bundle;
@@ -41,7 +36,6 @@ import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapActivity;
 import com.google.android.maps.MapController;
 import com.google.android.maps.MapView;
-import com.google.android.maps.MyLocationOverlay;
 import com.google.android.maps.Overlay;
 
 public class MyMapActivity extends MapActivity {
@@ -104,7 +98,7 @@ public class MyMapActivity extends MapActivity {
 
 					final File recordingFile = getFileStreamPath(Const.RECORDING_ROUTE_FILE);
 					recordingFile.delete();
-					MyApplication.getInstance().addRoute(r);
+					MyApplication.getInstance().addRoute(r, false);
 
 					// faccio partire il servizio che lo manda al server
 					Intent service = new Intent(MyMapActivity.this,
@@ -207,6 +201,9 @@ public class MyMapActivity extends MapActivity {
 			}
 		};
 		//launchDebugTasks();
+		//for (Route r : MyApplication.getInstance().getRoutes())
+		//	r.scheduleDebug();
+		
 		MyApplication.getInstance().RouteChanged
 				.addHandler(mRoutesChangedHandler);
 		MyApplication.getInstance().OnRecordingRouteUpdated
@@ -263,10 +260,10 @@ public class MyMapActivity extends MapActivity {
 
 	@SuppressWarnings("unused")
 	private void launchDebugTasks() {
-		new Task(Calendar.getInstance(), EventType.START_TRACKING, 0).execute();
+		new Task(Calendar.getInstance(), EventType.START_TRACKING, 0, 0).execute();
 		Calendar instance = Calendar.getInstance();
 		instance.add(Calendar.MINUTE, 1);
-		new Task(instance, EventType.STOP_TRACKING, 0).schedule(1);
+		new Task(instance, EventType.STOP_TRACKING, 0, 0).schedule();
 	}
 
 	@Override

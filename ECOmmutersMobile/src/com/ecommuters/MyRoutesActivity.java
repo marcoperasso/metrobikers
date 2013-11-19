@@ -106,7 +106,7 @@ public class MyRoutesActivity extends Activity {
 										if (saved)
 										{
 											MyApplication.getInstance()
-													.refreshRoutes(true);
+													.refreshRoutes();
 										}
 									} catch (Exception e) {
 										Log.e(Const.ECOMMUTERS_TAG, Log.getStackTraceString(e)); 

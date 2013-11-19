@@ -1,10 +1,11 @@
 package com.ecommuters;
 
 import java.util.Arrays;
+import java.util.Hashtable;
 
 import android.util.Log;
 
-public class GPSManager {
+class GPSStatus {
 	int[] levels = new int[MAX_TIMER_INTERVALS + 2];// uno aggiuntivo per il
 													// tracking
 	// automatico, uno per il
@@ -41,19 +42,17 @@ public class GPSManager {
 
 	public boolean startGPS(int level) {
 		levels[level]++;
-		Log.d(Const.ECOMMUTERS_TAG, String.format("Raising GPS listening level %d; current level status: %s", level, Arrays.toString(levels)));
+		Log.d(Const.ECOMMUTERS_TAG, String.format(
+				"Raising GPS listening level %d; current level status: %s",
+				level, Arrays.toString(levels)));
 		return updateCurrentLevel();
 	}
 
 	public boolean stopGPS(int level) {
-		if (level == MANUAL_TRACKING || level == AUTOMATIC_TRACKING) {
-			for (int i = 0; i <= level; i++)
-				levels[i] = 0;
-			Log.d(Const.ECOMMUTERS_TAG, String.format("Lowering GPS listening level %d; current level status: %s", level, Arrays.toString(levels)));
-			return updateCurrentLevel();
-		}
 		levels[level]--;
-		Log.d(Const.ECOMMUTERS_TAG, String.format("Lowering GPS listening level %d; current level status: %s", level, Arrays.toString(levels)));
+		Log.d(Const.ECOMMUTERS_TAG, String.format(
+				"Lowering GPS listening level %d; current level status: %s",
+				level, Arrays.toString(levels)));
 		return updateCurrentLevel();
 	}
 
@@ -78,10 +77,14 @@ public class GPSManager {
 	}
 
 	public int getMinDinstanceMeters() {
+		if (currentLevel < 0 || currentLevel >= minDistanceMetres.length)
+			return Integer.MAX_VALUE;
 		return minDistanceMetres[currentLevel];
 	}
 
 	public long getMinTimeSeconds() {
+		if (currentLevel < 0 || currentLevel >= minTimeSecs.length)
+			return Long.MAX_VALUE;
 		return minTimeSecs[currentLevel];
 	}
 
@@ -91,4 +94,61 @@ public class GPSManager {
 		return updateCurrentLevel();
 	}
 
+}
+
+class GPSManager {
+	private Hashtable<Integer, GPSStatus> mGPSStatus = new Hashtable<Integer, GPSStatus>();
+
+	private GPSStatus getGPSStatus(int routeId) {
+		GPSStatus m = mGPSStatus.get(routeId);
+		if (m == null) {
+			m = new GPSStatus();
+			mGPSStatus.put(routeId, m);
+		}
+		return m;
+	}
+	
+	public boolean isManualTracking() {
+		for (GPSStatus m : mGPSStatus.values())
+			if (m.currentLevel == GPSStatus.MANUAL_TRACKING)
+				return true;
+		return false;
+	}
+
+	void resetLevels() {
+		for (GPSStatus s : mGPSStatus.values()) {
+			s.resetLevels();
+		}
+		
+	}
+	
+	boolean requestingLocation() {
+		for (GPSStatus m : mGPSStatus.values())
+			if (m.requestingLocation())
+				return true;
+		return false;
+	}
+
+	boolean startGPS(int level, int routeId) {
+		return getGPSStatus(routeId).startGPS(level);
+	}
+	boolean stopGPS(int level, int routeId) {
+		return getGPSStatus(routeId).stopGPS(level);
+	}
+
+	public int getMinDinstanceMeters() {
+		int d = Integer.MAX_VALUE;
+		for (GPSStatus m : mGPSStatus.values())
+			d = Math.min(d, m.getMinDinstanceMeters());
+		return d;
+	}
+
+	public long getMinTimeSeconds() {
+		long s = Long.MAX_VALUE;
+		for (GPSStatus m : mGPSStatus.values())
+			s = Math.min(s, m.getMinDinstanceMeters());
+		return s;
+	}
+	
+	
 }
