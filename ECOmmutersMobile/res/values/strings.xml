@@ -72,5 +72,21 @@
     <string name="no_ecommuter">Nessun ECOmmuter trovato</string>
     <string name="balloon_text">Posizione rilevata alle %s</string>
     <string name="refine_query">Visualizzati %1$d ECOmmuters, su un totale di %2$d corrispondenti ai criteri impostati; se non trovi la persona cercata prova a raffinare la ricerca.</string>
+    <string name="time_start">Ora partenza:</string>
+    <string name="time_end">Ora arrivo:</string>
+    <string name="distance">Distanza:</string>
+    <string name="duration">Tempo:</string>
+    <string name="average_speed">Velocità media:</string>
+    <string name="gps_activation">Attivazione GPS:</string>
+    <string name="activate_gps_minutes">Attiva GPS (minuti prima della partenza):</string>
+    <string name="stop_gps_minutes">Spegni GPS (minuti dopo la partenza)</string>
+    <string name="monday">Lunedì</string>
+    <string name="tuesday">Martedì</string>
+    <string name="wednesday">Mercoledì</string>
+    <string name="days">Giorni</string>
+    <string name="thursday">Giovedì</string>
+    <string name="friday">Venerdì</string>
+    <string name="saturday">Sabato</string>
+    <string name="sunday">Domenica</string>
 
 </resources>

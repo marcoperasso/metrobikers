@@ -111,11 +111,37 @@ public class Task implements Runnable, Serializable {
 
 	public static void cancel(int routeId, EventType startTracking) {
 		cancel(getId(routeId, startTracking));
-		
+
 	}
 
 	public int getRouteId() {
 		return routeId;
+	}
+
+	public boolean canExecuteToday(Route[] mRoutes) {
+		for (Route r : mRoutes) {
+			if (routeId == r.getId()) {
+				int day = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
+				switch (day) {
+				case Calendar.MONDAY:
+					return r.isMonday();
+				case Calendar.TUESDAY:
+					return r.isTuesday();
+				case Calendar.WEDNESDAY:
+					return r.isWednesday();
+				case Calendar.THURSDAY:
+					return r.isThursday();
+				case Calendar.FRIDAY:
+					return r.isFriday();
+				case Calendar.SATURDAY:
+					return r.isSaturday();
+				case Calendar.SUNDAY:
+					return r.isSunday();
+				}
+				return true;
+			}
+		}
+		return true;
 	}
 
 }

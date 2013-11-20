@@ -14,18 +14,18 @@ class TimeInterval {
 	private int weigth;
 	
 	public TimeInterval(Route r, long time, int weight) {
-		assert (weight < GPSStatus.MAX_TIMER_INTERVALS);
+		assert (weight < Route.MAX_TIMER_INTERVALS);
 		this.route = r;
 		this.weigth = weight;
-		int before = GPSStatus.minutesBeforeStart[weight];
-		int after = GPSStatus.minutesAfterStart[weight];
+		int minutesBefore = r.getMinutesBeforeStart();
+		int minutesAfter = r.getMinutesAfterStart();
 		start = Calendar.getInstance();
 		start.setTimeInMillis(time);
-		start.add(Calendar.MINUTE, -before);
+		start.add(Calendar.MINUTE, -minutesBefore);
 		
 		end = Calendar.getInstance();
 		end.setTimeInMillis(time);
-		end.add(Calendar.MINUTE, after);
+		end.add(Calendar.MINUTE, minutesAfter);
 	}
 
 	public Calendar getStart() {
@@ -56,5 +56,6 @@ class TimeInterval {
 	public int getWeight() {
 		return weigth;
 	}
+
 
 }

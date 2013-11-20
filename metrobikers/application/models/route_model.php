@@ -5,6 +5,9 @@ class Route_model extends MY_Model {
     var $id;
     var $userid;
     var $name;
+    var $before;
+    var $after;
+    var $days;
     var $latestupdate;
     private $_points = NULL;
 

@@ -12,12 +12,14 @@ CREATE TABLE `routepoints` (
 
 
 delimiter $$
-
 CREATE TABLE `routes` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `userid` int(11) NOT NULL,
   `name` varchar(45) DEFAULT NULL,
   `latestupdate` datetime DEFAULT '0000-00-00 00:00:00',
+  `before` tinyint(4) DEFAULT NULL,
+  `after` tinyint(4) DEFAULT NULL,
+  `days` tinyint(4) DEFAULT NULL,
   PRIMARY KEY (`id`,`userid`),
   KEY `user` (`userid`),
   CONSTRAINT `user` FOREIGN KEY (`userid`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE

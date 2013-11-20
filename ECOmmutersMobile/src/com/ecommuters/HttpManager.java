@@ -112,7 +112,7 @@ public class HttpManager {
 		response = httpClient.execute(httpGet, localContext);
 		BufferedReader reader;
 		reader = new BufferedReader(new InputStreamReader(response.getEntity()
-				.getContent()));
+				.getContent()), 8192);
 		String line = null;
 		while ((line = reader.readLine()) != null) {
 			result.append(line);
@@ -157,7 +157,7 @@ public class HttpManager {
 		response = httpClient.execute(httpPost, localContext);
 		BufferedReader reader;
 		reader = new BufferedReader(new InputStreamReader(response.getEntity()
-				.getContent()));
+				.getContent()), 8192);
 		String line = null;
 		while ((line = reader.readLine()) != null) {
 			result.append(line);

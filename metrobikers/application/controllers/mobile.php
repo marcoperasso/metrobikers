@@ -143,10 +143,12 @@ class Mobile extends MY_Controller {
                 $this->db->trans_begin();
                 
                 if (!$this->Route_model->get_route()) {
+                    $this->Route_model->assign($route);
                     $this->Route_model->latestupdate = date('Y-m-d H:i:s', $route->latestupdate);
                     $this->Route_model->set_points($route->points);
                     $this->Route_model->create_route();
                 } else {
+                    $this->Route_model->assign($route);
                     $latestupd = max(array($route->latestupdate, $this->Route_model->latestupdate));
                     $this->Route_model->latestupdate = date('Y-m-d H:i:s', $latestupd);
                     $this->Route_model->set_points($route->points);

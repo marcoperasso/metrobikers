@@ -137,6 +137,15 @@ public class ConnectorService extends Service implements LocationListener {
 		Log.d(Const.ECOMMUTERS_TAG, "Receiving connector service start command");
 
 		final Task task = (Task) obj;
+		
+		if (!task.canExecuteToday(mRoutes))
+		{
+			Log.d(Const.ECOMMUTERS_TAG,
+					"This task cannot be executed today, the service will be stopped");
+			stopSelf();
+			return super.onStartCommand(intent, flags, startId);
+		}
+		
 		if (mWorkerThread == null) {
 			mWorkerThread = new Thread(new Runnable() {
 				public void run() {
@@ -177,7 +186,11 @@ public class ConnectorService extends Service implements LocationListener {
 			mWorkerThread.setName("Connector Service Worker");
 			mWorkerThread.start();
 		} else {
-			onExecuteTask(task);
+			mHandler.post(new Runnable(){
+				public void run() {
+					onExecuteTask(task);
+				}
+			});
 		}
 		return super.onStartCommand(intent, flags, startId);
 	}
@@ -474,12 +487,12 @@ public class ConnectorService extends Service implements LocationListener {
 		switch (task.getType()) {
 		case START_TRACKING:
 			activateGPS(task.getWeight(), task.getRouteId());
-			break;
+			return;
 		case STOP_TRACKING:
 			stopGPS(task.getWeight(), task.getRouteId());
-			break;
+			return;
 		default:
-			break;
+			return;
 		}
 
 	}

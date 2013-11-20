@@ -7,39 +7,16 @@ import java.util.Hashtable;
 import android.util.Log;
 
 class GPSStatus {
-	int[] levels = new int[MAX_TIMER_INTERVALS + 2];// uno aggiuntivo per il
+	int[] levels = new int[Route.MAX_TIMER_INTERVALS + 2];// uno aggiuntivo per il
 													// tracking
 	// automatico, uno per il
 	// tracking manuale
 	int currentLevel = -1;
 	public final static int[] minDistanceMetres = { 10, 5, 5 };
 	public final static long[] minTimeSecs = { 10, 5, 5 };
-	public final static int[] minutesBeforeStart = { 10 };// minuti
-															// prima
-															// della
-															// partenza
-															// della
-															// traccia
-															// a
-															// partire
-															// dai
-															// quali
-															// attivo
-															// il
-															// GPS
-	public final static int[] minutesAfterStart = { 20 };// minuti
-															// dopo
-															// la
-															// partenza
-															// dopo
-															// i
-															// quali
-															// disattivo
-															// il
-															// GPS
-	public static final int MAX_TIMER_INTERVALS = minutesBeforeStart.length;
-	public static final int AUTOMATIC_TRACKING = MAX_TIMER_INTERVALS;
-	public static final int MANUAL_TRACKING = MAX_TIMER_INTERVALS + 1;
+	
+	public static final int AUTOMATIC_TRACKING = Route.MAX_TIMER_INTERVALS;
+	public static final int MANUAL_TRACKING = Route.MAX_TIMER_INTERVALS + 1;
 
 	public boolean startGPS(int level) {
 		levels[level]++;
@@ -86,7 +63,7 @@ class GPSStatus {
 	}
 
 	public boolean resetLevels() {
-		for (int i = 0; i < MAX_TIMER_INTERVALS; i++)
+		for (int i = 0; i < Route.MAX_TIMER_INTERVALS; i++)
 			levels[i] = 0;
 		return updateCurrentLevel();
 	}

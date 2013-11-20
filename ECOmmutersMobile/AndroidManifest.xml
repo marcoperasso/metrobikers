@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.ecommuters"
-    android:versionCode="11"
+    android:versionCode="12"
     android:versionName="1.0" >
 
     <uses-sdk
@@ -82,7 +82,8 @@
         </activity>
         <activity
             android:name="com.ecommuters.RouteDetailActivity"
-            android:label="@string/title_activity_route_detail" >
+            android:label="@string/title_activity_route_detail" 
+            android:windowSoftInputMode="stateUnchanged"> 
         </activity>
 
         <service
