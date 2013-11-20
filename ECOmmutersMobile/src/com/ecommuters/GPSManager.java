@@ -1,6 +1,7 @@
 package com.ecommuters;
 
 import java.util.Arrays;
+import java.util.Enumeration;
 import java.util.Hashtable;
 
 import android.util.Log;
@@ -42,17 +43,13 @@ class GPSStatus {
 
 	public boolean startGPS(int level) {
 		levels[level]++;
-		Log.d(Const.ECOMMUTERS_TAG, String.format(
-				"Raising GPS listening level %d; current level status: %s",
-				level, Arrays.toString(levels)));
+		
 		return updateCurrentLevel();
 	}
 
 	public boolean stopGPS(int level) {
 		levels[level]--;
-		Log.d(Const.ECOMMUTERS_TAG, String.format(
-				"Lowering GPS listening level %d; current level status: %s",
-				level, Arrays.toString(levels)));
+
 		return updateCurrentLevel();
 	}
 
@@ -107,7 +104,7 @@ class GPSManager {
 		}
 		return m;
 	}
-	
+
 	public boolean isManualTracking() {
 		for (GPSStatus m : mGPSStatus.values())
 			if (m.currentLevel == GPSStatus.MANUAL_TRACKING)
@@ -119,9 +116,9 @@ class GPSManager {
 		for (GPSStatus s : mGPSStatus.values()) {
 			s.resetLevels();
 		}
-		
+
 	}
-	
+
 	boolean requestingLocation() {
 		for (GPSStatus m : mGPSStatus.values())
 			if (m.requestingLocation())
@@ -130,10 +127,36 @@ class GPSManager {
 	}
 
 	boolean startGPS(int level, int routeId) {
-		return getGPSStatus(routeId).startGPS(level);
+		boolean b = getGPSStatus(routeId).startGPS(level);
+		
+		Log.d(Const.ECOMMUTERS_TAG, String.format(
+				"Raising GPS listening for route %d and level %d; current level status: %s",
+						routeId, level, getLevelString()));
+		return b;
 	}
+
 	boolean stopGPS(int level, int routeId) {
-		return getGPSStatus(routeId).stopGPS(level);
+
+		boolean b = getGPSStatus(routeId).stopGPS(level);
+		Log.d(Const.ECOMMUTERS_TAG,
+				String.format(
+						"Lowering GPS listening for route %d and level %d; current level status: %s",
+						routeId, level, getLevelString()));
+		return b;
+	}
+
+	private String getLevelString() {
+		StringBuilder sb = new StringBuilder();
+		Enumeration<Integer> keys = mGPSStatus.keys();
+		while (keys.hasMoreElements()) {
+			int routeId = keys.nextElement();
+			sb.append("Route id: ");
+			sb.append(routeId);
+			sb.append(" - levels: ");
+			sb.append(Arrays.toString(mGPSStatus.get(routeId).levels));
+			sb.append("; ");
+		}
+		return sb.toString();
 	}
 
 	public int getMinDinstanceMeters() {
@@ -149,6 +172,5 @@ class GPSManager {
 			s = Math.min(s, m.getMinDinstanceMeters());
 		return s;
 	}
-	
-	
+
 }

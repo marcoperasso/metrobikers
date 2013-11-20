@@ -59,7 +59,7 @@ public class MyMapActivity extends MapActivity {
 
 		@Override
 		public void onEvent(Object sender, EventArgs args) {
-			showTrackingButton(isLiveTracking());
+			showTrackingButton(isManualLiveTracking());
 		}
 	};
 
@@ -200,9 +200,7 @@ public class MyMapActivity extends MapActivity {
 				mMap.invalidate();
 			}
 		};
-		//launchDebugTasks();
-		//for (Route r : MyApplication.getInstance().getRoutes())
-		//	r.scheduleDebug();
+		//scheduleForDebug();
 		
 		MyApplication.getInstance().RouteChanged
 				.addHandler(mRoutesChangedHandler);
@@ -259,11 +257,9 @@ public class MyMapActivity extends MapActivity {
 	}
 
 	@SuppressWarnings("unused")
-	private void launchDebugTasks() {
-		new Task(Calendar.getInstance(), EventType.START_TRACKING, 0, 0).execute();
-		Calendar instance = Calendar.getInstance();
-		instance.add(Calendar.MINUTE, 1);
-		new Task(instance, EventType.STOP_TRACKING, 0, 0).schedule();
+	private void scheduleForDebug() {
+		for (Route r : MyApplication.getInstance().getRoutes())
+			r.scheduleDebug();
 	}
 
 	@Override
@@ -299,7 +295,7 @@ public class MyMapActivity extends MapActivity {
 	}
 
 	private void toggleLiveTracking() {
-		boolean b = !isLiveTracking();
+		boolean b = !isManualLiveTracking();
 		setLiveTracking(b);
 		showTrackingButton(b);
 		Toast.makeText(
@@ -310,8 +306,9 @@ public class MyMapActivity extends MapActivity {
 
 	}
 
-	public boolean isLiveTracking() {
-		return MyApplication.getInstance().getConnectorService() != null;
+	public boolean isManualLiveTracking() {
+		ConnectorService connectorService = MyApplication.getInstance().getConnectorService();
+		return connectorService != null && connectorService.isManualLiveTracking();
 	}
 
 	public void setLiveTracking(boolean b) {
@@ -628,7 +625,7 @@ public class MyMapActivity extends MapActivity {
 		// myLocationOverlay.enableCompass();
 
 		showStopRecordingButton(MyApplication.getInstance().isRecording());
-		showTrackingButton(isLiveTracking());
+		showTrackingButton(isManualLiveTracking());
 		mPositionsDownloader.start();
 	}
 

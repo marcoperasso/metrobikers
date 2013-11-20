@@ -298,10 +298,6 @@ public class ConnectorService extends Service implements LocationListener {
 	}
 
 	private void stopGPS(final int level, final int routeId) {
-		if (level == GPSStatus.MANUAL_TRACKING) {
-			stopSelf();
-			return;
-		}
 		mHandler.post(new Runnable() {
 
 			public void run() {
@@ -395,8 +391,6 @@ public class ConnectorService extends Service implements LocationListener {
 	private void setGPSOnNotification() {
 		String message = getString(R.string.live_tracking_on);
 		Intent intent = new Intent(this, ConnectorService.class);
-		intent.putExtra(Task.TASK, new Task(Calendar.getInstance(),
-				EventType.STOP_TRACKING, GPSStatus.MANUAL_TRACKING, 0));
 		PendingIntent contentIntent = PendingIntent.getService(this, 0, intent, // add
 																				// this
 				PendingIntent.FLAG_UPDATE_CURRENT);
@@ -503,5 +497,9 @@ public class ConnectorService extends Service implements LocationListener {
 		} else {
 			stopGPS(GPSStatus.AUTOMATIC_TRACKING, routeId);
 		}
+	}
+
+	public boolean isManualLiveTracking() {
+		return gpsManager.isManualTracking();
 	}
 }
