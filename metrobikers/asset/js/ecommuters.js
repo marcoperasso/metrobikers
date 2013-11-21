@@ -6,28 +6,35 @@
 $(function() {
     setContentHeight();
     $(window).resize(setContentHeight);
-    $(".changeable").click(editField);
+    var idx = 0;
+    $(".changeable")
+            .click(editField)
+            .attr("title", "Clicca per modificare")
+            .focus(editField)
+            .each(function() {
+        this.tabIndex = idx++;
+    });
 });
 function setContentHeight()
 {
     $("body").css("min-height", ($(window).height()) + "px");
 }
 
-
-
-
-function getInput(obj)
+function editField()
 {
+    var obj = $(this);
+    var input = null;
+
+
     var bag = new InputBag(obj);
     if (obj.hasClass('datecontent'))
     {
-        var input = $("<input type='text'></input>");
+        input = $("<input type='text'></input>");
         input.datepicker({"autoSize": true, "dateFormat": "dd/mm/yy", "onSelect": bag.persistField, "onClose": bag.restore});
         input.val(obj.text());
         bag.setInputControl(input);
-        return input;
     }
-    if (obj.hasClass('gendercontent'))
+    else if (obj.hasClass('gendercontent'))
     {
         var html = "<div style='display:inline;' tabindex=1>";
         var items = ['Non specificato', 'Femmina', 'Maschio'];
@@ -38,7 +45,7 @@ function getInput(obj)
             html += '<input type="radio" value="' + i + '"' + (selected ? ' checked' : '') + ' name="' + obj.attr('name') + '"/>' + item;
         }
         html += "</div>";
-        var input = $(html);
+        input = $(html);
         $('input', input).change(bag.persistField);
         bag.setInputControl(input);
         bag.getInputValue = function()
@@ -46,20 +53,23 @@ function getInput(obj)
             var index = $('input::checked', this.getInputControl()).val();
             return items[index];
         };
-        return input;
     }
-    var input = $("<input type='text'></input>");
-    input.val(obj.text());
-    input.blur(bag.persistField);
-    bag.setInputControl(input);
-    return input;
-}
-function editField()
-{
-    var obj = $(this);
-    var input = getInput(obj);
+    else
+    {
+        input = $("<input type='text'></input>");
+        input.val(obj.text());
+        input.blur(bag.persistField);
+        bag.setInputControl(input);
+    }
     obj.replaceWith(input);
-    input.focus();
+    if (obj.hasClass('gendercontent'))
+    {
+        $('input::checked', input).focus();
+    }
+    else
+    {
+        input.focus();
+    }
 
 }
 function InputBag(objPar)
@@ -97,7 +107,7 @@ function InputBag(objPar)
     {
         var value = thisObj.getInputValue();
         var modified = obj.text() !== value;
-        obj.click(editField);
+        obj.click(editField).focus(editField);
         inputControl.replaceWith(obj);
         if (modified)
         {
