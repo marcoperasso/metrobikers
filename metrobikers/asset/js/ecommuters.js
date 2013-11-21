@@ -6,7 +6,7 @@
 $(function() {
     setContentHeight();
     $(window).resize(setContentHeight);
-    var idx = 0;
+    var idx = 50;
     $(".changeable")
             .click(editField)
             .attr("title", "Clicca per modificare")
@@ -61,7 +61,8 @@ function editField()
         input.blur(bag.persistField);
         bag.setInputControl(input);
     }
-    obj.replaceWith(input);
+    obj.hide();
+    input.insertBefore(obj);
     if (obj.hasClass('gendercontent'))
     {
         $('input::checked', input).focus();
@@ -72,6 +73,7 @@ function editField()
     }
 
 }
+
 function InputBag(objPar)
 {
     var thisObj = this;
@@ -107,8 +109,9 @@ function InputBag(objPar)
     {
         var value = thisObj.getInputValue();
         var modified = obj.text() !== value;
-        obj.click(editField).focus(editField);
-        inputControl.replaceWith(obj);
+        //obj.click(editField).focus(editField);
+        inputControl.remove();
+        obj.show();
         if (modified)
         {
             var data = {};
@@ -122,6 +125,7 @@ function InputBag(objPar)
     this.restore = function()
     {
         obj.click(editField);
-        inputControl.replaceWith(obj);
-    }
+        inputControl.remove();
+        obj.show();
+    };
 }
