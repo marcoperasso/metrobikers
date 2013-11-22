@@ -230,7 +230,7 @@ public class ConnectorService extends Service implements LocationListener {
 			}
 
 			if (minRouteDistance < DISTANCE_METERS) {// sono sulla traccia
-				Log.d(Const.ECOMMUTERS_TAG, String.format("DENTRO l'itinerario %s; distanza: %d", r.getName(), minRouteDistance));
+				Log.d(Const.ECOMMUTERS_TAG, String.format("DENTRO l'itinerario %s; distanza: %f", r.getName(), minRouteDistance));
 				if (r.addTrackingPosition(index, position)
 						&& !followedRoutes.contains(r)) {
 					MyFollowedRoute myFollowedRoute = new MyFollowedRoute(r);
@@ -248,7 +248,7 @@ public class ConnectorService extends Service implements LocationListener {
 																			// traccia
 																			// (sono
 																			// uscito)
-				Log.d(Const.ECOMMUTERS_TAG, String.format("FUORI dall'itinerario %s; distanza: %d", r.getName(), minRouteDistance));
+				Log.d(Const.ECOMMUTERS_TAG, String.format("FUORI dall'itinerario %s; distanza: %f", r.getName(), minRouteDistance));
 				if (followedRoutes.contains(r)) {
 					MyFollowedRoute mfr = followedRoutes.get(r);
 					followedRoutes.remove(mfr);
@@ -261,7 +261,7 @@ public class ConnectorService extends Service implements LocationListener {
 			}
 			else
 			{
-				Log.d(Const.ECOMMUTERS_TAG, String.format("QUASI FUORI dall'itinerario %s; distanza: %d", r.getName(), minRouteDistance));
+				Log.d(Const.ECOMMUTERS_TAG, String.format("QUASI FUORI dall'itinerario %s; distanza: %f", r.getName(), minRouteDistance));
 			}
 		}
 
