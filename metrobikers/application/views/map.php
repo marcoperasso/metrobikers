@@ -20,39 +20,13 @@
                     <div id="gv_legend" align="left" style="line-height: 13px; border: solid #000000 1px;
                          background: #FFFFFF; padding: 4px; font: 11px Arial;">
                         <div id="gv_legend_header" style="padding-bottom: 2px;">
-                            <b>Altitudine (m)</b></div>
+                            <b>Itinerari</b></div>
                     </div>
                 </td>
             </tr>
         </table>
     </div>
-    <div id="gv_tracklist_tooltip" class="gv_tracklist_tooltip" style="background-color: #FFFFFF;
-         border: 1px solid #CCCCCC; padding: 2px; font: 11px Arial; display: none;">
-    </div>
-    <!-- the following is the "floating" marker list; the "static" version is below -->
-    <div id="gv_marker_list_container" style="display: none;">
-        <table id="gv_marker_list_table" style="position: relative; filter: alpha(opacity=95);
-               -moz-opacity: 0.95; opacity: 0.95;" cellspacing="0" cellpadding="0" border="0">
-            <tr>
-                <td>
-                    <div id="gv_marker_list_handle" align="center" style="height: 6px; max-height: 6px;
-                         background: #CCCCCC; border-left: 1px solid #999999; border-top: 1px solid #EEEEEE;
-                         border-right: 1px solid #999999; padding: 0px; cursor: move;">
-                        <!-- -->
-                    </div>
-                    <div id="gv_marker_list" align="left" class="gv_marker_list" style="overflow: auto;
-                         background: #FFFFFF; border: solid #666666 1px; padding: 4px;">
-                    </div>
-                </td>
-            </tr>
-        </table>
-    </div>
-    <div id="gv_marker_list_static" align="left" class="gv_marker_list" style="width: 160px;
-         overflow: auto; float: left; display: none;">
-    </div>
-    <div id="gv_clear_margins" style="height: 0px; clear: both;">
-        <!-- clear the "float" -->
-    </div>
+ 
 </div>
 
 <script type="text/javascript">
