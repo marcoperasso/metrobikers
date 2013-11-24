@@ -17,6 +17,8 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.params.HttpConnectionParams;
+import org.apache.http.params.HttpParams;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
 import org.json.JSONArray;
@@ -26,6 +28,7 @@ import org.json.JSONObject;
 import android.util.Log;
 
 public class HttpManager {
+	private static final int CONNECTION_TIMEOUT = 10000;
 	private static String ALLOWED_CHARS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_.!~*()";
 	private static String cookie;
 	private static final boolean debuggingServer = false;
@@ -147,14 +150,16 @@ public class HttpManager {
 			IOException, JSONException {
 		StringBuilder result = new StringBuilder();
 		HttpClient httpClient = new DefaultHttpClient();
-		HttpContext localContext = new BasicHttpContext();
-
+		HttpParams params = httpClient.getParams();
+	    HttpConnectionParams.setConnectionTimeout(params, CONNECTION_TIMEOUT);
+	    HttpConnectionParams.setSoTimeout(params, CONNECTION_TIMEOUT);
+	    
 		HttpPost httpPost = new HttpPost(reqString);
 		httpPost.setHeader("Cookie", getCookie());
 		UrlEncodedFormEntity entity = new UrlEncodedFormEntity(postParameters);
 		httpPost.setEntity(entity);
 		HttpResponse response = null;
-		response = httpClient.execute(httpPost, localContext);
+		response = httpClient.execute(httpPost, new BasicHttpContext());
 		BufferedReader reader;
 		reader = new BufferedReader(new InputStreamReader(response.getEntity()
 				.getContent()), 8192);
