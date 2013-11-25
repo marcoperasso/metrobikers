@@ -102,7 +102,8 @@ class Mobile extends MY_Controller {
         $this->load->model("User_position_model");
         $this->load->model("User_on_route_model");
         $this->User_position_model->purge_positions();
-        $response = $this->User_position_model->get_positions($left, $top, $right, $bottom);
+        $userid = $this->input->post("userid");
+        $response = $this->User_position_model->get_positions($left, $top, $right, $bottom, $userid);
 
         foreach ($response as &$point) {
             $point["time"] = strtotime($point["time"]);

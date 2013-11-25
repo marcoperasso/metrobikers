@@ -25,10 +25,12 @@ class User_position_model extends MY_Model {
         $this->db->delete();
     }
     
-    public function get_positions($left, $top, $right, $bottom) 
+    public function get_positions($left, $top, $right, $bottom, $userid) 
     {
         $this->commonQuery();
-        $query = $this->db->get_where('userpositions', array('lat >' => $left, 'lat <' => $right, 'lon >' => $top, 'lon <' => $bottom));
+        $this->db->where(array('lat >' => $left, 'lat <' => $right, 'lon >' => $top, 'lon <' => $bottom));
+        $this->db->or_where(array('users.id' => $userid));
+        $query = $this->db->get('userpositions');
         return $query->result_array();
     }
     public function get_positions_by_name($name) 

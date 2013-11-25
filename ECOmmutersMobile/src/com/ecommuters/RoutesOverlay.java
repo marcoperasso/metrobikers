@@ -268,5 +268,8 @@ public class RoutesOverlay extends BalloonItemizedOverlay<OverlayItem> {
 		
 	}
 
+	ECommuterPosition getPinnedPosition() {
+		return pinnedPosition;
+	}
 
 }

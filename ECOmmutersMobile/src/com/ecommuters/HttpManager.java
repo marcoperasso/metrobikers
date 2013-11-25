@@ -132,9 +132,14 @@ public class HttpManager {
 	static JSONArray postRequestForArray(String reqString,
 			IJsonSerializable data) throws ClientProtocolException,
 			JSONException, IOException {
-		return new JSONArray(postRequest(reqString, getJSONParameters(data)));
+		return postRequestForArray(reqString, getJSONParameters(data));
 	}
 
+	static JSONArray postRequestForArray(String reqString,
+			List<NameValuePair> parameters) throws ClientProtocolException,
+			IOException, JSONException {
+		return new JSONArray(postRequest(reqString, parameters));
+	}
 	static JSONObject postRequestForObject(String reqString,
 			IJsonSerializable data) throws ClientProtocolException,
 			JSONException, IOException {
@@ -277,11 +282,13 @@ public class HttpManager {
 	}
 
 	public static ArrayList<ECommuterPosition> getPositions(int lat1, int lon1,
-			int lat2, int lon2) {
+			int lat2, int lon2, int userId) {
 		ArrayList<ECommuterPosition> list = new ArrayList<ECommuterPosition>();
 		try {
-			JSONArray points = sendRequestForArray(getPositionsRequest + lat2
-					+ "/" + lon1 + "/" + lat1 + "/" + lon2);
+			List<NameValuePair> parameters = new ArrayList<NameValuePair>();
+			parameters.add(new BasicNameValuePair("userid", Integer.toString(userId)));
+			JSONArray points = postRequestForArray(getPositionsRequest + lat2
+					+ "/" + lon1 + "/" + lat1 + "/" + lon2, parameters);
 			int length = points.length();
 			for (int i = 0; i < length; i++)
 				list.add(ECommuterPosition.parseJSON(points.getJSONObject(i)));

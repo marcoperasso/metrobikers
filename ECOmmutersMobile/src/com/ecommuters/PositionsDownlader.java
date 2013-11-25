@@ -41,6 +41,7 @@ public class PositionsDownlader implements Runnable{
 	}
 	private void downloadPositions() {
 		if (Helper.isOnline(activity)) {
+			final int userId = getPinnedUserId();
 			final GeoPoint ul = mMap.getProjection().fromPixels(0, 0);
 			final GeoPoint br = mMap.getProjection().fromPixels(
 					mMap.getWidth(), mMap.getHeight());
@@ -54,7 +55,7 @@ public class PositionsDownlader implements Runnable{
 
 					return HttpManager.getPositions(ul.getLatitudeE6(),
 							ul.getLongitudeE6(), br.getLatitudeE6(),
-							br.getLongitudeE6());
+							br.getLongitudeE6(), userId);
 				}
 
 				protected void onPostExecute(
@@ -74,6 +75,11 @@ public class PositionsDownlader implements Runnable{
 			}
 		}
 
+	}
+
+	private int getPinnedUserId() {
+		ECommuterPosition pinnedPosition = mRoutesOverlay.getPinnedPosition();
+		return pinnedPosition == null ? 0 : pinnedPosition.userId;
 	}
 
 	public void run() {
