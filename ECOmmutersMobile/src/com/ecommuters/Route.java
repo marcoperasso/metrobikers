@@ -187,7 +187,7 @@ public class Route implements IJsonSerializable, Serializable {
 	}
 
 	public boolean saveTrackingInfo() {
-		boolean b = getTrackingInfo().isEqualDistribution(points.size())
+		boolean b = isFollowing()
 				&& getTrackingInfo().save();
 		getTrackingInfo().reset();
 		return b;
@@ -195,7 +195,7 @@ public class Route implements IJsonSerializable, Serializable {
 
 	public boolean addTrackingPosition(int index, ECommuterPosition position) {
 		getTrackingInfo().addPosition(index, position);
-		return getTrackingInfo().isValid(this);
+		return isFollowing();
 	}
 
 	public boolean isFollowing() {

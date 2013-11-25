@@ -25,8 +25,6 @@ public class TrackingInfo implements Serializable, IJsonSerializable {
 	private boolean valid = false;
 	public TrackingInfo(Route route) {
 		this.routeId = route.getId();
-		this.startTime = System.currentTimeMillis() / 1000;
-		this.endTime = System.currentTimeMillis() / 1000;
 	}
 
 	public int getLatestIndex() {
@@ -43,6 +41,8 @@ public class TrackingInfo implements Serializable, IJsonSerializable {
 		indexes.add(index);
 		positions.add(new RoutePoint(position.lat,
 				position.lon, position.time));
+		if (positions.size() == 1)
+			this.startTime = position.time;
 		this.endTime = position.time;
 
 	}
@@ -69,25 +69,24 @@ public class TrackingInfo implements Serializable, IJsonSerializable {
 	}
 
 	boolean isEqualDistribution(int maxIdx) {
-		return indexes.size() > 2;
-//		int segmentLength = maxIdx / 4; 
-//		int lower = 0;
-//		int upper = segmentLength;
-//		for (int i : indexes)
-//		{
-//			if (i > lower && i < upper)
-//			{
-//				lower = upper;
-//				upper = upper + segmentLength;
-//			}
-//			if (i > upper)
-//				return false;
-//			
-//			if (upper > maxIdx)
-//				return true;
-//		}
-//		
-//		return false;
+		int segmentLength = maxIdx / 4; 
+		int lower = 0;
+		int upper = segmentLength;
+		for (int i : indexes)
+		{
+			if (i > lower && i < upper)
+			{
+				lower = upper;
+				upper = upper + segmentLength;
+			}
+			if (i > upper)
+				return false;
+			
+			if (upper > maxIdx)
+				return true;
+		}
+		
+		return false;
 	}
 
 	public static TrackingInfo readTrackingInfo(Context context, String fileName) {
