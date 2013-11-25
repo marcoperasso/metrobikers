@@ -28,7 +28,7 @@ import org.json.JSONObject;
 import android.util.Log;
 
 public class HttpManager {
-	private static final int CONNECTION_TIMEOUT = 10000;
+	private static final int CONNECTION_TIMEOUT = 15000;
 	private static String ALLOWED_CHARS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_.!~*()";
 	private static String cookie;
 	private static final boolean debuggingServer = false;
@@ -107,6 +107,10 @@ public class HttpManager {
 			throws IOException, ClientProtocolException {
 		StringBuilder result = new StringBuilder();
 		HttpClient httpClient = new DefaultHttpClient();
+		HttpParams params = httpClient.getParams();
+	    HttpConnectionParams.setConnectionTimeout(params, CONNECTION_TIMEOUT);
+	    HttpConnectionParams.setSoTimeout(params, CONNECTION_TIMEOUT);
+	    
 		HttpContext localContext = new BasicHttpContext();
 
 		HttpGet httpGet = new HttpGet(reqString);

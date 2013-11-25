@@ -249,9 +249,6 @@ public class ConnectorService extends Service implements LocationListener {
 																			// traccia
 																			// (sono
 																			// uscito)
-				Log.d(Const.ECOMMUTERS_TAG, String.format(
-						"FUORI dall'itinerario %s; distanza: %f", r.getName(),
-						minRouteDistance));
 				if (followedRoutes.contains(r)) {
 					MyFollowedRoute mfr = followedRoutes.get(r);
 					followedRoutes.remove(mfr);
@@ -261,11 +258,7 @@ public class ConnectorService extends Service implements LocationListener {
 							String.format("You exited route %s", r.getName()));
 				}
 
-			} else {
-				Log.d(Const.ECOMMUTERS_TAG, String.format(
-						"QUASI FUORI dall'itinerario %s; distanza: %f",
-						r.getName(), minRouteDistance));
-			}
+			} 
 		}
 
 		if (followedRoutes.size() == 0)
@@ -457,7 +450,10 @@ public class ConnectorService extends Service implements LocationListener {
 			public void run() {
 				try {
 					if (HttpManager.sendPositionData(loc))
+					{
+						Log.d(Const.ECOMMUTERS_TAG, "Position data succesfully sent.");
 						mLocation = null;
+					}
 				} catch (Exception e) {
 					Log.e(Const.ECOMMUTERS_TAG, e.toString());
 				}
