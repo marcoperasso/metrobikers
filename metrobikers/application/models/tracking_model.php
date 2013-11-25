@@ -6,6 +6,8 @@ class Tracking_model extends MY_Model {
     var $routeid;
     var $start;
     var $end;
+    var $distance;
+    var $points;
     
     public function __construct() {
         parent::__construct();

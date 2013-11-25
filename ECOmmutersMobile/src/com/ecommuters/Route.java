@@ -165,6 +165,7 @@ public class Route implements IJsonSerializable, Serializable {
 		return d;
 	}
 
+	
 	public long getTotalTimeSeconds() {
 		return getEndingTimeSeconds() - getStartingTimeSeconds();
 	}
