@@ -18,8 +18,8 @@
                     ripetere la procedura</a>.
             </p>
             <p>Scusaci per il disagio.</p>
+            <p><a class ="center-text" href="/">Torna alla pagina principale</a></p>
             
-            <a class ="center-text" href="/">Torna alla pagina principale</a>
         </div>
         <div class="col-md-2">
 

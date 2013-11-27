@@ -16,8 +16,9 @@
                 Potrebbe essere passato troppo tempo da quando hai inoltrato la richiesta di ripristino password, prova a ripetere la procedura.
             </p>
             <p>Scusaci per il disagio.</p>
-
+            <p>
             <a class ="center-text" href="/">Torna alla pagina principale</a>
+            </p>
         </div>
         <div class="col-md-2">
 

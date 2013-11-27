@@ -3,4 +3,6 @@
 /metrobikers/application/logs/log*.php
 /ECOmmutersMobile/gen/
 /ECOmmutersMobile/bin/
+/ECOmmutersTest/gen/
+/ECOmmutersTest/bin/
 /.metadata

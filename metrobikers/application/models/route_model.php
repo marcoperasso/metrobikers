@@ -53,7 +53,6 @@ class Route_model extends MY_Model {
 
     public function create_route() {
         $this->db->insert('routes', $this);
-        $this->_points = NULL;
         $this->id = $this->db->insert_id();
 
         $this->insert_points(FALSE);

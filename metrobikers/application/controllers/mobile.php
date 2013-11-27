@@ -44,11 +44,13 @@ class Mobile extends MY_Controller {
         $this->load->model("Route_model");
         $this->Route_model->id = $routeid;
         $this->Route_model->userid = $userid;
-        $response = NULL;
         if ($this->Route_model->get_route_by_id()) {
             $this->Route_model->points = $this->Route_model->get_points();
             $response = $this->Route_model;
+        } else {
+            $response = new object();
         }
+
         $this->output
                 ->set_content_type('application/json')
                 ->set_output(json_encode($response));
@@ -113,7 +115,7 @@ class Mobile extends MY_Controller {
                 ->set_content_type('application/json')
                 ->set_output(json_encode($response));
     }
-    
+
     public function get_positions_by_name() {
         $name = $this->input->get("name");
         $this->load->model("User_position_model");
@@ -125,7 +127,7 @@ class Mobile extends MY_Controller {
             $point["time"] = strtotime($point["time"]);
             $point["routes"] = $this->User_on_route_model->get_routes($point["userid"]);
         }
-		$response = array('positions' => $list, 'total' => $this->User_position_model->get_positions_count_by_name($name));
+        $response = array('positions' => $list, 'total' => $this->User_position_model->get_positions_count_by_name($name));
         $this->output
                 ->set_content_type('application/json')
                 ->set_output(json_encode($response));
@@ -142,14 +144,18 @@ class Mobile extends MY_Controller {
                 $this->Route_model->name = $route->name;
                 $this->Route_model->userid = $user->id;
                 $this->db->trans_begin();
-                
+
                 if (!$this->Route_model->get_route()) {
                     $this->Route_model->assign($route);
                     $this->Route_model->latestupdate = date('Y-m-d H:i:s', $route->latestupdate);
                     $this->Route_model->set_points($route->points);
                     $this->Route_model->create_route();
                 } else {
-                    $this->Route_model->assign($route);
+
+                    $this->Route_model->before = $route->before;
+                    $this->Route_model->after = $route->after;
+                    $this->Route_model->days = $route->days;
+                    $this->Route_model->days = $route->days;
                     $latestupd = max(array($route->latestupdate, $this->Route_model->latestupdate));
                     $this->Route_model->latestupdate = date('Y-m-d H:i:s', $latestupd);
                     $this->Route_model->set_points($route->points);

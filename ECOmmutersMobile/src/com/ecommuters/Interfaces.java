@@ -3,9 +3,7 @@ package com.ecommuters;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-interface OnAsyncResponse {
-	void response(boolean success, String message);
-}
+
 interface OnRouteSelected {
 	void select(String routeName);
 }

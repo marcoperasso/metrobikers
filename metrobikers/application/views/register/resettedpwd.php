@@ -15,9 +15,9 @@
                     una nuova password, segui le istruzioni che troverai nella mail. 
                 </p>
                 <p>Grazie per la collaborazione.</p>
-
+                <p>
                 <a class ="center-text" href="/">Torna alla pagina principale</a>
-
+                </p>
             </div>
             <div class="col-md-2">
 
