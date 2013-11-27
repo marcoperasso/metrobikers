@@ -26,7 +26,7 @@
             </tr>
         </table>
     </div>
- 
+
 </div>
 
 <script type="text/javascript">
@@ -42,6 +42,8 @@
     }
     function addTracks()
     {
+        var bounds = new google.maps.LatLngBounds();
+        var atLeastOneRoute = false;
         var points;
         var myInfoWindow = new google.maps.InfoWindow();
 
@@ -77,6 +79,7 @@ if (isset($routes)) {
     foreach ($routes as $route) {
         ?>
                 points = [];
+                atLeastOneRoute = true;
         <?php
         $points = $route->get_points();
         $count = count($points);
@@ -89,9 +92,12 @@ if (isset($routes)) {
                 {
                     var p1 = points[i - 1];
                     var p2 = points[i];
-
+                    var lanlng1 = new google.maps.LatLng(p1.lat, p1.lon);
+                    var lanlng2 = new google.maps.LatLng(p2.lat, p2.lon);
+                    bounds.extend(lanlng1);
+                    bounds.extend(lanlng2);
                     var poly = new google.maps.Polyline({
-                        path: [new google.maps.LatLng(p1.lat, p1.lon), new google.maps.LatLng(p2.lat, p2.lon)],
+                        path: [lanlng1, lanlng2],
                         strokeColor: p1.c,
                         strokeOpacity: 1.0,
                         strokeWeight: 3,
@@ -125,6 +131,11 @@ if (isset($routes)) {
     }
 }
 ?>
+        if (atLeastOneRoute)
+        {
+            map.setCenter(bounds.getCenter());
+            map.fitBounds(bounds);
+        }
     }
 
     function refreshPositionMarkers() {
