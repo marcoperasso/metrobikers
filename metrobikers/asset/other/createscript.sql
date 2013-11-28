@@ -1,33 +1,5 @@
 delimiter $$
 
-CREATE TABLE `routepoints` (
-  `routeid` int(11) NOT NULL,
-  `time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `lat` bigint(20) DEFAULT NULL,
-  `lon` bigint(20) DEFAULT NULL,
-  PRIMARY KEY (`routeid`,`time`),
-  KEY `route` (`routeid`),
-  CONSTRAINT `route` FOREIGN KEY (`routeid`) REFERENCES `routes` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8$$
-
-
-delimiter $$
-CREATE TABLE `routes` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `userid` int(11) NOT NULL,
-  `name` varchar(45) DEFAULT NULL,
-  `latestupdate` datetime DEFAULT '0000-00-00 00:00:00',
-  `before` tinyint(4) DEFAULT NULL,
-  `after` tinyint(4) DEFAULT NULL,
-  `days` tinyint(4) DEFAULT NULL,
-  PRIMARY KEY (`id`,`userid`),
-  KEY `user` (`userid`),
-  CONSTRAINT `user` FOREIGN KEY (`userid`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8$$
-
-
-delimiter $$
-
 CREATE TABLE `userpositions` (
   `userid` int(11) NOT NULL,
   `lat` bigint(20) DEFAULT NULL,
@@ -46,6 +18,7 @@ CREATE TABLE `usersonroutes` (
 
 
 delimiter $$
+
 CREATE TABLE `users` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `mail` varchar(255) NOT NULL DEFAULT '',
@@ -54,7 +27,7 @@ CREATE TABLE `users` (
   `password` char(32) DEFAULT NULL,
   `active` bit(1) DEFAULT NULL,
   `birthdate` date DEFAULT NULL,
-  `gender` tinyint(4) DEFAULT NULL,
+  `gender` tinyint(4) DEFAULT '0',
   `activationdate` date DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `mail_UNIQUE` (`mail`)
@@ -71,6 +44,33 @@ CREATE TABLE `validationkeys` (
   CONSTRAINT `FK_USER` FOREIGN KEY (`userid`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8$$
 
+
+delimiter $$
+CREATE TABLE `routes` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `userid` int(11) NOT NULL,
+  `name` varchar(45) DEFAULT NULL,
+  `latestupdate` datetime DEFAULT '0000-00-00 00:00:00',
+  `before` tinyint(4) DEFAULT NULL,
+  `after` tinyint(4) DEFAULT NULL,
+  `days` tinyint(4) DEFAULT NULL,
+  PRIMARY KEY (`id`,`userid`),
+  KEY `user` (`userid`),
+  CONSTRAINT `user` FOREIGN KEY (`userid`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8$$
+
+delimiter $$
+
+CREATE TABLE `routepoints` (
+  `routeid` int(11) NOT NULL,
+  `time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `lat` bigint(20) DEFAULT NULL,
+  `lon` bigint(20) DEFAULT NULL,
+  PRIMARY KEY (`routeid`,`time`),
+  KEY `route` (`routeid`),
+  CONSTRAINT `route` FOREIGN KEY (`routeid`) REFERENCES `routes` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8$$
+
 delimiter $$
 
 CREATE TABLE `trackings` (
@@ -85,5 +85,17 @@ CREATE TABLE `trackings` (
   CONSTRAINT `tracking_route` FOREIGN KEY (`routeid`) REFERENCES `routes` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8$$
 
+
+delimiter $$
+
+CREATE TABLE `linkedusers` (
+  `userid` int(11) NOT NULL,
+  `linkeduserid` int(11) NOT NULL,
+  PRIMARY KEY (`userid`,`linkeduserid`),
+  KEY `userlinks_user_1` (`linkeduserid`),
+  KEY `userlinks_user_2` (`userid`),
+  CONSTRAINT `userlinks_user_1` FOREIGN KEY (`linkeduserid`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `userlinks_user_2` FOREIGN KEY (`userid`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8$$
 
 

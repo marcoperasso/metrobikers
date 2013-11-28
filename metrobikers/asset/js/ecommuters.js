@@ -17,4 +17,7 @@ function setContentHeight()
     $("body").css("min-height", ($(window).height()) + "px");
 }
 
-
+function setActiveTab(tabClass)
+{
+    $('li.' + tabClass).addClass('active');
+}

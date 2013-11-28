@@ -144,7 +144,7 @@ if (isset($routes)) {
         positions_markers.length = 0;
 
         var bounds = map.getBounds();
-        var NE = bounds.getNorthEast()
+        var NE = bounds.getNorthEast();
         var SW = bounds.getSouthWest();
         var url = "<?php echo base_url() ?>mobile/get_positions/" +
                 Math.round(SW.lat() * 1000000) +

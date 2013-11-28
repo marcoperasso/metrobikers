@@ -17,20 +17,9 @@
             if (isset($user)) {
                 ?>
                 <ul class="nav navbar-nav">
-                    <li <?php
-                    if ($caller == "user/index") {
-                        echo " class=\"active\"";
-                    }
-                    ?>>
-                        <a href="/user">I miei dati</a>
-                    </li>
-                    <li
-                    <?php
-                    if ($caller == "user/routes") {
-                        echo " class=\"active\"";
-                    }
-                    ?>
-                        ><a href="/user/routes">I miei tragitti</a></li>
+                    <li class="user"><a href="/user">I miei dati</a></li>
+                    <li class="routes"><a href="/user/routes">I miei tragitti</a></li>
+                    <li class="my_ecommuters"><a href="/user/my_ecommuters">I miei ECOmmuters</a></li>
                 </ul>
             <?php } ?>
             <ul class="nav navbar-nav navbar-right">
@@ -53,8 +42,8 @@
                                 function doLogoff()
                                 {
                                     $.getJSON("<?php echo base_url() ?>login/dologoff",
-                                            function(data) {
-                                                window.location.href = "<?php echo base_url() ?>";
+                                            function() {
+                                                window.location.href = "/";
                                             });
                                 }
     </script>

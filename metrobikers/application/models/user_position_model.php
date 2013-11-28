@@ -24,33 +24,31 @@ class User_position_model extends MY_Model {
         $this->db->where('time <', date('Y-m-d H:i:s', $t));
         $this->db->delete();
     }
-    
-    public function get_positions($left, $top, $right, $bottom, $userid) 
-    {
+
+    public function get_positions($left, $top, $right, $bottom, $userid) {
         $this->commonQuery();
         $this->db->where(array('lat >' => $left, 'lat <' => $right, 'lon >' => $top, 'lon <' => $bottom));
         $this->db->or_where(array('users.id' => $userid));
         $query = $this->db->get('userpositions');
         return $query->result_array();
     }
-    public function get_positions_by_name($name) 
-    {
+
+    public function get_positions_by_name($name) {
         $this->commonQuery();
         $this->db->like('concat(name, " ", surname)', $name);
-		$this->db->limit(2);
+        $this->db->limit(10);
         $query = $this->db->get('userpositions');
         return $query->result_array();
     }
-	
-	public function get_positions_count_by_name($name) 
-    {
-		$this->db->from('userpositions');
+
+    public function get_positions_count_by_name($name) {
+        $this->db->from('userpositions');
         $this->db->join('users', 'users.id = userpositions.userid');
         $this->db->like('concat(name, " ", surname)', $name);
-		return $this->db->count_all_results();
+        return $this->db->count_all_results();
     }
-    private function commonQuery()
-    {
+
+    private function commonQuery() {
         $this->db->select("lat");
         $this->db->select("lon");
         $this->db->select("name");
@@ -60,7 +58,7 @@ class User_position_model extends MY_Model {
         $this->db->select("users.id as userid");
         $this->db->join('users', 'users.id = userpositions.userid');
     }
-    
+
     public function save_position() {
         if ($this->exist_position())
             $this->update_position();
