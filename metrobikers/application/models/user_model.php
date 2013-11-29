@@ -46,14 +46,18 @@ class User_model extends MY_Model {
     }
 
     public function get_linked_users() {
-        $this->db->select('mail, name, birthdate, surname, gender');
-        $this->db->where('active', TRUE);
-        $this->db->join('users', 'users.id = linkedusers.linkeduserid');
-        $query = $this->db->get_where('linkedusers ', array('userid' => $this->id));
+        $query = $this->db
+                ->select('mail, name, birthdate, surname, gender')
+                ->distinct()
+                ->where('(linkedusers.userid1=' . $this->id . ' or linkedusers.userid2= ' . $this->id  . ') and active = 1 and id<> ' . $this->id)
+                ->join('users', 'users.id = linkedusers.userid1 or users.id = linkedusers.userid2')
+                ->get('linkedusers');
+        
         $result = $query->result_array();
         foreach ($result as &$value) {
             $value = (object) $value;
         }
+        
         return $result;
     }
 

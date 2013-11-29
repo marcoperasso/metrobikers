@@ -6,53 +6,50 @@ if (!defined('BASEPATH'))
 class User extends MY_Controller {
 
     public function index() {
-
+        if (!$this->validate_login())
+            return;
         $data = array();
-        $user = get_user();
-        if ($user != NULL) {
-            $data['user'] = $user;
-        }
+        $data['user'] = $this->user;
 
         $this->load_view('user', "I miei dati", $data);
     }
 
     public function routes() {
-
+        if (!$this->validate_login())
+            return;
+        $this->load->model("Route_model");
+        $this->Route_model->userid = $this->user->id;
+        $routes = $this->Route_model->get_routes('0000-00-00 00:00:00');
         $data = array();
-        $user = get_user();
-        if ($user != NULL) {
-            $data['user'] = $user;
-
-            $this->load->model("Route_model");
-            $this->Route_model->userid = $user->id;
-            $routes = $this->Route_model->get_routes('0000-00-00 00:00:00');
-            $data['routes'] = $routes;
-        }
+        $data['user'] = $this->user;
+        $data['routes'] = $routes;
 
         $this->load_view('routes', 'I miei itinerari', $data);
     }
 
-    public function my_ecommuters() {
-        $data = array();
-        $user = get_user();
-        if ($user != NULL) {
-            $data['user'] = $user;
-            $data['linkedusers'] = $user->get_linked_users();
-        }
+    public function connect() {
+        if (!$this->validate_login())
+            return;
+    }
 
-        $this->load_view('my_ecommuters', 'I miei ECOmmuters', $data);
+    public function my_ecommuters() {
+        if (!$this->validate_login())
+            return;
+
+        $data = array();
+        $data['user'] = $this->user;
+        $data['linkedusers'] = $this->user->get_linked_users();
+        $this->load_view('my_ecommuters', 'Il mio gruppo', $data);
     }
 
     public function get_users_by_name_filter() {
-        $user = get_user();
-        if ($user == NULL) {
+        if ($this->user == NULL) {
             $response = array('users' => array());
         } else {
             $filter = $this->input->get("filter");
-            $this->load->model("User_model");
-            $list = $this->User_model->get_users_by_name_filter($user->id, $filter, TRUE);
+            $list = $this->User_model->get_users_by_name_filter($this->user->id, $filter, TRUE);
             if (count($list) == 0)
-                $list = $this->User_model->get_users_by_name_filter($user->id, $filter, FALSE);
+                $list = $this->User_model->get_users_by_name_filter($this->user->id, $filter, FALSE);
             $response = array('users' => $list);
         }
         $this->output
@@ -62,13 +59,11 @@ class User extends MY_Controller {
 
     public function update() {
         $response = (object) array('result' => FALSE);
-        $user = get_user();
-        if ($user != NULL) {
-            $this->load->model("User_model");
-            if ($user->update_user($this->input->post())) {
+        if ($this->user != NULL) {
+            if ($this->user->update_user($this->input->post())) {
 
-                $user->assign($this->input->post());
-                set_user($user);
+                $this->user->assign($this->input->post());
+                set_user($this->user);
                 $response->result = TRUE;
             }
         }

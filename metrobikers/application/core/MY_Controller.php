@@ -5,6 +5,8 @@ if (!defined('BASEPATH'))
 
 class MY_Controller extends CI_Controller {
 
+    var $user;
+
     public function __construct() {
         parent::__construct();
         if (!isset($_SESSION)) {
@@ -15,6 +17,8 @@ class MY_Controller extends CI_Controller {
           $lang = $this->config['language'];
           if (!$this->lang->load("messages", $lang)) */
         $this->lang->load("messages", "it-IT");
+        $this->load->model('User_model');
+        $this->user = (isset($_SESSION) && isset($_SESSION['user'])) ? unserialize($_SESSION["user"]) : NULL;
     }
 
     protected function send_mail($to, $subject, $message) {
@@ -42,7 +46,16 @@ class MY_Controller extends CI_Controller {
         $this->email->send();
     }
 
-    protected function load_view($view, $title="", $data = array(), $return = FALSE) {
+    protected function validate_login() {
+        if ($this->user == NULL)
+        {
+            $this->load_view("loginneeded", "Richiesta login");
+            return FALSE;
+        }
+        return TRUE;
+    }
+
+    protected function load_view($view, $title = "", $data = array(), $return = FALSE) {
         $data["view_name"] = $view;
         if (empty($title)) {
             $title = lang("welcome");

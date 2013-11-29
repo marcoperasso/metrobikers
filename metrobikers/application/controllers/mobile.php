@@ -13,22 +13,20 @@ class Mobile extends MY_Controller {
     }
 
     public function user_logged() {
-        $user = get_user();
         $this->output
                 ->set_content_type('application/json')
-                ->set_output(json_encode(array('logged' => $user !== NULL)));
+                ->set_output(json_encode(array('logged' => $this->user !== NULL)));
     }
 
     public function user() {
-        $user = get_user();
         $response = NULL;
-        if ($user != NULL) {
+        if ($this->user != NULL) {
             $response = array(
                 'logged' => TRUE,
-                'userid' => $user->id,
-                'name' => $user->name,
-                'surname' => $user->surname,
-                'birthdate' => $user->birthdate,
+                'userid' => $this->user->id,
+                'name' => $this->user->name,
+                'surname' => $this->user->surname,
+                'birthdate' => $this->user->birthdate,
             );
         } else {
             $response = array(
@@ -57,10 +55,10 @@ class Mobile extends MY_Controller {
     }
 
     public function get_routes($latestupdate) {
-        $user = get_user();
-        if ($user != NULL) {
+        
+        if ($this->user != NULL) {
             $this->load->model("Route_model");
-            $this->Route_model->userid = $user->id;
+            $this->Route_model->userid = $this->user->id;
             $response = $this->Route_model->get_routes(date('Y-m-d H:i:s', $latestupdate));
             foreach ($response as $route) {
                 $route->points = $route->get_points();
@@ -134,15 +132,14 @@ class Mobile extends MY_Controller {
     }
 
     public function save_route() {
-        $user = get_user();
         $response = NULL;
-        if ($user != NULL) {
+        if ($this->user != NULL) {
             $json = $this->input->post("data");
             $route = json_decode($json);
             $this->load->model("Route_model");
             try {
                 $this->Route_model->name = $route->name;
-                $this->Route_model->userid = $user->id;
+                $this->Route_model->userid = $this->user->id;
                 $this->db->trans_begin();
 
                 if (!$this->Route_model->get_route()) {
@@ -190,16 +187,15 @@ class Mobile extends MY_Controller {
     }
 
     public function save_tracking() {
-        $user = get_user();
         $response = NULL;
-        if ($user != NULL) {
+        if ($this->user != NULL) {
             $json = $this->input->post("data");
             $route = json_decode($json);
             $this->load->model("Tracking_model");
             try {
                 $this->db->trans_begin();
                 $this->Tracking_model->routeid = $route->routeid;
-                $this->Tracking_model->userid = $user->id;
+                $this->Tracking_model->userid = $this->user->id;
                 $this->Tracking_model->start = date('Y-m-d H:i:s', $route->start);
                 $this->Tracking_model->end = date('Y-m-d H:i:s', $route->end);
                 $this->Tracking_model->distance = $route->distance;

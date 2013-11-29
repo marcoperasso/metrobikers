@@ -18,8 +18,8 @@
                 ?>
                 <ul class="nav navbar-nav">
                     <li class="user"><a href="/user">I miei dati</a></li>
-                    <li class="routes"><a href="/user/routes">I miei tragitti</a></li>
-                    <li class="my_ecommuters"><a href="/user/my_ecommuters">I miei ECOmmuters</a></li>
+                    <li class="routes"><a href="/user/routes">I miei itinerari</a></li>
+                    <li class="my_ecommuters"><a href="/user/my_ecommuters">Il mio gruppo</a></li>
                 </ul>
             <?php } ?>
             <ul class="nav navbar-nav navbar-right">

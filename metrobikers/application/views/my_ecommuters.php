@@ -15,7 +15,7 @@
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default" id="doconnect">Chiedi di entrare nei tuoi ECOmmuter</button>
+                <button type="button" class="btn btn-default" id="doconnect">Chiedi di entrare nel tuo gruppo</button>
             </div>
         </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->
@@ -47,14 +47,18 @@
     $("#doconnect").click(function() {
         if (testFields($("#findform")))
             var input = $('#ecommutername');
-            window.location.href = "/user/connect?id=" + encodeURIComponent(input[0].userid) + '&fullname=' + encodeURIComponent(input.val());
+        window.location.href = "/user/connect?id=" + encodeURIComponent(input[0].userid) + '&fullname=' + encodeURIComponent(input.val());
     });
 </script>
 <div class="col-md-1"></div>
 <div class="col-md-10">
     <?php if (count($linkedusers) == 0) { ?>
-        <h2>Ma come! Non hai ancora contattato alcun ECOmmuter? <a data-toggle="modal" class="btn btn-primary btn-lg" title="Cerca altri ECOmmuters" href="#findECOmmuterModal">Fallo adesso!</a></h2>
+        <h1>Il gruppo è vuoto.</h1>
+        <h2>Ma come! Ancora non hai contattato altri ECOmmuters? <a data-toggle="modal" class="btn btn-primary btn-lg" title="Cerca altri ECOmmuters" href="#findECOmmuterModal">Fallo adesso!</a></h2>
     <?php } else { ?>
+        <div class="col-md-10"></div>
+        <div class="col-md-2"><a data-toggle="modal" class="btn btn-default btn-lg" title="Cerca altri ECOmmuters" href="#findECOmmuterModal">Cerca altri ECOmmuters</a>
+        </div>
         <table class ="table table-striped">
             <thead>
                 <tr>

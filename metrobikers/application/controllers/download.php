@@ -10,12 +10,11 @@ class Download extends MY_Controller {
     }
 
     public function gps($route_name) {
-        $user = get_user();
-        if ($user == NULL)
+         if (!$this->validate_login())
             return;
         $this->load->model("Route_model");
         $this->Route_model->name = $route_name;
-        $this->Route_model->userid = $user->id;
+        $this->Route_model->userid = $this->user->id;
         if (!$this->Route_model->get_route())
             return;
         $points = $this->Route_model->get_points();

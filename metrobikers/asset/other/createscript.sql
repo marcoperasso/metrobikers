@@ -89,13 +89,14 @@ CREATE TABLE `trackings` (
 delimiter $$
 
 CREATE TABLE `linkedusers` (
-  `userid` int(11) NOT NULL,
-  `linkeduserid` int(11) NOT NULL,
-  PRIMARY KEY (`userid`,`linkeduserid`),
-  KEY `userlinks_user_1` (`linkeduserid`),
-  KEY `userlinks_user_2` (`userid`),
-  CONSTRAINT `userlinks_user_1` FOREIGN KEY (`linkeduserid`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `userlinks_user_2` FOREIGN KEY (`userid`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+  `userid1` int(11) NOT NULL,
+  `userid2` int(11) NOT NULL,
+  PRIMARY KEY (`userid1`,`userid2`),
+  KEY `userlinks_user_1` (`userid1`),
+  KEY `userlinks_user_2` (`userid2`),
+  CONSTRAINT `userlinks_user_1` FOREIGN KEY (`userid1`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `userlinks_user_2` FOREIGN KEY (`userid2`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8$$
+
 
 
