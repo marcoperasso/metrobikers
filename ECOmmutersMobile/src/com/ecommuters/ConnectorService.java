@@ -210,6 +210,11 @@ public class ConnectorService extends Service implements LocationListener {
 	// -1: traccia terminata; 0: sulla traccia; numero positivo: fuori traccia,
 	// distanza minima dalla traccia
 	private void calculateRoutesByPosition(ECommuterPosition position) {
+		// posticipo i timeout
+		for (MyFollowedRoute run : followedRoutes) {
+			mHandler.removeCallbacks(run);
+			mHandler.postDelayed(run, TIMEOUT);
+		}
 		for (Route r : mRoutes) {
 			double minRouteDistance = Double.MAX_VALUE;
 			int index = -1;
@@ -220,12 +225,6 @@ public class ConnectorService extends Service implements LocationListener {
 					index = i;
 					minRouteDistance = distance;
 				}
-			}
-
-			// posticipo i timeout
-			for (MyFollowedRoute run : followedRoutes) {
-				mHandler.removeCallbacks(run);
-				mHandler.postDelayed(run, TIMEOUT);
 			}
 
 			if (minRouteDistance < DISTANCE_METERS) {// sono sulla traccia
@@ -263,11 +262,13 @@ public class ConnectorService extends Service implements LocationListener {
 
 		if (followedRoutes.size() == 0)
 			return;
-		for (MyFollowedRoute fr : followedRoutes) {
+		for (int i = followedRoutes.size() - 1; i >= 0; i--) {
+			MyFollowedRoute fr = followedRoutes.get(i);
 			Route r = fr.route;
 			position.addRoute(r.getId());
 			if (r.getLatestTrackedIndex() == r.getPoints().size() - 1) {
 				setAutomaticLiveTracking(false, r.getId());
+				followedRoutes.remove(i);
 				Log.i(Const.ECOMMUTERS_TAG,
 						String.format("You reached the end of the route %s",
 								r.getName()));
