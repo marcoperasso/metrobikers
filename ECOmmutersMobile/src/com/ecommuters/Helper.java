@@ -40,18 +40,6 @@ public class Helper {
 
 	}
 
-	static boolean matchProtocolVersion(Context context) {
-		try {
-			if (!isOnline(context))
-				return true;
-			return Const.PROTOCOL_VERSION.equals(HttpManager
-					.getProtocolVersion());
-		} catch (Exception e) {
-			return true;// se ho problemi di comunicazione, nel dubbio considero
-						// buona la versione
-		}
-	}
-
 	public static boolean isNullOrEmpty(String s) {
 		return s == null || s.length() == 0;
 	}

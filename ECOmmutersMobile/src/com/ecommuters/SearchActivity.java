@@ -3,8 +3,10 @@ package com.ecommuters;
 import java.util.ArrayList;
 
 import android.app.ListActivity;
+import android.app.ProgressDialog;
 import android.app.SearchManager;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -36,25 +38,44 @@ public class SearchActivity extends ListActivity implements OnClickListener {
 	}
 
 	private void doSearch(String query) {
-		ArrayList<ECommuterPosition> results = new ArrayList<ECommuterPosition>();
-		int total = HttpManager.getPositions(query, results);
-		ArrayAdapter<ECommuterPosition> adapter = new ArrayAdapter<ECommuterPosition>(this,
-				android.R.layout.simple_list_item_1, results);
-		setListAdapter(adapter);
+		final ProgressDialog progressBar = new ProgressDialog(this);
+		progressBar.setCancelable(true);
+		progressBar.setMessage(getString(R.string.searching));
+		progressBar.setIndeterminate(true);
+		progressBar.show();
+		new AsyncTask<String, Void, SearchPositionResult>() {
+
+			@Override
+			protected SearchPositionResult doInBackground(String... params) {
+				String query = params[0];
+				return HttpManager.getPositions(query);
+			}
+
+			@Override
+			protected void onPostExecute(SearchPositionResult result) {
+
+				ArrayAdapter<ECommuterPosition> adapter = new ArrayAdapter<ECommuterPosition>(SearchActivity.this,
+						android.R.layout.simple_list_item_1, result.positions);
+				setListAdapter(adapter);
+				
+				TextView tv = (TextView) findViewById(R.id.textViewLabel);
+				StringBuilder sb = new StringBuilder();
+				if (result.positions.size() > 0)
+					sb.append(getString(R.string.select_ecommuter));
+				else
+					sb.append(getString(R.string.no_ecommuter));
+				
+				if (result.total > result.positions.size())
+				{
+					sb.append("\r\n");
+					sb.append(getString(R.string.refine_query, result.positions.size(), result.total));
+				}
+				tv.setText(sb.toString());
+				progressBar.dismiss();
+				super.onPostExecute(result);
+			}
+		}.execute(query);
 		
-		TextView tv = (TextView) findViewById(R.id.textViewLabel);
-		StringBuilder sb = new StringBuilder();
-		if (results.size() > 0)
-			sb.append(getString(R.string.select_ecommuter));
-		else
-			sb.append(getString(R.string.no_ecommuter));
-		
-		if (total > results.size())
-		{
-			sb.append("\r\n");
-			sb.append(getString(R.string.refine_query, results.size(), total));
-		}
-		tv.setText(sb.toString());
 	}
 
 	public void onClick(View v) {
@@ -66,3 +87,8 @@ public class SearchActivity extends ListActivity implements OnClickListener {
 	}
 
 }
+class SearchPositionResult
+{
+	public ArrayList<ECommuterPosition> positions = new ArrayList<ECommuterPosition>();
+	public int total = 0;
+	}

@@ -108,9 +108,9 @@ public class HttpManager {
 		StringBuilder result = new StringBuilder();
 		HttpClient httpClient = new DefaultHttpClient();
 		HttpParams params = httpClient.getParams();
-	    HttpConnectionParams.setConnectionTimeout(params, CONNECTION_TIMEOUT);
-	    HttpConnectionParams.setSoTimeout(params, CONNECTION_TIMEOUT);
-	    
+		HttpConnectionParams.setConnectionTimeout(params, CONNECTION_TIMEOUT);
+		HttpConnectionParams.setSoTimeout(params, CONNECTION_TIMEOUT);
+
 		HttpContext localContext = new BasicHttpContext();
 
 		HttpGet httpGet = new HttpGet(reqString);
@@ -140,6 +140,7 @@ public class HttpManager {
 			IOException, JSONException {
 		return new JSONArray(postRequest(reqString, parameters));
 	}
+
 	static JSONObject postRequestForObject(String reqString,
 			IJsonSerializable data) throws ClientProtocolException,
 			JSONException, IOException {
@@ -160,9 +161,9 @@ public class HttpManager {
 		StringBuilder result = new StringBuilder();
 		HttpClient httpClient = new DefaultHttpClient();
 		HttpParams params = httpClient.getParams();
-	    HttpConnectionParams.setConnectionTimeout(params, CONNECTION_TIMEOUT);
-	    HttpConnectionParams.setSoTimeout(params, CONNECTION_TIMEOUT);
-	    
+		HttpConnectionParams.setConnectionTimeout(params, CONNECTION_TIMEOUT);
+		HttpConnectionParams.setSoTimeout(params, CONNECTION_TIMEOUT);
+
 		HttpPost httpPost = new HttpPost(reqString);
 		httpPost.setHeader("Cookie", getCookie());
 		UrlEncodedFormEntity entity = new UrlEncodedFormEntity(postParameters);
@@ -178,8 +179,7 @@ public class HttpManager {
 
 		}
 		reader.close();
-		for (Header h : response.getHeaders("Set-Cookie"))
-		{
+		for (Header h : response.getHeaders("Set-Cookie")) {
 			cookie = h.getValue();
 		}
 		return result.toString();
@@ -187,24 +187,12 @@ public class HttpManager {
 
 	private static String getCookie() {
 		StringBuilder sb = new StringBuilder();
-		
+
 		if (cookie != null)
 			sb.append(cookie);
 		if (debuggingServer)
 			sb.append(";XDEBUG_SESSION=netbeans-xdebug");
 		return sb.toString();
-	}
-
-	static int getProtocolVersion() throws Exception {
-		JSONObject obj;
-		try {
-			obj = sendRequestForObject(getVersionRequest);
-			if (obj != null)
-				return obj.getInt("version");
-		} catch (Exception e) {
-			Log.e(Const.ECOMMUTERS_TAG, Log.getStackTraceString(e));
-		}
-		throw new Exception();
 	}
 
 	public static void fillCredentialsData(Credentials c) {
@@ -286,7 +274,8 @@ public class HttpManager {
 		ArrayList<ECommuterPosition> list = new ArrayList<ECommuterPosition>();
 		try {
 			List<NameValuePair> parameters = new ArrayList<NameValuePair>();
-			parameters.add(new BasicNameValuePair("userid", Integer.toString(userId)));
+			parameters.add(new BasicNameValuePair("userid", Integer
+					.toString(userId)));
 			JSONArray points = postRequestForArray(getPositionsRequest + lat2
 					+ "/" + lon1 + "/" + lat1 + "/" + lon2, parameters);
 			int length = points.length();
@@ -299,37 +288,45 @@ public class HttpManager {
 
 	}
 
-	public static int getPositions(String query, ArrayList<ECommuterPosition> out) {
+	public static SearchPositionResult getPositions(String query) {
+		SearchPositionResult res = new SearchPositionResult();
 		try {
-			JSONObject obj = sendRequestForObject(getPositionsByNameRequest 
+			JSONObject obj = sendRequestForObject(getPositionsByNameRequest
 					+ encodeURIComponent(query));
-			 JSONArray points = obj.getJSONArray("positions");
+			JSONArray points = obj.getJSONArray("positions");
 			int length = points.length();
 			for (int i = 0; i < length; i++)
-				out.add(ECommuterPosition.parseJSON(points.getJSONObject(i)));
-			
-			return obj.getInt("total");
+				res.positions.add(ECommuterPosition.parseJSON(points
+						.getJSONObject(i)));
+			res.total = obj.getInt("total");
 		} catch (Exception e) {
-			return 0;
+
 		}
+		return res;
 	}
 
-	public static boolean login(String email, String pwd, StringBuilder message) {
+	public static LoginResult login(String email, String pwd) {
 		List<NameValuePair> postParameters = new ArrayList<NameValuePair>();
 		postParameters.add(new BasicNameValuePair("email", email));
 		postParameters.add(new BasicNameValuePair("pwd", Helper.md5(pwd)));
+		LoginResult result = new LoginResult();
 		try {
 			String postRequest = postRequest(HTTP_WWW_ECOMMUTERS_COM_LOGIN,
 					postParameters);
 			JSONObject obj = new JSONObject(postRequest);
 			if (obj.has("message"))
-				message.append(obj.getString("message"));
-			return obj.has("success") && obj.getBoolean("success");
+				result.message = obj.getString("message");
+			result.result = obj.has("success") && obj.getBoolean("success");
+			if (obj.has("version") && obj.getInt("version") != Const.PROTOCOL_VERSION)
+			{
+				result.message = MyApplication.getInstance().getString(R.string.wrong_version);
+				result.result = false;
+			}
 		} catch (Exception e) {
-			message.append(e.toString());
-			return false;
+			result.message = e.toString();
+			result.result = false;
 		}
-
+		return result;
 	}
 
 }

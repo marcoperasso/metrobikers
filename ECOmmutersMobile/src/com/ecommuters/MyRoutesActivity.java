@@ -141,6 +141,7 @@ public class MyRoutesActivity extends Activity {
 		ArrayAdapter<Route> adapter = new ArrayAdapter<Route>(this,
 				android.R.layout.simple_list_item_1, mRoutes);
 		lv.setAdapter(adapter);
+		adapter.notifyDataSetChanged();
 		lv.setOnItemClickListener(new OnItemClickListener() {
 
 			public void onItemClick(AdapterView<?> arg0, View arg1,

@@ -24,6 +24,7 @@ public class MyApplication extends Application {
 	public void onCreate() {
 		super.onCreate();
 		sInstance = this;
+
 		// controllo se devo mandare degli itinerari al server
 		Intent service = new Intent(this, SyncService.class);
 		this.startService(service);
@@ -67,14 +68,12 @@ public class MyApplication extends Application {
 	public void refreshRoutes() {
 		ConnectorService.resetGPSStatus();
 		synchronized (routeSemaphore) {
-			if (mRoutes != null)
-			{
+			if (mRoutes != null) {
 				for (Route r : mRoutes)
 					r.cancelScheduling();
 			}
 			mRoutes = Route.readAllRoutes(getApplicationContext());
-			if (mRoutes != null)
-			{
+			if (mRoutes != null) {
 				for (Route r : mRoutes)
 					r.schedule(true);
 			}
@@ -137,20 +136,23 @@ public class MyApplication extends Application {
 
 	}
 
-	public void requestRoutes(final Activity activity, final OnRoutesAvailable onRoutesAvailable) {
-		new Thread(new Runnable(){
+	public void requestRoutes(final Activity activity,
+			final OnRoutesAvailable onRoutesAvailable) {
+		new Thread(new Runnable() {
 
 			public void run() {
 				final Route[] routes = getRoutes();
-				activity.runOnUiThread(new Runnable(){
+				activity.runOnUiThread(new Runnable() {
 
 					public void run() {
 						onRoutesAvailable.gotRoutes(routes);
-						
-					}});
-				
-			}}).start();
-		
+
+					}
+				});
+
+			}
+		}).start();
+
 	}
 
 }

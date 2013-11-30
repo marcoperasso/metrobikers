@@ -88,5 +88,6 @@
     <string name="friday">Venerdì</string>
     <string name="saturday">Sabato</string>
     <string name="sunday">Domenica</string>
+    <string name="searching">Sto cercando...</string>
 
 </resources>

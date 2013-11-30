@@ -373,17 +373,6 @@ public class MyMapActivity extends MapActivity {
 
 	}
 
-	private boolean testVersion() {
-		if (Helper.isOnline(this) && !Helper.matchProtocolVersion(this)) {
-			Toast t = Toast.makeText(this, R.string.wrong_version,
-					Toast.LENGTH_LONG);
-			t.setGravity(Gravity.CENTER, 0, 0);
-			t.show();
-			return false;
-		}
-		return true;
-	}
-
 	private void enableGPS() {
 		if (!mlocManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
 

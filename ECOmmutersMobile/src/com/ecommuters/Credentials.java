@@ -1,6 +1,7 @@
 package com.ecommuters;
 
 import android.content.Context;
+import android.os.AsyncTask;
 
 public class Credentials {
 	private int userId;
@@ -50,24 +51,6 @@ public class Credentials {
 		this.userId = userId;
 	}
 
-	public void testLogin(final Context context,
-			final OnAsyncResponse onResponse) {
-
-		if (!Helper.isOnline(context)) {
-			onResponse.response(true, "");
-		}
-		StringBuilder message = new StringBuilder();
-		boolean success = HttpManager.login(getEmail(), getPassword(), message);
-		
-		if (success) {
-			int id = getUserId();
-			HttpManager.fillCredentialsData(this);
-			if (id != getUserId())
-				MySettings.setCredentials(context, this);
-		}
-		onResponse.response(success, message.toString());
-	}
-
 	public String getName() {
 		return name;
 	}
@@ -84,18 +67,72 @@ public class Credentials {
 		this.surname = surname;
 	}
 
-	public static void testCredentials(Context context,
-			OnAsyncResponse testResponse) {
-		if (HttpManager.isLogged()) {
-			testResponse.response(true, "");
-			return;
-		}
-		Credentials credential = MySettings.readCredentials(context);
-		if (credential.isEmpty()) {
-			testResponse.response(false, "");
-			return;
-		}
-		credential.testLogin(context, testResponse);
+	public static void testCredentials(final Context context,
+			final OnAsyncResponse testResponse) {
+		new AsyncTask<Void, Void, Boolean>() {
+
+			@Override
+			protected Boolean doInBackground(Void... params) {
+				return HttpManager.isLogged();
+			}
+
+			protected void onPostExecute(Boolean result) {
+				if (result) {
+					testResponse.response(true, "");
+					return;
+				}
+				Credentials credential = MySettings.readCredentials(context);
+				if (credential.isEmpty()) {
+					testResponse.response(false, "");
+					return;
+				}
+				credential.testLogin(context, testResponse);
+			};
+		}.execute();
+
 	}
 
+	public void testLogin(final Context context,
+			final OnAsyncResponse onResponse) {
+
+		if (!Helper.isOnline(context)) {
+			onResponse.response(true, "");
+		}
+		new AsyncTask<Credentials, Void, LoginResult>() {
+
+			@Override
+			protected LoginResult doInBackground(Credentials... params) {
+				LoginResult res = HttpManager.login(getEmail(), getPassword());
+				Credentials c = params[0];
+				if (res.result) {
+					int id = getUserId();
+					HttpManager.fillCredentialsData(c);
+					if (id != getUserId())
+						MySettings.setCredentials(context, c);
+				}
+				return res;
+			}
+
+			protected void onPostExecute(LoginResult result) {
+				onResponse.response(result.result, result.message.toString());
+			};
+		}.execute(this);
+
+	}
+
+}
+
+class LoginResult {
+	public LoginResult(boolean result, String message) {
+		this.result = result;
+		this.message = message;
+	}
+
+	public LoginResult() {
+		this.result = false;
+		this.message = "";
+	}
+
+	public boolean result;
+	public String message;
 }
