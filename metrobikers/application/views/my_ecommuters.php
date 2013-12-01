@@ -8,7 +8,7 @@
                 <h4 class="modal-title">Trova ECOmmuters</h4>
             </div>
             <div class="modal-body">
-                <form id="findform" autocomplete="on" method="post"> 
+                <form id="findform" autocomplete="on" method="post" onsubmit="return false;" > 
                     <fieldset>
                         <input type="text" name="ecommutername" id="ecommutername" autofocus placeholder="Scrivi qui il nome" class="required form-control"/><br>
                     </fieldset>
@@ -24,7 +24,7 @@
 
     function datasource(request, response)
     {
-        function onServerResponse(data)
+        $.getJSON("/user/get_not_linked_users", {'filter': request.term}, function(data)
         {
             response($.map(data.users, function(usr) {
                 return {
@@ -33,8 +33,7 @@
                     id: usr.id
                 };
             }));
-        }
-        $.getJSON("/user//get_users_by_name_filter", {'filter': request.term}, onServerResponse);
+        });
     }
     function select(event, ui)
     {
@@ -46,9 +45,34 @@
     });
     $("#doconnect").click(function() {
         if (testFields($("#findform")))
+        {
             var input = $('#ecommutername');
-        window.location.href = "/user/connect?id=" + encodeURIComponent(input[0].userid) + '&fullname=' + encodeURIComponent(input.val());
+            //l'utente ha cliccato un hint, quindi so già l'id dell'ecommuter
+            if (input[0].userid)
+            {
+                window.location.href = "/user/connect/" + input[0].userid;
+                return;
+            }
+            //l'utente ha solo scritto nella text box, devo recoperare l'id dell'ecommuter
+            $.getJSON("/user/get_not_linked_users", {'filter': input.val()}, function(data) {
+                if (data.users.length > 1)
+                {
+                    alert("Più di un ECOmmuter trovato per i criteri impostati.");
+                    input.focus();
+                    return;
+                }
+                if (data.users.length === 0)
+                {
+                    alert("Nessun ECOmmuter trovato per i criteri impostati.");
+                    input.focus();
+                    return;
+                }
+                window.location.href = "/user/connect/" + data.users[0].id;
+            });
+        }
     });
+
+
 </script>
 <div class="col-md-1"></div>
 <div class="col-md-10">

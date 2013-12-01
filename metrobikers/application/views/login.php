@@ -6,7 +6,7 @@
                 <h4 class="modal-title">Accedi ad ECOmmuters</h4>
             </div>
             <div class="modal-body">
-                <form id="loginform" autocomplete="on" method="post"> 
+                <form id="loginform" autocomplete="on" method="post" onsubmit="return false;" > 
                     <fieldset>
                         <div id="mailValidatorScope">
                             <input type="text" name="email" id="loginemail" placeholder="Email" class="required form-control"/><br>
@@ -46,7 +46,7 @@
             }, function(data) {
                 if (onEnd)
                 {
-                    onEnd(data)
+                    onEnd(data);
                 }
                 else
                 {
@@ -71,7 +71,8 @@
             form.submit();
         }
     }
-
+    
+    
 
 </script>
 

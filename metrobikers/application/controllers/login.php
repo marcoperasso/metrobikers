@@ -27,7 +27,7 @@ class Login extends MY_Controller {
 
         $this->output->set_content_type('application/json');
         $success = $this->User_model->get_user($mail) && $this->User_model->password == $pwd;
-        $response = array('success' => $success);
+        $response = array('success' => $success, 'version' => 1);
         if ($success) {
             set_user($this->User_model);
         } else {

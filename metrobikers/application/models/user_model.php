@@ -49,24 +49,33 @@ class User_model extends MY_Model {
         $query = $this->db
                 ->select('mail, name, birthdate, surname, gender')
                 ->distinct()
-                ->where('(linkedusers.userid1=' . $this->id . ' or linkedusers.userid2= ' . $this->id  . ') and active = 1 and id<> ' . $this->id)
+                ->where('(linkedusers.userid1=' . $this->id . ' or linkedusers.userid2= ' . $this->id . ') and active = 1 and id<> ' . $this->id)
                 ->join('users', 'users.id = linkedusers.userid1 or users.id = linkedusers.userid2')
                 ->get('linkedusers');
-        
+
         $result = $query->result_array();
         foreach ($result as &$value) {
             $value = (object) $value;
         }
-        
+
         return $result;
     }
 
-    public function get_users_by_name_filter($userid, $filter, $after) {
-        $this->db->select('id, name, surname');
-        $this->db->like('concat(name, " ", surname)', $filter, $after ? 'after' : 'both');
-        $this->db->where('id !=', $userid);
-        $this->db->limit(10);
-        $query = $this->db->get('users');
+    public function get_not_linked_users($userid, $filter, $beginning) {
+        $w = 'id not in (select userid1 from linkedusers where userid2 = ' 
+            . $this->id . ' union select userid2 from linkedusers where userid1 = ' 
+                . $this->id 
+                . ') and active = 1 and id <> '
+                . $this->id . ' and concat(name, " ", surname) like "'
+                . ($beginning ? '' : '%')
+                . $filter . '%'
+                . '"';
+       $query = $this->db
+                ->select('id, name, surname')
+                ->distinct()
+                ->where($w)
+                ->get('users', 10);
+
         return $query->result_array();
     }
 

@@ -42,14 +42,14 @@ class User extends MY_Controller {
         $this->load_view('my_ecommuters', 'Il mio gruppo', $data);
     }
 
-    public function get_users_by_name_filter() {
+    public function get_not_linked_users() {
         if ($this->user == NULL) {
             $response = array('users' => array());
         } else {
             $filter = $this->input->get("filter");
-            $list = $this->User_model->get_users_by_name_filter($this->user->id, $filter, TRUE);
+            $list = $this->user->get_not_linked_users($this->user->id, $filter, TRUE);
             if (count($list) == 0)
-                $list = $this->User_model->get_users_by_name_filter($this->user->id, $filter, FALSE);
+                $list = $this->user->get_not_linked_users($this->user->id, $filter, FALSE);
             $response = array('users' => $list);
         }
         $this->output

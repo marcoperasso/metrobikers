@@ -5,13 +5,6 @@ if (!defined('BASEPATH'))
 
 class Mobile extends MY_Controller {
 
-    public function version() {
-
-        $this->output
-                ->set_content_type('application/json')
-                ->set_output(json_encode(array('version' => 1)));
-    }
-
     public function user_logged() {
         $this->output
                 ->set_content_type('application/json')
