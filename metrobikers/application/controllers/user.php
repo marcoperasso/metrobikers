@@ -27,9 +27,16 @@ class User extends MY_Controller {
         $this->load_view('routes', 'I miei itinerari', $data);
     }
 
-    public function connect() {
+    public function connect($userid) {
         if (!$this->validate_login())
             return;
+        /*if ($this->User_model->get_user_by_id($userid))
+        {
+            echo "Funzione non ancora supportata.<br> Presto potrai far entrare nel tuo gruppo ";
+            echo $this->User_model->name . ' ' . $this->User_model->surname;
+            
+        }*/
+        $this->load_view("unsupported", "Funzionalità non ancora disponibile");
     }
 
     public function my_ecommuters() {
