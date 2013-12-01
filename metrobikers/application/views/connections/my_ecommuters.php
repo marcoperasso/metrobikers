@@ -39,10 +39,14 @@
     {
         this.userid = ui.item.id;
     }
-    $("#ecommutername").autocomplete({
-        source: datasource,
-        select: select
-    });
+    $("#ecommutername")
+            .autocomplete({
+                source: datasource,
+                select: select
+            })
+            .change(function() {
+                this.userid = null;
+            });
     $("#doconnect").click(function() {
         if (testFields($("#findform")))
         {
@@ -50,24 +54,25 @@
             //l'utente ha cliccato un hint, quindi so già l'id dell'ecommuter
             if (input[0].userid)
             {
-                window.location.href = "/user/connect/" + input[0].userid;
+                window.location.href = "/user/preconnect/" + input[0].userid;
                 return;
             }
-            //l'utente ha solo scritto nella text box, devo recoperare l'id dell'ecommuter
-            $.getJSON("/user/get_not_linked_users", {'filter': input.val()}, function(data) {
+            //l'utente ha solo scritto nella text box, devo recoperare l'id dell'ecommuter filtrando secco l'utente
+            //se non lo trovo o ne trovo di più mi arrabbio
+            $.getJSON("/user/get_not_linked_users", {'filter': input.val(), 'exact' : true}, function(data) {
                 if (data.users.length > 1)
                 {
-                    alert("Più di un ECOmmuter trovato per i criteri impostati.");
+                    alert("Trovato più di un ECOmmuter col nome indicato.");
                     input.focus();
                     return;
                 }
                 if (data.users.length === 0)
                 {
-                    alert("Nessun ECOmmuter trovato per i criteri impostati.");
+                    alert("L'ECOmmuter indicato non esiste.");
                     input.focus();
                     return;
                 }
-                window.location.href = "/user/connect/" + data.users[0].id;
+                window.location.href = "/user/preconnect/" + data.users[0].id;
             });
         }
     });

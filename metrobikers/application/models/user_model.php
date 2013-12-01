@@ -44,6 +44,7 @@ class User_model extends MY_Model {
         }
         return FALSE;
     }
+
     public function get_user($mail) {
         $query = $this->db->get_where('users ', array('mail' => $mail));
         if ($query->num_rows() === 1) {
@@ -51,6 +52,10 @@ class User_model extends MY_Model {
             return TRUE;
         }
         return FALSE;
+    }
+
+    public function insert_linked_user($userid) {
+        $this->db->insert('linkedusers', array('userid1'=> $this->id, 'userid2' => $userid));
     }
 
     public function get_linked_users() {
@@ -69,16 +74,17 @@ class User_model extends MY_Model {
         return $result;
     }
 
-    public function get_not_linked_users($userid, $filter, $beginning) {
-        $w = 'id not in (select userid1 from linkedusers where userid2 = ' 
-            . $this->id . ' union select userid2 from linkedusers where userid1 = ' 
-                . $this->id 
+    public function get_not_linked_users($userid, $filter, $beginning, $end) {
+        $w = 'id not in (select userid1 from linkedusers where userid2 = '
+                . $this->id . ' union select userid2 from linkedusers where userid1 = '
+                . $this->id
                 . ') and active = 1 and id <> '
                 . $this->id . ' and concat(name, " ", surname) like "'
                 . ($beginning ? '' : '%')
-                . $filter . '%'
+                . $filter
+                . ($end ? '' : '%')
                 . '"';
-       $query = $this->db
+        $query = $this->db
                 ->select('id, name, surname')
                 ->distinct()
                 ->where($w)

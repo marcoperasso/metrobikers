@@ -7,7 +7,6 @@ class Register extends MY_Controller {
 
     public function __construct() {
         parent::__construct();
-        $this->load->model('User_model');
         $this->load->model('Validation_key_model');
     }
 
@@ -23,7 +22,7 @@ class Register extends MY_Controller {
                 $data['user'] = $this->User_model;
                 $this->db->trans_begin();
                 $this->User_model->activate_user();
-                $this->Validation_key_model->delete_key($this->User_model->id);
+                $this->Validation_key_model->delete_key($key);
                 $this->db->trans_commit();
                 set_user($this->User_model);
                 if ($resetpwd) {
@@ -68,12 +67,11 @@ class Register extends MY_Controller {
         $mail = $this->input->post('email');
         if ($mail && $this->User_model->get_user($mail)) {
             $this->db->trans_begin();
-            $this->Validation_key_model->delete_key($this->User_model->id);
             $this->Validation_key_model->create_key($this->User_model->id);
             $this->db->trans_commit();
             $data["user_draft"] = $this->User_model;
             $data["validationkey"] = $this->Validation_key_model->validationkey;
-            $view = $this->load->view('register/resetpwdmailcontent', $data, TRUE);
+            $view = $this->load->view('mail/resetpwdmailcontent', $data, TRUE);
             $this->send_mail($this->User_model->mail, lang("reset_pwd_submitted"), $view);
             $this->load_view('register/resettedpwd', "Ripristino password", $data);
         } else {
@@ -99,7 +97,7 @@ class Register extends MY_Controller {
             $this->db->trans_commit();
             $data["user_draft"] = $this->User_model;
             $data["validationkey"] = $this->Validation_key_model->validationkey;
-            $view = $this->load->view('register/registermailcontent', $data, TRUE);
+            $view = $this->load->view('mail/registermailcontent', $data, TRUE);
             $this->send_mail($this->User_model->mail, lang("registration_submitted"), $view);
             $this->load_view('register/userregistered', "Utente registrato", $data);
         }

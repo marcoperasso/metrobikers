@@ -6,7 +6,7 @@
                 <h4 class="modal-title">Accedi ad ECOmmuters</h4>
             </div>
             <div class="modal-body">
-                <form id="loginform" autocomplete="on" method="post" onsubmit="return false;" > 
+                <form id="loginform" autocomplete="on" method="post" > 
                     <fieldset>
                         <div id="mailValidatorScope">
                             <input type="text" name="email" id="loginemail" placeholder="Email" class="required form-control"/><br>

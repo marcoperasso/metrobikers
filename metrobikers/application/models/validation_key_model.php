@@ -9,11 +9,6 @@ class Validation_key_model extends MY_Model {
         parent::__construct();
     }
 
-    public function get_key($user) {
-        $query = $this->db->get_where('validationkeys', array('userid' => user));
-        $this->assign($query->row_array());
-    }
-
     public function create_key($user) {
         $this->userid = $user;
         $this->validationkey = uniqid("", TRUE);
@@ -21,8 +16,8 @@ class Validation_key_model extends MY_Model {
         return $this->db->insert('validationkeys', $this);
     }
 
-    public function delete_key($user) {
-        return $this->db->delete('validationkeys', array('userid' => $user)); 
+    public function delete_key($key) {
+        return $this->db->delete('validationkeys', array('validationkey' => $key)); 
     }
 
 }
