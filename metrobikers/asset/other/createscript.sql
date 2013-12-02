@@ -24,6 +24,7 @@ CREATE TABLE `users` (
   `mail` varchar(255) NOT NULL DEFAULT '',
   `name` varchar(255) DEFAULT NULL,
   `surname` varchar(255) DEFAULT NULL,
+  `nickname` varchar(255) DEFAULT NULL,
   `password` char(32) DEFAULT NULL,
   `active` bit(1) DEFAULT NULL,
   `birthdate` date DEFAULT NULL,
@@ -31,7 +32,7 @@ CREATE TABLE `users` (
   `activationdate` date DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `mail_UNIQUE` (`mail`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8$$
+) ENGINE=InnoDB AUTO_INCREMENT=96 DEFAULT CHARSET=utf8$$
 
 
 delimiter $$
@@ -40,7 +41,8 @@ CREATE TABLE `validationkeys` (
   `userid` int(11) NOT NULL,
   `validationkey` char(36) NOT NULL,
   `datecreated` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`userid`),
+  `reason` smallint(6) DEFAULT '0',
+  PRIMARY KEY (`userid`,`validationkey`),
   CONSTRAINT `FK_USER` FOREIGN KEY (`userid`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8$$
 
