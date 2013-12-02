@@ -61,7 +61,7 @@ class User_model extends MY_Model {
 
     public function get_linked_users() {
         $query = $this->db
-                ->select('mail, name, birthdate, surname, nickname, gender')
+                ->select('id, mail, name, birthdate, surname, nickname, gender')
                 ->distinct()
                 ->where('(linkedusers.userid1=' . $this->id . ' or linkedusers.userid2= ' . $this->id . ') and active = 1 and id<> ' . $this->id)
                 ->join('users', 'users.id = linkedusers.userid1 or users.id = linkedusers.userid2')

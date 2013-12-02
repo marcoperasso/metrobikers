@@ -237,3 +237,8 @@ p{
     background-color: yellow;
     cursor: pointer;
 }
+.clickable:hover
+{
+    background-color: yellow;
+    cursor: pointer;
+}

@@ -21,63 +21,71 @@
     </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
 <script type="text/javascript">
-
-    function datasource(request, response)
+    $(function()
     {
-        $.getJSON("/user/get_not_linked_users", {'filter': request.term}, function(data)
+        function datasource(request, response)
         {
-            response($.map(data.users, function(usr) {
-                return {
-                    label: usr.name + ' ' + usr.surname + (usr.nickname ? ' (' + usr.nickname + ')' : '') ,
-                    value: usr.name + ' ' + usr.surname,
-                    id: usr.id
-                };
-            }));
-        });
-    }
-    function select(event, ui)
-    {
-        this.userid = ui.item.id;
-    }
-    $("#ecommutername")
-            .autocomplete({
-                source: datasource,
-                select: select
-            })
-            .change(function() {
-                this.userid = null;
-            });
-    $("#doconnect").click(function() {
-        if (testFields($("#findform")))
-        {
-            var input = $('#ecommutername');
-            //l'utente ha cliccato un hint, quindi so già l'id dell'ecommuter
-            if (input[0].userid)
+            $.getJSON("/user/get_not_linked_users", {'filter': request.term}, function(data)
             {
-                window.location.href = "/user/preconnect/" + input[0].userid;
-                return;
-            }
-            //l'utente ha solo scritto nella text box, devo recoperare l'id dell'ecommuter filtrando secco l'utente
-            //se non lo trovo o ne trovo di più mi arrabbio
-            $.getJSON("/user/get_not_linked_users", {'filter': input.val(), 'exact' : true}, function(data) {
-                if (data.users.length > 1)
-                {
-                    alert("Trovato più di un ECOmmuter col nome indicato.");
-                    input.focus();
-                    return;
-                }
-                if (data.users.length === 0)
-                {
-                    alert("L'ECOmmuter indicato non esiste.");
-                    input.focus();
-                    return;
-                }
-                window.location.href = "/user/preconnect/" + data.users[0].id;
+                response($.map(data.users, function(usr) {
+                    return {
+                        label: usr.name + ' ' + usr.surname + (usr.nickname ? ' (' + usr.nickname + ')' : ''),
+                        value: usr.name + ' ' + usr.surname,
+                        id: usr.id
+                    };
+                }));
             });
         }
+        function select(event, ui)
+        {
+            this.userid = ui.item.id;
+        }
+        $("#ecommutername")
+                .autocomplete({
+            source: datasource,
+            select: select
+        })
+                .change(function() {
+            this.userid = null;
+        });
+        $("#doconnect").click(function() {
+            if (testFields($("#findform")))
+            {
+                var input = $('#ecommutername');
+                //l'utente ha cliccato un hint, quindi so già l'id dell'ecommuter
+                if (input[0].userid)
+                {
+                    window.location.href = "/user/preconnect/" + input[0].userid;
+                    return;
+                }
+                //l'utente ha solo scritto nella text box, devo recoperare l'id dell'ecommuter filtrando secco l'utente
+                //se non lo trovo o ne trovo di più mi arrabbio
+                $.getJSON("/user/get_not_linked_users", {'filter': input.val(), 'exact': true}, function(data) {
+                    if (data.users.length > 1)
+                    {
+                        alert("Trovato più di un ECOmmuter col nome indicato.");
+                        input.focus();
+                        return;
+                    }
+                    if (data.users.length === 0)
+                    {
+                        alert("L'ECOmmuter indicato non esiste.");
+                        input.focus();
+                        return;
+                    }
+                    window.location.href = "/user/preconnect/" + data.users[0].id;
+                });
+            }
+        });
+        $('.delete')
+                .click(function() {
+            if (confirm('Vuoi davvero rimuovere ' + this.getAttribute('descri') + ' dal tuo gruppo?'))
+            {
+                window.location.href = '/user/remove_linked_user/' + this.id;
+            }
+        }
+        );
     });
-
-
 </script>
 <div class="col-md-1"></div>
 <div class="col-md-10">
@@ -94,6 +102,7 @@
                     <th>Nome</th>
                     <th>Cognome</th>
                     <th>Nickname</th>
+                    <th></th>
                 </tr>
             </thead>
             <tbody>
@@ -104,6 +113,7 @@
                         <td><?php echo $linkeduser->name; ?></td>
                         <td><?php echo $linkeduser->surname; ?></td>
                         <td><?php echo $linkeduser->nickname; ?></td>
+                        <td><a class="delete clickable" id="<?php echo $linkeduser->id; ?>" title ="Rimuovi" descri="<?php echo $linkeduser->name . ' ' . $linkeduser->surname; ?>"><img src="/asset/img/icon_delete.png"></a></td>
                     </tr>
                     <?php
                 }
