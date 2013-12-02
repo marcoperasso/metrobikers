@@ -13,7 +13,7 @@
                     Abbiamo mandato una richiesta di contatto via mail a <?php echo $user_contacted->name . ' ' . $user_contacted->surname; ?>
                 </p>
                 <p class="text-center">
-                <a href="/">Torna alla pagina principale</a>
+                <a href="/user/my_ecommuters">Torna al mio gruppo</a>
                 </p>
             </div>
             <div class="col-md-2">

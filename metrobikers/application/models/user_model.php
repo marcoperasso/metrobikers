@@ -7,6 +7,7 @@ class User_model extends MY_Model {
     var $name;
     var $birthdate;
     var $surname;
+    var $nickname;
     var $active;
     var $gender;
     var $activationdate;
@@ -60,7 +61,7 @@ class User_model extends MY_Model {
 
     public function get_linked_users() {
         $query = $this->db
-                ->select('mail, name, birthdate, surname, gender')
+                ->select('mail, name, birthdate, surname, nickname, gender')
                 ->distinct()
                 ->where('(linkedusers.userid1=' . $this->id . ' or linkedusers.userid2= ' . $this->id . ') and active = 1 and id<> ' . $this->id)
                 ->join('users', 'users.id = linkedusers.userid1 or users.id = linkedusers.userid2')
@@ -85,7 +86,7 @@ class User_model extends MY_Model {
                 . ($end ? '' : '%')
                 . '"';
         $query = $this->db
-                ->select('id, name, surname')
+                ->select('id, name, surname, nickname')
                 ->distinct()
                 ->where($w)
                 ->get('users', 10);

@@ -23,4 +23,9 @@ function decode_gender($genderId) {
             return "Non specificato";
     }
 }
+
+function htmlSpaceIfEmpty($string)
+{
+    return empty($string) ? '&nbsp;' : $string;
+}
 ?>

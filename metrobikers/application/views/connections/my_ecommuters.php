@@ -28,7 +28,7 @@
         {
             response($.map(data.users, function(usr) {
                 return {
-                    label: usr.name + ' ' + usr.surname,
+                    label: usr.name + ' ' + usr.surname + (usr.nickname ? ' (' + usr.nickname + ')' : '') ,
                     value: usr.name + ' ' + usr.surname,
                     id: usr.id
                 };
@@ -93,6 +93,7 @@
                 <tr>
                     <th>Nome</th>
                     <th>Cognome</th>
+                    <th>Nickname</th>
                 </tr>
             </thead>
             <tbody>
@@ -102,6 +103,7 @@
                     <tr>
                         <td><?php echo $linkeduser->name; ?></td>
                         <td><?php echo $linkeduser->surname; ?></td>
+                        <td><?php echo $linkeduser->nickname; ?></td>
                     </tr>
                     <?php
                 }

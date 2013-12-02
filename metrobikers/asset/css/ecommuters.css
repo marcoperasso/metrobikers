@@ -227,6 +227,11 @@ div.pwdmetercontainer{
 p{
     text-align: justify;
 }
+.changeable
+{
+    min-width: 300px;
+    display: inline-block;
+}
 .changeable:hover
 {
     background-color: yellow;

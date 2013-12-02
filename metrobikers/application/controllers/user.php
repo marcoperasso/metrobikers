@@ -60,7 +60,14 @@ class User extends MY_Controller {
             $this->user->insert_linked_user($this->User_model->id);
             $this->Validation_key_model->delete_key($key);
             $this->db->trans_commit();
+            $data["user_contacted"] = $this->User_model;
+            $data["user"] = $this->user;
+            $view = $this->load->view('mail/useringroupmailcontent', $data, TRUE);
+            $this->send_mail($this->User_model->mail, lang("contact_accepted"), $view);
+            
             $this->my_ecommuters();
+            
+            
         } else {
             $data['reason'] = "La chiave di attivazione del collegamento non è presente nel nostro database.";
             $this->load_view("error", "Chiave di attivazione non valida", $data);
