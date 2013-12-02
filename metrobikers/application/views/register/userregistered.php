@@ -13,8 +13,8 @@
                     Grazie <?php echo $user_draft->name ?> per esserti registrato. <br />
                     Segui le istruzioni che ti abbiamo mandato via email all'indirizzo <?php echo $user_draft->mail ?> per completare la tua registrazione.
                 </p>
-                <p>
-                <a class ="center-text" href="/">Torna alla pagina principale</a>
+                <p class="text-center">
+                <a href="/">Torna alla pagina principale</a>
                 </p>
             </div>
             <div class="col-md-2">

@@ -10,10 +10,10 @@
 
             <div class="col-md-8">
                 <p class="text-center">
-                    Abbiamo mandato una richiesta di contatto via mail a <?= $user_contacted->name . ' ' . $user_contacted->surname?>
+                    Abbiamo mandato una richiesta di contatto via mail a <?php echo $user_contacted->name . ' ' . $user_contacted->surname; ?>
                 </p>
-                <p>
-                <a class ="center-text" href="/">Torna alla pagina principale</a>
+                <p class="text-center">
+                <a href="/">Torna alla pagina principale</a>
                 </p>
             </div>
             <div class="col-md-2">

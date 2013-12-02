@@ -11,5 +11,9 @@
     <a data-toggle="modal" href="#loginModal" class="btn btn-primary btn-lg">Accedi</a>
 </div>
 <div class="col-md-2"></div>
-
+<script type="text/javascript">window.onLogged = function()
+    {
+        window.location.href = '<?php echo isset($request) ? $request : '/';?>';
+    };
+</script>
 

@@ -32,7 +32,7 @@ class User extends MY_Controller {
             return;
         if ($this->User_model->get_user_by_id($userid)) {
             $this->load->model('Validation_key_model');
-            $this->Validation_key_model->create_key($this->user->id);
+            $this->Validation_key_model->create_key($this->user->id, VALIDATION_KEY_REASON_CONNECT);
             $data["user_contacted"] = $this->User_model;
             $data["user"] = $this->user;
             $data["validationkey"] = $this->Validation_key_model->validationkey;
@@ -46,12 +46,15 @@ class User extends MY_Controller {
         if (!$this->validate_login())
             return;
         $key = $this->input->get("userkey");
+        $inviteduserid = $this->input->get("inviteduserid");
+        if ($inviteduserid !== $this->user->id) {
+            $data['reason'] = $this->user->name . ' ' . $this->user->surname . ", questo invito non è rivolto a te. Prova ad effettuare l'accesso utilizzando un altro utente.";
+            $this->load_view("error", "ECOmmuter non corretto", $data);
+            return;
+        }
         $data['key'] = $key;
         if ($this->User_model->get_user_by_key($key)) {
-            if ($this->User_model->id == $this->user->id) {
-                $this->load_view("connections/error", "Chiave di collegamento non valida", $data);
-                return;
-            }
+
             $this->load->model('Validation_key_model');
             $this->db->trans_begin();
             $this->user->insert_linked_user($this->User_model->id);
@@ -59,7 +62,9 @@ class User extends MY_Controller {
             $this->db->trans_commit();
             $this->my_ecommuters();
         } else {
-            $this->load_view("connections/error", "Chiave di collegamento non valida", $data);
+            $data['reason'] = "La chiave di attivazione del collegamento non è presente nel nostro database.";
+            $this->load_view("error", "Chiave di attivazione non valida", $data);
+  
         }
     }
 

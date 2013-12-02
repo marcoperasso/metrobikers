@@ -83,7 +83,7 @@
 <div class="col-md-6">
     <div class="container">
         <h2 class="text-center"><?php if ($resetpwd){?> Ripristino password <?php } else {?>Attiva la registrazione <?php  } ?></h2><br />
-        <p>Ben tornato <?= $user_draft->name ?>, inserisci qui la tua nuova password.</p>
+        <p>Ben tornato <?php echo $user_draft->name; ?>, inserisci qui la tua nuova password.</p>
         <?php echo validation_errors(); ?>
         <div class="col-md-2">
 

@@ -12,8 +12,8 @@
             <p >
                 Mi spiace, questa email non è presente nel nostro database: <?php echo $mail ?>
             </p>
-            <p>
-            <a class ="center-text" href="/">Torna alla pagina principale</a>
+            <p class="text-center">
+            <a href="/">Torna alla pagina principale</a>
             </p>
         </div>
         <div class="col-md-2">

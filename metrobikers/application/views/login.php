@@ -53,7 +53,7 @@
                     if (!data.success)
                         alert(data.message);
                     else
-                        window.location.href = "/user";
+                        window.onLogged();
                 }
             });
             jqr.fail(onFailRequest);
@@ -72,7 +72,10 @@
         }
     }
     
-    
+    window.onLogged = function()
+    {
+        window.location.href = "/";
+    };
 
 </script>
 

@@ -49,7 +49,11 @@ class MY_Controller extends CI_Controller {
     protected function validate_login() {
         if ($this->user == NULL)
         {
-            $this->load_view("loginneeded", "Richiesta login");
+            $this->load_view(
+                    "loginneeded",
+                    "Richiesta login", 
+                    array('request' => $_SERVER['REQUEST_URI'])
+                    );
             return FALSE;
         }
         return TRUE;

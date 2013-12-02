@@ -12,8 +12,8 @@
             <p class="text-center">
                 <?php echo $user->name ?>, la tua password é stata correttamente reimpostata.
             </p>
-            <p>
-            <a class ="center-text" href="/">Torna alla pagina principale</a>
+            <p class="text-center">
+            <a href="/">Torna alla pagina principale</a>
             </p>
         </div>
         <div class="col-md-2">

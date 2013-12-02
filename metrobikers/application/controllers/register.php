@@ -67,7 +67,7 @@ class Register extends MY_Controller {
         $mail = $this->input->post('email');
         if ($mail && $this->User_model->get_user($mail)) {
             $this->db->trans_begin();
-            $this->Validation_key_model->create_key($this->User_model->id);
+            $this->Validation_key_model->create_key($this->User_model->id, VALIDATION_KEY_REASON_RESET_PWD);
             $this->db->trans_commit();
             $data["user_draft"] = $this->User_model;
             $data["validationkey"] = $this->Validation_key_model->validationkey;
@@ -93,7 +93,7 @@ class Register extends MY_Controller {
         } else {
             $this->db->trans_begin();
             $this->User_model->create_user();
-            $this->Validation_key_model->create_key($this->User_model->id);
+            $this->Validation_key_model->create_key($this->User_model->id, VALIDATION_KEY_REASON_REGISTER);
             $this->db->trans_commit();
             $data["user_draft"] = $this->User_model;
             $data["validationkey"] = $this->Validation_key_model->validationkey;

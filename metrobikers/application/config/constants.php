@@ -36,6 +36,9 @@ define('FOPEN_READ_WRITE_CREATE',				'a+b');
 define('FOPEN_WRITE_CREATE_STRICT',				'xb');
 define('FOPEN_READ_WRITE_CREATE_STRICT',                        'x+b');
 
+define('VALIDATION_KEY_REASON_REGISTER',                        0);
+define('VALIDATION_KEY_REASON_RESET_PWD',                       1);
+define('VALIDATION_KEY_REASON_CONNECT',                         2);
 
 include 'privateconst.php';
 /* End of file constants.php */
