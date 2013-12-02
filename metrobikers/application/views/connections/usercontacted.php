@@ -10,8 +10,12 @@
 
             <div class="col-md-8">
                 <p class="text-center">
-                    Abbiamo mandato una richiesta di contatto via mail a <?php echo $user_contacted->name . ' ' . $user_contacted->surname; ?>
+                    Abbiamo mandato una richiesta di contatto via mail a <?php echo $user_contacted->name . ' ' . $user_contacted->surname; ?>.
                 </p>
+                <p class="text-center">
+                    Quando <?php echo $user_contacted->name; ?> accetterà la tua richiesta riceverai una mail di conferma.
+                </p>
+                
                 <p class="text-center">
                 <a href="/user/my_ecommuters">Torna al mio gruppo</a>
                 </p>
