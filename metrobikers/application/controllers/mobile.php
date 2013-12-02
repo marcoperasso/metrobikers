@@ -48,7 +48,7 @@ class Mobile extends MY_Controller {
     }
 
     public function get_routes($latestupdate) {
-        
+
         if ($this->user != NULL) {
             $this->load->model("Route_model");
             $this->Route_model->userid = $this->user->id;
@@ -68,24 +68,28 @@ class Mobile extends MY_Controller {
 
         $json = $this->input->post("data");
         $point = json_decode($json);
-        $this->load->model("User_position_model");
-        $this->load->model("User_on_route_model");
-        $this->db->trans_begin();
+        if ($point) {
+            $this->load->model("User_position_model");
+            $this->load->model("User_on_route_model");
+            $this->db->trans_begin();
 
-        $this->User_position_model->userid = $point->userid;
-        $this->User_position_model->lat = $point->lat;
-        $this->User_position_model->lon = $point->lon;
-        $this->User_position_model->time = date('Y-m-d H:i:s', $point->time);
-        $this->User_position_model->save_position();
+            $this->User_position_model->userid = $point->userid;
+            $this->User_position_model->lat = $point->lat;
+            $this->User_position_model->lon = $point->lon;
+            $this->User_position_model->time = date('Y-m-d H:i:s', $point->time);
+            $this->User_position_model->save_position();
 
-        $this->User_on_route_model->purge($point->userid);
-        foreach ($point->routes as $routeid) {
-            $this->User_on_route_model->userid = $point->userid;
-            $this->User_on_route_model->routeid = $routeid;
-            $this->User_on_route_model->save();
+            $this->User_on_route_model->purge($point->userid);
+            foreach ($point->routes as $routeid) {
+                $this->User_on_route_model->userid = $point->userid;
+                $this->User_on_route_model->routeid = $routeid;
+                $this->User_on_route_model->save();
+            }
+            $this->db->trans_commit();
+            $response = array('saved' => TRUE);
+        } else {
+            $response = array('saved' => FALSE);
         }
-        $this->db->trans_commit();
-        $response = array('saved' => TRUE);
         $this->output
                 ->set_content_type('application/json')
                 ->set_output(json_encode($response));
