@@ -13,7 +13,8 @@
                         </div>
                         <input type="password" name="password" id="loginpassword" placeholder="Password" class="required form-control"/>
                         <br>
-                        <p class="text-center"><small><a href="#" id="loginforget">Ho dimenticato la password! Per pietà, posso reimpostarla?</a></small></p>
+                        <p class="text-center"><small><a href="#" id="loginforget">Ho dimenticato la password! Mi rendo conto di aver fatto una cosa gravissima, 
+                                    ma se prometto di non farlo più... posso reimpostarla?</a></small></p>
                     </fieldset>
                 </form>
             </div>
@@ -64,7 +65,7 @@
     }
     function resetPassword()
     {
-        if (testFields($("#mailValidatorScope")) && confirm("Ti verrà inviata una mail all'indirizzo " + $("#loginemail").val() + " con le istruzioni per reimpostare la password; vuoi continuare?"))
+        if (testFields($("#mailValidatorScope")) && confirm("E va bene... per questa volta... ti verrà inviata una mail all'indirizzo " + $("#loginemail").val() + " con le istruzioni per reimpostare la password; vuoi continuare?"))
         {
             var form = $(loginform);
             form.attr('action', '/register/reset_pwd');
