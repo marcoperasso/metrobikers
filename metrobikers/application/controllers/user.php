@@ -9,7 +9,6 @@ class User extends MY_Controller {
         if (!$this->validate_login())
             return;
         $data = array();
-        $data['user'] = $this->user;
 
         $this->load_view('user', "I miei dati", $data);
     }
@@ -21,7 +20,6 @@ class User extends MY_Controller {
         $this->Route_model->userid = $this->user->id;
         $routes = $this->Route_model->get_routes('0000-00-00 00:00:00');
         $data = array();
-        $data['user'] = $this->user;
         $data['routes'] = $routes;
 
         $this->load_view('routes', 'I miei itinerari', $data);
@@ -39,6 +37,18 @@ class User extends MY_Controller {
             $view = $this->load->view('mail/contactusermailcontent', $data, TRUE);
             $this->send_mail($this->User_model->mail, lang("contact_submitted"), $view);
             $this->load_view('connections/usercontacted', "Richiesta di contatto inoltrata", $data);
+        }
+    }
+
+    public function disconnect($userid) {
+        if (!$this->validate_login())
+            return;
+        if ($this->user->remove_linked_user($userid)) {
+            $this->User_model->get_user_by_id($userid);
+            $this->load_my_ecommuters_view("ECOmmuter " . $this->User_model->name . ' ' . $this->User_model->surname . " rimosso dal gruppo");
+        } else {
+            $data['reason'] = "Si è verificato un errore eliminando l'utente dal gruppo.";
+            $this->load_view("error", "Errore", $data);
         }
     }
 
@@ -65,28 +75,25 @@ class User extends MY_Controller {
             $view = $this->load->view('mail/useringroupmailcontent', $data, TRUE);
             $this->send_mail($this->User_model->mail, lang("contact_accepted"), $view);
 
-            $this->my_ecommuters();
+            $this->load_my_ecommuters_view("ECOmmuter " . $this->User_model->name . ' ' . $this->User_model->surname . " annesso al gruppo");
         } else {
             $data['reason'] = "La chiave di attivazione del collegamento non è presente nel nostro database.";
             $this->load_view("error", "Chiave di attivazione non valida", $data);
         }
     }
 
-    public function my_ecommuters() {
-        if (!$this->validate_login())
-            return;
-
+    private function load_my_ecommuters_view($startup_message) {
         $data = array();
-        $data['user'] = $this->user;
         $data['linkedusers'] = $this->user->get_linked_users();
+        if ($startup_message)
+            $data['startup_message'] = $startup_message;
         $this->load_view('connections/my_ecommuters', 'Il mio gruppo', $data);
     }
 
-    public function remove_linked_user($id) {
-        $response = array('result'=>TRUE);
-        $this->output
-                ->set_content_type('application/json')
-                ->set_output(json_encode($response));
+    public function my_ecommuters() {
+        if (!$this->validate_login())
+            return;
+        $this->load_my_ecommuters_view(NULL);
     }
 
     public function get_not_linked_users() {

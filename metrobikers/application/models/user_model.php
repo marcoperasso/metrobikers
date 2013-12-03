@@ -55,8 +55,14 @@ class User_model extends MY_Model {
         return FALSE;
     }
 
+    public function remove_linked_user($userid) {
+        return
+                $this->db->delete('linkedusers', array('userid1' => $this->id, 'userid2' => $userid)) &&
+                $this->db->delete('linkedusers', array('userid2' => $this->id, 'userid1' => $userid));
+    }
+
     public function insert_linked_user($userid) {
-        $this->db->insert('linkedusers', array('userid1'=> $this->id, 'userid2' => $userid));
+        $this->db->insert('linkedusers', array('userid1' => $this->id, 'userid2' => $userid));
     }
 
     public function get_linked_users() {

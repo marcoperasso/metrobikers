@@ -65,7 +65,7 @@ class MY_Controller extends CI_Controller {
             $title = lang("welcome");
         }
         $data["page_title"] = $title;
-        $data["user"] = get_user();
+        $data["user"] = $this->user;
         return $this->load->view("templates/masterpage", $data, $return);
     }
 

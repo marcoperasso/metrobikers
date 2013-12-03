@@ -15,7 +15,7 @@
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default" id="doconnect">Chiedi di entrare nel tuo gruppo</button>
+                <button type="button" class="btn btn-default" id="doconnect">Invia richiesta</button>
             </div>
         </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->
@@ -81,7 +81,7 @@
                 .click(function() {
             if (confirm('Vuoi davvero rimuovere ' + this.getAttribute('descri') + ' dal tuo gruppo?'))
             {
-                window.location.href = '/user/remove_linked_user/' + this.id;
+                window.location.href = '/user/disconnect/' + this.id;
             }
         }
         );
@@ -89,7 +89,12 @@
 </script>
 <div class="col-md-1"></div>
 <div class="col-md-10">
-    <?php if (count($linkedusers) == 0) { ?>
+    <?php
+    if (isset($startup_message)) {
+        echo '<h2>' . $startup_message . '</h2>';
+    }
+    if (count($linkedusers) == 0) {
+        ?>
         <h1>Il gruppo è vuoto.</h1>
         <h2>Ma come! Ancora non hai contattato altri ECOmmuters? <a data-toggle="modal" class="btn btn-primary btn-lg" title="Cerca altri ECOmmuters" href="#findECOmmuterModal">Fallo adesso!</a></h2>
     <?php } else { ?>

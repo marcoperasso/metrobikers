@@ -17,7 +17,7 @@
                 </p>
                 
                 <p class="text-center">
-                <a href="/user/my_ecommuters">Torna al mio gruppo</a>
+                <a href="/user/my_ecommuters">Torna al gruppo</a>
                 </p>
             </div>
             <div class="col-md-2">
