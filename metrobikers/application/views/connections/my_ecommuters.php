@@ -10,7 +10,7 @@
             <div class="modal-body">
                 <form id="findform" autocomplete="on" method="post" onsubmit="return false;" > 
                     <fieldset>
-                        <input type="text" name="ecommutername" id="ecommutername" autofocus placeholder="Scrivi qui il nome" class="required form-control"/><br>
+                        <input type="text" name="ecommutername" id="ecommutername" placeholder="Scrivi qui il nome" class="required form-control autofocus"/><br>
                     </fieldset>
                 </form>
             </div>

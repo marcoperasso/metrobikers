@@ -12,14 +12,16 @@ $(function() {
         attachControl(this);
     });
 
-    $('.modal').on('shown.bs.modal', function() {
-        $(this).find('input').focus();
+    $('.modal').on('show.bs.modal', function() {
+        $('.autofocus', this).focus();
     }).keypress(function(e) {
         var jObj = $(this);
         if (e.which === 13 && jObj.is(":visible")) {
            jObj.find('.btn-default').click();
         }
     });
+    
+    $('.autofocus').focus();
 });
 function setContentHeight()
 {

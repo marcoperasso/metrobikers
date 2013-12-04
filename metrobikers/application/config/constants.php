@@ -40,6 +40,8 @@ define('VALIDATION_KEY_REASON_REGISTER',                        0);
 define('VALIDATION_KEY_REASON_RESET_PWD',                       1);
 define('VALIDATION_KEY_REASON_CONNECT',                         2);
 
+define('POST_BLOCK_SIZE',                                       10);
+
 include 'privateconst.php';
 /* End of file constants.php */
 /* Location: ./application/config/constants.php */

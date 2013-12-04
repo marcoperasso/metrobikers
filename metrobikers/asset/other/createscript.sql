@@ -8,16 +8,11 @@ CREATE TABLE `userpositions` (
   PRIMARY KEY (`userid`)
 ) ENGINE=MEMORY DEFAULT CHARSET=utf8$$
 
-delimiter $$
-
 CREATE TABLE `usersonroutes` (
   `userid` int(11) NOT NULL,
   `routeid` int(11) NOT NULL,
   PRIMARY KEY (`userid`,`routeid`)
 ) ENGINE=MEMORY DEFAULT CHARSET=utf8$$
-
-
-delimiter $$
 
 CREATE TABLE `users` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -32,10 +27,7 @@ CREATE TABLE `users` (
   `activationdate` date DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `mail_UNIQUE` (`mail`)
-) ENGINE=InnoDB AUTO_INCREMENT=96 DEFAULT CHARSET=utf8$$
-
-
-delimiter $$
+) ENGINE=InnoDB DEFAULT CHARSET=utf8$$
 
 CREATE TABLE `validationkeys` (
   `userid` int(11) NOT NULL,
@@ -46,8 +38,6 @@ CREATE TABLE `validationkeys` (
   CONSTRAINT `FK_USER` FOREIGN KEY (`userid`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8$$
 
-
-delimiter $$
 CREATE TABLE `routes` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `userid` int(11) NOT NULL,
@@ -61,8 +51,6 @@ CREATE TABLE `routes` (
   CONSTRAINT `user` FOREIGN KEY (`userid`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8$$
 
-delimiter $$
-
 CREATE TABLE `routepoints` (
   `routeid` int(11) NOT NULL,
   `time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -72,8 +60,6 @@ CREATE TABLE `routepoints` (
   KEY `route` (`routeid`),
   CONSTRAINT `route` FOREIGN KEY (`routeid`) REFERENCES `routes` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8$$
-
-delimiter $$
 
 CREATE TABLE `trackings` (
   `userid` int(11) NOT NULL,
@@ -87,9 +73,6 @@ CREATE TABLE `trackings` (
   CONSTRAINT `tracking_route` FOREIGN KEY (`routeid`) REFERENCES `routes` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8$$
 
-
-delimiter $$
-
 CREATE TABLE `linkedusers` (
   `userid1` int(11) NOT NULL,
   `userid2` int(11) NOT NULL,
@@ -100,5 +83,13 @@ CREATE TABLE `linkedusers` (
   CONSTRAINT `userlinks_user_2` FOREIGN KEY (`userid2`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8$$
 
+CREATE TABLE `posts` (
+  `userid` int(11) NOT NULL,
+  `time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `content` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`userid`,`time`),
+  KEY `post_user` (`userid`),
+  CONSTRAINT `post_user` FOREIGN KEY (`userid`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8$$
 
 

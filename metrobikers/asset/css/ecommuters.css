@@ -242,3 +242,23 @@ p{
     background-color: yellow;
     cursor: pointer;
 }
+
+.postheader
+{
+    color: blue;
+}
+
+.postbody
+{
+    
+}
+.postfooter
+{
+    margin-top: 5px;
+    font-size: x-small;
+}
+.postloader
+{
+    text-align: center;
+    padding-top: 20px;
+}

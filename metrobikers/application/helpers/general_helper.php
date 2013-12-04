@@ -26,6 +26,6 @@ function decode_gender($genderId) {
 
 function htmlSpaceIfEmpty($string)
 {
-    return empty($string) ? '&nbsp;' : $string;
+    return empty($string) ? '&nbsp;' : html_escape($string);
 }
 ?>

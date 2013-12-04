@@ -9,12 +9,12 @@
                 <form id="loginform" autocomplete="on" method="post" > 
                     <fieldset>
                         <div id="mailValidatorScope">
-                            <input type="text" name="email" id="loginemail" placeholder="Email" class="required form-control"/><br>
+                            <input type="text" name="email" id="loginemail" placeholder="Email" class="required form-control autofocus"/><br>
                         </div>
                         <input type="password" name="password" id="loginpassword" placeholder="Password" class="required form-control"/>
                         <br>
-                        <p class="text-center"><small><a href="#" id="loginforget">Ho dimenticato la password! Mi rendo conto di aver fatto una cosa gravissima, 
-                                    ma se prometto di non farlo più... posso reimpostarla?</a></small></p>
+                        <p class="text-center"><small>Ho dimenticato la password! <br>Mi rendo conto di aver fatto una cosa gravissima, 
+                                    ma se prometto di non farlo più... <br><a href="#" id="loginforget">posso reimpostarla?</a></small></p>
                     </fieldset>
                 </form>
             </div>
