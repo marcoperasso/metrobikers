@@ -12,9 +12,11 @@ class Post_model extends MY_Model {
 
     public function get_post_count($userid) {
         $query = $this->db
-                ->select('count(*) size')
+                ->select('count(a.id) size')
+                ->distinct()
                 ->join('users a', 'a.id=b.userid')
-                ->where('userid', $userid)
+                ->join('linkedusers c', 'a.id = c.userid1 or a.id = c.userid2')
+                ->where('(c.userid1=' . $userid . ' or c.userid2= ' . $userid . ') and active = 1 ')
                 ->get('posts b');
         $result = $query->row();
         return $result->size;
@@ -25,8 +27,10 @@ class Post_model extends MY_Model {
                 ->select('content, time, name, surname, nickname')
                 ->order_by('time', 'desc')
                 ->limit(POST_BLOCK_SIZE, $offset)
+                ->distinct()
                 ->join('users a', 'a.id=b.userid')
-                ->where('userid', $userid)
+                ->join('linkedusers c', 'a.id = c.userid1 or a.id = c.userid2')
+                ->where('(c.userid1=' . $userid . ' or c.userid2= ' . $userid . ') and active = 1 ')
                 ->get('posts b');
         $result = $query->result_array();
         foreach ($result as &$value) {

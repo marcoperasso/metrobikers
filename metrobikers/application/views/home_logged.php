@@ -12,7 +12,6 @@
     {
         $('#loader').bind('inview', function(event, visible) {
             if (visible) {
-                alert('');
                 $.get("/home/get_more_posts/" + currentPostOffset, function(data) {
                     $("#missingposts").replaceWith(data);
                     currentPostOffset += <?php echo POST_BLOCK_SIZE; ?>;
@@ -34,7 +33,7 @@
                 <div class="form-group">
                     <table class="table">
                         <tr>
-                            <td><input type="input" name="content" class="form-control autofocus required" placeholder="Hai qualche novità?"/> </td>
+                            <td><input type="input" name="content" class="form-control autofocus required" placeholder="Hai qualche novità? Comunicala al gruppo!"/> </td>
                             <td style="width: 20px"><input type="submit" name="submit" id="submit" value="OK" class="btn btn-primary " /></td>
                         </tr>
                     </table>
