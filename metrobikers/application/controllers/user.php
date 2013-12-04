@@ -36,7 +36,11 @@ class User extends MY_Controller {
             $data["validationkey"] = $this->Validation_key_model->validationkey;
             $view = $this->load->view('mail/contactusermailcontent', $data, TRUE);
             $this->send_mail($this->User_model->mail, lang("contact_submitted"), $view);
-            $this->load_view('connections/usercontacted', "Richiesta di contatto inoltrata", $data);
+            
+            $message = "Abbiamo mandato una richiesta di contatto via mail a " . 
+                    $this->User_model->name . ' ' . $this->User_model->surname .
+                    '.<br>Quando accetterà la tua richiesta riceverai una mail di conferma.'; 
+            $this->load_my_ecommuters_view($message);
         }
     }
 
@@ -45,7 +49,7 @@ class User extends MY_Controller {
             return;
         if ($this->user->remove_linked_user($userid)) {
             $this->User_model->get_user_by_id($userid);
-            $this->load_my_ecommuters_view("ECOmmuter " . $this->User_model->name . ' ' . $this->User_model->surname . " rimosso dal gruppo");
+            $this->load_my_ecommuters_view("L'ECOmmuter " . $this->User_model->name . ' ' . $this->User_model->surname . " è stato rimosso dal tuo gruppo");
         } else {
             $data['reason'] = "Si è verificato un errore eliminando l'utente dal gruppo.";
             $this->load_view("error", "Errore", $data);
@@ -75,7 +79,7 @@ class User extends MY_Controller {
             $view = $this->load->view('mail/useringroupmailcontent', $data, TRUE);
             $this->send_mail($this->User_model->mail, lang("contact_accepted"), $view);
 
-            $this->load_my_ecommuters_view("ECOmmuter " . $this->User_model->name . ' ' . $this->User_model->surname . " annesso al gruppo");
+            $this->load_my_ecommuters_view("L'ECOmmuter " . $this->User_model->name . ' ' . $this->User_model->surname . " è stato annesso al tuo gruppo");
         } else {
             $data['reason'] = "La chiave di attivazione del collegamento non è presente nel nostro database.";
             $this->load_view("error", "Chiave di attivazione non valida", $data);

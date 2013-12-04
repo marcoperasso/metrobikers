@@ -20,6 +20,28 @@
         </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
+
+<?php if (isset($startup_message)) { ?>
+
+    <div class="modal fade" id="messageModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Tutto OK!</h4>
+                </div>
+                <div class="modal-body">
+                    <p><?php echo $startup_message; ?></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Grazie</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+
+    <?php }
+?>
 <script type="text/javascript">
     $(function()
     {
@@ -85,15 +107,14 @@
             }
         }
         );
+        $('#messageModal').modal('show');
     });
 </script>
+
+
 <div class="col-md-1"></div>
 <div class="col-md-10">
-    <?php
-    if (isset($startup_message)) {
-        echo '<h2>' . $startup_message . '</h2>';
-    }
-    if (count($linkedusers) == 0) {
+    <?php if (count($linkedusers) == 0) {
         ?>
         <h1>Il gruppo è vuoto.</h1>
         <h2>Ma come! Ancora non hai contattato altri ECOmmuters? <a data-toggle="modal" class="btn btn-primary btn-lg" title="Cerca altri ECOmmuters" href="#findECOmmuterModal">Fallo adesso!</a></h2>

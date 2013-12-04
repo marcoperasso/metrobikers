@@ -9,7 +9,7 @@
     <?php echo validation_errors(); ?>
     <div class="container">
         <br />
-        <h2 class="text-center">Ti stimo, stai per diventare un ECOmmuter!</h2><br />
+        <h2 class="text-center">Ti stimiamo, stai per diventare un ECOmmuter!</h2><br />
         <?php echo form_open(base_url('register/register')) ?>
         <div class="col-md-1"></div>
 

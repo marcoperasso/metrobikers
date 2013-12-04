@@ -15,7 +15,9 @@ class Home extends MY_Controller {
         $this->load_view('mission');
     }
 
-  
+  public function details() {
+        $this->load_view('details');
+    }
 }
 
 /* End of file welcome.php */

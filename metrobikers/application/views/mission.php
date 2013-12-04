@@ -22,27 +22,25 @@
 <div class="row">
     <div class="col-md-1"></div>
     <div class="col-md-5">
-        <p>Spostarsi in auto in città spesso significa sopportare ore di coda, perdere 
-            tempo alla ricerca di parcheggi, stress, costi di carburante, assicurazioni, 
-            manutenzione, inquinamento; ridurre questi aspetti negativi contribuirebbe a migliorare la qualità della vita di 
-            ognuno di noi. La vita sedentaria che spesso conduciamo ci obbliga inoltre a diete forzate per mantenerci in buona salute e
-            costose sedute di palestra.</p>
-        <p>La bicicletta è una possibile risposta a tutti questi problemi: tuttavia molte 
-            città non sono ancora a misura di ciclista e spesso ad utilizzare un 
-            mezzo a due ruote sono solo pochi temerari.</p>
-        <p><b>Con ECOmmuters cerchiamo di colmare questa lacuna</b>: registra i tuoi itinerari utilizzando l'applicazione per smartphone, trova persone che 
-            percorrono in bicicletta il tuo stesso tragitto casa-lavoro ed unisciti a loro.
+        <p>Amica, amico, questo è un prodotto per gente giovane! Attenzione però... non intendiamo in senso anagrafico, ma <b>giovane di spirito</b>! Prima di spiegarti di che si tratta, lascia che ti descriviamo chi è l'ECOmmuter...</p>
+        <p>L'ECOmmuter vive nel presente con lo sguardo rivolto al futuro, non rimpiange il passato né si lamenta di ciò che non va, piuttosto è in grado di vedere e cogliere le opportunità che quotidianamente gli si presentano.</p>
+        <p>L'ECOmmuter non è vittima della tecnologia, ma la utilizza a suo vantaggio; sa che quando ha un telecomando in mano, quello che rischia di essere telecomandato è lui. Per questo si sente più libero utilizzando un mouse o un <i>touch screen</i>, ma li sa usare bene!</p>
+        <p>L'ECOmmuter ama dunque avvalersi di strumenti moderni, non si lascia vincolare da inerzie e legami col passato; sa che l'automobile è ormai un mezzo obsoleto per spostarsi in ambito urbano: 
+            la sua velocità media è inferiore a quella del cavallo, principale mezzo di trasporto nelle città del 1700.</p>
+        <p>L'ECOmmuter ama la natura, perché sa che un ritorno alla vita semplice non costituisce un passo indietro, ma un'evoluzione necessaria per risolvere gli evidenti mali dell'incrostata società in cui vive.</p>
+        <p>A questo punto non sarai stupito se ti diciamo che il mezzo di trasporto preferito dell'ECOmmuter è la <b>bicicletta</b>.</p>
+        <p>Ma le nostre città non sono adatte per gli spostamenti in bicicletta, oseremmo dire neanche per la vita degli esseri umani, sono state decisamente progettate a misura di automobile!</p>
+        <p><b>Con ECOmmuters possiamo cambiare rotta</b>: registriamo i nostri itinerari utilizzando l'applicazione per smartphone, troviamo persone che abitualmente
+            percorrono in bicicletta i nostri stessi tragitti e facciamo gruppo. Condividiamo i problemi incontrati e le soluzioni adottate.
             Facendo massa critica saremo più rispettati dagli automobilisti, godremo di maggiore visibilità
             aumentando la sicurezza dello spostamento, potremo chiedere a gran voce alle amministrazioni 
             locali la creazione di percorsi ciclabili, forti dei dati che avremo raccolto sui nostri spostamenti giornalieri.</p>
-        <p><b>Questa è la missione di ECOmmuters</b>: facilitare la ricerca di compagni di viaggio 
-            al fine di coinvolgere più persone possibile per dare loro visibilità come singoli e come categoria, 
-            verso un futuro in cui in città 
-            saranno poche auto a transitare tra migliaia di biciclette. </p>
-        <br />
+        <p><b>Questa è la missione di ECOmmuters</b>: creare una rete di viaggiatori E-COlogici per dare loro visibilità come singoli e come categoria, 
+            verso un futuro in cui le città saranno finalmente a misura d'uomo. </p>
     </div>
     <div class="col-md-6">
         <h3 style="margin-top: 0px; margin-bottom: 0px;">Ti riconosci in questi valori? Allora fai il salto, </h3><br />
-        <a href="<?php echo base_url() ?>register" class="btn btn-primary btn-lg">Diventa anche tu un ECOmmuter!</a>
+        <a href="/register" class="btn btn-primary btn-lg">Diventa anche tu un ECOmmuter!</a>
+        <a href="/home/details" class="btn btn-lg btn-default">Bello, però mi spieghereste un po' meglio come funziona?</a>
     </div>
 </div>

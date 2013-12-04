@@ -8,11 +8,9 @@
 <div class="col-md-6">
     
         <div class="container">
-            <h1><b>Benvenuto in ECOmmuters!</b></h1>
-            <p>Cerca nuovi compagni di viaggio con cui condividere i tuoi spostamenti <i><b>E</b></I>-cologici.</p>
+            <h1><b>Mi spiace, pagina non ancora pronta!</b></h1>
             <p>
-                <a href="/register" class="btn btn-primary btn-lg">Diventa anche tu un ECOmmuter!</a>
-                <a href="/home/mission" class="btn btn-default btn-lg">Che roba è?</a>
+                
             </p>
         </div>
   
