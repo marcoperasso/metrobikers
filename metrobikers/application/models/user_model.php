@@ -18,10 +18,10 @@ class User_model extends MY_Model {
     }
 
     public function to_string() {
-        if (empty($this->name) && empty($this->surname))
-            return $this->mail;
-
-        return $this->name . " " . $this->surname;
+        $s = $this->name . " " . $this->surname ;
+        if (!empty($this->nickname))
+            $s = $s . ' ('. $this->nickname .')';
+        return $s;
     }
 
     public function get_user_by_key($key) {

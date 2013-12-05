@@ -15,8 +15,8 @@ class Post_model extends MY_Model {
                 ->select('count(a.id) size')
                 ->distinct()
                 ->join('users a', 'a.id=b.userid')
-                ->join('linkedusers c', 'a.id = c.userid1 or a.id = c.userid2')
-                ->where('(c.userid1=' . $userid . ' or c.userid2= ' . $userid . ') and active = 1 ')
+                ->join('linkedusers c', 'a.id = c.userid1 or a.id = c.userid2', 'left')
+                ->where('(c.userid1=' . $userid . ' or c.userid2= ' . $userid . ' or a.id = ' . $userid . ') and active = 1 ')              
                 ->get('posts b');
         $result = $query->row();
         return $result->size;
@@ -29,8 +29,8 @@ class Post_model extends MY_Model {
                 ->limit(POST_BLOCK_SIZE, $offset)
                 ->distinct()
                 ->join('users a', 'a.id=b.userid')
-                ->join('linkedusers c', 'a.id = c.userid1 or a.id = c.userid2')
-                ->where('(c.userid1=' . $userid . ' or c.userid2= ' . $userid . ') and active = 1 ')
+                ->join('linkedusers c', 'a.id = c.userid1 or a.id = c.userid2', 'left')
+                ->where('(c.userid1=' . $userid . ' or c.userid2= ' . $userid . ' or a.id = ' . $userid . ') and active = 1 ')              
                 ->get('posts b');
         $result = $query->result_array();
         foreach ($result as &$value) {

@@ -189,6 +189,8 @@ class Mobile extends MY_Controller {
             $json = $this->input->post("data");
             $route = json_decode($json);
             $this->load->model("Tracking_model");
+            $this->load->model("Post_model");
+            $this->load->model("Route_model");
             try {
                 $this->db->trans_begin();
                 $this->Tracking_model->routeid = $route->routeid;
@@ -198,6 +200,19 @@ class Mobile extends MY_Controller {
                 $this->Tracking_model->distance = $route->distance;
                 $this->Tracking_model->points = $route->points;
                 $this->Tracking_model->create_tracking();
+
+                $routeName = "";
+                $this->Route_model->id = $route->routeid;
+                $this->Route_model->userid = $this->user->id;
+                if ($this->Route_model->get_route_by_id()) {
+                    $routeName = $this->Route_model->name;
+                }
+                $this->Post_model->userid = $this->user->id;
+                $this->Post_model->time = $this->Tracking_model->end;
+
+                $this->Post_model->content = sprintf("%1s ha percorso %2.2f Km percorrendo l'itinerario '%3s'", $this->user->to_string(), ($route->distance / 1000), $routeName);
+                $this->Post_model->create_post();
+
                 $this->db->trans_commit();
                 if ($this->db->_error_message()) {
                     $response = array(

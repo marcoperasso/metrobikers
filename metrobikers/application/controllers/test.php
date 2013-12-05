@@ -10,10 +10,7 @@ class Test extends MY_Controller {
     }
 
     public function index() {
-        phpinfo();
-        //$this->load->model('User_model');
-        // $this->User_model->get_user("marco.perasso@microarea.it");
-        // set_user($this->User_model);
+       echo sprintf("%1s ha percorso %2.2f Km percorrendo l'itinerario %3s", "pp", (3456 / 1000), "Name");
     }
 
     public function registration_mail_content() { 

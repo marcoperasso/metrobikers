@@ -95,7 +95,10 @@ h6,
     -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(201, 255, 167, 0.6);
     box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(201, 255, 167, 0.6);
 }
-
+.btn
+{
+    margin: 5px;
+}
 .btn-primary {
     color: #FFFFFF;
     background-color: #FF7D04;
@@ -250,7 +253,7 @@ p{
 
 .postbody
 {
-    
+
 }
 .postfooter
 {
