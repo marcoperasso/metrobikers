@@ -16,7 +16,7 @@ class Post_model extends MY_Model {
                 ->distinct()
                 ->join('users a', 'a.id=b.userid')
                 ->join('linkedusers c', 'a.id = c.userid1 or a.id = c.userid2', 'left')
-                ->where('(c.userid1=' . $userid . ' or c.userid2= ' . $userid . ' or a.id = ' . $userid . ') and active = 1 ')              
+                ->where('(c.userid1=' . $userid . ' or c.userid2= ' . $userid . ' or a.id = ' . $userid . ') and active = 1 ')
                 ->get('posts b');
         $result = $query->row();
         return $result->size;
@@ -24,13 +24,13 @@ class Post_model extends MY_Model {
 
     public function get_posts($userid, $offset) {
         $query = $this->db
-                ->select('content, time, name, surname, nickname')
+                ->select('id userid, content, time, name, surname, nickname')
                 ->order_by('time', 'desc')
                 ->limit(POST_BLOCK_SIZE, $offset)
                 ->distinct()
                 ->join('users a', 'a.id=b.userid')
                 ->join('linkedusers c', 'a.id = c.userid1 or a.id = c.userid2', 'left')
-                ->where('(c.userid1=' . $userid . ' or c.userid2= ' . $userid . ' or a.id = ' . $userid . ') and active = 1 ')              
+                ->where('(c.userid1=' . $userid . ' or c.userid2= ' . $userid . ' or a.id = ' . $userid . ') and active = 1 ')
                 ->get('posts b');
         $result = $query->result_array();
         foreach ($result as &$value) {
@@ -41,6 +41,18 @@ class Post_model extends MY_Model {
 
     public function create_post() {
         $this->db->insert('posts', $this);
+    }
+
+    public function update_post() {
+        $data = array(
+            'content' => $this->content,
+        );
+
+        $this->db
+                ->where('userid', $this->userid)
+                ->where('time', $this->time)
+                ->update('mytable', $data);
+        return $this->db->update('posts', $this);
     }
 
 }

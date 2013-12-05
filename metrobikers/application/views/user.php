@@ -1,4 +1,7 @@
-<script type="text/javascript">setActiveTab('user');</script>
+<script type="text/javascript">
+    setActiveTab('user');
+    setUpdateUrl("/user/update");
+</script>
 <div class="col-md-1"></div>
 <div class="col-md-10">
     <fieldset>

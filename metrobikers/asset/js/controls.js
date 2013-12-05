@@ -1,4 +1,7 @@
-
+function setUpdateUrl(url)
+{
+    window.updateUrl = url;
+}
 function attachControl(el)
 {
     var a = $(el);
@@ -11,14 +14,18 @@ function attachControl(el)
     {
         ctrl = new GenderControl();
     }
+    else if (a.hasClass('postcontent'))
+    {
+        ctrl = new PostControl();
+    }
     else
     {
         ctrl = new Control();
     }
     ctrl.setObj(a);
     a.click(ctrl.editField)
-     .attr("title", "Clicca per modificare")
-     .focus(ctrl.editField);
+            .attr("title", "Clicca per modificare")
+            .focus(ctrl.editField);
 
 }
 
@@ -78,9 +85,7 @@ function Control()
         obj.show();
         if (modified)
         {
-            var data = {};
-            data[obj.attr("name")] = thisObj.unformatData();
-            $.post("/user/update", data, function(res) {
+            $.post(window.updateUrl, thisObj.getPostData(), function(res) {
                 if (res && res.result)
                     obj.text(value);
             }, 'json');
@@ -88,9 +93,14 @@ function Control()
     };
     this.undo = function()
     {
-
         inputControl.remove();
         obj.show();
+    };
+    this.getPostData = function()
+    {
+        var data = {};
+        data[obj.attr("name")] = thisObj.unformatData();
+        return data;
     };
 }
 
@@ -113,8 +123,8 @@ function DateControl()
         return currentDate.getFullYear() + '-' + (currentDate.getMonth() + 1) + '-' + currentDate.getDate();
     };
 }
-
 DateControl.prototype = new Control();
+
 function GenderControl()
 {
     var thisObj = this;
@@ -144,5 +154,20 @@ function GenderControl()
         return $('input::checked', thisObj.getInputControl()).val();
     };
 }
-
 GenderControl.prototype = new Control();
+
+function PostControl()
+{
+    var thisObj = this;
+    this.setThisObj(this);
+
+    this.getPostData = function()
+    {
+        var data = {};
+        data.postcontent = thisObj.unformatData();
+        data.posttime = 0;
+        return data;
+    };
+
+}
+PostControl.prototype = new Control();

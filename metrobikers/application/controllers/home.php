@@ -17,15 +17,18 @@ class Home extends MY_Controller {
             $data = array(
                 'posts' => $this->Post_model->get_posts($this->user->id, 0),
                 'count' => $this->Post_model->get_post_count($this->user->id)
-                );
+            );
             $this->load_view('home_logged', "Benvenuto in ECOmmuters", $data);
         }
     }
 
     public function get_more_posts($offset) {
         $this->load->model('Post_model');
-            $data = array('posts' => $this->Post_model->get_posts($this->user->id, $offset));
-            $this->load->view('posts', $data);
+        $data = array(
+            'posts' => $this->Post_model->get_posts($this->user->id, $offset),
+            'user' => $this->user);
+
+        $this->load->view('posts', $data);
     }
 
     public function post() {
@@ -36,6 +39,19 @@ class Home extends MY_Controller {
         $this->Post_model->content = $this->input->post('content');
         $this->Post_model->create_post();
         $this->index();
+    }
+
+    public function update_post() {
+        if (!$this->validate_login())
+            return;
+        $this->load->model('Post_model');
+        $this->Post_model->userid = $this->user->id;
+        $this->Post_model->content = $this->input->post('postcontent');
+
+        $response = (object) array('result' => $this->Post_model->update_post());
+        $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode($response));
     }
 
     public function mission() {

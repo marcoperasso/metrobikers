@@ -1,6 +1,7 @@
 <script type="text/javascript" src="/asset/js/jquery.inview.js">
 </script>
 <script type="text/javascript" >
+    setUpdateUrl("/home/update_post");
     function adjustLoaderVisibility()
     {
         if (currentPostOffset < totalPosts)
