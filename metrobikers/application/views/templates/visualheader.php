@@ -25,7 +25,7 @@
             <ul class="nav navbar-nav navbar-right">
                 <?php if (isset($user)) { ?>
                     <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Ciao <?php echo $user->name; ?> <?php echo $user->surname; ?></a>
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Ciao <?php echo $user->to_string(); ?></a>
                         <ul class="dropdown-menu">
                             <li><a href="#" onclick="doLogoff()">Esci</a></li>
                         </ul>

@@ -19,7 +19,7 @@ class Register extends MY_Controller {
         $data['key'] = $key;
         if ($this->form_validation->run() === TRUE) {
             if ($this->User_model->get_user_by_key($key)) {
-                $data['user'] = $this->User_model;
+                $this->user = $this->User_model;
                 $this->db->trans_begin();
                 $this->User_model->activate_user();
                 $this->Validation_key_model->delete_key($key);

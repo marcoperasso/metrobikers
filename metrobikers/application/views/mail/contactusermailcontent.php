@@ -15,7 +15,7 @@
 
         <div class="col-md-6 container">
             <?php $url = base_url("user/connect?userkey=" . urlencode($validationkey)) . '&inviteduserid=' . $user_contacted->id; ?>
-            <p>Ciao <?php echo $user_contacted->name ?>, <?php echo $user->name . ' ' . $user->surname; ?> 
+            <p>Ciao <?php echo $user_contacted->name ?>, <?php echo $user->to_string(); ?> 
                 desidera includerti nel suo gruppo.</p>
             <p>Utilizza questo link: <a href="<?php echo $url; ?>"><?php echo $url; ?></a> per accettare.</p>
 

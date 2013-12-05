@@ -21,7 +21,7 @@ class User_model extends MY_Model {
         $s = $this->name . " " . $this->surname ;
         if (!empty($this->nickname))
             $s = $s . ' ('. $this->nickname .')';
-        return $s;
+        return html_escape($s);
     }
 
     public function get_user_by_key($key) {

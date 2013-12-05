@@ -210,7 +210,7 @@ class Mobile extends MY_Controller {
                 $this->Post_model->userid = $this->user->id;
                 $this->Post_model->time = $this->Tracking_model->end;
 
-                $this->Post_model->content = sprintf("%1s ha percorso %2.2f Km percorrendo l'itinerario '%3s'", $this->user->to_string(), ($route->distance / 1000), $routeName);
+                $this->Post_model->content = sprintf(lang('post_for_tracking'), $this->user->to_string(), ($route->distance / 1000), $routeName);
                 $this->Post_model->create_post();
 
                 $this->db->trans_commit();

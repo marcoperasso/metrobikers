@@ -14,7 +14,7 @@
         </div>
 
         <div class="col-md-6 container">
-            <p>Ciao <?php echo $user->name;?>, tu e <?php echo $user_contacted->name . ' ' . $user_contacted->surname; ?> 
+            <p>Ciao <?php echo $user->name;?>, tu e <?php echo $user_contacted->to_string(); ?> 
                 siete adesso nello stesso gruppo.</p>
             <p><a href="<?php echo base_url('user/my_ecommuters'); ?>">Visualizza il tuo gruppo</a></p>
 
