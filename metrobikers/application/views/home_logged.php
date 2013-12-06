@@ -14,9 +14,16 @@
         $('#loader').bind('inview', function(event, visible) {
             if (visible) {
                 $.get("/home/get_more_posts/" + currentPostOffset, function(data) {
-                    $("#missingposts").replaceWith(data);
+                    var placeHolder = $("#missingposts");
+                    var jData = $(data).insertAfter(placeHolder);
+                    placeHolder.remove();
                     currentPostOffset += <?php echo POST_BLOCK_SIZE; ?>;
                     adjustLoaderVisibility();
+
+                    $(".changeable", jData).each(function() {
+                        this.tabIndex = window.tab_idx++;
+                        attachControl(this);
+                    });
                 });
             }
         });

@@ -6,9 +6,9 @@
 $(function() {
     setContentHeight();
     $(window).resize(setContentHeight);
-    var idx = 50;
+    window.tab_idx = 50;
     $(".changeable").each(function() {
-        this.tabIndex = idx++;
+        this.tabIndex = window.tab_idx++;
         attachControl(this);
     });
 
