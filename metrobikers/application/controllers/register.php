@@ -10,6 +10,10 @@ class Register extends MY_Controller {
         $this->load->model('Validation_key_model');
     }
 
+    public function privacy() {
+        $this->load->view('register/privacy');
+    }
+
     public function activate() {
         $this->load->helper('form');
         $this->load->library('form_validation');

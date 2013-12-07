@@ -1,5 +1,4 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3c.org/TR/1999/REC-html401-19991224/loose.dtd">
-<!-- saved from url=(0045)http://www.personechepossono.com/privacy.html -->
 <html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><title>Privacy</title>
 
         <meta name="ROBOTS" content="NOINDEX, NOFOLLOW">
@@ -55,10 +54,9 @@
                 FONT-FAMILY: Arial, Helvetica, sans-serif; COLOR: #666666; FONT-SIZE: 14px
             }
         </style>
-
-        <meta name="GENERATOR" content="MSHTML 8.00.6001.18812"></head>
+</head>
     <body>
-        <table border="0" cellspacing="0" cellpadding="0" width="390" align="center">
+        <table border="0" cellspacing="0" cellpadding="0" width="80%" align="center">
             <tbody>
                 <tr>
                     <td>

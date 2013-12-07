@@ -24,6 +24,11 @@
             <div class="form-group">
                 <input type="input" name="mail" id="mail" class="required mailinput
                        form-control" placeholder="Email"/>
+            </div> 
+            <div class="checkbox" name="privacy" id="privacy" >
+                <label>
+                    <input type="checkbox" class="required">Ho letto e accetto <a href="/register/privacy" target="privacy">l'informativa</a> sul trattamento dei miei dati personali
+                </label>
             </div>
             <br /><br />
             <input type="submit" name="submit" id="submit" value="Diventa un ECOmmuter!" class="btn btn-primary form-control" />
@@ -32,6 +37,6 @@
         </form>
     </div>
     <div class="col-md-1"></div>
-   
+
 </div>
 <div class="col-md-1"></div>
