@@ -35,10 +35,6 @@ function Control()
     var thisObj = this;
     var obj;
     var inputControl;
-    this.setThisObj = function(val)
-    {
-        thisObj = val;
-    };
     this.editField = function()
     {
         inputControl = thisObj.createInput();
@@ -79,15 +75,17 @@ function Control()
     this.save = function()
     {
         var value = thisObj.getInputValue();
-        var modified = obj.text() !== value;
+        var oldValue = obj.text();
+        var modified = oldValue !== value;
         //obj.click(editField).focus(editField);
         inputControl.remove();
         obj.show();
         if (modified)
         {
+            obj.text(value);
             $.post(window.updateUrl, thisObj.getPostData(), function(res) {
-                if (res && res.result)
-                    obj.text(value);
+                if (!res || !res.result)
+                    obj.text(oldValue);
             }, 'json');
         }
     };
@@ -106,8 +104,8 @@ function Control()
 
 function DateControl()
 {
+    Control.call(this);
     var thisObj = this;
-    this.setThisObj(this);
 
     this.createInput = function()
     {
@@ -127,8 +125,7 @@ DateControl.prototype = new Control();
 
 function GenderControl()
 {
-    var thisObj = this;
-    this.setThisObj(this);
+    Control.call(this);
     var items = ['Non specificato', 'Femmina', 'Maschio'];
     this.createInput = function()
     {
@@ -158,14 +155,14 @@ GenderControl.prototype = new Control();
 
 function PostControl()
 {
+    Control.call(this);
     var thisObj = this;
-    this.setThisObj(this);
 
     this.getPostData = function()
     {
         var data = {};
         data.postcontent = thisObj.unformatData();
-        data.posttime = 0;
+        data.posttime = thisObj.getObj().attr('posttime');
         return data;
     };
 

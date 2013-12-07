@@ -50,9 +50,15 @@ class Post_model extends MY_Model {
 
         $this->db
                 ->where('userid', $this->userid)
-                ->where('time', $this->time)
-                ->update('mytable', $data);
+                ->where('time', $this->time);
         return $this->db->update('posts', $this);
+    }
+    
+     public function delete_post() {
+        $this->db
+                ->where('userid', $this->userid)
+                ->where('time', $this->time);
+        return $this->db->delete('posts');
     }
 
 }

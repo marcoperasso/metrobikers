@@ -47,8 +47,9 @@ class Home extends MY_Controller {
         $this->load->model('Post_model');
         $this->Post_model->userid = $this->user->id;
         $this->Post_model->content = $this->input->post('postcontent');
-
-        $response = (object) array('result' => $this->Post_model->update_post());
+        $this->Post_model->time = $this->input->post('posttime');
+        
+        $response =(object) array('result' =>  empty($this->Post_model->content) ? $this->Post_model->delete_post() : $this->Post_model->update_post());
         $this->output
                 ->set_content_type('application/json')
                 ->set_output(json_encode($response));
