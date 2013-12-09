@@ -47,7 +47,7 @@
             }
         });
 
-        currentPostOffset = <?php echo POST_BLOCK_SIZE; ?>;
+        currentPostOffset = 0;
         totalPosts = '<?php echo $count; ?>';
         loadAdditionalPosts();
     });
