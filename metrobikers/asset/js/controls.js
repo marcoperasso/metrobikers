@@ -77,7 +77,6 @@ function Control()
         var value = thisObj.getInputValue();
         var oldValue = obj.text();
         var modified = oldValue !== value;
-        //obj.click(editField).focus(editField);
         inputControl.remove();
         obj.show();
         if (modified)

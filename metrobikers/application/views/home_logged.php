@@ -9,28 +9,47 @@
         else
             $('#loader').hide();
     }
+    function deletePost(post)
+    {
+        if (!confirm("Vuoi davvero cancellare questo elemento?"))
+            return;
+
+        $.post("/home/delete_post", {'posttime': $(post).attr('posttime')}, function(res) {
+            if (res && res.result)
+            {
+                window.location.reload();
+            }
+        }, 'json');
+    }
+    function loadAdditionalPosts()
+    {
+        $.get("/home/get_more_posts/" + currentPostOffset, function(data) {
+            var placeHolder = $("#missingposts");
+            var jData = $(data).insertAfter(placeHolder);
+            placeHolder.remove();
+            currentPostOffset += <?php echo POST_BLOCK_SIZE; ?>;
+            adjustLoaderVisibility();
+
+            $(".changeable", jData).each(function() {
+                this.tabIndex = window.tab_idx++;
+                attachControl(this);
+            });
+            $(".deletepost", jData).click(function() {
+                deletePost(this);
+            });
+        });
+    }
     $(function()
     {
         $('#loader').bind('inview', function(event, visible) {
             if (visible) {
-                $.get("/home/get_more_posts/" + currentPostOffset, function(data) {
-                    var placeHolder = $("#missingposts");
-                    var jData = $(data).insertAfter(placeHolder);
-                    placeHolder.remove();
-                    currentPostOffset += <?php echo POST_BLOCK_SIZE; ?>;
-                    adjustLoaderVisibility();
-
-                    $(".changeable", jData).each(function() {
-                        this.tabIndex = window.tab_idx++;
-                        attachControl(this);
-                    });
-                });
+                loadAdditionalPosts();
             }
         });
 
         currentPostOffset = <?php echo POST_BLOCK_SIZE; ?>;
         totalPosts = '<?php echo $count; ?>';
-        adjustLoaderVisibility();
+        loadAdditionalPosts();
     });
 </script>
 <div class="col-md-6 "  >
@@ -48,9 +67,7 @@
                 </div>
             </div>
         </form>
-        <?php
-        $this->load->view('posts', array('posts', $posts));
-        ?>
+        <div id ='missingposts'></div>
         <div id="loader" class="postloader"><img src="/asset/img/loading.gif"/></div>
     </div>
 </div>
