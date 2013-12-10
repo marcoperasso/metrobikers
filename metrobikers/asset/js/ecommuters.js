@@ -16,7 +16,7 @@ $(function() {
         $('.autofocus', this).focus();
     }).keypress(function(e) {
         var jObj = $(this);
-        if (e.which === 13 && jObj.is(":visible")) {
+        if (e.which === 13 && !e.shiftKey && jObj.is(":visible")) {
            jObj.find('.btn-default').click();
             e.preventDefault();
         }

@@ -44,7 +44,7 @@
 
         $('#content').keypress(function(e) {
             var jObj = $(this);
-            if (e.which === 13) {
+            if (e.which === 13 && !e.shiftKey) {
                 jObj.closest('form').find('.btn-default').click();
                 e.preventDefault();
             }

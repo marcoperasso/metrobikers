@@ -6,7 +6,7 @@
             <a href="#" posttime ="<?php echo $post->time ?>" title ="Elimina post" class="deletepost"><img src="/asset/img/icon_delete.png"/></a>
             <?php } ?>
         </div>
-        <div posttime ="<?php echo $post->time ?>" class ="postbody <?php if ($post->userid == $user->id) echo 'changeable postcontent' ?>"><?php echo html_escape($post->content) ?></div>
+        <div posttime ="<?php echo $post->time ?>" class ="postbody <?php if ($post->userid == $user->id) echo 'changeable postcontent' ?>"><?php echo adjust_post($post->content) ?></div>
 
         <?php
     }
