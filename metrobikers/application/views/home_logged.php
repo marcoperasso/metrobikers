@@ -14,12 +14,7 @@
         if (!confirm("Vuoi davvero cancellare questo elemento?"))
             return;
 
-        $.post("/home/delete_post", {'posttime': $(post).attr('posttime')}, function(res) {
-            if (res && res.result)
-            {
-                window.location.reload();
-            }
-        }, 'json');
+        window.location.href = '/home/delete_post?posttime=' + encodeURIComponent($(post).attr('posttime'));
     }
     function loadAdditionalPosts()
     {
@@ -47,21 +42,37 @@
             }
         });
 
+        $('#content').keypress(function(e) {
+            var jObj = $(this);
+            if (e.which === 13) {
+                jObj.closest('form').find('.btn-default').click();
+                e.preventDefault();
+            }
+        });
+
         currentPostOffset = 0;
         totalPosts = '<?php echo $count; ?>';
         loadAdditionalPosts();
     });
 </script>
+<style type="text/css">
+    textarea.autoedit
+    {
+        display: block;
+        width: 100%;
+    }
+</style>
+
 <div class="col-md-6 "  >
     <h3 class="text-center">Novità dagli ECOmmuters</h3>
     <div class="container">
-        <form action="/home/post" method="post">
+        <form action="/home/create_post" method="post">
             <div class="form-group" id="fieldscontainer">
                 <div class="form-group">
                     <table class="table">
                         <tr>
-                            <td><input type="input" name="content" class="form-control autofocus required" placeholder="Hai qualche novità? Comunicala al gruppo!"/> </td>
-                            <td style="width: 20px"><input type="submit" name="submit" id="submit" value="OK" class="btn btn-primary " /></td>
+                            <td><textarea id="content" name="content" class="form-control autofocus required" placeholder="Hai qualche novità? Comunicala al gruppo!"></textarea> </td>
+                            <td style="width: 20px"><input type="submit" name="submit" id="submit" value="OK" class="btn btn-primary btn-default" /></td>
                         </tr>
                     </table>
                 </div>

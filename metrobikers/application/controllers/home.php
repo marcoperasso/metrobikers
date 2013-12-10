@@ -31,7 +31,7 @@ class Home extends MY_Controller {
         $this->load->view('posts', $data);
     }
 
-    public function post() {
+    public function create_post() {
         if (!$this->validate_login())
             return;
         $this->load->model('Post_model');
@@ -60,12 +60,9 @@ class Home extends MY_Controller {
             return;
         $this->load->model('Post_model');
         $this->Post_model->userid = $this->user->id;
-        $this->Post_model->time = $this->input->post('posttime');
-        
-        $response =(object) array('result' => $this->Post_model->delete_post());
-        $this->output
-                ->set_content_type('application/json')
-                ->set_output(json_encode($response));
+        $this->Post_model->time = $this->input->get('posttime');
+        $this->Post_model->delete_post();
+        $this->index();
     }
     public function mission() {
         $this->load_view('mission');

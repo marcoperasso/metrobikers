@@ -12,8 +12,7 @@ class Post_model extends MY_Model {
 
     public function get_post_count($userid) {
         $query = $this->db
-                ->select('count(a.id) size')
-                ->distinct()
+                ->select('count(distinct a.id + time) size')
                 ->join('users a', 'a.id=b.userid')
                 ->join('linkedusers c', 'a.id = c.userid1 or a.id = c.userid2', 'left')
                 ->where('(c.userid1=' . $userid . ' or c.userid2= ' . $userid . ' or a.id = ' . $userid . ') and active = 1 ')

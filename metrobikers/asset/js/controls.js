@@ -44,7 +44,7 @@ function Control()
     };
     this.createInput = function()
     {
-        var inputControl = $("<input type='text'></input>");
+        var inputControl = $("<input type='text' class='autoedit'></input>");
         inputControl.val(obj.text());
         inputControl.blur(thisObj.save);
         return inputControl;
@@ -108,7 +108,7 @@ function DateControl()
 
     this.createInput = function()
     {
-        var inputControl = $("<input type='text'></input>");
+        var inputControl = $("<input type='text' class='autoedit'></input>");
         inputControl.datepicker({"autoSize": true, "dateFormat": "dd/mm/yy", "onSelect": thisObj.save, "onClose": thisObj.undo});
         inputControl.val(thisObj.getObj().text());
         return inputControl;
@@ -165,5 +165,12 @@ function PostControl()
         return data;
     };
 
+    this.createInput = function()
+    {
+        var inputControl = $("<textarea class='autoedit'></textarea>");
+        inputControl.val(thisObj.getObj().text());
+        inputControl.blur(thisObj.save);
+        return inputControl;
+    };
 }
 PostControl.prototype = new Control();
