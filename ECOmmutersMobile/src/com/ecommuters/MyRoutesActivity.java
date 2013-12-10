@@ -22,7 +22,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class MyRoutesActivity extends Activity {
+public class MyRoutesActivity extends Activity implements OnAsyncResponse {
 
 	private static final int menuDeleteLocal = 0;
 	private static final int menuDetails = 1;
@@ -34,6 +34,7 @@ public class MyRoutesActivity extends Activity {
 	private Route mActiveRoute;
 
 	private GenericEventHandler mRoutesChangedHandler;
+	private ProgressDialog progressBar;
 
 	@Override
 	protected void onStop() {
@@ -69,7 +70,7 @@ public class MyRoutesActivity extends Activity {
 
 	private void downloadRoutes() {
 
-		final ProgressDialog progressBar = new ProgressDialog(this);
+		progressBar = new ProgressDialog(this);
 		progressBar.setMessage(getString(R.string.downloading));
 		progressBar.setCancelable(true);
 		progressBar.setIndeterminate(true);
@@ -77,53 +78,10 @@ public class MyRoutesActivity extends Activity {
 
 		try {
 			Credentials.testCredentials(MyRoutesActivity.this,
-					new OnAsyncResponse() {
-						public void response(boolean success, String message) {
-
-							if (!success)
-							{
-								progressBar.dismiss();
-								Toast.makeText(MyRoutesActivity.this, message, Toast.LENGTH_LONG).show();
-								return;
-							}
-
-							AsyncTask<Void, Void, Void> task = new AsyncTask<Void, Void, Void>() {
-
-								@Override
-								protected Void doInBackground(Void... params) {
-									try {
-										List<Route> rr = HttpManager
-												.getRoutes(0);
-										boolean saved = false;
-										for (Route r : rr) {
-											String routeFile = Helper
-													.getRouteFile(r.getName());
-											r.save(MyRoutesActivity.this,
-													routeFile);
-											saved = true;
-										}
-
-										if (saved)
-										{
-											MyApplication.getInstance()
-													.refreshRoutes();
-										}
-									} catch (Exception e) {
-										Log.e(Const.ECOMMUTERS_TAG, Log.getStackTraceString(e)); 
-									} finally {
-										progressBar.dismiss();
-									}
-									return null;
-								}
-							};
-
-							task.execute((Void) null);
-
-						}
-					});
+					MyRoutesActivity.this);
 
 		} catch (Exception e) {
-			Log.e(Const.ECOMMUTERS_TAG, Log.getStackTraceString(e)); 
+			Log.e(Const.ECOMMUTERS_TAG, Log.getStackTraceString(e));
 		}
 
 	}
@@ -202,4 +160,47 @@ public class MyRoutesActivity extends Activity {
 		MyApplication.getInstance().deleteRoute(mActiveRoute);
 	}
 
+	public void response(boolean success, String message) {
+		if (!success) {
+			progressBar.dismiss();
+			progressBar = null;
+			Toast.makeText(MyRoutesActivity.this, message, Toast.LENGTH_LONG)
+					.show();
+			return;
+		}
+
+		AsyncTask<Void, Void, Void> task = new AsyncTask<Void, Void, Void>() {
+
+			@Override
+			protected Void doInBackground(Void... params) {
+				try {
+					List<Route> rr = HttpManager.getRoutes(0);
+					boolean saved = false;
+					for (Route r : rr) {
+						String routeFile = Helper.getRouteFile(r.getName());
+						r.save(MyRoutesActivity.this, routeFile);
+						saved = true;
+					}
+
+					if (saved) {
+						MyApplication.getInstance().refreshRoutes();
+					}
+				} catch (Exception e) {
+					Log.e(Const.ECOMMUTERS_TAG, Log.getStackTraceString(e));
+				}
+				
+				return null;
+			}
+			
+			@Override
+			protected void onPostExecute(Void result) {
+				progressBar.dismiss();
+				progressBar = null;
+				super.onPostExecute(result);
+			}
+		};
+
+		task.execute((Void) null);
+
+	}
 }
