@@ -61,6 +61,7 @@ public class PositionsDownlader implements Runnable{
 				protected void onPostExecute(
 						ArrayList<ECommuterPosition> positions) {
 					mRoutesOverlay.setPositions(positions);
+					downloadPositionsTask = null;
 					if (mHandler != null) {
 						mHandler.postDelayed(PositionsDownlader.this, downloadPositionsInterval);
 					}
