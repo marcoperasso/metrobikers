@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import android.app.Activity;
 import android.app.Application;
 import android.content.Intent;
+import android.util.Log;
+
 
 public class MyApplication extends Application {
 
@@ -24,7 +26,7 @@ public class MyApplication extends Application {
 	public void onCreate() {
 		super.onCreate();
 		sInstance = this;
-
+		
 		// controllo se devo mandare degli itinerari al server
 		Intent service = new Intent(this, SyncService.class);
 		this.startService(service);

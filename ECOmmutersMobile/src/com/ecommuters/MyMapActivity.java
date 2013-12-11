@@ -61,7 +61,7 @@ public class MyMapActivity extends MapActivity {
 		}
 	};
 
-	private PositionsDownlader mPositionsDownloader;
+	private PositionsDownloader mPositionsDownloader;
 
 	private GenericEventHandler mUpdateRoutehandler = new GenericEventHandler() {
 
@@ -238,7 +238,7 @@ public class MyMapActivity extends MapActivity {
 			}
 
 		});
-		mPositionsDownloader = new PositionsDownlader(mMap, mRoutesOverlay,
+		mPositionsDownloader = new PositionsDownloader(mMap, mRoutesOverlay,
 				this);
 
 		MyApplication.getInstance().requestRoutes(this,

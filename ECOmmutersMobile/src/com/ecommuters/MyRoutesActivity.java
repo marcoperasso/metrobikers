@@ -24,6 +24,38 @@ import android.widget.Toast;
 
 public class MyRoutesActivity extends Activity implements OnAsyncResponse {
 
+	private final class DownloadRoutesAsyncTask extends AsyncTask<Void, Void, Void> {
+		@Override
+		protected Void doInBackground(Void... params) {
+			try {
+				Thread.currentThread().setName("Download Routes Worker");
+				
+				List<Route> rr = HttpManager.getRoutes(0);
+				boolean saved = false;
+				for (Route r : rr) {
+					String routeFile = Helper.getRouteFile(r.getName());
+					r.save(MyRoutesActivity.this, routeFile);
+					saved = true;
+				}
+
+				if (saved) {
+					MyApplication.getInstance().refreshRoutes();
+				}
+			} catch (Exception e) {
+				Log.e(Const.ECOMMUTERS_TAG, Log.getStackTraceString(e));
+			}
+			
+			return null;
+		}
+
+		@Override
+		protected void onPostExecute(Void result) {
+			progressBar.dismiss();
+			progressBar = null;
+			super.onPostExecute(result);
+		}
+	}
+
 	private static final int menuDeleteLocal = 0;
 	private static final int menuDetails = 1;
 
@@ -169,38 +201,7 @@ public class MyRoutesActivity extends Activity implements OnAsyncResponse {
 			return;
 		}
 
-		AsyncTask<Void, Void, Void> task = new AsyncTask<Void, Void, Void>() {
-
-			@Override
-			protected Void doInBackground(Void... params) {
-				try {
-					List<Route> rr = HttpManager.getRoutes(0);
-					boolean saved = false;
-					for (Route r : rr) {
-						String routeFile = Helper.getRouteFile(r.getName());
-						r.save(MyRoutesActivity.this, routeFile);
-						saved = true;
-					}
-
-					if (saved) {
-						MyApplication.getInstance().refreshRoutes();
-					}
-				} catch (Exception e) {
-					Log.e(Const.ECOMMUTERS_TAG, Log.getStackTraceString(e));
-				}
-				
-				return null;
-			}
-			
-			@Override
-			protected void onPostExecute(Void result) {
-				progressBar.dismiss();
-				progressBar = null;
-				super.onPostExecute(result);
-			}
-		};
-
-		task.execute((Void) null);
+		new DownloadRoutesAsyncTask().execute((Void) null);
 
 	}
 }
