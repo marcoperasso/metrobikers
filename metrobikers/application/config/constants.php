@@ -45,10 +45,15 @@ define('GENDER_FEMALE',                                         1);
 define('GENDER_MALE',                                           2);
 
 
-define('POSITION_POLICY_ALL',                                   0);
-define('POSITION_POLICY_ALL_NONAME',                            1);
-define('POSITION_POLICY_GROUP',                                 2);
-define('POSITION_POLICY_GROUP_NONAME',                          3);
+define('SHOW_POSITION_ALL',                                     0);
+define('SHOW_POSITION_GROUP',                                   1);
+define('SHOW_POSITION_NONE',                                    2);
+
+
+define('SHOW_NAME_ALL',                                         0);
+define('SHOW_NAME_GROUP',                                      1);
+define('SHOW_NAME_NONE',                                        2);
+
 
 define('POST_BLOCK_SIZE',                                       10);
 

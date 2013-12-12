@@ -10,7 +10,8 @@ class User_model extends MY_Model {
     var $nickname;
     var $active;
     var $gender;
-    var $positionpolicy;
+    var $showposition;
+    var $showname;
     var $activationdate;
     var $password;
 

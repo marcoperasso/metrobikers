@@ -16,7 +16,8 @@
     <br>
     <fieldset>
         <legend>Privacy</legend>
-        <b>La mia posizione può essere visualizzata da: </b><span name="positionpolicy" class="changeable enumcontent" items="<?php echo position_policy_items(); ?>"><?php echo decode_position_policy($user->positionpolicy); ?></span><br/>
+        <b>Chi può visualizzare la mia posizione: </b><span name="showposition" class="changeable enumcontent" items="<?php echo showposition_items(); ?>"><?php echo decode_showposition($user->showposition); ?></span><br/>
+        <b>Chi può visualizzare il mio nome: </b><span name="showname" class="changeable enumcontent" items="<?php echo showname_items(); ?>"><?php echo decode_showname($user->showname); ?></span><br/>
     </fieldset>
 
 

@@ -22,27 +22,45 @@ function decode_gender($genderId) {
     }
 }
 
-function decode_position_policy($id) {
+function decode_showposition($id) {
     switch ($id) {
-        case POSITION_POLICY_ALL_NONAME:
-            return "Chiunque, ma non visualizzare il mio nome";
-        case POSITION_POLICY_GROUP:
-            return "Gli appartenenti al mio gruppo";
-        case POSITION_POLICY_GROUP_NONAME:
-            return "Gli appartenenti al mio gruppo, ma non visualizzare il mio nome";
+        case SHOW_POSITION_ALL:
+            return "chiunque";
+        case SHOW_POSITION_GROUP:
+            return "gli appartenenti al mio gruppo";
+        case SHOW_POSITION_NONE:
+            return "nessuno";
         default:
-            return "Chiunque";
+            return "chiunque";
     }
 }
 
-function position_policy_items() {
-    return "['" . 
-            decode_position_policy(POSITION_POLICY_ALL) . "', '" . 
-            decode_position_policy(POSITION_POLICY_ALL_NONAME) . "', '" . 
-            decode_position_policy(POSITION_POLICY_GROUP) . "', '" . 
-            decode_position_policy(POSITION_POLICY_GROUP_NONAME) . "']";
+function decode_showname($id) {
+    switch ($id) {
+        case SHOW_NAME_ALL:
+            return "chiunque";
+        case SHOW_NAME_GROUP:
+            return "gli appartenenti al mio gruppo";
+        case SHOW_NAME_NONE:
+            return "nessuno";
+        default:
+            return "chiunque";
+    }
 }
 
+function showposition_items() {
+    return "['" . 
+            decode_showposition(SHOW_POSITION_ALL) . "', '" . 
+            decode_showposition(SHOW_POSITION_GROUP) . "', '" . 
+            decode_showposition(SHOW_POSITION_NONE) . "']";
+}
+
+function showname_items() {
+    return "['" . 
+            decode_showname(SHOW_NAME_ALL) . "', '" . 
+            decode_showname(SHOW_NAME_GROUP) . "', '" . 
+            decode_showname(SHOW_NAME_NONE) . "']";
+}
 function gender_items() {
     return "['" . 
             decode_gender(GENDER_UNSPECIFIED) . "', '" . 
