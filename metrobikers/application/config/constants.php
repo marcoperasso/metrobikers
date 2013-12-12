@@ -40,6 +40,16 @@ define('VALIDATION_KEY_REASON_REGISTER',                        0);
 define('VALIDATION_KEY_REASON_RESET_PWD',                       1);
 define('VALIDATION_KEY_REASON_CONNECT',                         2);
 
+define('GENDER_UNSPECIFIED',                                    0);
+define('GENDER_FEMALE',                                         1);
+define('GENDER_MALE',                                           2);
+
+
+define('POSITION_POLICY_ALL',                                   0);
+define('POSITION_POLICY_ALL_NONAME',                            1);
+define('POSITION_POLICY_GROUP',                                 2);
+define('POSITION_POLICY_GROUP_NONAME',                          3);
+
 define('POST_BLOCK_SIZE',                                       10);
 
 include 'privateconst.php';

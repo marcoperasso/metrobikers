@@ -1,6 +1,6 @@
 
 <div class="col-md-1"></div>
-<div class="col-md-4" style="text-align: right;" >
+<div class="col-md-5 text-center" >
     <a href="/" title="Vai alla pagina principale">
         <img class="logo" src="/asset/img/logo.png" id="ecommuter_logo">
     </a>
@@ -17,6 +17,5 @@
         </div>
   
 </div>
-<div class="col-md-1"></div>
 
 

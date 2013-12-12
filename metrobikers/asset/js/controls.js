@@ -10,9 +10,9 @@ function attachControl(el)
     {
         ctrl = new DateControl();
     }
-    else if (a.hasClass('gendercontent'))
+    else if (a.hasClass('enumcontent'))
     {
-        ctrl = new GenderControl();
+        ctrl = new EnumControl();
     }
     else if (a.hasClass('postcontent'))
     {
@@ -122,18 +122,25 @@ function DateControl()
 }
 DateControl.prototype = new Control();
 
-function GenderControl()
+function EnumControl()
 {
     Control.call(this);
-    var items = ['Non specificato', 'Femmina', 'Maschio'];
+    var thisObj = this;
+    var items = null;
+    function getItems()
+    {
+        if (!items)
+            items = eval(thisObj.getObj().attr('items'));
+        return items;
+    }
     this.createInput = function()
     {
         var html = "<div style='display:inline;' tabindex=1>";
-        for (var i = 0; i < items.length; i++)
+        for (var i = 0; i < getItems().length; i++)
         {
-            var item = items[i];
+            var item = getItems()[i];
             var selected = item === thisObj.getObj().text();
-            html += '<input type="radio" value="' + i + '"' + (selected ? ' checked' : '') + ' name="' + thisObj.getObj().attr('name') + '"/>' + item;
+            html += '<input type="radio" value="' + i + '"' + (selected ? ' checked' : '') + ' name="' + thisObj.getObj().attr('name') + '"/>' + item + '&nbsp;';
         }
         html += "</div>";
         var input = $(html);
@@ -143,14 +150,14 @@ function GenderControl()
     this.getInputValue = function()
     {
         var index = $('input::checked', thisObj.getInputControl()).val();
-        return items[index];
+        return getItems()[index];
     };
     this.unformatData = function()
     {
         return $('input::checked', thisObj.getInputControl()).val();
     };
 }
-GenderControl.prototype = new Control();
+EnumControl.prototype = new Control();
 
 function PostControl()
 {
