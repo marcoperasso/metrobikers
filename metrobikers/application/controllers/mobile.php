@@ -99,12 +99,18 @@ class Mobile extends MY_Controller {
         $this->load->model("User_position_model");
         $this->load->model("User_on_route_model");
         $this->User_position_model->purge_positions();
-        $userid = $this->input->post("userid");
-        $response = $this->User_position_model->get_positions($left, $top, $right, $bottom, $userid);
+        $search_userid = $this->input->post("userid");
+        if (!$search_userid)
+            $search_userid = 0;
+        $userid = $this->user == NULL ? 0 : $this->user->id;
+        $response = $this->User_position_model->get_positions($left, $top, $right, $bottom, $userid, $search_userid);
 
-        foreach ($response as &$point) {
-            $point["time"] = strtotime($point["time"]);
-            $point["routes"] = $this->User_on_route_model->get_routes($point["userid"]);
+        if ($response)
+        {
+            foreach ($response as &$point) {
+                $point["time"] = strtotime($point["time"]);
+                $point["routes"] = $this->User_on_route_model->get_routes($point["userid"]);
+            }
         }
         $this->output
                 ->set_content_type('application/json')

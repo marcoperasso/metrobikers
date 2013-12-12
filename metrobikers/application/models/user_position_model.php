@@ -1,7 +1,6 @@
 <?php
 
 class User_position_model extends MY_Model {
-
     var $userid;
     var $lat;
     var $lon;
@@ -25,16 +24,28 @@ class User_position_model extends MY_Model {
         $this->db->delete();
     }
 
-    public function get_positions($left, $top, $right, $bottom, $userid) {
-        $this->commonQuery();
-        $this->db->where(array('lat >' => $left, 'lat <' => $right, 'lon >' => $top, 'lon <' => $bottom));
-        $this->db->or_where(array('users.id' => $userid));
-        $query = $this->db->get('userpositions');
+    public function get_positions($left, $top, $right, $bottom, $userid, $search_userid) {
+        $select = "SELECT distinct lat, lon, ".
+                    "if (showname = 0 or (showname =  1 and (userid1 = " . $userid . " or userid2 = " . $userid . ")), name, 'ECOmmuter') as name, " .
+                    "if (showname = 0 or (showname =  1 and (userid1 = " . $userid . " or userid2 = " . $userid . ")), surname, 'Anomimo') as surname, " .
+                    "time, users.id as userid " .
+                    "FROM (userpositions) " .
+                    "JOIN users ON users.id = userpositions.userid ".
+                    "LEFT JOIN linkedusers ON users.id = linkedusers.userid1 OR users.id = linkedusers.userid2 " .
+                    "WHERE (showposition =  0 OR (showposition =  1 and (userid1 = " . $userid . " or userid2 = " . $userid . "))) ".
+                    "AND (lat BETWEEN  '" . $left . "' AND '" . $right . "' AND lon BETWEEN '" . $top . "' AND '" . $bottom . "' OR users.id = " . $search_userid . ")";
+        $query = $this->db->query($select);
         return $query->result_array();
     }
 
     public function get_positions_by_name($name) {
-        $this->commonQuery();
+        $this->db->select("lat");
+        $this->db->select("lon");
+        $this->db->select("name");
+        $this->db->select("surname");
+        $this->db->select("time");
+        $this->db->select("users.id as userid");
+        $this->db->join('users', 'users.id = userpositions.userid');
         $this->db->like('concat(name, " ", surname)', $name);
         $this->db->limit(10);
         $query = $this->db->get('userpositions');
@@ -50,18 +61,6 @@ class User_position_model extends MY_Model {
         $result = $query->row();
         return $result->size;
     }
-
-    private function commonQuery() {
-        $this->db->select("lat");
-        $this->db->select("lon");
-        $this->db->select("name");
-        $this->db->select("surname");
-        $this->db->select("time");
-        $this->db->select("mail");
-        $this->db->select("users.id as userid");
-        $this->db->join('users', 'users.id = userpositions.userid');
-    }
-
     public function save_position() {
         if ($this->exist_position())
             $this->update_position();

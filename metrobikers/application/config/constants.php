@@ -51,7 +51,7 @@ define('SHOW_POSITION_NONE',                                    2);
 
 
 define('SHOW_NAME_ALL',                                         0);
-define('SHOW_NAME_GROUP',                                      1);
+define('SHOW_NAME_GROUP',                                       1);
 define('SHOW_NAME_NONE',                                        2);
 
 

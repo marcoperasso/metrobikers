@@ -145,8 +145,8 @@ function EnumControl()
             html += '<input type="radio" value="' + i + '"' + (selected ? ' checked' : '') + ' name="' + thisObj.getObj().attr('name') + '"/>' + item + '<br>';
         }
         html += "</div>";
-        var input = $(html);
-        input.blur(thisObj.save);
+        var input = $(html); 
+        //input.blur(thisObj.save);
         $('input', input).change(thisObj.save);
         return input;
     };
