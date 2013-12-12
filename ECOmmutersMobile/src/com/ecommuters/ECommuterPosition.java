@@ -17,29 +17,24 @@ public class ECommuterPosition extends GpsPoint implements IJsonSerializable,
 	int userId;
 	String name;
 	String surname;
-	String mail;
 	float accuracy;
 	private ArrayList<Integer> routeIds = new ArrayList<Integer>();
 
 	private static final long serialVersionUID = -5703092633640293472L;
 
 	public ECommuterPosition(int userId, int lat, int lon, String name,
-			String surname, String mail, long time) {
+			String surname, long time) {
 		super(lat, lon, time);
 		this.userId = userId;
 		this.name = name;
 		this.surname = surname;
-		this.mail = mail;
 	}
 
-	public ECommuterPosition(int userId, int lat, int lon, float accuracy,
-			long time) {
+	public ECommuterPosition(int userId, int lat, int lon, long time) {
 		super(lat, lon, time);
-		this.accuracy = accuracy;
 		this.userId = userId;
 		this.name = null;
 		this.surname = null;
-		this.mail = null;
 	}
 
 	public JSONObject toJson() throws JSONException {
@@ -52,8 +47,6 @@ public class ECommuterPosition extends GpsPoint implements IJsonSerializable,
 			obj.put("name", name);
 		if (surname != null)
 			obj.put("surname", surname);
-		if (mail != null)
-			obj.put("mail", mail);
 
 		JSONArray arRoutes = new JSONArray();
 		obj.put("routes", arRoutes);
@@ -67,7 +60,7 @@ public class ECommuterPosition extends GpsPoint implements IJsonSerializable,
 		ECommuterPosition position = new ECommuterPosition(
 				jsonObject.getInt("userid"), jsonObject.getInt("lat"),
 				jsonObject.getInt("lon"), jsonObject.getString("name"),
-				jsonObject.getString("surname"), jsonObject.getString("mail"),
+				jsonObject.getString("surname"), 
 				jsonObject.getLong("time"));
 		JSONArray arRoutes = jsonObject.getJSONArray("routes");
 		int length = arRoutes.length();
