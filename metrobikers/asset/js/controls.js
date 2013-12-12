@@ -72,8 +72,10 @@ function Control()
     {
         return inputControl.val();
     };
-    this.save = function()
+    this.save = function(event)
     {
+        if (event.relatedTarget && $(event.relatedTarget).closest(this).length > 0)
+            return;
         var value = thisObj.getInputValue();
         var oldValue = obj.text();
         var modified = oldValue !== value;
@@ -135,15 +137,16 @@ function EnumControl()
     }
     this.createInput = function()
     {
-        var html = "<div style='display:inline;' tabindex=1>";
+        var html = "<div style='display:inline-block;' tabindex=1>";
         for (var i = 0; i < getItems().length; i++)
         {
             var item = getItems()[i];
             var selected = item === thisObj.getObj().text();
-            html += '<input type="radio" value="' + i + '"' + (selected ? ' checked' : '') + ' name="' + thisObj.getObj().attr('name') + '"/>' + item + '&nbsp;';
+            html += '<input type="radio" value="' + i + '"' + (selected ? ' checked' : '') + ' name="' + thisObj.getObj().attr('name') + '"/>' + item + '<br>';
         }
         html += "</div>";
         var input = $(html);
+        input.blur(thisObj.save);
         $('input', input).change(thisObj.save);
         return input;
     };
