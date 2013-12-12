@@ -106,7 +106,8 @@ class GPSManager {
 	boolean startGPS(int level, int routeId) {
 		boolean b = getGPSStatus(routeId).startGPS(level);
 		
-		Log.d(Const.ECOMMUTERS_TAG, String.format(
+		if (MyApplication.LogEnabled)
+			Log.d(Const.ECOMMUTERS_TAG, String.format(
 				"Raising GPS listening for route %d and level %d; current level status: %s",
 						routeId, level, getLevelString()));
 		return b;
@@ -115,7 +116,8 @@ class GPSManager {
 	boolean stopGPS(int level, int routeId) {
 
 		boolean b = getGPSStatus(routeId).stopGPS(level);
-		Log.d(Const.ECOMMUTERS_TAG,
+		if (MyApplication.LogEnabled)
+			Log.d(Const.ECOMMUTERS_TAG,
 				String.format(
 						"Lowering GPS listening for route %d and level %d; current level status: %s",
 						routeId, level, getLevelString()));

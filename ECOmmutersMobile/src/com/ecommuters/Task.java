@@ -70,7 +70,8 @@ public class Task implements Runnable, Serializable {
 		alarms.setRepeating(AlarmManager.RTC_WAKEUP,
 				calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pIntent);
 
-		Log.i(Const.ECOMMUTERS_TAG,
+		if (MyApplication.LogEnabled)
+			Log.i(Const.ECOMMUTERS_TAG,
 				String.format("Scheduling task %s with weight: %d at %s.",
 						getType().toString(), getWeight(), calendar.getTime()
 								.toString()));

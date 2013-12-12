@@ -10,6 +10,8 @@ import android.content.Intent;
 
 public class MyApplication extends Application {
 
+	public static final boolean LogEnabled = false;
+
 	private static MyApplication sInstance;
 
 	private ArrayList<Route> mRoutes;

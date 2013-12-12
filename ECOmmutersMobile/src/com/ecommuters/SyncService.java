@@ -37,9 +37,10 @@ public class SyncService extends IntentService {
 				r.save(this, Helper.getRouteFile(r.getName()));
 		}
 
-		Log.i(Const.ECOMMUTERS_TAG, String.format(
-				"Successfully sent %d new routes to www.ecommuters.com.",
-				newRoutes.size()));
+		if (MyApplication.LogEnabled)
+			Log.i(Const.ECOMMUTERS_TAG, String.format(
+					"Successfully sent %d new routes to www.ecommuters.com.",
+					newRoutes.size()));
 	}
 
 	private void scheduleRetrial() {
@@ -55,9 +56,10 @@ public class SyncService extends IntentService {
 				.getSystemService(Context.ALARM_SERVICE);
 		alarms.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pIntent);
 
-		Log.i(Const.ECOMMUTERS_TAG, String.format(
-				"Scheduling sync routes task %s.",
-				new Date(calendar.getTimeInMillis()).toString()));
+		if (MyApplication.LogEnabled)
+			Log.i(Const.ECOMMUTERS_TAG, String.format(
+					"Scheduling sync routes task %s.",
+					new Date(calendar.getTimeInMillis()).toString()));
 
 	}
 
@@ -72,48 +74,42 @@ public class SyncService extends IntentService {
 
 	@Override
 	protected void onHandleIntent(Intent arg0) {
-		try
-		{
-		Log.i(Const.ECOMMUTERS_TAG,
-				"Starting synchronization");
-		final long latestUpdate = MySettings
-				.getLatestSyncDate(SyncService.this);
+		try {
+			Log.i(Const.ECOMMUTERS_TAG, "Starting synchronization");
+			final long latestUpdate = MySettings
+					.getLatestSyncDate(SyncService.this);
 
-		final List<Route> newRoutes = getNewRoutes(latestUpdate);
-		final List<File> files = Helper.getFiles(this, Const.TRACKINGEXT);
-		if (newRoutes.size() == 0 && files.size() == 0) {
-			return;
-		}
-		Credentials.testCredentials(this, new OnAsyncResponse() {
-			public void response(boolean success, String message) {
-
-				boolean allSent = false;
-				try {
-					if (!success)
-					{
-						Log.e(Const.ECOMMUTERS_TAG, message);
-						return;
-					}
-					sendTrackings(files);
-					sendRoutes(newRoutes);
-					allSent = true;
-					MySettings.setLatestSyncDate(SyncService.this,
-							(long) (System.currentTimeMillis() / 1e3));
-				} catch (Exception e) {
-					Log.e(Const.ECOMMUTERS_TAG, Log.getStackTraceString(e));
-				} finally {
-					if (!allSent)
-						scheduleRetrial();
-				}
+			final List<Route> newRoutes = getNewRoutes(latestUpdate);
+			final List<File> files = Helper.getFiles(this, Const.TRACKINGEXT);
+			if (newRoutes.size() == 0 && files.size() == 0) {
+				return;
 			}
+			Credentials.testCredentials(this, new OnAsyncResponse() {
+				public void response(boolean success, String message) {
 
-		});
-		}
-		finally
-		{
-			Log.i(Const.ECOMMUTERS_TAG,
-					"Synchronization finished");
-			
+					boolean allSent = false;
+					try {
+						if (!success) {
+							Log.e(Const.ECOMMUTERS_TAG, message);
+							return;
+						}
+						sendTrackings(files);
+						sendRoutes(newRoutes);
+						allSent = true;
+						MySettings.setLatestSyncDate(SyncService.this,
+								(long) (System.currentTimeMillis() / 1e3));
+					} catch (Exception e) {
+						Log.e(Const.ECOMMUTERS_TAG, Log.getStackTraceString(e));
+					} finally {
+						if (!allSent)
+							scheduleRetrial();
+					}
+				}
+
+			});
+		} finally {
+			Log.i(Const.ECOMMUTERS_TAG, "Synchronization finished");
+
 		}
 
 	}
@@ -135,10 +131,11 @@ public class SyncService extends IntentService {
 			sent++;
 			f.delete();
 		}
-		if (sent > 0)
-			Log.i(Const.ECOMMUTERS_TAG,
-					String.format(
-							"Successfully sent %d tracking data packets to www.ecommuters.com.",
-							sent));
+		if (MyApplication.LogEnabled)
+			if (sent > 0)
+				Log.i(Const.ECOMMUTERS_TAG,
+						String.format(
+								"Successfully sent %d tracking data packets to www.ecommuters.com.",
+								sent));
 	}
 }

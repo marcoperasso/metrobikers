@@ -11,7 +11,8 @@ public class BootReceiver extends BroadcastReceiver {
 
 	@Override
 	public void onReceive(Context context, Intent intent) {
-		Log.i(Const.ECOMMUTERS_TAG,
+		if (MyApplication.LogEnabled)
+			Log.i(Const.ECOMMUTERS_TAG,
 				"Performing boot operations.");
 		for (Route r : MyApplication.getInstance().getRoutes())
 			r.schedule(true);

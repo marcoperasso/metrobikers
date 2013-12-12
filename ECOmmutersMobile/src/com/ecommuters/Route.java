@@ -203,7 +203,8 @@ public class Route implements IJsonSerializable, Serializable {
 	}
 
 	public void schedule(boolean executeIfActiveNow) {
-		Log.i(Const.ECOMMUTERS_TAG, String.format("Scheduling route %s", name));
+		if (MyApplication.LogEnabled)
+			Log.i(Const.ECOMMUTERS_TAG, String.format("Scheduling route %s", name));
 		TimeInterval interval = getInterval();
 
 		Task startingTask = schedule(interval.getStart(), interval.getWeight(),
@@ -219,7 +220,8 @@ public class Route implements IJsonSerializable, Serializable {
 	}
 
 	public void scheduleDebug() {
-		Log.i(Const.ECOMMUTERS_TAG, String.format("Scheduling route %s", name));
+		if (MyApplication.LogEnabled)
+			Log.i(Const.ECOMMUTERS_TAG, String.format("Scheduling route %s", name));
 		TimeInterval interval = getInterval();
 		Calendar c = Calendar.getInstance();
 		Task startingTask = schedule(c, interval.getWeight(),

@@ -122,8 +122,9 @@ public class ConnectorService extends Service implements LocationListener {
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		if (intent == null || intent.getExtras() == null) {
-			Log.d(Const.ECOMMUTERS_TAG,
-					"Receiving connector service start command with no data, the service will be stopped");
+			if (MyApplication.LogEnabled)
+				Log.d(Const.ECOMMUTERS_TAG,
+						"Receiving connector service start command with no data, the service will be stopped");
 			stopSelf();
 			return super.onStartCommand(intent, flags, startId);
 		}
@@ -176,8 +177,9 @@ public class ConnectorService extends Service implements LocationListener {
 					mNotificationManager
 							.cancel(Const.SENDING_POSITION_NOTIFICATION_ID);
 
-					Log.i(Const.ECOMMUTERS_TAG,
-							"Finished connector service worker thread");
+					if (MyApplication.LogEnabled)
+						Log.i(Const.ECOMMUTERS_TAG,
+								"Finished connector service worker thread");
 
 				}
 			});
@@ -195,7 +197,8 @@ public class ConnectorService extends Service implements LocationListener {
 	}
 
 	public void onCreate() {
-		Log.i(Const.ECOMMUTERS_TAG, "Starting connector service");
+		if (MyApplication.LogEnabled)
+			Log.i(Const.ECOMMUTERS_TAG, "Starting connector service");
 
 		sendLatestPositionProcedureRunnable = new Runnable() {
 			public void run() {
@@ -228,9 +231,10 @@ public class ConnectorService extends Service implements LocationListener {
 			}
 
 			if (minRouteDistance < DISTANCE_METERS) {// sono sulla traccia
-				Log.d(Const.ECOMMUTERS_TAG,
-						String.format("DENTRO l'itinerario %s; distanza: %f",
-								r.getName(), minRouteDistance));
+				if (MyApplication.LogEnabled)
+					Log.d(Const.ECOMMUTERS_TAG, String.format(
+							"DENTRO l'itinerario %s; distanza: %f",
+							r.getName(), minRouteDistance));
 				if (r.addTrackingPosition(index, position)
 						&& !followedRoutes.contains(r)) {
 					MyFollowedRoute myFollowedRoute = new MyFollowedRoute(r);
@@ -257,7 +261,7 @@ public class ConnectorService extends Service implements LocationListener {
 							String.format("You exited route %s", r.getName()));
 				}
 
-			} 
+			}
 		}
 
 		if (followedRoutes.size() == 0)
@@ -294,7 +298,8 @@ public class ConnectorService extends Service implements LocationListener {
 								.format("Position updated every %1$d seconds and %2$d meters",
 										gpsManager.getMinTimeSeconds(),
 										gpsManager.getMinDinstanceMeters());
-						Log.i(Const.ECOMMUTERS_TAG, text);
+						if (MyApplication.LogEnabled)
+							Log.i(Const.ECOMMUTERS_TAG, text);
 					}
 					mlocManager.requestLocationUpdates(
 							LocationManager.GPS_PROVIDER,
@@ -321,12 +326,13 @@ public class ConnectorService extends Service implements LocationListener {
 				mlocManager.removeUpdates(ConnectorService.this);
 				if (gpsManager.requestingLocation()) {
 
-					String text = String
-							.format("Position updated every %1$d seconds and %2$d meters",
-									gpsManager.getMinTimeSeconds(),
-									gpsManager.getMinDinstanceMeters());
-					Log.i(Const.ECOMMUTERS_TAG, text);
-
+					if (MyApplication.LogEnabled) {
+						String text = String
+								.format("Position updated every %1$d seconds and %2$d meters",
+										gpsManager.getMinTimeSeconds(),
+										gpsManager.getMinDinstanceMeters());
+						Log.i(Const.ECOMMUTERS_TAG, text);
+					}
 					// poi, se devo continuare a registrare su un livello
 					// diverso,
 					// mi ri registro
@@ -368,18 +374,20 @@ public class ConnectorService extends Service implements LocationListener {
 		ECommuterPosition loc = new ECommuterPosition(
 				currentCredentials == null ? 0 : currentCredentials.getUserId(),
 				(int) (location.getLatitude() * 1E6), (int) (location
-						.getLongitude() * 1E6), 
-				(long) (System.currentTimeMillis() / 1E3));
+						.getLongitude() * 1E6), (long) (System
+						.currentTimeMillis() / 1E3));
 		calculateRoutesByPosition(loc);
 		mLocation = loc;
 	}
 
 	public void onProviderEnabled(String provider) {
-		Log.i(Const.ECOMMUTERS_TAG, getString(R.string.gps_enabled));
+		if (MyApplication.LogEnabled)
+			Log.i(Const.ECOMMUTERS_TAG, getString(R.string.gps_enabled));
 	}
 
 	public void onProviderDisabled(String provider) {
-		Log.i(Const.ECOMMUTERS_TAG, getString(R.string.gps_disabled));
+		if (MyApplication.LogEnabled)
+			Log.i(Const.ECOMMUTERS_TAG, getString(R.string.gps_disabled));
 	}
 
 	public void onStatusChanged(String provider, int status, Bundle extras) {
@@ -446,13 +454,14 @@ public class ConnectorService extends Service implements LocationListener {
 		Log.i(Const.ECOMMUTERS_TAG, text);
 		setSendingPositionNotification();
 		final ECommuterPosition loc = mLocation;
-		new Thread(){
+		new Thread() {
 			@Override
 			public void run() {
 				try {
-					if (HttpManager.sendPositionData(loc))
-					{
-						Log.d(Const.ECOMMUTERS_TAG, "Position data succesfully sent.");
+					if (HttpManager.sendPositionData(loc)) {
+						if (MyApplication.LogEnabled)
+							Log.d(Const.ECOMMUTERS_TAG,
+									"Position data succesfully sent.");
 						mLocation = null;
 					}
 				} catch (Exception e) {
@@ -461,7 +470,7 @@ public class ConnectorService extends Service implements LocationListener {
 				super.run();
 			}
 		}.start();
-		
+
 	}
 
 	@Override
@@ -490,9 +499,10 @@ public class ConnectorService extends Service implements LocationListener {
 	}
 
 	public void onExecuteTask(final Task task) {
-		Log.i(Const.ECOMMUTERS_TAG, String.format(
-				"Executing task %s with weight: %d.",
-				task.getType().toString(), task.getWeight()));
+		if (MyApplication.LogEnabled)
+			Log.i(Const.ECOMMUTERS_TAG, String.format(
+					"Executing task %s with weight: %d.", task.getType()
+							.toString(), task.getWeight()));
 
 		switch (task.getType()) {
 		case START_TRACKING:
