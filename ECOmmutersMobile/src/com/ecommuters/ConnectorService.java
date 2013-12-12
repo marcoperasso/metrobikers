@@ -135,12 +135,14 @@ public class ConnectorService extends Service implements LocationListener {
 			stopSelf();
 			return super.onStartCommand(intent, flags, startId);
 		}
-		Log.d(Const.ECOMMUTERS_TAG, "Receiving connector service start command");
+		if (MyApplication.LogEnabled)
+			Log.d(Const.ECOMMUTERS_TAG, "Receiving connector service start command");
 
 		final Task task = (Task) obj;
 
 		if (!task.canExecuteToday(mRoutes)) {
-			Log.d(Const.ECOMMUTERS_TAG,
+			if (MyApplication.LogEnabled)
+				Log.d(Const.ECOMMUTERS_TAG,
 					"This task cannot be executed today, the service will be stopped");
 			stopSelf();
 			return super.onStartCommand(intent, flags, startId);
@@ -241,7 +243,8 @@ public class ConnectorService extends Service implements LocationListener {
 					followedRoutes.add(myFollowedRoute);
 					mHandler.postDelayed(myFollowedRoute, TIMEOUT);
 					setAutomaticLiveTracking(true, r.getId());
-					Log.i(Const.ECOMMUTERS_TAG,
+					if (MyApplication.LogEnabled)
+						Log.i(Const.ECOMMUTERS_TAG,
 							String.format("You entered route %s", r.getName()));
 				}
 			} else if (minRouteDistance > MAX_DISTANCE_FROM_TRACK_METERS) { // mi
@@ -257,7 +260,8 @@ public class ConnectorService extends Service implements LocationListener {
 					followedRoutes.remove(mfr);
 					mHandler.removeCallbacks(mfr);
 					setAutomaticLiveTracking(false, r.getId());
-					Log.i(Const.ECOMMUTERS_TAG,
+					if (MyApplication.LogEnabled)
+						Log.i(Const.ECOMMUTERS_TAG,
 							String.format("You exited route %s", r.getName()));
 				}
 
@@ -273,7 +277,8 @@ public class ConnectorService extends Service implements LocationListener {
 			if (r.getLatestTrackedIndex() == r.getPoints().size() - 1) {
 				setAutomaticLiveTracking(false, r.getId());
 				followedRoutes.remove(i);
-				Log.i(Const.ECOMMUTERS_TAG,
+				if (MyApplication.LogEnabled)
+					Log.i(Const.ECOMMUTERS_TAG,
 						String.format("You reached the end of the route %s",
 								r.getName()));
 			}
