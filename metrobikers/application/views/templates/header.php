@@ -9,7 +9,8 @@
 <script type="text/javascript" src="/asset/js/ecommuters.js"></script>
 <script type="text/javascript" src="/asset/js/validators.js"></script>
 <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
-
+<meta name="keywords" content="Bicicletta, bici, urbano, pista ciclabile, commuter, pendolare, spostamento urbano, tracciatura posizione">
+<meta name="description" content="Social network per l'aggregazione di chi si sposta in bicicletta in ambito urbano">
 <script>
   (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
   (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),

@@ -22,11 +22,11 @@
 <div class="row">
     <div class="col-md-1"></div>
     <div class="col-md-5">
-        <p>Iniziamo col dire che questo è un prodotto per gente giovane. Attenzione però... non intendiamo in senso anagrafico, ma <b>giovane di spirito</b>! Prima di spiegarti di che si tratta, lascia che descriviamo il profilo dell'ECOmmuter...</p>
+        <p>Questo è un prodotto per gente giovane. Attenzione però... non intendiamo in senso anagrafico, ma <b>giovane di spirito</b>! Prima di spiegarti di che si tratta, lascia che descriviamo il profilo dell'ECOmmuter...</p>
         <p>L'ECOmmuter vive nel presente con lo sguardo rivolto al futuro, non rimpiange il passato né si lamenta di ciò che non va, piuttosto è in grado di vedere e cogliere le opportunità che quotidianamente la vita gli offre.</p>
         <p>L'ECOmmuter non è vittima della tecnologia, ma la utilizza a suo vantaggio; sa che quando ha un telecomando in mano, quello che rischia di essere telecomandato è lui. Per questo si sente più libero utilizzando un mouse o un <i>touch screen</i>, ma li sa usare bene!</p>
         <p>L'ECOmmuter ama avvalersi di strumenti moderni, non si lascia vincolare da inerzie e abitudini; sa che l'automobile è ormai un mezzo obsoleto per spostarsi in ambito urbano: 
-            la sua velocità media è inferiore a quella del cavallo, principale mezzo di trasporto nelle città del 1700, ma soprattutto è causa di smog, rumore, congestione, incidenti.</p>
+            la sua velocità media è inferiore a quella che aveva il cavallo quando rappresentava il principale mezzo di trasporto nelle città del 1700, ma soprattutto è causa di smog, rumore, congestione, incidenti.</p>
         <p>L'ECOmmuter ama la natura, perché sa che un ritorno alla vita semplice non costituisce un passo indietro, ma un'evoluzione necessaria per risolvere gli evidenti mali dell'incrostata società in cui vive.</p>
         <p>A questo punto non sarai stupito se ti diciamo che il mezzo di trasporto preferito dell'ECOmmuter è la <b>bicicletta</b>.</p>
         <p>Ma le nostre città sono state progettate a misura d'automobile, e spostarsi in bici comporta numerosi rischi.</p>
@@ -41,6 +41,12 @@
     <div class="col-md-6">
         <h3 style="margin-top: 0px; margin-bottom: 0px;">Ti riconosci in questi valori? Allora fai il salto, </h3><br />
         <a href="/register" class="btn btn-primary btn-lg">Diventa anche tu un ECOmmuter!</a>
-        <a href="/home/details" class="btn btn-lg btn-default">Bello, però mi spieghereste un po' meglio come funziona?</a>
+        <a href="/home/details" class="btn btn-lg btn-default">Bello, mi spiegate un po' meglio come funziona?</a>
+
+        <div class="container">
+            <h2>Entra a far parte della nostra <a href="https://plus.google.com/u/0/communities/102754557298986622823" title="Community Google+ ECOmmuters">community</a>.</h2>
+            <a title="Scarica la App da Google Play" href ="https://play.google.com/apps/testing/com.ecommuters" target="play"><img src="/asset/img/googleplay.jpg"/></a>
+        </div>
+
     </div>
 </div>
