@@ -387,12 +387,12 @@ public class ConnectorService extends Service implements LocationListener {
 
 	public void onProviderEnabled(String provider) {
 		if (MyApplication.LogEnabled)
-			Log.i(Const.ECOMMUTERS_TAG, getString(R.string.gps_enabled));
+			Log.i(Const.ECOMMUTERS_TAG, "GPS abilitato");
 	}
 
 	public void onProviderDisabled(String provider) {
 		if (MyApplication.LogEnabled)
-			Log.i(Const.ECOMMUTERS_TAG, getString(R.string.gps_disabled));
+			Log.i(Const.ECOMMUTERS_TAG, "GPS disabilitato");
 	}
 
 	public void onStatusChanged(String provider, int status, Bundle extras) {
