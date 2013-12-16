@@ -68,10 +68,12 @@ CREATE TABLE `trackings` (
   `end` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
   `distance` int(11) DEFAULT NULL,
   `points` int(11) DEFAULT NULL,
+  `speedmax` float DEFAULT NULL,
   PRIMARY KEY (`userid`,`routeid`,`start`,`end`),
   KEY `tracking_route` (`routeid`),
   CONSTRAINT `tracking_route` FOREIGN KEY (`routeid`) REFERENCES `routes` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8$$
+
 
 CREATE TABLE `linkedusers` (
   `userid1` int(11) NOT NULL,
