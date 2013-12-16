@@ -71,6 +71,14 @@
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
+        <receiver
+            android:name="com.ecommuters.LowBatteryReceiver"
+            android:enabled="true"
+            android:exported="true" >
+            <intent-filter>
+                <action android:name="android.intent.action.BATTERY_LOW" />
+            </intent-filter>
+        </receiver>
 
         <activity
             android:name="com.ecommuters.CredentialsActivity"
@@ -82,8 +90,8 @@
         </activity>
         <activity
             android:name="com.ecommuters.RouteDetailActivity"
-            android:label="@string/title_activity_route_detail" 
-            android:windowSoftInputMode="stateUnchanged"> 
+            android:label="@string/title_activity_route_detail"
+            android:windowSoftInputMode="stateUnchanged" >
         </activity>
 
         <service

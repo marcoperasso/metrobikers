@@ -63,7 +63,6 @@
     <string name="warning_to_user">Questa applicazione è in grado di tracciare la tua posizione e mandarla al sito &lt;a href=&quot;http://www.ecommuters.com&quot;&gt;www.ecommuters.com&lt;/a&gt;.&lt;br&gt;Ogni volta che questo accadrà, verrai avvisato con un messaggio di notifica; potrai comunque in ogni momento disabilitare questo comportamento.</string>
     <string name="no_show_again">Non mostrare più</string>
     <string name="title_activity_search">Ricerca ECOmmuter</string>
-    <string name="hello_world">Hello world!</string>
     <string name="search_hint">Nome o parte di esso</string>
     <string name="find_ecommuter">Trova ECOmmuter</string>
     <string name="select_ecommuter">Seleziona l\'ECOmmuter desiderato</string>

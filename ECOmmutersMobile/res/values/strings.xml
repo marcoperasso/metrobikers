@@ -47,7 +47,7 @@
     <string name="overwrite_route_question">Route already existing, do you want to overwrite it?</string>
     <string name="maintain_recording_question">Do you want to keep recorded data?</string>
     <string name="livetracking">Track position in real time</string>
-    <string name="manual_live_tracking_on">Manual live tracking manuale activated</string>
+    <string name="manual_live_tracking_on">Manual live tracking activated</string>
     <string name="live_tracking_on">Live tracking activated, click here to stop it.</string>
     <string name="manual_live_tracking_off">Manual live tracking deactivated</string>
     <string name="live_tracking_off">Live tracking deactivated.</string>
@@ -60,10 +60,9 @@
     <string name="sample">sample</string> 
     <string name="yes">Yes</string>
     <string name="no">No</string>
-    <string name="warning_to_user">Thes app can track your position and send it to the site &lt;a href=&quot;http://www.ecommuters.com&quot;&gt;www.ecommuters.com&lt;/a&gt;.&lt;br&gt;Each time this happens, you\'ll be notified; you\'ll be able to disable this behaviour at any moment.</string>
+    <string name="warning_to_user">Thes app can track your position and send it to the site &lt;a href=&quot;http://www.ecommuters.com&quot;&gt;www.ecommuters.com&lt;/a&gt;.&lt;br&gt;Each time this happens, you\'ll be notified; you\'ll be able to disable this behaviour al all times.</string>
     <string name="no_show_again">Do not show again</string>
     <string name="title_activity_search">Find ECOmmuter</string>
-    <string name="hello_world">Hello world!</string>
     <string name="search_hint">Name or part of it</string>
     <string name="find_ecommuter">Find ECOmmuter</string>
     <string name="select_ecommuter">Select the desired ECOmmuter</string>
@@ -71,7 +70,7 @@
     <string name="balloon_text">Position recorded at %s</string>
     <string name="refine_query">%1$d ECOmmuters of %2$d shown; if you do not find the person you are looking for, try refining your search criteria.</string>
     <string name="time_start">Starting time:</string>
-    <string name="time_end">Arriva time:</string>
+    <string name="time_end">Arrival time:</string>
     <string name="distance">Distance:</string>
     <string name="duration">Elapsed time:</string>
     <string name="average_speed">Average speed:</string>

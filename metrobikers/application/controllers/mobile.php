@@ -205,6 +205,7 @@ class Mobile extends MY_Controller {
                 $this->Tracking_model->end = date('Y-m-d H:i:s', $route->end);
                 $this->Tracking_model->distance = $route->distance;
                 $this->Tracking_model->points = $route->points;
+                $this->Tracking_model->speedmax = $route->speedmax;
                 $this->Tracking_model->create_tracking();
 
                 $routeName = "";

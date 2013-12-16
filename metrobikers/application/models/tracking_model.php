@@ -8,6 +8,7 @@ class Tracking_model extends MY_Model {
     var $end;
     var $distance;
     var $points;
+    var $speedmax;
     
     public function __construct() {
         parent::__construct();
