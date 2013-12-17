@@ -248,4 +248,8 @@ public class Helper {
 		return null;
 	}
 
+	public static long getCurrentUnixTime() {
+		return Math.round(System.currentTimeMillis() / 1000f);
+	}
+
 }

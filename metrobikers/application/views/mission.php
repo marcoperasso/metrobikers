@@ -45,7 +45,7 @@
 
         <div class="container">
             <h2>Entra a far parte della nostra <a href="https://plus.google.com/u/0/communities/102754557298986622823" title="Community Google+ ECOmmuters">community</a>.</h2>
-            <a title="Scarica la App da Google Play" href ="https://play.google.com/apps/testing/com.ecommuters" target="play"><img src="/asset/img/googleplay.jpg"/></a>
+            <a title="Scarica la App da Google Play" href ="https://play.google.com/apps/testing/com.ecommuters" target="play"><img src="/asset/img/logo-google-play.png"/></a>
         </div>
 
     </div>

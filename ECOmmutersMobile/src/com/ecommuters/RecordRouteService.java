@@ -78,7 +78,7 @@ public class RecordRouteService extends IntentService {
 
 	private void archiveData() throws IOException {
 		synchronized (mRoute) {
-			long latestUpdate = System.currentTimeMillis() / 1000;
+			long latestUpdate = Helper.getCurrentUnixTime();
 			mRoute.setLatestUpdate(latestUpdate);
 			String routeFile = Const.RECORDING_ROUTE_FILE;
 			mRoute.save(this, routeFile);
@@ -123,7 +123,7 @@ public class RecordRouteService extends IntentService {
 
 			public void onLocationChanged(Location location) {
 				synchronized (mRoute) {
-					long unixTime = (System.currentTimeMillis() / 1000);
+					long unixTime = Helper.getCurrentUnixTime();
 					if (mRoute.getPoints().size() > 0)
 					{
 						RoutePoint lastPoint = mRoute.getPoints().get(mRoute.getPoints().size() - 1);

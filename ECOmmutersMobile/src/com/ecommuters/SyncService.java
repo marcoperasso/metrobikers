@@ -96,8 +96,7 @@ public class SyncService extends IntentService {
 						sendTrackings(files);
 						sendRoutes(newRoutes);
 						allSent = true;
-						MySettings.setLatestSyncDate(SyncService.this,
-								(long) (System.currentTimeMillis() / 1e3));
+						MySettings.setLatestSyncDate(SyncService.this, Helper.getCurrentUnixTime());
 					} catch (Exception e) {
 						Log.e(Const.ECOMMUTERS_TAG, Log.getStackTraceString(e));
 					} finally {

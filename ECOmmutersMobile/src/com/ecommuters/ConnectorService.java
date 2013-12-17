@@ -379,8 +379,7 @@ public class ConnectorService extends Service implements LocationListener {
 		ECommuterPosition loc = new ECommuterPosition(
 				currentCredentials == null ? 0 : currentCredentials.getUserId(),
 				(int) (location.getLatitude() * 1E6), (int) (location
-						.getLongitude() * 1E6), (long) (System
-						.currentTimeMillis() / 1E3));
+						.getLongitude() * 1E6), Helper.getCurrentUnixTime());
 		calculateRoutesByPosition(loc);
 		mLocation = loc;
 	}

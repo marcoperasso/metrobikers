@@ -279,7 +279,7 @@ public class Route implements IJsonSerializable, Serializable {
 	}
 
 	public void update() throws IOException {
-		latestUpdate = System.currentTimeMillis() / 1000;
+		latestUpdate = Helper.getCurrentUnixTime();
 		save(MyApplication.getInstance(), Helper.getRouteFile(name));
 		schedule(true);
 
