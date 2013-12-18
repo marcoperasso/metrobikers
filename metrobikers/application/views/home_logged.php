@@ -2,6 +2,36 @@
 </script>
 <script type="text/javascript" >
     setUpdateUrl("/home/update_post");
+    function PostControl()
+    {
+        Control.call(this);
+        var thisObj = this;
+
+        this.getPostData = function()
+        {
+            var data = {};
+            data.postcontent = thisObj.unformatData();
+            data.posttime = thisObj.getObj().attr('posttime');
+            return data;
+        };
+
+        this.activateObj = function() {
+            thisObj.getObj()[0].editField = thisObj.editField;
+        };
+
+        this.onAfterSetValue = function() {
+            thisObj.getObj().html(adjustContent(thisObj.getObj().text()));
+        };
+        this.createInput = function()
+        {
+            var inputControl = $("<textarea class='autoedit'></textarea>");
+            inputControl.val(thisObj.getObj().text());
+            inputControl.blur(thisObj.save);
+            return inputControl;
+        };
+    }
+    PostControl.prototype = new Control();
+
     function adjustLoaderVisibility()
     {
         if (currentPostOffset < totalPosts)
@@ -14,7 +44,34 @@
         if (!confirm("Vuoi davvero cancellare questo elemento?"))
             return;
 
-        window.location.href = '/home/delete_post?posttime=' + encodeURIComponent($(post).attr('posttime'));
+        var cnt = $(post).closest('.postcontainer');
+        window.location.href = '/home/delete_post?posttime=' + encodeURIComponent($('.postbody', cnt).attr('posttime'));
+    }
+    function editPost(post)
+    {
+        var cnt = $(post).closest('.postcontainer');
+        $('.postbody', cnt)[0].editField();
+    }
+    function adjustContent(str)
+    {
+        if (!window.rexAnchor)
+            window.rexAnchor = /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
+        str = str.replace(window.rexAnchor, function($0) {
+            return '<a href="' + $0 + '">' + $0 + '</a>';
+        });
+
+        if (!window.brAnchor)
+            window.brAnchor = /(\n)|(\r\n)/ig;
+        str = str.replace(window.brAnchor, function() {
+            return '<br>';
+        });
+
+       /* if (!window.ecommutersAnchor)
+            window.ecommutersAnchor = /<ECM(\w+)>\w+<\/<ECM>/ig;
+        str = str.replace(window.ecommutersAnchor, function($1, $2) {
+            return $1 + '.' + $2;
+        });*/
+        return str;
     }
     function loadAdditionalPosts()
     {
@@ -25,12 +82,22 @@
             currentPostOffset += <?php echo POST_BLOCK_SIZE; ?>;
             adjustLoaderVisibility();
 
-            $(".changeable", jData).each(function() {
+            $(".postcontent", jData).each(function() {
                 this.tabIndex = window.tab_idx++;
-                attachControl(this);
+                var ctrl = new PostControl();
+                ctrl.setObj($(this));
+                ctrl.activateObj();
             });
             $(".deletepost", jData).click(function() {
                 deletePost(this);
+            });
+
+            $(".editpost", jData).click(function() {
+                editPost(this);
+            });
+
+            $(".postbody", jData).each(function() {
+                this.innerHTML = adjustContent(this.innerHTML);
             });
         });
     }

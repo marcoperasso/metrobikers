@@ -14,18 +14,13 @@ function attachControl(el)
     {
         ctrl = new EnumControl();
     }
-    else if (a.hasClass('postcontent'))
-    {
-        ctrl = new PostControl();
-    }
     else
     {
         ctrl = new Control();
     }
     ctrl.setObj(a);
-    a.click(ctrl.editField)
-            .attr("title", "Clicca per modificare")
-            .focus(ctrl.editField);
+    ctrl.activateObj();
+
 
 }
 
@@ -63,6 +58,12 @@ function Control()
     this.setObj = function(val) {
         obj = val;
     };
+    this.activateObj = function()
+    {
+        obj.click(thisObj.editField)
+                .attr("title", "Clicca per modificare")
+                .focus(thisObj.editField);
+    };
     this.getInputValue = function()
     {
         return inputControl.val();
@@ -71,6 +72,8 @@ function Control()
     this.unformatData = function()
     {
         return inputControl.val();
+    };
+    this.onAfterSetValue = function() {
     };
     this.save = function(event)
     {
@@ -84,9 +87,13 @@ function Control()
         if (modified)
         {
             obj.text(value);
+            thisObj.onAfterSetValue();
             $.post(window.updateUrl, thisObj.getPostData(), function(res) {
                 if (!res || !res.result)
+                {
                     obj.text(oldValue);
+                    thisObj.onAfterSetValue();
+                }
             }, 'json');
         }
     };
@@ -145,7 +152,7 @@ function EnumControl()
             html += '<input type="radio" value="' + i + '"' + (selected ? ' checked' : '') + ' name="' + thisObj.getObj().attr('name') + '"/>' + item + '<br>';
         }
         html += "</div>";
-        var input = $(html); 
+        var input = $(html);
         //input.blur(thisObj.save);
         $('input', input).change(thisObj.save);
         return input;
@@ -162,25 +169,3 @@ function EnumControl()
 }
 EnumControl.prototype = new Control();
 
-function PostControl()
-{
-    Control.call(this);
-    var thisObj = this;
-
-    this.getPostData = function()
-    {
-        var data = {};
-        data.postcontent = thisObj.unformatData();
-        data.posttime = thisObj.getObj().attr('posttime');
-        return data;
-    };
-
-    this.createInput = function()
-    {
-        var inputControl = $("<textarea class='autoedit'></textarea>");
-        inputControl.val(thisObj.getObj().text());
-        inputControl.blur(thisObj.save);
-        return inputControl;
-    };
-}
-PostControl.prototype = new Control();

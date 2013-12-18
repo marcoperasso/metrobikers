@@ -72,8 +72,6 @@ function htmlSpaceIfEmpty($string) {
     return empty($string) ? '&nbsp;' : html_escape($string);
 }
 
-function adjust_post($content) {
-    return str_replace(array('\r\n', '\n'), array('<br>', '<br>'), html_escape($content));
-}
+
 
 ?>
