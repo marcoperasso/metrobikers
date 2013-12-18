@@ -57,7 +57,7 @@
         if (!window.rexAnchor)
             window.rexAnchor = /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
         str = str.replace(window.rexAnchor, function($0) {
-            return '<a href="' + $0 + '">' + $0 + '</a>';
+            return '<a target="_blank" href="' + $0 + '">' + $0 + '</a>';
         });
 
         if (!window.brAnchor)

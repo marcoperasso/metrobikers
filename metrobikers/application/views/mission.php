@@ -43,10 +43,16 @@
         <a href="/register" class="btn btn-primary btn-lg">Diventa anche tu un ECOmmuter!</a>
         <a href="/home/details" class="btn btn-lg btn-default">Bello, mi spiegate un po' meglio come funziona?</a>
 
-        <div class="container">
+        <div class="container" style="margin-top: 30px">
             <h2>Entra a far parte della nostra <a href="https://plus.google.com/u/0/communities/102754557298986622823" title="Community Google+ ECOmmuters">community</a>.</h2>
-            <a title="Scarica la App da Google Play" href ="https://play.google.com/apps/testing/com.ecommuters" target="play"><img src="/asset/img/logo-google-play.png"/></a>
+            <div class="text-center">
+                <a title="Scarica la App da Google Play" href ="https://play.google.com/store/apps/details?id=com.ecommuters" target="play"><img src="/asset/img/logo-google-play.png" style="margin: 30px 0px 30px 0px"/></a>
+            </div>
+            <p>ECOmmuters è un prodotto giovane, siamo consapevoli che molte funzionalità potrebbero essere migliorate o mancano proprio.</p>
+            <p>Sappiamo però che un buon prodotto nasce soprattutto grazie al contributo degli utenti: non avrebbe senso infarcirlo a priori di funzionalità
+                che nessuno utilizza; ti invitiamo per questo a segnalarci i tuoi suggerimenti o eventuali malfunzionamenti scrivendo
+                a <a href="mailto:info@ecommuters.com">info@ecommuters.com</a>.</p>
+            <p>Ti ringraziamo per la preziosa collaborazione.</p>
         </div>
-
     </div>
 </div>

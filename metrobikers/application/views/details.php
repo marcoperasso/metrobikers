@@ -69,7 +69,7 @@
                         Salvo diversa indicazione, la tua posizione sarà visibile solo agli appartenenti al tuo gruppo.</p>
                 </div>
             </div>
-            <div class="item"><img src="/asset/img/logo-google-play.png">
+            <div class="item"><a title="Scarica la App da Google Play" href ="https://play.google.com/store/apps/details?id=com.ecommuters" target="play"><img src="/asset/img/logo-google-play.png"/></a>
                 <div class="carousel-caption">
                     <h4>Passo due: Scarica l'applicazione da Google Play</h4>
                     <p>L'applicazione richiede l'utilizzo del GPS per il rilevamento preciso della posizione e l'accesso a Internet.</p>
