@@ -105,8 +105,7 @@ class Mobile extends MY_Controller {
         $userid = $this->user == NULL ? 0 : $this->user->id;
         $response = $this->User_position_model->get_positions($left, $top, $right, $bottom, $userid, $search_userid);
 
-        if ($response)
-        {
+        if ($response) {
             foreach ($response as &$point) {
                 $point["time"] = strtotime($point["time"]);
                 $point["routes"] = $this->User_on_route_model->get_routes($point["userid"]);
@@ -135,54 +134,54 @@ class Mobile extends MY_Controller {
     }
 
     public function save_route() {
-        $response = NULL;
+        $response = array(
+            'saved' => FALSE
+        );
         if ($this->user != NULL) {
             $json = $this->input->post("data");
             $route = json_decode($json);
-            $this->load->model("Route_model");
-            try {
-                $this->Route_model->name = $route->name;
-                $this->Route_model->userid = $this->user->id;
-                $this->db->trans_begin();
+            if ($route) {
+                $this->load->model("Route_model");
+                try {
+                    $this->Route_model->name = $route->name;
+                    $this->Route_model->userid = $this->user->id;
+                    $this->db->trans_begin();
 
-                if (!$this->Route_model->get_route()) {
-                    $this->Route_model->assign($route);
-                    $this->Route_model->latestupdate = date('Y-m-d H:i:s', $route->latestupdate);
-                    $this->Route_model->set_points($route->points);
-                    $this->Route_model->create_route();
-                } else {
+                    if (!$this->Route_model->get_route()) {
+                        $this->Route_model->assign($route);
+                        $this->Route_model->latestupdate = date('Y-m-d H:i:s', $route->latestupdate);
+                        $this->Route_model->set_points($route->points);
+                        $this->Route_model->create_route();
+                    } else {
 
-                    $this->Route_model->before = $route->before;
-                    $this->Route_model->after = $route->after;
-                    $this->Route_model->days = $route->days;
-                    $this->Route_model->days = $route->days;
-                    $latestupd = max(array($route->latestupdate, $this->Route_model->latestupdate));
-                    $this->Route_model->latestupdate = date('Y-m-d H:i:s', $latestupd);
-                    $this->Route_model->set_points($route->points);
-                    $this->Route_model->update_route();
-                }
+                        $this->Route_model->before = $route->before;
+                        $this->Route_model->after = $route->after;
+                        $this->Route_model->days = $route->days;
+                        $this->Route_model->days = $route->days;
+                        $latestupd = max(array($route->latestupdate, $this->Route_model->latestupdate));
+                        $this->Route_model->latestupdate = date('Y-m-d H:i:s', $latestupd);
+                        $this->Route_model->set_points($route->points);
+                        $this->Route_model->update_route();
+                    }
 
 
-                $this->db->trans_commit();
-                if ($this->db->_error_message()) {
+                    $this->db->trans_commit();
+                    if ($this->db->_error_message()) {
+                        $response = array(
+                            'saved' => FALSE,
+                            'message' => $this->db->_error_message());
+                    } else {
+                        $response = array(
+                            'saved' => TRUE,
+                            'id' => $this->Route_model->id
+                        );
+                    }
+                } catch (Exception $exc) {
                     $response = array(
                         'saved' => FALSE,
-                        'message' => $this->db->_error_message());
-                } else {
-                    $response = array(
-                        'saved' => TRUE,
-                        'id' => $this->Route_model->id
-                    );
+                        'message' => $exc->getTraceAsString());
                 }
-            } catch (Exception $exc) {
-                $response = array(
-                    'saved' => FALSE,
-                    'message' => $exc->getTraceAsString());
             }
-        } else {
-            $response = array(
-                'saved' => FALSE
-            );
         }
         $this->output
                 ->set_content_type('application/json')
