@@ -101,6 +101,10 @@ public class MyMapActivity extends MapActivity {
 					Intent service = new Intent(MyMapActivity.this,
 							SyncService.class);
 					startService(service);
+					
+					Intent intent = new Intent(MyMapActivity.this, RouteDetailActivity.class);
+					intent.putExtra(Const.ROUTE_EXTRA, routeName);
+					startActivity(intent);
 
 				} catch (IOException e) {
 					Toast.makeText(MyMapActivity.this, e.getLocalizedMessage(),
