@@ -116,6 +116,8 @@ class User_model extends MY_Model {
         $this->mail = $this->input->post('mail');
         $this->name = $this->input->post('name');
         $this->surname = $this->input->post('surname');
+        $this->nickname = "";
+        $this->gender = GENDER_UNSPECIFIED;
         $this->active = FALSE;
         $this->showposition = SHOW_POSITION_GROUP;
         $this->showname = SHOW_NAME_GROUP;
