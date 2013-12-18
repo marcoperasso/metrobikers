@@ -12,7 +12,7 @@ import android.content.Context;
 import android.util.Log;
 
 public class TrackingInfo implements Serializable, IJsonSerializable {
-	private static final int MIN_DISTANCE_FOR_MAX_SPEED = 50;
+	private static final int MIN_DISTANCE_FOR_MAX_SPEED = 100;
 	/**
 	 * 
 	 */

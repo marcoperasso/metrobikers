@@ -249,7 +249,7 @@ public class Helper {
 	}
 
 	public static long getCurrentUnixTime() {
-		return Math.round(System.currentTimeMillis() / 1000f);
+		return Math.round(System.currentTimeMillis() / 1000d);
 	}
 
 }
