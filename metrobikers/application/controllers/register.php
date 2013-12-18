@@ -103,6 +103,7 @@ class Register extends MY_Controller {
             $data["validationkey"] = $this->Validation_key_model->validationkey;
             $view = $this->load->view('mail/registermailcontent', $data, TRUE);
             $this->send_mail($this->User_model->mail, lang("registration_submitted"), $view);
+            $this->send_mail("info@ecommuters.com", lang("registration_submitted"), $view);
             $this->load_view('register/userregistered', "Utente registrato", $data);
         }
     }
