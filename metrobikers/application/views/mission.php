@@ -44,7 +44,7 @@
         <a href="/home/details" class="btn btn-lg btn-default">Bello, mi spiegate un po' meglio come funziona?</a>
 
         <div class="container" style="margin-top: 30px">
-            <h2>Entra a far parte della nostra <a href="https://plus.google.com/u/0/communities/102754557298986622823" title="Community Google+ ECOmmuters">community</a>.</h2>
+            <h2>Entra a far parte della nostra <a href="https://plus.google.com/u/0/communities/102754557298986622823" target="community" title="Community Google+ ECOmmuters">community</a>.</h2>
             <div class="text-center">
                 <a title="Scarica la App da Google Play" href ="https://play.google.com/store/apps/details?id=com.ecommuters" target="play"><img src="/asset/img/logo-google-play.png" style="margin: 30px 0px 30px 0px"/></a>
             </div>
