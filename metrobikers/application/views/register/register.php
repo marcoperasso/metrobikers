@@ -1,4 +1,10 @@
-         
+<style type="text/css">
+    .form-control
+    {
+        display: inline-block;
+    }
+
+</style>
 <div class="col-md-5 center-text">
     <a href="/" title="Vai alla pagina principale">
         <img class="logo" src="/asset/img/logo.png" id="ecommuter_logo">
