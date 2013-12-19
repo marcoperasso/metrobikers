@@ -1,10 +1,4 @@
-<style type="text/css">
-    .form-control
-    {
-        display: inline-block;
-    }
 
-</style>
 <div class="col-md-5 center-text">
     <a href="/" title="Vai alla pagina principale">
         <img class="logo" src="/asset/img/logo.png" id="ecommuter_logo">
@@ -21,8 +15,8 @@
 
         <div class="col-md-10"></div>
         <div class="form-group" id="fieldscontainer">
-            <div class="form-group">
-                <input type="input" name="name" class="required form-control" placeholder="Nome"/>
+            <div class="form-group" >
+                <input type="input" name="name" class="required form-control" style="display: inline-block;" placeholder="Nome"/>
             </div>
             <div class="form-group">
                 <input type="input" name="surname" class="required form-control" placeholder="Cognome"/>
