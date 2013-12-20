@@ -107,7 +107,10 @@ class User_model extends MY_Model {
         $this->activationdate = date('Y-m-d');
         $this->load->library('Crypter');
         $pwd = $this->crypter->decrypt($this->input->post('password'));
-        $this->password = $pwd;
+        
+        $this->load->library('BCrypt');
+        $bcrypt = new BCrypt(15);
+        $this->password = $bcrypt->hash($pwd);
         $this->db->where('id', $this->id);
         $this->db->update('users', $this);
     }

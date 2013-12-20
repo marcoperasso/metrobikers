@@ -26,7 +26,10 @@ class Login extends MY_Controller {
         $this->load->model('User_model');
 
         $this->output->set_content_type('application/json');
-        $success = $this->User_model->get_user($mail) && $this->User_model->password == $pwd;
+        $this->load->library('BCrypt');
+        $bcrypt = new BCrypt(15);
+        
+        $success = $this->User_model->get_user($mail) && $bcrypt->verify($pwd, $this->User_model->password);
         $response = array('success' => $success, 'version' => 1);
         if ($success) {
             set_user($this->User_model);
