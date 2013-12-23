@@ -49,22 +49,23 @@ function decode_showname($id) {
 }
 
 function showposition_items() {
-    return "['" . 
-            decode_showposition(SHOW_POSITION_ALL) . "', '" . 
-            decode_showposition(SHOW_POSITION_GROUP) . "', '" . 
+    return "['" .
+            decode_showposition(SHOW_POSITION_ALL) . "', '" .
+            decode_showposition(SHOW_POSITION_GROUP) . "', '" .
             decode_showposition(SHOW_POSITION_NONE) . "']";
 }
 
 function showname_items() {
-    return "['" . 
-            decode_showname(SHOW_NAME_ALL) . "', '" . 
-            decode_showname(SHOW_NAME_GROUP) . "', '" . 
+    return "['" .
+            decode_showname(SHOW_NAME_ALL) . "', '" .
+            decode_showname(SHOW_NAME_GROUP) . "', '" .
             decode_showname(SHOW_NAME_NONE) . "']";
 }
+
 function gender_items() {
-    return "['" . 
-            decode_gender(GENDER_UNSPECIFIED) . "', '" . 
-            decode_gender(GENDER_FEMALE) . "', '" . 
+    return "['" .
+            decode_gender(GENDER_UNSPECIFIED) . "', '" .
+            decode_gender(GENDER_FEMALE) . "', '" .
             decode_gender(GENDER_MALE) . "']";
 }
 
@@ -72,6 +73,10 @@ function htmlSpaceIfEmpty($string) {
     return empty($string) ? '&nbsp;' : html_escape($string);
 }
 
-
+function get_user_photo($userid) {
+    if (file_exists('./user_data/' . $userid . '/photo.png'))
+            return '/user_data/' . $userid . '/photo.png';
+    return "/asset/img/ecommuter.png";
+}
 
 ?>

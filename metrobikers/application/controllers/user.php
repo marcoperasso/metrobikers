@@ -36,8 +36,8 @@ class User extends MY_Controller {
             $data["validationkey"] = $this->Validation_key_model->validationkey;
             $view = $this->load->view('mail/contactusermailcontent', $data, TRUE);
             $this->send_mail($this->User_model->mail, lang("contact_submitted"), $view);
-            
-            $message = sprintf(lang("mail_for_contact"), $this->User_model->to_string()); 
+
+            $message = sprintf(lang("mail_for_contact"), $this->User_model->to_string());
             $this->load_my_ecommuters_view($message);
         }
     }
@@ -81,6 +81,26 @@ class User extends MY_Controller {
         } else {
             $data['reason'] = "La chiave di attivazione del collegamento non è presente nel nostro database.";
             $this->load_view("error", "Chiave di attivazione non valida", $data);
+        }
+    }
+
+    function upload_photo() {
+        $config['upload_path'] = './user_data/' . $this->user->id . '/';
+        $config['allowed_types'] = 'gif|jpg|png';
+        $config['max_size'] = '100';
+        $config['max_width'] = '1024';
+        $config['max_height'] = '768';
+        $config['overwrite'] = TRUE;
+        $config['file_name'] = 'photo';
+        $this->load->library('upload', $config);
+
+        if (!is_dir($this->upload->upload_path))
+            mkdir($this->upload->upload_path);
+        if (!$this->upload->do_upload()) {
+            $data['reason'] = $this->upload->display_errors();
+            $this->load_view("error", "Errore di caricamento della foto", $data);
+        } else {
+            $this->index();
         }
     }
 

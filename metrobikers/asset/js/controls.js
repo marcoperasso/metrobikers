@@ -14,6 +14,10 @@ function attachControl(el)
     {
         ctrl = new EnumControl();
     }
+    else if (a.hasClass('imagecontent'))
+    {
+        ctrl = new ImageControl();
+    }
     else
     {
         ctrl = new Control();
@@ -169,3 +173,58 @@ function EnumControl()
 }
 EnumControl.prototype = new Control();
 
+function ImageControl()
+{
+    Control.call(this);
+    var thisObj = this;
+
+    this.createInput = function()
+    {
+        var html = '<input type="file"/>';
+        var input = $(html);
+        input.change(thisObj.save).trigger('click');
+        return input;
+    };
+
+    this.save = function(event)
+    {
+        var formData = new FormData($('form')[0]);
+        $.ajax({
+            url: '/upload/do_upload', //Server script to process data
+            type: 'POST',
+            xhr: function() {  // Custom XMLHttpRequest
+                var myXhr = $.ajaxSettings.xhr();
+                //if (myXhr.upload) { // Check if upload property exists
+                //    myXhr.upload.addEventListener('progress', progressHandlingFunction, false); // For handling the progress of the upload
+                //}
+                return myXhr;
+            },
+            //Ajax events
+            // Form data
+            data: formData,
+            //Options to tell jQuery not to process data or worry about content-type.
+            cache: false,
+            contentType: false,
+            processData: false
+        });
+
+        /*var value = thisObj.getInputValue();
+         var oldValue = obj.text();
+         var modified = oldValue !== value;
+         inputControl.remove();
+         obj.show();
+         if (modified)
+         {
+         obj.text(value);
+         thisObj.onAfterSetValue();
+         $.post(window.updateUrl, thisObj.getPostData(), function(res) {
+         if (!res || !res.result)
+         {
+         obj.text(oldValue);
+         thisObj.onAfterSetValue();
+         }
+         }, 'json');
+         }*/
+    };
+}
+ImageControl.prototype = new Control();

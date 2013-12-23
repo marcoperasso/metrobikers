@@ -1,9 +1,18 @@
-<script type="text/javascript">
-    setActiveTab('user');
-    setUpdateUrl("/user/update");
-</script>
+
+<style type="text/css">
+    img.changeable
+    {
+        min-width: 100px;
+    }
+</style>
 <div class="col-md-1"></div>
 <div class="col-md-10">
+    <fieldset>
+        <legend>Foto</legend>
+        <img class="" alt="Foto" src="<?php echo get_user_photo($user->id) ?>" style="width: 100px; height: 100px"/>
+        <form style="display:inline-block" method="post" action="/user/upload_photo" enctype="multipart/form-data" ><input type="file" name="userfile" value="Cambia..."/></form>
+
+    </fieldset>
     <fieldset>
         <legend>Dati anagrafici</legend>
         <b>Nome:</b> <span name="name" class="changeable"><?php echo htmlSpaceIfEmpty($user->name); ?></span><br/>
@@ -23,3 +32,10 @@
 
 </div>
 <div class="col-md-1"></div>
+<script type="text/javascript">
+    setActiveTab('user');
+    setUpdateUrl("/user/update");
+    $("input[type='file']").change(function() {
+        $(this).closest('form').submit();
+    });
+</script>
