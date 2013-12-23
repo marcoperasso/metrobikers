@@ -125,6 +125,7 @@
         <table class ="table table-striped">
             <thead>
                 <tr>
+                    <th>Foto</th>
                     <th>Nome</th>
                     <th>Cognome</th>
                     <th>Nickname</th>
@@ -136,6 +137,7 @@
                 foreach ($linkedusers as $linkeduser) {
                     ?>
                     <tr>
+                        <td><img alt="Foto" src="<?php echo get_user_photo($linkeduser->id) ?>" style="display: inline-block; width:50px;height: 50px; margin: 2px 20px 2px 2px"/></td>
                         <td><?php echo $linkeduser->name; ?></td>
                         <td><?php echo $linkeduser->surname; ?></td>
                         <td><?php echo $linkeduser->nickname; ?></td>
