@@ -97,9 +97,21 @@ class User extends MY_Controller {
         if (!is_dir($this->upload->upload_path))
             mkdir($this->upload->upload_path);
         if (!$this->upload->do_upload()) {
+
             $data['reason'] = $this->upload->display_errors();
             $this->load_view("error", "Errore di caricamento della foto", $data);
         } else {
+             $data = $this->upload->data();
+           
+            $files = glob($this->upload->upload_path .  '/photo*.{jpg,png,gif}', GLOB_BRACE);
+            foreach ($files as $file) {
+                $ext = '.' . pathinfo($file, PATHINFO_EXTENSION);  
+                $ext1 = $data['file_ext'];
+                if (strcmp($ext, $ext1) != 0)
+                {
+                    unlink($file);
+                }
+            }
             $this->index();
         }
     }

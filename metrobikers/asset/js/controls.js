@@ -180,51 +180,27 @@ function ImageControl()
 
     this.createInput = function()
     {
-        var html = '<input type="file"/>';
+        var html = '<form style="display:none;" method="post" action="/user/upload_photo" enctype="multipart/form-data"><input type="file" name="userfile" value="Cambia..."/></form>';
         var input = $(html);
-        input.change(thisObj.save).trigger('click');
+        $('input', input).change(function(){$(this).closest('form').submit();}).trigger('click');
         return input;
     };
 
-    this.save = function(event)
+    this.save = function()
     {
-        var formData = new FormData($('form')[0]);
-        $.ajax({
-            url: '/upload/do_upload', //Server script to process data
-            type: 'POST',
-            xhr: function() {  // Custom XMLHttpRequest
-                var myXhr = $.ajaxSettings.xhr();
-                //if (myXhr.upload) { // Check if upload property exists
-                //    myXhr.upload.addEventListener('progress', progressHandlingFunction, false); // For handling the progress of the upload
-                //}
-                return myXhr;
-            },
-            //Ajax events
-            // Form data
-            data: formData,
-            //Options to tell jQuery not to process data or worry about content-type.
-            cache: false,
-            contentType: false,
-            processData: false
-        });
+        thisObj.getInputControl().submit();
 
-        /*var value = thisObj.getInputValue();
-         var oldValue = obj.text();
-         var modified = oldValue !== value;
-         inputControl.remove();
-         obj.show();
-         if (modified)
-         {
-         obj.text(value);
-         thisObj.onAfterSetValue();
-         $.post(window.updateUrl, thisObj.getPostData(), function(res) {
-         if (!res || !res.result)
-         {
-         obj.text(oldValue);
-         thisObj.onAfterSetValue();
-         }
-         }, 'json');
-         }*/
+    };
+    this.activateObj = function()
+    {
+        thisObj.getObj().click(thisObj.editField)
+                .attr("title", "Clicca per modificare");
+    };
+    this.editField = function()
+    {
+        var c = thisObj.createInput();
+        c.insertBefore(thisObj.getObj());
+        thisObj.setInputControl(c);
     };
 }
 ImageControl.prototype = new Control();

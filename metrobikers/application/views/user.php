@@ -9,9 +9,7 @@
 <div class="col-md-10">
     <fieldset>
         <legend>Foto</legend>
-        <img class="" alt="Foto" src="<?php echo get_user_photo($user->id) ?>" style="width: 100px; height: 100px"/>
-        <form style="display:inline-block" method="post" action="/user/upload_photo" enctype="multipart/form-data" ><input type="file" name="userfile" value="Cambia..."/></form>
-
+        <img class="changeable imagecontent" alt="Foto" src="<?php echo get_user_photo($user->id) ?>" style="width: 100px; height: 100px"/>
     </fieldset>
     <fieldset>
         <legend>Dati anagrafici</legend>
