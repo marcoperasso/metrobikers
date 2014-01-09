@@ -4,7 +4,49 @@ if (!defined('BASEPATH'))
     exit('No direct script access allowed');
 
 class Mitu extends MY_Controller {
+	public function send_message($message)
+	{
+		// Replace with real BROWSER API key from Google APIs
+		$apiKey = "AIzaSyC2SzSst-NVCnnUKlGegbarNe6SapTgDnk";
 
+		// Replace with real client registration IDs 
+		$registrationIDs = array( "APA91bGwEzb3tq9CWAH2X_l8601VED4P7tkn9W_RNrKPfR8d0JEyX2b89mFQNa6tu7c5dKZYq5W5E10zrQ_UJhKnZiXCzCYvmVmJlG9SNWvr_KtC1S-5Fm7KzW_JknjQhGjA3fYeQiNsCNX2rQivZRnqMTzby_ml9Q" );
+
+
+
+		// Set POST variables
+		$url = 'https://android.googleapis.com/gcm/send';
+
+		$fields = array(
+				'registration_ids'  => $registrationIDs,
+				'data'              => array( "message" => $message ),
+				);
+
+		$headers = array( 
+				    'Authorization: key=' . $apiKey,
+				    'Content-Type: application/json'
+				);
+
+		// Open connection
+		$ch = curl_init();
+
+		// Set the url, number of POST vars, POST data
+		curl_setopt( $ch, CURLOPT_URL, $url );
+
+		curl_setopt( $ch, CURLOPT_POST, true );
+		curl_setopt( $ch, CURLOPT_HTTPHEADER, $headers);
+		curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
+
+		curl_setopt( $ch, CURLOPT_POSTFIELDS, json_encode( $fields ) );
+
+		// Execute post
+		$result = curl_exec($ch);
+
+		// Close connection
+		curl_close($ch);
+
+		echo $result;
+	}
     public function save_user() {
         $this->load->model("MITU_User_model");
 		$userid = $this->input->post('userid');
