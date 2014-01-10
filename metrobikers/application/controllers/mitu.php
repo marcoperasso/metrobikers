@@ -4,84 +4,88 @@ if (!defined('BASEPATH'))
     exit('No direct script access allowed');
 
 class Mitu extends MY_Controller {
-	public function send_message($message)
-	{
-		// Replace with real BROWSER API key from Google APIs
-		$apiKey = "AIzaSyC2SzSst-NVCnnUKlGegbarNe6SapTgDnk";
 
-		// Replace with real client registration IDs 
-		$registrationIDs = array( "APA91bGwEzb3tq9CWAH2X_l8601VED4P7tkn9W_RNrKPfR8d0JEyX2b89mFQNa6tu7c5dKZYq5W5E10zrQ_UJhKnZiXCzCYvmVmJlG9SNWvr_KtC1S-5Fm7KzW_JknjQhGjA3fYeQiNsCNX2rQivZRnqMTzby_ml9Q" );
+    public function send_message($message) {
+        $apiKey = "AIzaSyC2SzSst-NVCnnUKlGegbarNe6SapTgDnk";
 
+        // Replace with real client registration IDs 
+        $registrationIDs = array("APA91bGwEzb3tq9CWAH2X_l8601VED4P7tkn9W_RNrKPfR8d0JEyX2b89mFQNa6tu7c5dKZYq5W5E10zrQ_UJhKnZiXCzCYvmVmJlG9SNWvr_KtC1S-5Fm7KzW_JknjQhGjA3fYeQiNsCNX2rQivZRnqMTzby_ml9Q");
 
+        // Set POST variables
+        $url = 'https://android.googleapis.com/gcm/send';
 
-		// Set POST variables
-		$url = 'https://android.googleapis.com/gcm/send';
+        $fields = array(
+            'registration_ids' => $registrationIDs,
+            'data' => array("message" => $message),
+        );
 
-		$fields = array(
-				'registration_ids'  => $registrationIDs,
-				'data'              => array( "message" => $message ),
-				);
+        $headers = array(
+            'Authorization: key=' . $apiKey,
+            'Content-Type: application/json'
+        );
 
-		$headers = array( 
-				    'Authorization: key=' . $apiKey,
-				    'Content-Type: application/json'
-				);
+        // Open connection
+        $ch = curl_init();
 
-		// Open connection
-		$ch = curl_init();
+        // Set the url, number of POST vars, POST data
+        curl_setopt($ch, CURLOPT_URL, $url);
 
-		// Set the url, number of POST vars, POST data
-		curl_setopt( $ch, CURLOPT_URL, $url );
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 
-		curl_setopt( $ch, CURLOPT_POST, true );
-		curl_setopt( $ch, CURLOPT_HTTPHEADER, $headers);
-		curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($fields));
 
-		curl_setopt( $ch, CURLOPT_POSTFIELDS, json_encode( $fields ) );
+        // Execute post
+        $result = curl_exec($ch);
 
-		// Execute post
-		$result = curl_exec($ch);
+        // Close connection
+        curl_close($ch);
 
-		// Close connection
-		curl_close($ch);
+        echo $result;
+    }
 
-		echo $result;
-	}
+    public function save_regid() {
+        if ($this->user !== NULL)
+        {
+            $this->load->model("MITU_Regid_model");
+            $this->MITU_Regid_model->userid = $this->input->post('userid');
+            $this->MITU_Regid_model->regid = $this->input->post('regid');
+            $this->MITU_Regid_model->create_regid();
+        }
+    }
+
     public function save_user() {
         $this->load->model("MITU_User_model");
-		$userid = $this->input->post('userid');
-		$newuser = $this->input->post('newuser');
-		$existing = $this->MITU_User_model->get_user($userid);
-		$response = array('success' => TRUE);
-		if ($existing)
-		{
-			if ($newuser)
-			{
-				$response["message"] = "User already existing";
-				$response["success"] = FALSE;
-				$this->output->set_output(json_encode($response));
-			}
-		}
+        $userid = $this->input->post('userid');
+        $newuser = $this->input->post('newuser');
+        $existing = $this->MITU_User_model->get_user($userid);
+        $response = array('success' => TRUE);
+        if ($existing) {
+            if ($newuser) {
+                $response["message"] = "User already existing";
+                $response["success"] = FALSE;
+                $this->output->output->set_content_type('application/json')->set_output(json_encode($response));
+                return;
+            }
+        }
         $this->MITU_User_model->mail = $this->input->post('email');
-		$this->MITU_User_model->userid = $userid;
-		
-		$this->load->library('BCrypt');
+        $this->MITU_User_model->userid = $userid;
+
+        $this->load->library('BCrypt');
         $bcrypt = new BCrypt(15);
-		
+
         $this->MITU_User_model->password = $bcrypt->hash($this->input->post('pwd'));
         $this->MITU_User_model->name = $this->input->post('name');
-		$this->MITU_User_model->surname = $this->input->post('surname');
-		
-		if ($existing)
-		{
-			$this->MITU_User_model->update_user();
-		}
-		else
-		{
-			$this->MITU_User_model->create_user();
-			$response["id"] = $this->MITU_User_model->id;
-		}
-		$this->output->set_output(json_encode($response));
+        $this->MITU_User_model->surname = $this->input->post('surname');
+
+        if ($existing) {
+            $this->MITU_User_model->update_user();
+        } else {
+            $this->MITU_User_model->create_user();
+            $response["id"] = $this->MITU_User_model->id;
+        }
+        $this->output->output->set_content_type('application/json')->set_output(json_encode($response));
     }
 
     public function login() {
@@ -89,10 +93,9 @@ class Mitu extends MY_Controller {
         $userid = $this->input->post('userid');
         $this->load->model('MITU_User_model');
 
-        $this->output->set_content_type('application/json');
         $this->load->library('BCrypt');
         $bcrypt = new BCrypt(15);
-        
+
         $success = $this->MITU_User_model->get_user($userid) && $bcrypt->verify($pwd, $this->MITU_User_model->password);
         $response = array('success' => $success, 'version' => 1);
         if ($success) {
@@ -101,10 +104,9 @@ class Mitu extends MY_Controller {
             $response["message"] = "Login failed. Invalid user or password";
         }
 
-        $this->output->set_output(json_encode($response));
+        $this->output->set_content_type('application/json')->set_output(json_encode($response));
     }
 
-    
     public function user_logged() {
         $this->output
                 ->set_content_type('application/json')

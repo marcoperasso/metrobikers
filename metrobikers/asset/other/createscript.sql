@@ -94,4 +94,22 @@ CREATE TABLE `posts` (
   CONSTRAINT `post_user` FOREIGN KEY (`userid`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8$$
 
+CREATE TABLE `mitu_users` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `userid` varchar(15) NOT NULL DEFAULT '',
+  `mail` varchar(255) NOT NULL DEFAULT '',
+  `name` varchar(255) DEFAULT NULL,
+  `surname` varchar(255) DEFAULT NULL,
+  `password` char(60) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `mail_UNIQUE` (`mail`),
+  UNIQUE KEY `userid_UNIQUE` (`userid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8$$
 
+CREATE TABLE `mitu_regids` (
+  `userid` int(11) NOT NULL,
+  `regid` varchar(250) NOT NULL,
+  PRIMARY KEY (`regid`,`userid`),
+  KEY `regid_user` (`userid`),
+  CONSTRAINT `regid_user` FOREIGN KEY (`userid`) REFERENCES `mitu_users` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=utf8$$
