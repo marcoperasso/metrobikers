@@ -10,7 +10,11 @@ class MITU_Regid_model extends MY_Model {
     }
 
     public function create_regid() {
-        $this->db->insert('mitu_regids', $this);
+        $query = $this->db->get_where('mitu_regids ', array('userid' => $this->userid, 'regid' => $this->regid));
+        if ($query->num_rows() === 1) {
+            return TRUE;
+        }
+        return $this->db->insert('mitu_regids', $this);
     }
 
     public function get_regids($userid) {

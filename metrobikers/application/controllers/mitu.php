@@ -3,8 +3,21 @@
 if (!defined('BASEPATH'))
     exit('No direct script access allowed');
 
-class Mitu extends MY_Controller {
+class Mitu extends CI_Controller {
 
+    var $user;
+
+    public function __construct() {
+        parent::__construct();
+        if (!isset($_SESSION)) {
+            session_start();
+        }
+        $this->lang->load("messages", "it-IT");
+        $this->load->model('MITU_User_model');
+
+        $this->user = (isset($_SESSION) && isset($_SESSION['user'])) ? unserialize($_SESSION["user"]) : NULL;
+    }
+    
     public function send_message($message) {
         $apiKey = "AIzaSyC2SzSst-NVCnnUKlGegbarNe6SapTgDnk";
 
@@ -46,17 +59,18 @@ class Mitu extends MY_Controller {
     }
 
     public function save_regid() {
-        if ($this->user !== NULL)
-        {
+        $response = array('success' => FALSE);
+        if ($this->user !== NULL) {
             $this->load->model("MITU_Regid_model");
-            $this->MITU_Regid_model->userid = $this->input->post('userid');
+            $this->MITU_Regid_model->userid = $this->user->id;
             $this->MITU_Regid_model->regid = $this->input->post('regid');
-            $this->MITU_Regid_model->create_regid();
+            $response['success'] = $this->MITU_Regid_model->create_regid();
         }
+
+        $this->output->set_content_type('application/json')->set_output(json_encode($response));
     }
 
     public function save_user() {
-        $this->load->model("MITU_User_model");
         $userid = $this->input->post('userid');
         $newuser = $this->input->post('newuser');
         $existing = $this->MITU_User_model->get_user($userid);
@@ -65,7 +79,7 @@ class Mitu extends MY_Controller {
             if ($newuser) {
                 $response["message"] = "User already existing";
                 $response["success"] = FALSE;
-                $this->output->output->set_content_type('application/json')->set_output(json_encode($response));
+                $this->output->set_content_type('application/json')->set_output(json_encode($response));
                 return;
             }
         }
@@ -85,14 +99,13 @@ class Mitu extends MY_Controller {
             $this->MITU_User_model->create_user();
             $response["id"] = $this->MITU_User_model->id;
         }
-        $this->output->output->set_content_type('application/json')->set_output(json_encode($response));
+        $this->output->set_content_type('application/json')->set_output(json_encode($response));
     }
 
     public function login() {
         $pwd = $this->input->post('pwd');
         $userid = $this->input->post('userid');
-        $this->load->model('MITU_User_model');
-
+        
         $this->load->library('BCrypt');
         $bcrypt = new BCrypt(15);
 
