@@ -18,8 +18,9 @@ class MITU_Regid_model extends MY_Model {
     }
 
     public function get_regids($userid) {
-        $query = $this->db->get_where('mitu_regids ', array('userid' => $userid));
+        $query = $this->db->select('regid')->get_where('mitu_regids ', array('userid' => $userid));
         return $query->result_array();
+        
     }
 
 }

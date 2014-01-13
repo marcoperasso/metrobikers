@@ -1,7 +1,12 @@
 <?php
 
-if (!defined('BASEPATH'))
+if (!defined('BASEPATH')) {
     exit('No direct script access allowed');
+}
+        const SUCCESS = 0;
+        const CUSTOM_ERROR = 1;
+        const USER_NOT_LOGGED = 2;
+        const NO_RECEIVER_IDS = 3;
 
 class Mitu extends CI_Controller {
 
@@ -17,19 +22,16 @@ class Mitu extends CI_Controller {
 
         $this->user = (isset($_SESSION) && isset($_SESSION['user'])) ? unserialize($_SESSION["user"]) : NULL;
     }
-    
-    public function send_message($message) {
-        $apiKey = "AIzaSyC2SzSst-NVCnnUKlGegbarNe6SapTgDnk";
 
-        // Replace with real client registration IDs 
-        $registrationIDs = array("APA91bGwEzb3tq9CWAH2X_l8601VED4P7tkn9W_RNrKPfR8d0JEyX2b89mFQNa6tu7c5dKZYq5W5E10zrQ_UJhKnZiXCzCYvmVmJlG9SNWvr_KtC1S-5Fm7KzW_JknjQhGjA3fYeQiNsCNX2rQivZRnqMTzby_ml9Q");
+    private function send_message($registrationIDs, $data) {
+        $apiKey = "AIzaSyC2SzSst-NVCnnUKlGegbarNe6SapTgDnk";
 
         // Set POST variables
         $url = 'https://android.googleapis.com/gcm/send';
 
         $fields = array(
             'registration_ids' => $registrationIDs,
-            'data' => array("message" => $message),
+            'data' => $data
         );
 
         $headers = array(
@@ -55,7 +57,7 @@ class Mitu extends CI_Controller {
         // Close connection
         curl_close($ch);
 
-        echo $result;
+        return $result;
     }
 
     public function save_regid() {
@@ -105,7 +107,7 @@ class Mitu extends CI_Controller {
     public function login() {
         $pwd = $this->input->post('pwd');
         $userid = $this->input->post('userid');
-        
+
         $this->load->library('BCrypt');
         $bcrypt = new BCrypt(15);
 
@@ -135,7 +137,7 @@ class Mitu extends CI_Controller {
                 'userid' => $this->user->userid,
                 'name' => $this->user->name,
                 'surname' => $this->user->surname,
-                'mail' => $this->user->mail,
+                'mail' => $this->user->mail
             );
         } else {
             $response = array(
@@ -199,18 +201,38 @@ class Mitu extends CI_Controller {
                 ->set_output(json_encode($response));
     }
 
-    public function get_positions_by_name() {
-        $name = $this->input->get("name");
-        $this->load->model("User_position_model");
-        $this->load->model("User_on_route_model");
-        $this->User_position_model->purge_positions();
-        $list = $this->User_position_model->get_positions_by_name($name);
+    public function get_users() {
+        $filter = $this->input->get("filter");
 
-        foreach ($list as &$point) {
-            $point["time"] = strtotime($point["time"]);
-            $point["routes"] = $this->User_on_route_model->get_routes($point["userid"]);
+        $response = array(
+            'users' => $this->MITU_User_model->get_users($filter),
+            'total' => $this->MITU_User_model->get_user_count($filter));
+        $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode($response));
+    }
+
+    public function contact_user($id) {
+        if ($this->user !== NULL) {
+            $this->load->model("MITU_Regid_model");
+            $ids = $this->MITU_Regid_model->get_regids($id);
+            if (count($ids) === 0) {
+                $response->messageid = NO_RECEIVER_IDS;
+            } else {
+                $regids = array();
+                foreach ($ids as $value) {
+                    array_push($regids, $value['regid']);
+                }
+
+                $result = $this->send_message($regids, array(
+                    'userid' => $this->user->userid,
+                    'name' => $this->user->name,
+                    'surname' => $this->user->surname));
+                $response = array('result' => SUCCESS, "gcmresponse" => json_decode($result));
+            }
+        } else {
+            $response = array('result' => USER_NOT_LOGGED);
         }
-        $response = array('positions' => $list, 'total' => $this->User_position_model->get_positions_count_by_name($name));
         $this->output
                 ->set_content_type('application/json')
                 ->set_output(json_encode($response));
