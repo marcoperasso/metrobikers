@@ -39,6 +39,7 @@ class MITU_User_model extends MY_Model {
     }
 
     public function get_users($filter) {
+        $this->db->select('id');
         $this->db->select('userid');
         $this->db->select('name');
         $this->db->select('surname');

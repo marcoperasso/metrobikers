@@ -150,50 +150,62 @@ class Mitu extends CI_Controller {
     }
 
     public function update_position() {
-
         $json = $this->input->post("data");
         $point = json_decode($json);
         if ($point) {
-            $this->load->model("User_position_model");
-            $this->load->model("User_on_route_model");
+            $this->load->model("MITU_User_position_model");
+            $this->load->model("MITU_Connections_model");
+
             $this->db->trans_begin();
 
-            $this->User_position_model->userid = $point->userid;
-            $this->User_position_model->lat = $point->lat;
-            $this->User_position_model->lon = $point->lon;
-            $this->User_position_model->time = date('Y-m-d H:i:s', $point->time);
-            $this->User_position_model->save_position();
+            $this->MITU_User_position_model->userid = $point->id;
+            $this->MITU_User_position_model->lat = $point->lat;
+            $this->MITU_User_position_model->lon = $point->lon;
+            $this->MITU_User_position_model->time = date('Y-m-d H:i:s', $point->time);
+            $this->MITU_User_position_model->save_position();
 
-            $this->User_on_route_model->purge($point->userid);
-            foreach ($point->routes as $routeid) {
-                $this->User_on_route_model->userid = $point->userid;
-                $this->User_on_route_model->routeid = $routeid;
-                $this->User_on_route_model->save();
+            $this->MITU_Connections_model->purge($point->id);
+            foreach ($point->users as $userid) {
+                $this->MITU_Connections_model->idfrom = $point->id;
+                $this->MITU_Connections_model->idto = $userid;
+                $this->MITU_Connections_model->create_connection();
             }
             $this->db->trans_commit();
             $response = array('saved' => TRUE);
         } else {
             $response = array('saved' => FALSE);
         }
+
+
         $this->output
                 ->set_content_type('application/json')
                 ->set_output(json_encode($response));
     }
 
-    public function get_positions($left, $top, $right, $bottom) {
-        $this->load->model("User_position_model");
-        $this->load->model("User_on_route_model");
-        $this->User_position_model->purge_positions();
-        $search_userid = $this->input->post("userid");
-        if (!$search_userid)
-            $search_userid = 0;
+    public function get_positions() {
+        $this->load->model("MITU_User_position_model");
+        $this->MITU_User_position_model->purge_positions();
         $userid = $this->user == NULL ? 0 : $this->user->id;
-        $response = $this->User_position_model->get_positions($left, $top, $right, $bottom, $userid, $search_userid);
+        $response = $this->MITU_User_position_model->get_positions($userid);
 
         if ($response) {
             foreach ($response as &$point) {
                 $point["time"] = strtotime($point["time"]);
-                $point["routes"] = $this->User_on_route_model->get_routes($point["userid"]);
+            }
+        }
+        $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode($response));
+    }
+    
+    public function a($userid) {
+        $this->load->model("MITU_User_position_model");
+        $this->MITU_User_position_model->purge_positions();
+        $response = $this->MITU_User_position_model->get_positions($userid);
+
+        if ($response) {
+            foreach ($response as &$point) {
+                $point["time"] = strtotime($point["time"]);
             }
         }
         $this->output

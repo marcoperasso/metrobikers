@@ -112,3 +112,17 @@ CREATE TABLE `mitu_regids` (
   PRIMARY KEY (`regid`,`userid`),
   CONSTRAINT `regid_user` FOREIGN KEY (`userid`) REFERENCES `mitu_users` (`id`) ON DELETE NO CASCADE ON UPDATE NO CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8$$
+
+CREATE TABLE `mitu_connections` (
+  `idfrom` int(11) NOT NULL,
+  `idto` int(11) NOT NULL,
+  PRIMARY KEY (`idfrom`,`idto`)
+) ENGINE=MEMORY DEFAULT CHARSET=utf8$$;
+
+CREATE TABLE `mitu_userpositions` (
+  `userid` int(11) NOT NULL,
+  `lat` bigint(20) DEFAULT NULL,
+  `lon` bigint(20) DEFAULT NULL,
+  `time` datetime DEFAULT NULL,
+  PRIMARY KEY (`userid`)
+) ENGINE=MEMORY DEFAULT CHARSET=utf8$$;
