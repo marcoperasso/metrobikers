@@ -6,7 +6,7 @@ class MITU_User_position_model extends MY_Model {
     var $lat;
     var $lon;
     var $time;
-
+    var $gps;
     public function __construct() {
         parent::__construct();
     }
@@ -26,7 +26,7 @@ class MITU_User_position_model extends MY_Model {
     }
 
     public function get_positions($userid) {
-        $select = "SELECT lat, lon, name, surname, time, mitu_users.userid " .
+        $select = "SELECT lat, lon, name, surname, time, gps, mitu_users.userid " .
                 "FROM mitu_userpositions " .
                 " JOIN mitu_users ON mitu_users.id = mitu_userpositions.userid " .
                 " right JOIN mitu_connections ON mitu_users.id = mitu_connections.idfrom ".

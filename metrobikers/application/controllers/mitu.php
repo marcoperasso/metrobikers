@@ -161,6 +161,7 @@ class Mitu extends CI_Controller {
             $this->MITU_User_position_model->userid = $point->id;
             $this->MITU_User_position_model->lat = $point->lat;
             $this->MITU_User_position_model->lon = $point->lon;
+            $this->MITU_User_position_model->gps = $point->gps;
             $this->MITU_User_position_model->time = date('Y-m-d H:i:s', $point->time);
             $this->MITU_User_position_model->save_position();
 
