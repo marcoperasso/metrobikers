@@ -184,29 +184,19 @@ class Mitu extends CI_Controller {
     }
 
     public function get_positions() {
-        $this->load->model("MITU_User_position_model");
-        $this->MITU_User_position_model->purge_positions();
         $userid = $this->user == NULL ? 0 : $this->user->id;
-        $response = $this->MITU_User_position_model->get_positions($userid);
-
-        if ($response) {
-            foreach ($response as &$point) {
-                $point["time"] = strtotime($point["time"]);
-            }
-        }
-        $this->output
-                ->set_content_type('application/json')
-                ->set_output(json_encode($response));
+        $this->get_positions_by_userid($userid);
     }
     
-    public function a($userid) {
+    public function get_positions_by_userid($userid) {
         $this->load->model("MITU_User_position_model");
-        $this->MITU_User_position_model->purge_positions();
+        //$this->MITU_User_position_model->purge_positions();
         $response = $this->MITU_User_position_model->get_positions($userid);
 
         if ($response) {
             foreach ($response as &$point) {
                 $point["time"] = strtotime($point["time"]);
+                $point["gps"] = $point["gps"] == 1 ? TRUE : FALSE;
             }
         }
         $this->output

@@ -26,10 +26,10 @@ class MITU_User_position_model extends MY_Model {
     }
 
     public function get_positions($userid) {
-        $select = "SELECT lat, lon, name, surname, time, gps, mitu_users.userid " .
+        $select = "SELECT lat, lon, name, surname, time, gps, id, mitu_users.userid " .
                 "FROM mitu_userpositions " .
                 " JOIN mitu_users ON mitu_users.id = mitu_userpositions.userid " .
-                " right JOIN mitu_connections ON mitu_users.id = mitu_connections.idfrom ".
+                " JOIN mitu_connections ON mitu_users.id = mitu_connections.idfrom ".
                 " where idto = " . $this->db->escape($userid);
         $query = $this->db->query($select);
         return $query->result_array();
