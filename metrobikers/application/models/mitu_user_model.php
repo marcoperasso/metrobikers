@@ -38,20 +38,22 @@ class MITU_User_model extends MY_Model {
         return FALSE;
     }
 
-    public function get_users($filter) {
+    public function get_users($filter, $my_userid) {
         $this->db->select('id');
         $this->db->select('userid');
         $this->db->select('name');
         $this->db->select('surname');
         $this->db->like('concat(name, " ", surname, " ", userid)', $filter);
         $this->db->limit(10);
+        $this->db->where('id !=', $my_userid);
         $query = $this->db->get('mitu_users');
         return $query->result_array();
     }
 
-    public function get_user_count($filter) {
+    public function get_user_count($filter, $my_userid) {
         $this->db->select('count(*) size');
         $this->db->like('concat(name, " ", surname, " ", userid)', $filter);
+        $this->db->where('id !=', $my_userid);
         $query = $this->db->get('mitu_users');
         $result = $query->row();
         return $result->size;

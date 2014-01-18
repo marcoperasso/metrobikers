@@ -8,6 +8,10 @@ if (!defined('BASEPATH')) {
         const USER_NOT_LOGGED = 2;
         const NO_RECEIVER_IDS = 3;
 
+        const MSG_REQUEST_CONTACT = 0;
+        const MSG_ACCEPT_CONTACT = 1;
+        const MSG_REJECT_CONTACT = 1;
+
 class Mitu extends CI_Controller {
 
     var $user;
@@ -187,7 +191,7 @@ class Mitu extends CI_Controller {
         $userid = $this->user == NULL ? 0 : $this->user->id;
         $this->get_positions_by_userid($userid);
     }
-    
+
     public function get_positions_by_userid($userid) {
         $this->load->model("MITU_User_position_model");
         //$this->MITU_User_position_model->purge_positions();
@@ -205,17 +209,28 @@ class Mitu extends CI_Controller {
     }
 
     public function get_users() {
-        $filter = $this->input->get("filter");
+
+        $userid = $this->user == NULL ? 0 : $this->user->id;
+
+        $filter = $this->input->get("filter", $userid);
 
         $response = array(
-            'users' => $this->MITU_User_model->get_users($filter),
-            'total' => $this->MITU_User_model->get_user_count($filter));
+            'users' => $this->MITU_User_model->get_users($filter, $userid),
+            'total' => $this->MITU_User_model->get_user_count($filter, $userid));
         $this->output
                 ->set_content_type('application/json')
                 ->set_output(json_encode($response));
     }
 
+    public function respond_to_user($id, $response) {
+        $this->message_to_user($id, $response);
+    }
+
     public function contact_user($id) {
+        $this->message_to_user($id, MSG_REQUEST_CONTACT);
+    }
+
+    private function message_to_user($id, $response_code) {
         if ($this->user !== NULL) {
             $this->load->model("MITU_Regid_model");
             $ids = $this->MITU_Regid_model->get_regids($id);
@@ -228,9 +243,16 @@ class Mitu extends CI_Controller {
                 }
 
                 $result = $this->send_message($regids, array(
-                    'userid' => $this->user->userid,
-                    'name' => $this->user->name,
-                    'surname' => $this->user->surname));
+                    'msgtype' => $response_code,
+                    'touserid' => $id,
+                    'user' => array(
+                        'id' => $this->user->id,
+                        'userid' => $this->user->userid,
+                        'name' => $this->user->name,
+                        'surname' => $this->user->surname,
+                        'mail' => $this->user->mail
+                    )
+                ));
                 $response = array('result' => SUCCESS, "gcmresponse" => json_decode($result));
             }
         } else {
