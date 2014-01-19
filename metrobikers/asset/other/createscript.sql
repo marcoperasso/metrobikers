@@ -124,6 +124,6 @@ CREATE TABLE `mitu_userpositions` (
   `lat` bigint(20) DEFAULT NULL,
   `lon` bigint(20) DEFAULT NULL,
   `time` datetime DEFAULT NULL,
-  `gps` bit(1) DEFAULT NULL,
+  `gps` tinyint(1) DEFAULT NULL,
   PRIMARY KEY (`userid`)
 ) ENGINE=MEMORY DEFAULT CHARSET=utf8$$;

@@ -10,7 +10,8 @@ if (!defined('BASEPATH')) {
 
         const MSG_REQUEST_CONTACT = 0;
         const MSG_ACCEPT_CONTACT = 1;
-        const MSG_REJECT_CONTACT = 1;
+        const MSG_REJECT_CONTACT = 2;
+        const MSG_REMOVE_CONTACT = 3;
 
 class Mitu extends CI_Controller {
 
@@ -165,7 +166,7 @@ class Mitu extends CI_Controller {
             $this->MITU_User_position_model->userid = $point->id;
             $this->MITU_User_position_model->lat = $point->lat;
             $this->MITU_User_position_model->lon = $point->lon;
-            $this->MITU_User_position_model->gps = $point->gps;
+            $this->MITU_User_position_model->gps = $point->gps ? 1 : 0;
             $this->MITU_User_position_model->time = date('Y-m-d H:i:s', $point->time);
             $this->MITU_User_position_model->save_position();
 
@@ -228,6 +229,10 @@ class Mitu extends CI_Controller {
 
     public function contact_user($id) {
         $this->message_to_user($id, MSG_REQUEST_CONTACT);
+    }
+    
+     public function disconnect_user($id) {
+        $this->message_to_user($id, MSG_REMOVE_CONTACT);
     }
 
     private function message_to_user($id, $response_code) {
