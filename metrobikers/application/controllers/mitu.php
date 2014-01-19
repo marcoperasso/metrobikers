@@ -224,18 +224,18 @@ class Mitu extends CI_Controller {
     }
 
     public function respond_to_user($id, $response) {
-        $this->message_to_user($id, $response);
+        $this->message_to_user($id, $response, '');
     }
 
-    public function contact_user($id) {
-        $this->message_to_user($id, MSG_REQUEST_CONTACT);
+    public function contact_user() {
+        $this->message_to_user($this->input->post("userid"), MSG_REQUEST_CONTACT, $this->input->post("securetoken"));
     }
     
      public function disconnect_user($id) {
-        $this->message_to_user($id, MSG_REMOVE_CONTACT);
+        $this->message_to_user($id, MSG_REMOVE_CONTACT, '');
     }
 
-    private function message_to_user($id, $response_code) {
+    private function message_to_user($id, $response_code, $secureToken) {
         if ($this->user !== NULL) {
             $this->load->model("MITU_Regid_model");
             $ids = $this->MITU_Regid_model->get_regids($id);
@@ -250,6 +250,7 @@ class Mitu extends CI_Controller {
                 $result = $this->send_message($regids, array(
                     'msgtype' => $response_code,
                     'touserid' => $id,
+                    'securetoken' => $secureToken,
                     'user' => array(
                         'id' => $this->user->id,
                         'userid' => $this->user->userid,
