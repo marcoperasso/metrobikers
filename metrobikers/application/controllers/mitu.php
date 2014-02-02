@@ -12,6 +12,8 @@ if (!defined('BASEPATH')) {
         const MSG_ACCEPT_CONTACT = 1;
         const MSG_REJECT_CONTACT = 2;
         const MSG_REMOVE_CONTACT = 3;
+        const MSG_WRONG_PASSWORD = 4;
+        const MSG_MESSAGE = 5;
 
 class Mitu extends CI_Controller {
 
@@ -224,18 +226,25 @@ class Mitu extends CI_Controller {
     }
 
     public function respond_to_user($id, $response) {
-        $this->message_to_user($id, $response, '');
+        $this->internal_message_to_user($id, $response);
     }
 
     public function contact_user() {
-        $this->message_to_user($this->input->post("userid"), MSG_REQUEST_CONTACT, $this->input->post("securetoken"));
-    }
-    
-     public function disconnect_user($id) {
-        $this->message_to_user($id, MSG_REMOVE_CONTACT, '');
+        $this->internal_message_to_user($this->input->post("userid"), MSG_REQUEST_CONTACT, array("securetoken" => $this->input->post("securetoken")));
     }
 
-    private function message_to_user($id, $response_code, $secureToken) {
+    public function disconnect_user($id) {
+        $this->internal_message_to_user($id, MSG_REMOVE_CONTACT);
+    }
+
+    public function message_to_user() {
+        $message = $this->input->post('message');
+        $userid = $this->input->post('userid');
+
+        $this->internal_message_to_user($userid, MSG_MESSAGE, array("message" => $message));
+    }
+
+    private function internal_message_to_user($id, $response_code, $args = array()) {
         if ($this->user !== NULL) {
             $this->load->model("MITU_Regid_model");
             $ids = $this->MITU_Regid_model->get_regids($id);
@@ -246,19 +255,18 @@ class Mitu extends CI_Controller {
                 foreach ($ids as $value) {
                     array_push($regids, $value['regid']);
                 }
-
-                $result = $this->send_message($regids, array(
+                $ar = array(
                     'msgtype' => $response_code,
                     'touserid' => $id,
-                    'securetoken' => $secureToken,
                     'user' => array(
                         'id' => $this->user->id,
                         'userid' => $this->user->userid,
                         'name' => $this->user->name,
                         'surname' => $this->user->surname,
                         'mail' => $this->user->mail
-                    )
                 ));
+                $ar = array_merge($ar, $args);
+                $result = $this->send_message($regids, $ar);
                 $response = array('result' => SUCCESS, "gcmresponse" => json_decode($result));
             }
         } else {
