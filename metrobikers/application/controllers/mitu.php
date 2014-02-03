@@ -195,7 +195,7 @@ class Mitu extends CI_Controller {
 
     public function get_positions_by_userid($userid) {
         $this->load->model("MITU_User_position_model");
-        //$this->MITU_User_position_model->purge_positions();
+        $this->MITU_User_position_model->purge_positions();
         $response = $this->MITU_User_position_model->get_positions($userid);
 
         if ($response) {
@@ -255,8 +255,7 @@ class Mitu extends CI_Controller {
                         'id' => $this->user->id,
                         'userid' => $this->user->userid,
                         'name' => $this->user->name,
-                        'surname' => $this->user->surname,
-                        'mail' => $this->user->mail
+                        'surname' => $this->user->surname
                     )
                 ));
                 $response = array('result' => SUCCESS, "gcmresponse" => json_decode($result));
