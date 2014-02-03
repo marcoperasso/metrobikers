@@ -14,6 +14,7 @@ if (!defined('BASEPATH')) {
         const MSG_REMOVE_CONTACT = 3;
         const MSG_WRONG_PASSWORD = 4;
         const MSG_MESSAGE = 5;
+        const MSG_POSITION = 6;
 
 class Mitu extends CI_Controller {
 
@@ -177,6 +178,8 @@ class Mitu extends CI_Controller {
                 $this->MITU_Connections_model->idfrom = $point->id;
                 $this->MITU_Connections_model->idto = $userid;
                 $this->MITU_Connections_model->create_connection();
+                
+                $this->internal_message_to_user($userid, MSG_POSITION, FALSE, array("position" => $point));
             }
             $this->db->trans_commit();
             $response = array('saved' => TRUE);
@@ -230,7 +233,7 @@ class Mitu extends CI_Controller {
     }
 
     public function contact_user() {
-        $this->internal_message_to_user($this->input->post("userid"), MSG_REQUEST_CONTACT, array("securetoken" => $this->input->post("securetoken")));
+        $this->internal_message_to_user($this->input->post("userid"), MSG_REQUEST_CONTACT, TRUE, array("securetoken" => $this->input->post("securetoken")));
     }
 
     public function disconnect_user($id) {
@@ -244,7 +247,7 @@ class Mitu extends CI_Controller {
         $this->internal_message_to_user($userid, MSG_MESSAGE, array("message" => $message));
     }
 
-    private function internal_message_to_user($id, $response_code, $args = array()) {
+    private function internal_message_to_user($id, $response_code, $do_output = TRUE, $args = array()) {
         if ($this->user !== NULL) {
             $this->load->model("MITU_Regid_model");
             $ids = $this->MITU_Regid_model->get_regids($id);
@@ -271,9 +274,11 @@ class Mitu extends CI_Controller {
         } else {
             $response = array('result' => USER_NOT_LOGGED);
         }
-        $this->output
-                ->set_content_type('application/json')
-                ->set_output(json_encode($response));
+        if ($do_output) {
+            $this->output
+                    ->set_content_type('application/json')
+                    ->set_output(json_encode($response));
+        }
     }
 
 }
