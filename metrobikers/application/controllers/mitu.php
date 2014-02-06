@@ -31,7 +31,7 @@ class Mitu extends CI_Controller {
         $this->user = (isset($_SESSION) && isset($_SESSION['user'])) ? unserialize($_SESSION["user"]) : NULL;
     }
 
-    private function send_message($registrationIDs, $data) {
+    private function send_message($registrationIDs, $data, $collapse_key = NULL) {
         $apiKey = "AIzaSyC2SzSst-NVCnnUKlGegbarNe6SapTgDnk";
 
         // Set POST variables
@@ -41,7 +41,9 @@ class Mitu extends CI_Controller {
             'registration_ids' => $registrationIDs,
             'data' => $data
         );
-
+        if ($collapse_key != NULL) {
+            $fields['collapse_key'] = $collapse_key;
+        }
         $headers = array(
             'Authorization: key=' . $apiKey,
             'Content-Type: application/json'
@@ -178,7 +180,7 @@ class Mitu extends CI_Controller {
                 $this->MITU_Connections_model->idfrom = $point->id;
                 $this->MITU_Connections_model->idto = $userid;
                 $this->MITU_Connections_model->create_connection();
-                
+
                 $this->internal_message_to_user($userid, MSG_POSITION, FALSE, array("position" => $point));
             }
             $this->db->trans_commit();
@@ -247,6 +249,14 @@ class Mitu extends CI_Controller {
         $this->internal_message_to_user($userid, MSG_MESSAGE, array("message" => $message));
     }
 
+    private function get_collapse_key($response_code) {
+        switch ($response_code) {
+            case MSG_REQUEST_CONTACT: return "MSG_REQUEST_CONTACT";
+            case MSG_POSITION: return "MSG_POSITION";
+            default : return NULL;
+        }
+    }
+
     private function internal_message_to_user($id, $response_code, $do_output = TRUE, $args = array()) {
         if ($this->user !== NULL) {
             $this->load->model("MITU_Regid_model");
@@ -268,7 +278,7 @@ class Mitu extends CI_Controller {
                         'surname' => $this->user->surname
                 ));
                 $ar = array_merge($ar, $args);
-                $result = $this->send_message($regids, $ar);
+                $result = $this->send_message($regids, $ar, $this->get_collapse_key($response_code));
                 $response = array('result' => SUCCESS, "gcmresponse" => json_decode($result));
             }
         } else {
