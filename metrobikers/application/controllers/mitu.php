@@ -245,8 +245,9 @@ class Mitu extends CI_Controller {
     public function message_to_user() {
         $message = $this->input->post('message');
         $userid = $this->input->post('userid');
+	$time = $this->input->post('time');
 
-        $this->internal_message_to_user($userid, MSG_MESSAGE, TRUE, array("message" => $message));
+        $this->internal_message_to_user($userid, MSG_MESSAGE, TRUE, array("message" => $message, "time" => $time));
     }
 
     private function get_collapse_key($response_code) {
