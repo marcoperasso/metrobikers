@@ -246,7 +246,7 @@ class Mitu extends CI_Controller {
         $message = $this->input->post('message');
         $userid = $this->input->post('userid');
 
-        $this->internal_message_to_user($userid, MSG_MESSAGE, array("message" => $message));
+        $this->internal_message_to_user($userid, MSG_MESSAGE, TRUE, array("message" => $message));
     }
 
     private function get_collapse_key($response_code) {
@@ -262,7 +262,7 @@ class Mitu extends CI_Controller {
             $this->load->model("MITU_Regid_model");
             $ids = $this->MITU_Regid_model->get_regids($id);
             if (count($ids) === 0) {
-                $response->messageid = NO_RECEIVER_IDS;
+                $response->result = NO_RECEIVER_IDS;
             } else {
                 $regids = array();
                 foreach ($ids as $value) {
