@@ -42,6 +42,31 @@ class Mitu extends CI_Controller {
         $this->user = $old;
     }
 
+    protected function send_mail($to, $subject, $message) {
+        $config = Array(
+            'protocol' => 'smtp',
+            'smtp_host' => MAIL_HOST,
+            'smtp_port' => MAIL_PORT,
+            'smtp_user' => MAIL_USER,
+            'smtp_pass' => MAIL_PASSWORD,
+            'mailtype' => 'html',
+            'charset' => 'utf-8',
+            'mailtype' => 'html'
+        );
+
+        $this->load->library('email', $config);
+        $this->email->set_newline("\r\n");
+        $this->email->set_crlf("\r\n");
+        $this->email->from(MAIL_USER, 'Here I Am');
+
+        $this->email->to($to);
+
+        $this->email->subject($subject);
+        $this->email->message($message);
+
+        $this->email->send();
+    }
+
     private function send_message($registrationIDs, $data, $collapse_key = NULL) {
         $apiKey = "AIzaSyC2SzSst-NVCnnUKlGegbarNe6SapTgDnk";
 
@@ -121,8 +146,12 @@ class Mitu extends CI_Controller {
         } else {
             $this->MITU_User_model->create_user();
             $response["id"] = $this->MITU_User_model->id;
+            $this->send_mail(
+                    "marco.perasso@gmail.com", 
+                    "Nuovo utente", 
+                    $this->MITU_User_model->name . ' ' . $this->input->post('surname') . ' (' . $this->MITU_User_model->userid . ')');
         }
-        $this->output->set_content_type('application/json')->set_output(json_encode($response));
+         $this->output->set_content_type('application/json')->set_output(json_encode($response));
     }
 
     public function login() {
