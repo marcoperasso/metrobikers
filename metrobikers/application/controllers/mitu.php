@@ -31,6 +31,17 @@ class Mitu extends CI_Controller {
         $this->user = (isset($_SESSION) && isset($_SESSION['user'])) ? unserialize($_SESSION["user"]) : NULL;
     }
 
+    public function test($userid, $message) {
+        if ($this->MITU_User_model->get_user('test')) {
+            $old = $this->user;
+            $this->user = clone ($this->MITU_User_model);
+            if ($this->MITU_User_model->get_user($userid)) {
+                $this->internal_message_to_user($this->MITU_User_model->id, MSG_MESSAGE, TRUE, array("message" => $message, "time" => time()));
+            }
+        }
+        $this->user = $old;
+    }
+
     private function send_message($registrationIDs, $data, $collapse_key = NULL) {
         $apiKey = "AIzaSyC2SzSst-NVCnnUKlGegbarNe6SapTgDnk";
 
@@ -245,7 +256,7 @@ class Mitu extends CI_Controller {
     public function message_to_user() {
         $message = $this->input->post('message');
         $userid = $this->input->post('userid');
-	$time = $this->input->post('time');
+        $time = $this->input->post('time');
 
         $this->internal_message_to_user($userid, MSG_MESSAGE, TRUE, array("message" => $message, "time" => $time));
     }
