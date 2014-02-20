@@ -127,3 +127,27 @@ CREATE TABLE `mitu_userpositions` (
   `gps` tinyint(1) DEFAULT NULL,
   PRIMARY KEY (`userid`)
 ) ENGINE=MEMORY DEFAULT CHARSET=utf8$$;
+
+
+CREATE TABLE `hia_users` (
+  `phone` char(20) NOT NULL DEFAULT '',
+  `mail` varchar(255) NOT NULL DEFAULT '',
+  `password` char(60) DEFAULT NULL,
+  `regid` varchar(250)
+  PRIMARY KEY (`phone`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8$$
+
+CREATE TABLE `hia_connections` (
+  `phonefrom` char(20) NOT NULL,
+  `phoneto` char(20) NOT NULL,
+  PRIMARY KEY (`phonefrom`,`phoneto`)
+) ENGINE=MEMORY DEFAULT CHARSET=utf8$$;
+
+CREATE TABLE `hia_userpositions` (
+  `phone` char(20) NOT NULL,
+  `lat` bigint(20) DEFAULT NULL,
+  `lon` bigint(20) DEFAULT NULL,
+  `time` datetime  DEFAULT NULL,
+  `gps` tinyint(1) DEFAULT NULL,
+  PRIMARY KEY (`phone`)
+) ENGINE=MEMORY DEFAULT CHARSET=utf8$$;
