@@ -81,7 +81,7 @@ function get_user_photo($userid) {
         return '/user_data/' . $userid . '/photo.jpg';
     
     
-    return "/asset/img/ecommuter.png";
+    return "asset/img/ecommuter.png";
 }
 
 ?>

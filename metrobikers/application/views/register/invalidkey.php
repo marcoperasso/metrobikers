@@ -14,11 +14,11 @@
             </p>
             <p >
                 Potrebbe essere passato troppo tempo da quando hai inoltrato la richiesta di registrazione, prova a 
-                <a href="/register" title="Registrazione">
+                <a href="register" title="Registrazione">
                     ripetere la procedura</a>.
             </p>
             <p>Scusaci per il disagio.</p>
-            <p class="text-center"><a href="/">Torna alla pagina principale</a></p>
+            <p class="text-center"><a href="">Torna alla pagina principale</a></p>
             
         </div>
         <div class="col-md-2">

@@ -3,8 +3,8 @@
 <div class="row">
     <div class="col-md-1"></div>
     <div class="col-md-4 center-text">
-        <a href="/" title="Vai alla pagina principale">
-            <img class ="logo" src="/asset/img/logo.png" id="ecommuter_logo">
+        <a href="" title="Vai alla pagina principale">
+            <img class ="logo" src="asset/img/logo.png" id="ecommuter_logo">
         </a>
     </div>
     <div class="col-md-1"></div>
@@ -40,18 +40,18 @@
     </div>
     <div class="col-md-6">
         <h3 style="margin-top: 0px; margin-bottom: 0px;">Ti riconosci in questi valori? Allora fai il salto, </h3><br />
-        <a href="/register" class="btn btn-primary btn-lg">Diventa anche tu un ECOmmuter!</a>
-        <a href="/home/details" class="btn btn-lg btn-default">Bello, mi spiegate un po' meglio come funziona?</a>
+        <a href="register" class="btn btn-primary btn-lg">Diventa anche tu un ECOmmuter!</a>
+        <a href="home/details" class="btn btn-lg btn-default">Bello, mi spiegate un po' meglio come funziona?</a>
 
         <div class="container" style="margin-top: 30px">
             <h2>Entra a far parte della nostra <a href="https://plus.google.com/u/0/communities/102754557298986622823" target="community" title="Community Google+ ECOmmuters">community</a>.</h2>
             <div class="text-center">
-                <a title="Scarica la App da Google Play" href ="https://play.google.com/store/apps/details?id=com.ecommuters" target="play"><img src="/asset/img/logo-google-play.png" style="margin: 30px 0px 30px 0px"/></a>
+                <a title="Scarica la App da Google Play" href ="https://play.google.com/store/apps/details?id=com.ecommuters" target="play"><img src="asset/img/logo-google-play.png" style="margin: 30px 0px 30px 0px"/></a>
             </div>
             <p>ECOmmuters è un prodotto giovane, siamo consapevoli che molte funzionalità potrebbero essere migliorate o mancano proprio.</p>
             <p>Sappiamo però che un buon prodotto nasce soprattutto grazie al contributo degli utenti: non avrebbe senso infarcirlo a priori di funzionalità
                 che nessuno utilizza; ti invitiamo per questo a segnalarci i tuoi suggerimenti o eventuali malfunzionamenti scrivendo
-                a <a href="mailto:info@ecommuters.com">info@ecommuters.com</a>.</p>
+                a <a href="mailto:info@smartpointer.it">info@smartpointer.it</a>.</p>
             <p>Ti ringraziamo per la preziosa collaborazione.</p>
         </div>
     </div>

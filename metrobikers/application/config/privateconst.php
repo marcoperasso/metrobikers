@@ -4,9 +4,9 @@
  * Qui dovrebbero esserci tutit i delta di configurazione fra ambiente di sviluppo e di produzione
 */
 
-define('BASE_URL',                      'http://localhost:8888/');
-define('DATABASE_USER',         'webuser');
-define('DATABASE_PASSWORD',     'webuser');
+define('BASE_URL',                      'http://localhost:9999/ecommuters');
+define('DATABASE_USER',         'root');
+define('DATABASE_PASSWORD',     '');
 define('DATABASE_HOST',         'localhost');
 define('DATABASE_NAME',         'metrobikers');
 

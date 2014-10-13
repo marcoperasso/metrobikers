@@ -24,9 +24,9 @@
         </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
-<script type="text/javascript" src="/asset/js/modal.js"></script>
+<script type="text/javascript" src="asset/js/modal.js"></script>
 <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
-<script type="text/javascript" src="/asset/js/md5-min.js"></script>
+<script type="text/javascript" src="asset/js/md5-min.js"></script>
 <script type="text/javascript">
     $("#loginforget").click(resetPassword);
     $("#dologin").click(doLogin);
@@ -37,11 +37,11 @@
     }
     function doLoginInternal(onEnd)
     {
-        jQuery.get("/crypt", null, function(data) {
+        jQuery.get("crypt", null, function(data) {
             eval(data);
             var pwd = hex_md5($('#loginpassword').val());
             pwd = this.crypt(pwd);
-            var jqr = $.getJSON("/login/dologin", {
+            var jqr = $.getJSON("login/dologin", {
                 "email": $("#loginemail").val(),
                 "pwd": pwd
             }, function(data) {
@@ -68,14 +68,14 @@
         if (testFields($("#mailValidatorScope")) && confirm("E va bene... per questa volta... ti verrà inviata una mail all'indirizzo " + $("#loginemail").val() + " con le istruzioni per reimpostare la password; vuoi continuare?"))
         {
             var form = $(loginform);
-            form.attr('action', '/register/reset_pwd');
+            form.attr('action', 'register/reset_pwd');
             form.submit();
         }
     }
     
     window.onLogged = function()
     {
-        window.location.href = "/";
+        window.location.href = "";
     };
 
 </script>

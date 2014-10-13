@@ -32,7 +32,7 @@
 <div class="col-md-1"></div>
 <script type="text/javascript">
     setActiveTab('user');
-    setUpdateUrl("/user/update");
+    setUpdateUrl("user/update");
     $("input[type='file']").change(function() {
         $(this).closest('form').submit();
     });

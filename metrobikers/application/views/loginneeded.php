@@ -1,8 +1,8 @@
 
 <div class="col-md-2"></div>
 <div class="col-md-4 center-text">
-    <a href="/" title="Vai alla pagina principale">
-        <img class="logo" src="/asset/img/logo.png" id="ecommuter_logo">
+    <a href="" title="Vai alla pagina principale">
+        <img class="logo" src="asset/img/logo.png" id="ecommuter_logo">
     </a>
 </div>
 <div class="col-md-4 container">
@@ -13,7 +13,7 @@
 <div class="col-md-2"></div>
 <script type="text/javascript">window.onLogged = function()
     {
-        window.location.href = '<?php echo isset($request) ? $request : '/';?>';
+        window.location.href = '<?php echo isset($request) ? $request : BASE_URL?>;?>';
     };
 </script>
 

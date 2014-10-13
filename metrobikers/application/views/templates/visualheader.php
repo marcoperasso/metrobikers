@@ -8,7 +8,7 @@
     <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
         <!-- Brand and toggle get grouped for better mobile display -->
         <div class="navbar-header">
-            <a class="navbar-brand" href="/">Home</a>
+            <a class="navbar-brand" href="">Home</a>
         </div>
 
         <!-- Collect the nav links, forms, and other content for toggling -->
@@ -17,9 +17,9 @@
             if (isset($user)) {
                 ?>
                 <ul class="nav navbar-nav">
-                    <li class="user"><a href="/user">I miei dati</a></li>
-                    <li class="routes"><a href="/user/routes">I miei itinerari</a></li>
-                    <li class="my_ecommuters"><a href="/user/my_ecommuters">Il mio gruppo</a></li>
+                    <li class="user"><a href="user">I miei dati</a></li>
+                    <li class="routes"><a href="user/routes">I miei itinerari</a></li>
+                    <li class="my_ecommuters"><a href="user/my_ecommuters">Il mio gruppo</a></li>
                 </ul>
             <?php } ?>
             <ul class="nav navbar-nav navbar-right">
@@ -43,7 +43,7 @@
                                 {
                                     $.getJSON("<?php echo base_url() ?>login/dologoff",
                                             function() {
-                                                window.location.href = "/";
+                                                window.location.href = "";
                                             });
                                 }
     </script>

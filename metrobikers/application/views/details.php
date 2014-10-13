@@ -60,7 +60,7 @@
         <!-- Wrapper for slides -->
         <div class="carousel-inner" >
             <div class="item active"  >
-                <img src="/asset/img/logo.png">
+                <img src="asset/img/logo.png">
                 <div class="carousel-caption">
                     <h4>Passo uno: registrati</h4>
                     <p>E' sufficiente fornire una mail valida, il tuo nome e cognome e accettare l'informativa sulla privacy.</p>
@@ -69,7 +69,7 @@
                         Salvo diversa indicazione, la tua posizione sarà visibile solo agli appartenenti al tuo gruppo.</p>
                 </div>
             </div>
-            <div class="item"><a title="Scarica la App da Google Play" href ="https://play.google.com/store/apps/details?id=com.ecommuters" target="play"><img src="/asset/img/logo-google-play.png"/></a>
+            <div class="item"><a title="Scarica la App da Google Play" href ="https://play.google.com/store/apps/details?id=com.ecommuters" target="play"><img src="asset/img/logo-google-play.png"/></a>
                 <div class="carousel-caption">
                     <h4>Passo due: Scarica l'applicazione da Google Play</h4>
                     <p>L'applicazione richiede l'utilizzo del GPS per il rilevamento preciso della posizione e l'accesso a Internet.</p>
@@ -79,14 +79,14 @@
                 </div>
             </div>
             <div class="item"> 
-                <img src="/asset/img/ecommuterapplogin.png">
+                <img src="asset/img/ecommuterapplogin.png">
                 <div class="carousel-caption">
                     <h4>Passo tre: Inserisci le tue credenziali nell'applicazione</h4>
                     <p>Sono le stesse che hai indicato in fase di registrazione.</p>
                 </div>
             </div>
             <div class="item">
-                <img src="/asset/img/ecommuterapprecord.png">
+                <img src="asset/img/ecommuterapprecord.png">
                 <div class="carousel-caption">
                     <h4>Passo quattro: registra i tuoi itinerari</h4>
                     <p>Il tasto rosso avvia e interrompe la registrazione.</p>
@@ -95,7 +95,7 @@
                 </div>
             </div>
             <div class="item">
-                <img src="/asset/img/ecommuterapproute.png">
+                <img src="asset/img/ecommuterapproute.png">
                 <div class="carousel-caption">
                     <h4>Passo cinque: configura l'intervallo temporale di tracciatura della tua posizione</h4>
                     <p>L'applicazione attiva il GPS alcuni minuti prima dell'ora di partenza (configurabili) e lo disattiva alcuni minuti dopo (configurabili). 
@@ -107,7 +107,7 @@
                 </div>
             </div>
             <div class="item">
-                <img src="/asset/img/group.png">
+                <img src="asset/img/group.png">
                 <div class="carousel-caption">
                     <h4>Passo sei: crea il tuo gruppo di ECOmmuters</h4>
                     <p>Cerca altri ECOmmuters ed invia loro una richesta di annessione al tuo gruppo.</p>
@@ -115,7 +115,7 @@
                 </div>
             </div>
             <div class="item">
-                <img src="/asset/img/ecommuterapptracking.png">
+                <img src="asset/img/ecommuterapptracking.png">
                 <div class="carousel-caption">
                     <h4>Puoi attivare manualmente la tracciatura della posizione</h4>
                     <p>Utilizzando il pulsante di attivazione della tracciatura potrai renderti visibile in ogni momento.</p>
@@ -125,7 +125,7 @@
                 </div>
             </div>
             <div class="item">
-                <img src="/asset/img/logosmall.png">
+                <img src="asset/img/logosmall.png">
                 <div class="carousel-caption">
                     <h4>Altre funzionalità</h4>
                     <p>Con la funzionalità di ricerca potrai trovare altri ECOmmuters immettendo il nome o parte di esso.</p>
@@ -135,10 +135,10 @@
                 </div>
             </div>
             <div class="item">
-                <img src="/asset/img/logo.png">
+                <img src="asset/img/logo.png">
                 <div class="carousel-caption">
                     <h4>E' tutto</h4>
-                    <p>E ti sembra poco? Forza, rompi gli indugi, <a href="/register">diventa ECOmmuter!</a></p>
+                    <p>E ti sembra poco? Forza, rompi gli indugi, <a href="register">diventa ECOmmuter!</a></p>
                     
                 </div>
             </div>

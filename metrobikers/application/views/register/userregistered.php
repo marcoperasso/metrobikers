@@ -14,7 +14,7 @@
                     Segui le istruzioni che ti abbiamo mandato via email all'indirizzo <?php echo $user_draft->mail ?> per completare la tua registrazione.
                 </p>
                 <p class="text-center">
-                <a href="/">Torna alla pagina principale</a>
+                <a href="">Torna alla pagina principale</a>
                 </p>
             </div>
             <div class="col-md-2">

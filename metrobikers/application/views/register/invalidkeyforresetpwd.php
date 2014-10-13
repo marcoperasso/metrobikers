@@ -17,7 +17,7 @@
             </p>
             <p>Scusaci per il disagio.</p>
             <p class="text-center">
-                <a href="/">Torna alla pagina principale</a>
+                <a href="">Torna alla pagina principale</a>
             </p>
         </div>
         <div class="col-md-2">

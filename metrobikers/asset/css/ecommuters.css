@@ -33,7 +33,7 @@ footer
     bottom:0px;
     width:100%;
     height:60px;   /* Height of the footer */
-    background-image: url('/asset/img/greengrass.png');
+    background-image: url('../img/greengrass.png');
     background-repeat: repeat-x;
 
 }

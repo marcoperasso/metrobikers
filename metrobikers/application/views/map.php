@@ -116,14 +116,14 @@ if (isset($routes)) {
                     var marker = new google.maps.Marker({
                         position: new google.maps.LatLng(pStart.lat, pStart.lon),
                         title: "Inizio",
-                        icon: "/asset/img/start.png"
+                        icon: "asset/img/start.png"
                     });
                     marker.setMap(map);
 
                     marker = new google.maps.Marker({
                         position: new google.maps.LatLng(pEnd.lat, pEnd.lon),
                         title: "Fine",
-                        icon: "/asset/img/stop.png"
+                        icon: "asset/img/stop.png"
                     });
                     marker.setMap(map);
                 }
@@ -167,7 +167,7 @@ if (isset($routes)) {
                 var marker = new google.maps.Marker({
                     position: new google.maps.LatLng(obj.lat / 1000000, obj.lon / 1000000),
                     title: obj.name + " " + obj.surname + " (" + zeroPad(date.getHours(), 2) + ":" + zeroPad(date.getMinutes(), 2) + ")",
-                    icon: "/asset/img/routemarker.png"
+                    icon: "asset/img/routemarker.png"
                 });
                 marker.setMap(map);
                 positions_markers.push(marker);

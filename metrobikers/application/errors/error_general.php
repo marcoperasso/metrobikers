@@ -13,7 +13,7 @@
                 <div class="col-md-2"></div>
                 <div class="col-md-8">
                     <h1><?php echo $heading; ?></h1>
-                    <img class="centered" src="/asset/img/crashedfrog.png"/>
+                    <img class="centered" src="asset/img/crashedfrog.png"/>
                     <?php echo $message; ?>
                 </div>
                 <div class="col-md-2"></div>

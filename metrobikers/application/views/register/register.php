@@ -1,7 +1,7 @@
 
 <div class="col-md-5 center-text">
-    <a href="/" title="Vai alla pagina principale">
-        <img class="logo" src="/asset/img/logo.png" id="ecommuter_logo">
+    <a href="" title="Vai alla pagina principale">
+        <img class="logo" src="asset/img/logo.png" id="ecommuter_logo">
     </a>
 </div>
 
@@ -27,7 +27,7 @@
             </div> 
             <div class="checkbox" name="privacy" id="privacy" >
                 <label>
-                    <input type="checkbox" class="required">Ho letto e accetto <a href="/register/privacy" target="privacy">l'informativa</a> sul trattamento dei miei dati personali
+                    <input type="checkbox" class="required">Ho letto e accetto <a href="register/privacy" target="privacy">l'informativa</a> sul trattamento dei miei dati personali
                 </label>
             </div>
             <br /><br />

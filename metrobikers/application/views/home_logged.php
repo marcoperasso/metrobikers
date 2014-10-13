@@ -1,7 +1,7 @@
-<script type="text/javascript" src="/asset/js/jquery.inview.js">
+<script type="text/javascript" src="asset/js/jquery.inview.js">
 </script>
 <script type="text/javascript" >
-    setUpdateUrl("/home/update_post");
+    setUpdateUrl("home/update_post");
     function PostControl()
     {
         Control.call(this);
@@ -45,7 +45,7 @@
             return;
 
         var cnt = $(post).closest('.postcontainer');
-        window.location.href = '/home/delete_post?posttime=' + encodeURIComponent($('.postbody', cnt).attr('posttime'));
+        window.location.href = 'home/delete_post?posttime=' + encodeURIComponent($('.postbody', cnt).attr('posttime'));
     }
     function editPost(post)
     {
@@ -75,7 +75,7 @@
     }
     function loadAdditionalPosts()
     {
-        $.get("/home/get_more_posts/" + currentPostOffset, function(data) {
+        $.get("home/get_more_posts/" + currentPostOffset, function(data) {
             var placeHolder = $("#missingposts");
             var jData = $(data).insertAfter(placeHolder);
             placeHolder.remove();
@@ -133,7 +133,7 @@
 <div class="col-md-6 "  >
     <h3 class="text-center">Novità dagli ECOmmuters</h3>
     <div class="container">
-        <form action="/home/create_post" method="post">
+        <form action="home/create_post" method="post">
             <div class="form-group" id="fieldscontainer">
                 <div class="form-group">
                     <table class="table">
@@ -146,7 +146,7 @@
             </div>
         </form>
         <div id ='missingposts'></div>
-        <div id="loader" class="postloader"><img src="/asset/img/loading.gif"/></div>
+        <div id="loader" class="postloader"><img src="asset/img/loading.gif"/></div>
     </div>
 </div>
 <div class="col-md-6">

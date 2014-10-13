@@ -47,7 +47,7 @@
     {
         function datasource(request, response)
         {
-            $.getJSON("/user/get_not_linked_users", {'filter': request.term}, function(data)
+            $.getJSON("user/get_not_linked_users", {'filter': request.term}, function(data)
             {
                 response($.map(data.users, function(usr) {
                     return {
@@ -77,12 +77,12 @@
                 //l'utente ha cliccato un hint, quindi so già l'id dell'ecommuter
                 if (input[0].userid)
                 {
-                    window.location.href = "/user/preconnect/" + input[0].userid;
+                    window.location.href = "user/preconnect/" + input[0].userid;
                     return;
                 }
                 //l'utente ha solo scritto nella text box, devo recoperare l'id dell'ecommuter filtrando secco l'utente
                 //se non lo trovo o ne trovo di più mi arrabbio
-                $.getJSON("/user/get_not_linked_users", {'filter': input.val(), 'exact': true}, function(data) {
+                $.getJSON("user/get_not_linked_users", {'filter': input.val(), 'exact': true}, function(data) {
                     if (data.users.length > 1)
                     {
                         alert("Trovato più di un ECOmmuter col nome indicato.");
@@ -95,7 +95,7 @@
                         input.focus();
                         return;
                     }
-                    window.location.href = "/user/preconnect/" + data.users[0].id;
+                    window.location.href = "user/preconnect/" + data.users[0].id;
                 });
             }
         });
@@ -103,7 +103,7 @@
                 .click(function() {
             if (confirm('Vuoi davvero rimuovere ' + this.getAttribute('descri') + ' dal tuo gruppo?'))
             {
-                window.location.href = '/user/disconnect/' + this.id;
+                window.location.href = 'user/disconnect/' + this.id;
             }
         }
         );
@@ -141,7 +141,7 @@
                         <td><?php echo $linkeduser->name; ?></td>
                         <td><?php echo $linkeduser->surname; ?></td>
                         <td><?php echo $linkeduser->nickname; ?></td>
-                        <td><a class="delete clickable" id="<?php echo $linkeduser->id; ?>" title ="Rimuovi" descri="<?php echo $linkeduser->name . ' ' . $linkeduser->surname; ?>"><img src="/asset/img/icon_delete.png"></a></td>
+                        <td><a class="delete clickable" id="<?php echo $linkeduser->id; ?>" title ="Rimuovi" descri="<?php echo $linkeduser->name . ' ' . $linkeduser->surname; ?>"><img src="asset/img/icon_delete.png"></a></td>
                     </tr>
                     <?php
                 }
