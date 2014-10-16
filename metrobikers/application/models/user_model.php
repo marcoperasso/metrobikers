@@ -50,7 +50,7 @@ class User_model extends MY_Model {
 
     public function get_user($mail) {
         $query = $this->db->get_where('users ', array('mail' => $mail));
-        if ($query->num_rows() === 1) {
+        if ($query && $query->num_rows() === 1) {
             $this->assign($query->row());
             return TRUE;
         }

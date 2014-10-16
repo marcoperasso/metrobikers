@@ -8,7 +8,7 @@ define('BASE_URL',                      'http://localhost:9999/ecommuters');
 define('DATABASE_USER',         'root');
 define('DATABASE_PASSWORD',     '');
 define('DATABASE_HOST',         'localhost');
-define('DATABASE_NAME',         'metrobikers');
+define('DATABASE_NAME',         'ecommuters');
 
 
 define('MAIL_HOST',             'ssl://smtp.gmail.com');
