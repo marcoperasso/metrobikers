@@ -57,6 +57,6 @@ define('SHOW_NAME_NONE',                                        2);
 
 define('POST_BLOCK_SIZE',                                       10);
 
-include 'privateconst.php';
+include __DIR__ . '/../../privateconst.php';
 /* End of file constants.php */
 /* Location: ./application/config/constants.php */
