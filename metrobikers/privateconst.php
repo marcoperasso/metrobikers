@@ -4,7 +4,7 @@
  * Qui dovrebbero esserci tutit i delta di configurazione fra ambiente di sviluppo e di produzione
 */
 
-define('BASE_URL',                      'http://localhost:9999/ecommuters');
+define('BASE_URL',              'http://localhost:610/ecommuters');
 define('DATABASE_USER',         'root');
 define('DATABASE_PASSWORD',     '');
 define('DATABASE_HOST',         'localhost');
